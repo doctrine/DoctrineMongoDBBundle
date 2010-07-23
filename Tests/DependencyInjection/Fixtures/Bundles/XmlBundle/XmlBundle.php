@@ -1,6 +1,6 @@
 <?php
 
-namespace Fixtures\XmlBundle;
+namespace Fixtures\Bundles\XmlBundle;
 
 use Symfony\Framework\Bundle\Bundle;
 

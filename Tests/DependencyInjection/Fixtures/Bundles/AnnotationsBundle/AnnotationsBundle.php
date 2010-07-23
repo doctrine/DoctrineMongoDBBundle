@@ -1,6 +1,6 @@
 <?php
 
-namespace Fixtures\AnnotationsBundle;
+namespace Fixtures\Bundles\AnnotationsBundle;
 
 use Symfony\Framework\Bundle\Bundle;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Fixtures\YamlBundle;
+namespace Fixtures\Bundles\YamlBundle;
 
 use Symfony\Framework\Bundle\Bundle;
 
