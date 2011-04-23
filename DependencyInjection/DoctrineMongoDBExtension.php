@@ -26,6 +26,7 @@ use Symfony\Bundle\DoctrineAbstractBundle\DependencyInjection\AbstractDoctrineEx
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
  * @author Kris Wallsmith <kris.wallsmith@symfony.com>
  * @author Jonathan H. Wage <jonwage@gmail.com>
+ * @author Richard Shank <develop@zestic.com>
  */
 class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 {
@@ -41,6 +42,18 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $processor = new Processor();
         $configuration = new Configuration($container->getParameter('kernel.debug'));
         $config = $processor->processConfiguration($configuration, $configs);
+
+        if (isset($config['acl_database'])) {
+            $container->setParameter('doctrine.odm.mongodb.security.acl.default_database', $config['acl_database']);
+        } else {
+            $container->setParameter('doctrine.odm.mongodb.security.acl.default_database', $config['default_database']);
+
+        }
+
+        if (isset($config['collections'])) {
+            $container->setParameter('doctrine.odm.mongodb.security.acl.entry_collection', $config['collections']['entry']);
+            $container->setParameter('doctrine.odm.mongodb.security.acl.oid_collection', $config['collections']['object_identity']);
+        }
 
         // can't currently default this correctly in Configuration
         if (!isset($config['metadata_cache_driver'])) {
