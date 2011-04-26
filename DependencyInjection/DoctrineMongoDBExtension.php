@@ -143,7 +143,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         if ($container->hasDefinition($configServiceName)) {
             $odmConfigDef = $container->getDefinition($configServiceName);
         } else {
-            $odmConfigDef = new Definition('%doctrine.odm.mongodb.configuration_class%');
+            $odmConfigDef = new Definition('%doctrine.odm.mongodb.configuration.class%');
             $container->setDefinition($configServiceName, $odmConfigDef);
         }
 
@@ -177,7 +177,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $eventManagerName = isset($documentManager['event_manager']) ? $documentManager['event_manager'] : $documentManager['name'];
         $eventManagerId = sprintf('doctrine.odm.mongodb.%s_event_manager', $eventManagerName);
         if (!$container->hasDefinition($eventManagerId)) {
-            $eventManagerDef = new Definition('%doctrine.odm.mongodb.event_manager_class%');
+            $eventManagerDef = new Definition('%doctrine.odm.mongodb.event_manager.class%');
             $eventManagerDef->addTag('doctrine.odm.mongodb.event_manager');
             $eventManagerDef->setPublic(false);
             $container->setDefinition($eventManagerId, $eventManagerDef);
@@ -188,8 +188,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             new Reference(sprintf('doctrine.odm.mongodb.%s_configuration', $documentManager['name'])),
             new Reference($eventManagerId),
         );
-        $odmDmDef = new Definition('%doctrine.odm.mongodb.document_manager_class%', $odmDmArgs);
-        $odmDmDef->setFactoryClass('%doctrine.odm.mongodb.document_manager_class%');
+        $odmDmDef = new Definition('%doctrine.odm.mongodb.document_manager.class%', $odmDmArgs);
+        $odmDmDef->setFactoryClass('%doctrine.odm.mongodb.document_manager.class%');
         $odmDmDef->setFactoryMethod('create');
         $odmDmDef->addTag('doctrine.odm.mongodb.document_manager');
         $container->setDefinition(sprintf('doctrine.odm.mongodb.%s_document_manager', $documentManager['name']), $odmDmDef);
@@ -219,17 +219,17 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $type = $dmMetadataCacheDriver['type'];
 
         if ('memcache' === $type) {
-            $memcacheClass = isset($dmMetadataCacheDriver['class']) ? $dmMetadataCacheDriver['class'] : sprintf('%%doctrine.odm.mongodb.cache.%s_class%%', $type);
+            $memcacheClass = isset($dmMetadataCacheDriver['class']) ? $dmMetadataCacheDriver['class'] : sprintf('%%doctrine.odm.mongodb.cache.%s.class%%', $type);
             $cacheDef = new Definition($memcacheClass);
             $memcacheHost = isset($dmMetadataCacheDriver['host']) ? $dmMetadataCacheDriver['host'] : '%doctrine.odm.mongodb.cache.memcache_host%';
             $memcachePort = isset($dmMetadataCacheDriver['port']) ? $dmMetadataCacheDriver['port'] : '%doctrine.odm.mongodb.cache.memcache_port%';
-            $memcacheInstanceClass = isset($dmMetadataCacheDriver['instance-class']) ? $dmMetadataCacheDriver['instance-class'] : (isset($dmMetadataCacheDriver['instance_class']) ? $dmMetadataCacheDriver['instance_class'] : '%doctrine.odm.mongodb.cache.memcache_instance_class%');
+            $memcacheInstanceClass = isset($dmMetadataCacheDriver['instance-class']) ? $dmMetadataCacheDriver['instance-class'] : (isset($dmMetadataCacheDriver['instance_class']) ? $dmMetadataCacheDriver['instance_class'] : '%doctrine.odm.mongodb.cache.memcache_instance.class%');
             $memcacheInstance = new Definition($memcacheInstanceClass);
             $memcacheInstance->addMethodCall('connect', array($memcacheHost, $memcachePort));
             $container->setDefinition(sprintf('doctrine.odm.mongodb.%s_memcache_instance', $documentManager['name']), $memcacheInstance);
             $cacheDef->addMethodCall('setMemcache', array(new Reference(sprintf('doctrine.odm.mongodb.%s_memcache_instance', $documentManager['name']))));
         } else {
-             $cacheDef = new Definition(sprintf('%%doctrine.odm.mongodb.cache.%s_class%%', $type));
+             $cacheDef = new Definition(sprintf('%%doctrine.odm.mongodb.cache.%s.class%%', $type));
         }
 
         $container->setDefinition(sprintf('doctrine.odm.mongodb.%s_metadata_cache', $documentManager['name']), $cacheDef);
@@ -249,7 +249,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 isset($connection['options']) ? $connection['options'] : array(),
                 new Reference(sprintf('doctrine.odm.mongodb.%s_configuration', $name))
             );
-            $odmConnDef = new Definition('%doctrine.odm.mongodb.connection_class%', $odmConnArgs);
+            $odmConnDef = new Definition('%doctrine.odm.mongodb.connection.class%', $odmConnArgs);
             $container->setDefinition(sprintf('doctrine.odm.mongodb.%s_connection', $name), $odmConnDef);
         }
     }
