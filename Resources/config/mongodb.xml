@@ -121,7 +121,7 @@
             <argument type="service" id="security.acl.permission_granting_strategy" />
             <argument type="collection">
                 <argument key="entry_collection">%doctrine.odm.mongodb.security.acl.entry_collection%</argument>
-                <argument key="entry_collection">%doctrine.odm.mongodb.security.acl.oid_collection%</argument>
+                <argument key="oid_collection">%doctrine.odm.mongodb.security.acl.oid_collection%</argument>
             </argument>
             <argument type="service" id="security.acl.cache" on-invalid="null" />
         </service>
