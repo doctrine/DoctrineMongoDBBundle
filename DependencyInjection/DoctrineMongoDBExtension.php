@@ -43,17 +43,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $configuration = new Configuration($container->getParameter('kernel.debug'));
         $config = $processor->processConfiguration($configuration, $configs);
 
-        if (isset($config['acl_database'])) {
-            $container->setParameter('doctrine.odm.mongodb.security.acl.default_database', $config['acl_database']);
-        } else {
-            $container->setParameter('doctrine.odm.mongodb.security.acl.default_database', $config['default_database']);
+        $this->loadAcl($config['default_database'], $container);
 
-        }
-
-        if (isset($config['collections'])) {
-            $container->setParameter('doctrine.odm.mongodb.security.acl.entry_collection', $config['collections']['entry']);
-            $container->setParameter('doctrine.odm.mongodb.security.acl.oid_collection', $config['collections']['object_identity']);
-        }
 
         // can't currently default this correctly in Configuration
         if (!isset($config['metadata_cache_driver'])) {
@@ -113,6 +104,18 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         }
 
         return $options;
+    }
+
+    protected function loadAcl($defaultDB, ContainerBuilder $container)
+    {
+        $defaultDatabase = isset($documentManager['default_database']) ? $documentManager['default_database'] : $defaultDB;
+        $aclDatabase = isset($documentManager['acl_database']) ? $documentManager['acl_database'] : $defaultDatabase;
+        $container->setParameter('doctrine.odm.mongodb.security.acl.database', $aclDatabase);
+
+        if (isset($config['collections'])) {
+            $container->setParameter('doctrine.odm.mongodb.security.acl.entry_collection', $config['collections']['entry']);
+            $container->setParameter('doctrine.odm.mongodb.security.acl.oid_collection', $config['collections']['object_identity']);
+        }
     }
 
     /**
