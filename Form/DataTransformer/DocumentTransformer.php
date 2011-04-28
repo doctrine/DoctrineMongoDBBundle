@@ -34,11 +34,19 @@ class DocumentTransformer implements DataTransformerInterface
 
     public function transform($document)
     {
+        if (null === $document || '' === $document) {
+            return '';
+        }
+
         return $this->meta->getIdentifierValue($document);
     }
 
     public function reverseTransform($id)
     {
+        if (null === $id || '' === $id) {
+            return;
+        }
+
         if (!$document = $this->repo->find($id)) {
             throw new TransformationFailedException(sprintf('The document with id "%s" could not be found', $id));
         }

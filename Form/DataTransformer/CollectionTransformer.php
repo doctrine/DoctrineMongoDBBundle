@@ -36,6 +36,11 @@ class CollectionTransformer extends DocumentTransformer
     public function transform($collection)
     {
         $ids = array();
+
+        if (null === $collection || '' === $collection) {
+            return $ids;
+        }
+
         foreach ($collection as $document) {
             $ids[] = parent::transform($document);
         }
@@ -46,6 +51,10 @@ class CollectionTransformer extends DocumentTransformer
     public function reverseTransform($ids)
     {
         $collection = $this->collection ?: new ArrayCollection();
+
+        if (null === $ids || '' === $ids) {
+            return $collection;
+        }
 
         $old = $collection->toArray();
         $new = array();

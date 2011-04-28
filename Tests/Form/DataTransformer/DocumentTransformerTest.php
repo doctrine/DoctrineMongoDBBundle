@@ -36,6 +36,30 @@ class DocumentTransformerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($id, $this->transformer->transform($document), '->transform() transforms a document to an id');
     }
 
+    /**
+     * @dataProvider getEmpties
+     */
+    public function testTransformEmpty($empty)
+    {
+        $this->assertSame('', $this->transformer->transform($empty), '->transform() transforms an empty value to an empty string');
+    }
+
+    /**
+     * @dataProvider getEmpties
+     */
+    public function testReverseTransformEmpty($empty)
+    {
+        $this->assertSame(null, $this->transformer->reverseTransform($empty), '->reverseTransform() transforms an empty value to null');
+    }
+
+    public function getEmpties()
+    {
+        return array(
+            array(null),
+            array(''),
+        );
+    }
+
     public function testReverseTransform()
     {
         $id = 'asdf1234';

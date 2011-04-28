@@ -49,6 +49,32 @@ class CollectionTransformerTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @dataProvider getEmpties
+     */
+    public function testTransformEmpty($empty)
+    {
+        $transformer = new CollectionTransformer($this->meta, $this->repo);
+        $this->assertEquals(array(), $transformer->transform($empty), '->transform() transforms an empty value into an array');
+    }
+
+    /**
+     * @dataProvider getEmpties
+     */
+    public function testReverseTransformEmpty($empty)
+    {
+        $transformer = new CollectionTransformer($this->meta, $this->repo);
+        $this->assertInstanceOf('Doctrine\\Common\\Collections\\Collection', $transformer->reverseTransform($empty), '->reverseTransform() transforms an empty value into a collection');
+    }
+
+    public function getEmpties()
+    {
+        return array(
+            array(null),
+            array(''),
+        );
+    }
+
     public function testReverseTransform()
     {
         $id = 'asdf1234';
