@@ -73,6 +73,7 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('connection')->end()
                             ->scalarNode('database')->end()
                             ->booleanNode('logging')->defaultValue($this->debug)->end()
+                            ->booleanNode('auto_mapping')->defaultFalse()->end()
                         ->end()
                         ->fixXmlConfig('mapping')
                         ->append($this->getMappingsNode())
