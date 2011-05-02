@@ -18,6 +18,7 @@ use Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection\Compiler\AddValidat
 use Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection\Compiler\CreateHydratorDirectoryPass;
 use Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection\Compiler\CreateProxyDirectoryPass;
 use Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection\Compiler\RegisterEventListenersAndSubscribersPass;
+use Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 
 /**
  * Doctrine MongoDB ODM bundle.
@@ -36,5 +37,10 @@ class DoctrineMongoDBBundle extends Bundle
         $container->addCompilerPass(new RegisterEventListenersAndSubscribersPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION);
         $container->addCompilerPass(new CreateProxyDirectoryPass(), PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new CreateHydratorDirectoryPass(), PassConfig::TYPE_BEFORE_REMOVING);
+    }
+
+    public function getContainerExtension()
+    {
+        return new DoctrineMongoDBExtension();
     }
 }

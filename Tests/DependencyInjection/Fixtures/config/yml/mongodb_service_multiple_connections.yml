@@ -1,4 +1,4 @@
-doctrine_mongo_db:
+doctrine_mongodb:
   default_document_manager: dm2
   default_connection: conn2
   connections:

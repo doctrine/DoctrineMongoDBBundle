@@ -30,7 +30,7 @@ use Symfony\Bundle\DoctrineAbstractBundle\DependencyInjection\AbstractDoctrineEx
 class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 {
     /**
-     * Responds to the doctrine_mongo_db configuration parameter.
+     * Responds to the doctrine_mongodb configuration parameter.
      */
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -322,6 +322,11 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     protected function getMappingResourceConfigDirectory()
     {
         return 'Resources/config/doctrine/metadata/mongodb';
+    }
+
+    public function getAlias()
+    {
+        return 'doctrine_mongodb';
     }
 
     /**

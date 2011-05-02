@@ -33,7 +33,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('doctrine_mongo_db');
+        $rootNode = $treeBuilder->root('doctrine_mongodb');
 
         $this->addDocumentManagersSection($rootNode);
         $this->addConnectionsSection($rootNode);
@@ -91,12 +91,13 @@ class Configuration implements ConfigurationInterface
                             ->arrayNode('mappings')
                                 ->useAttributeAsKey('name')
                                 ->prototype('array')
-                                    ->treatNullLike(array())
-                                    ->performNoDeepMerging()
                                     ->beforeNormalization()
                                         ->ifString()
                                         ->then(function($v) { return array ('type' => $v); })
                                     ->end()
+                                    ->treatNullLike(array())
+                                    ->treatFalseLike(array('mapping' => false))
+                                    ->performNoDeepMerging()
                                     ->children()
                                         ->scalarNode('mapping')->defaultValue(true)->end()
                                         ->scalarNode('type')->end()

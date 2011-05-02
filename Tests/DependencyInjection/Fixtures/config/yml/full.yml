@@ -1,4 +1,4 @@
-doctrine_mongo_db:
+doctrine_mongodb:
     proxy_namespace:    Test_Proxies
     auto_generate_proxy_classes:    true
 
