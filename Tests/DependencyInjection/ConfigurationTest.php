@@ -60,51 +60,58 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $options = $processor->processConfiguration($configuration, array($config));
 
         $expected = array(
-            'proxy_dir'                         => '%kernel.cache_dir%/doctrine/odm/mongodb/Proxies',
-            'proxy_namespace'                   => 'Test_Proxies',
-            'auto_generate_proxy_classes'       => true,
-            'hydrator_dir'                      => '%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators',
-            'hydrator_namespace'                => 'Test_Hydrators',
-            'auto_generate_hydrator_classes'    => true,
-            'default_document_manager'          => 'default_dm_name',
-            'default_database'                  => 'default_db_name',
-            'default_connection'                => 'conn1',
+            'proxy_dir'                      => '%kernel.cache_dir%/doctrine/odm/mongodb/Proxies',
+            'proxy_namespace'                => 'Test_Proxies',
+            'auto_generate_proxy_classes'    => true,
+            'hydrator_dir'                   => '%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators',
+            'hydrator_namespace'             => 'Test_Hydrators',
+            'auto_generate_hydrator_classes' => true,
+            'default_document_manager'       => 'default_dm_name',
+            'default_database'               => 'default_db_name',
+            'default_connection'             => 'conn1',
             'connections'   => array(
-                'conn1'         => array(
-                    'server'    => 'http://server',
-                    'options'   => array(
-                        'connect'   => true,
-                        'persist'   => 'persist_val',
-                        'timeout'   => 500,
+                'conn1'       => array(
+                    'server'  => 'http://server',
+                    'options' => array(
+                        'connect'    => true,
+                        'persist'    => 'persist_val',
+                        'timeout'    => 500,
                         'replicaSet' => true,
-                        'username'  => 'username_val',
-                        'password'  => 'password_val',
+                        'username'   => 'username_val',
+                        'password'   => 'password_val',
                     ),
                 ),
-                'conn2'         => array(
-                    'server'    => 'http://server2',
-                    'options'   => array(),
+                'conn2'       => array(
+                    'server'  => 'http://server2',
+                    'options' => array(),
                 ),
             ),
             'document_managers' => array(
                 'dm1' => array(
-                    'mappings' => array(
-                        'FooBundle'     => array(
-                            'type' => 'annotations',
-                        ),
-                    ),
+                    'logging'      => false,
+                    'auto_mapping' => false,
                     'metadata_cache_driver' => array(
-                        'type'      => 'memcache',
-                        'class'     => 'fooClass',
-                        'host'      => 'host_val',
-                        'port'      => 1234,
+                        'type'           => 'memcache',
+                        'class'          => 'fooClass',
+                        'host'           => 'host_val',
+                        'port'           => 1234,
                         'instance_class' => 'instance_val',
                     ),
-                    'logging' => false,
+                    'mappings' => array(
+                        'FooBundle' => array(
+                            'type'    => 'annotations',
+                            'mapping' => true,
+                        ),
+                    ),
                 ),
                 'dm2' => array(
-                    'connection' => 'dm2_connection',
-                    'database' => 'db1',
+                    'connection'   => 'dm2_connection',
+                    'database'     => 'db1',
+                    'logging'      => true,
+                    'auto_mapping' => false,
+                    'metadata_cache_driver' => array(
+                        'type' => 'apc',
+                    ),
                     'mappings' => array(
                         'BarBundle' => array(
                             'type'      => 'yml',
@@ -112,12 +119,9 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                             'prefix'    => 'prefix_val',
                             'alias'     => 'alias_val',
                             'is_bundle' => false,
+                            'mapping'   => true,
                         )
                     ),
-                    'metadata_cache_driver' => array(
-                        'type' => 'apc',
-                    ),
-                    'logging' => true,
                 )
             )
         );
@@ -196,7 +200,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 array('document_managers' => array('default' => array('mappings' => array('foomap' => array('type' => 'val1'), 'barmap' => array('dir' => 'val2'))))),
                 array('document_managers' => array('default' => array('mappings' => array('barmap' => array('prefix' => 'val3'))))),
             ),
-            array('document_managers' => array('default' => array('logging' => false, 'mappings' => array('foomap' => array('type' => 'val1'), 'barmap' => array('prefix' => 'val3'))))),
+            array('document_managers' => array('default' => array('logging' => false, 'auto_mapping' => false, 'mappings' => array('foomap' => array('type' => 'val1', 'mapping' => true), 'barmap' => array('prefix' => 'val3', 'mapping' => true))))),
         );
 
         // connections are merged non-recursively.
@@ -218,8 +222,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 array('document_managers' => array('bardm' => array('database' => 'val3'))),
             ),
             array('document_managers' => array(
-                'foodm' => array('database' => 'val1', 'logging' => false, 'mappings' => array()),
-                'bardm' => array('database' => 'val3', 'logging' => false, 'mappings' => array()),
+                'foodm' => array('database' => 'val1', 'logging' => false, 'auto_mapping' => false, 'mappings' => array()),
+                'bardm' => array('database' => 'val3', 'logging' => false, 'auto_mapping' => false, 'mappings' => array()),
             )),
         );
 
@@ -260,8 +264,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 )),
                 'document_managers',
                 array(
-                    'foo' => array('connection' => 'conn1', 'logging' => false, 'mappings' => array()),
-                    'bar' => array('connection' => 'conn2', 'logging' => false, 'mappings' => array()),
+                    'foo' => array('connection' => 'conn1', 'logging' => false, 'auto_mapping' => false, 'mappings' => array()),
+                    'bar' => array('connection' => 'conn2', 'logging' => false, 'auto_mapping' => false, 'mappings' => array()),
                 ),
             ),
             // mapping configuration that's beneath a specific document manager
@@ -273,9 +277,12 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 )),
                 'document_managers',
                 array(
-                    'foo' => array('connection' => 'conn1', 'mappings' => array(
-                        'foo-mapping' => array('type' => 'xml'),
-                    ), 'logging' => false),
+                    'foo' => array(
+                        'connection'   => 'conn1', 
+                        'mappings'     => array('foo-mapping' => array('type' => 'xml', 'mapping' => true)),
+                        'logging'      => false,
+                        'auto_mapping' => false,
+                    ),
                 ),
             ),
         );
