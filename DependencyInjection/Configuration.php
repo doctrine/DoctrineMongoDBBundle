@@ -98,6 +98,7 @@ class Configuration implements ConfigurationInterface
                                         ->then(function($v) { return array ('type' => $v); })
                                     ->end()
                                     ->children()
+                                        ->scalarNode('mapping')->defaultValue(true)->end()
                                         ->scalarNode('type')->end()
                                         ->scalarNode('dir')->end()
                                         ->scalarNode('prefix')->end()
