@@ -24,7 +24,7 @@ use Symfony\Bundle\DoctrineAbstractBundle\DependencyInjection\AbstractDoctrineEx
  * Doctrine MongoDB ODM extension.
  *
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
- * @author Kris Wallsmith <kris.wallsmith@symfony.com>
+ * @author Kris Wallsmith <kris@symfony.com>
  * @author Jonathan H. Wage <jonwage@gmail.com>
  */
 class DoctrineMongoDBExtension extends AbstractDoctrineExtension
