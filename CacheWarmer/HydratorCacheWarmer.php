@@ -70,7 +70,7 @@ class HydratorCacheWarmer implements CacheWarmerInterface
             $dm = $this->container->get(sprintf('doctrine.odm.mongodb.%s_document_manager', $documentManagerName));
             /* @var $dm Doctrine\ODM\MongoDB\DocumentManager */
             $classes = $dm->getMetadataFactory()->getAllMetadata();
-            $dm->getHydratorFactory()->generateHydratorClasses($classes);
+            $dm->getHydratorFactory()->generateHydratorClass($classes);
         }
     }
 }
