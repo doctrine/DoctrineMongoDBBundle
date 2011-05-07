@@ -11,7 +11,6 @@
 
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests\Form\ChoiceList;
 
-require_once __DIR__.'/../../TestCase.php';
 require_once __DIR__.'/../../Fixtures/Form/Document.php';
 
 use Symfony\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
