@@ -321,7 +321,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
     protected function getMappingResourceConfigDirectory()
     {
-        return 'Resources/config/doctrine/metadata/mongodb';
+        return 'Resources/config/doctrine';
     }
 
     protected function getMappingResourceExtension()
