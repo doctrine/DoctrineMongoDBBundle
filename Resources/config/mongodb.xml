@@ -66,6 +66,10 @@
             <tag name="form.type" alias="document" />
             <argument type="service" id="doctrine.odm.mongodb.document_manager" />
         </service>
+        <service id="form.type_guesser.doctrine.mongodb" class="Symfony\Bundle\DoctrineMongoDBBundle\Form\DoctrineMongoDBTypeGuesser">
+            <tag name="form.type_guesser" />
+            <argument type="service" id="doctrine.odm.mongodb.document_manager" />
+        </service>
 
         <!-- metadata -->
         <service id="doctrine.odm.mongodb.metadata.chain" class="%doctrine.odm.mongodb.metadata.driver_chain.class%" />
