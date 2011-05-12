@@ -12,12 +12,31 @@
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Form;
 
 use Symfony\Component\Form\AbstractExtension;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Form extension.
  *
  * @author Kris Wallsmith <kris@symfony.com>
+ * @author Thibault Duplessis <thibault.duplessis@gmail.com>
  */
 class DoctrineMongoDBExtension extends AbstractExtension
 {
+    /**
+     * The Doctrine 2 document manager
+     * @var DocumentManager
+     */
+    protected $documentManager = null;
+
+    public function __construct(DocumentManager $documentManager)
+    {
+        $this->documentManager = $documentManager;
+    }
+
+    protected function loadTypes()
+    {
+        return array(
+            new Type\DocumentType($this->documentManager),
+        );
+    }
 }
