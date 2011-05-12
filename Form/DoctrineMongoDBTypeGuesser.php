@@ -53,6 +53,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
                         'document_manager' => $this->documentManager,
                         'class' => $mapping['targetDocument'],
                         'multiple' => $multiple,
+                        'expanded' => $multiple
                     ),
                     Guess::HIGH_CONFIDENCE
                 );
