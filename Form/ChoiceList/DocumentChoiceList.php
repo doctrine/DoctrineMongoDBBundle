@@ -62,13 +62,13 @@ class DocumentChoiceList extends ArrayChoiceList
     private $queryBuilder;
 
     /**
-     * The fields of which the identifier of the underlying class consists
+     * The field of which the identifier of the underlying class consists
      *
      * This property should only be accessed through identifier.
      *
-     * @var array
+     * @var string
      */
-    private $identifier = array();
+    private $identifier;
 
     /**
      * A cache for \ReflectionProperty instances for the underlying class
@@ -180,7 +180,7 @@ class DocumentChoiceList extends ArrayChoiceList
      *
      * @return array  An array of documents
      */
-    public function getdocuments()
+    public function getDocuments()
     {
         if (!$this->loaded) {
             $this->load();
@@ -192,16 +192,10 @@ class DocumentChoiceList extends ArrayChoiceList
     /**
      * Returns the document for the given key
      *
-     * If the underlying documents have composite identifiers, the choices
-     * are intialized. The key is expected to be the index in the choices
-     * array in this case.
-     *
-     * If they have single identifiers, they are either fetched from the
+     * They are either fetched from the
      * internal document cache (if filled) or loaded from the database.
      *
-     * @param  string $key  The choice key (for documents with composite
-     *                      identifiers) or document ID (for documents with single
-     *                      identifiers)
+     * @param  string $key  The choice key document ID
      * @return object       The matching document
      */
     public function getDocument($key)
@@ -210,25 +204,10 @@ class DocumentChoiceList extends ArrayChoiceList
             $this->load();
         }
 
-        try {
-            if (count($this->identifier) > 1) {
-                // $key is a collection index
-                $documents = $this->getdocuments();
-                return isset($documents[$key]) ? $documents[$key] : null;
-            } else if ($this->documents) {
-                return isset($this->documents[$key]) ? $this->documents[$key] : null;
-            } else if ($queryBuilder = $this->queryBuilder) {
-                // should we clone the builder?
-                $alias = $queryBuilder->getRootAlias();
-                $where = $queryBuilder->expr()->eq($alias.'.'.current($this->identifier), $key);
-
-                return $queryBuilder->andWhere($where)->getQuery()->getSingleResult();
-            }
-
-            return $this->documentManager->find($this->class, $key);
-        } catch (NoResultException $e) {
-            return null;
+        if ($this->documents) {
+            return isset($this->documents[$key]) ? $this->documents[$key] : null;
         }
+        return $this->documentManager->find($this->class, $key);
     }
 
     /**
