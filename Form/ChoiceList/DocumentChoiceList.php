@@ -180,7 +180,7 @@ class DocumentChoiceList extends ArrayChoiceList
      *
      * @return array  An array of documents
      */
-    public function getdocuments()
+    public function getDocuments()
     {
         if (!$this->loaded) {
             $this->load();
@@ -213,7 +213,7 @@ class DocumentChoiceList extends ArrayChoiceList
         try {
             if (count($this->identifier) > 1) {
                 // $key is a collection index
-                $documents = $this->getdocuments();
+                $documents = $this->getDocuments();
                 return isset($documents[$key]) ? $documents[$key] : null;
             } else if ($this->documents) {
                 return isset($this->documents[$key]) ? $this->documents[$key] : null;

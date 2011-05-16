@@ -31,37 +31,37 @@ class DocumentToIdTransformer implements DataTransformerInterface
     }
 
     /**
-     * Transforms entities into choice keys
+     * Transforms documents into choice keys
      *
-     * @param Collection|object $entity A collection of entities, a single entity or
+     * @param Collection|object $document A collection of documents, a single document or
      *                                  NULL
      * @return mixed An array of choice keys, a single key or NULL
      */
-    public function transform($entity)
+    public function transform($document)
     {
-        if (null === $entity || '' === $entity) {
+        if (null === $document || '' === $document) {
             return '';
         }
 
-        if (!is_object($entity)) {
-            throw new UnexpectedTypeException($entity, 'object');
+        if (!is_object($document)) {
+            throw new UnexpectedTypeException($document, 'object');
         }
 
         if (count($this->choiceList->getIdentifier()) > 1) {
             // load all choices
-            $availableEntities = $this->choiceList->getEntities();
+            $availableDocuments = $this->choiceList->getDocuments();
 
-            return array_search($entity, $availableEntities);
+            return array_search($document, $availableDocuments);
         }
 
-        return $this->choiceList->getIdentifierValue($entity);
+        return $this->choiceList->getIdentifierValue($document);
     }
 
     /**
-     * Transforms choice keys into entities
+     * Transforms choice keys into documents
      *
      * @param  mixed $key   An array of keys, a single key or NULL
-     * @return Collection|object  A collection of entities, a single entity
+     * @return Collection|object  A collection of documents, a single document
      *                            or NULL
      */
     public function reverseTransform($key)
@@ -74,10 +74,10 @@ class DocumentToIdTransformer implements DataTransformerInterface
             throw new UnexpectedTypeException($key, 'numeric');
         }
 
-        if (!($entity = $this->choiceList->getDocument($key))) {
-            throw new TransformationFailedException(sprintf('The entity with key "%s" could not be found', $key));
+        if (!($document = $this->choiceList->getDocument($key))) {
+            throw new TransformationFailedException(sprintf('The document with key "%s" could not be found', $key));
         }
 
-        return $entity;
+        return $document;
     }
 }
