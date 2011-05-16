@@ -47,13 +47,6 @@ class DocumentToIdTransformer implements DataTransformerInterface
             throw new UnexpectedTypeException($document, 'object');
         }
 
-        if (count($this->choiceList->getIdentifier()) > 1) {
-            // load all choices
-            $availableDocuments = $this->choiceList->getDocuments();
-
-            return array_search($document, $availableDocuments);
-        }
-
         return $this->choiceList->getIdentifierValue($document);
     }
 
@@ -68,10 +61,6 @@ class DocumentToIdTransformer implements DataTransformerInterface
     {
         if ('' === $key || null === $key) {
             return null;
-        }
-
-        if (count($this->choiceList->getIdentifier()) > 1 && !is_numeric($key)) {
-            throw new UnexpectedTypeException($key, 'numeric');
         }
 
         if (!($document = $this->choiceList->getDocument($key))) {
