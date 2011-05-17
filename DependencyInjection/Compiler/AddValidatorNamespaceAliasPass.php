@@ -14,7 +14,7 @@ class AddValidatorNamespaceAliasPass implements CompilerPassInterface
         }
 
         $loader = $container->getDefinition('validator.mapping.loader.annotation_loader');
-        $args = $loader->getArguments();
+        $args = $container->getParameterBag()->resolveValue($loader->getArguments());
 
         $args[0]['assertMongoDB'] = 'Symfony\\Bundle\\DoctrineMongoDBBundle\\Validator\\Constraints\\';
         $loader->replaceArgument(0, $args[0]);
