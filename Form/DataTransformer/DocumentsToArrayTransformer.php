@@ -35,7 +35,7 @@ class DocumentsToArrayTransformer implements DataTransformerInterface
     /**
      * Transforms documents into choice keys
      *
-     * @param Collection|object $collection A collection of documents, a single document or
+     * @param Collection|array|object $collection A collection of documents, a single document or
      *                                      NULL
      * @return mixed An array of choice keys, a single key or NULL
      */
@@ -45,8 +45,12 @@ class DocumentsToArrayTransformer implements DataTransformerInterface
             return array();
         }
 
-        if (!($collection instanceof Collection)) {
-            throw new UnexpectedTypeException($collection, 'Doctrine\Common\Collection\Collection');
+
+        if (!is_object($collection) && !is_array($collection)) {
+            if (is_object($collection) && !($collection instanceof Collection)) {
+                throw new UnexpectedTypeException($collection, 'Doctrine\Common\Collection\Collection');
+            }
+            throw new UnexpectedTypeException($collection, 'array');
         }
 
         $array = array();
