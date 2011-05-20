@@ -45,12 +45,8 @@ class DocumentsToArrayTransformer implements DataTransformerInterface
             return array();
         }
 
-
-        if (!is_object($collection) && !is_array($collection)) {
-            if (is_object($collection) && !($collection instanceof Collection)) {
-                throw new UnexpectedTypeException($collection, 'Doctrine\Common\Collection\Collection');
-            }
-            throw new UnexpectedTypeException($collection, 'array');
+        if (!is_array($collection) && !($collection instanceof Collection)) {
+            throw new UnexpectedTypeException($collection, 'Doctrine\Common\Collection\Collection');
         }
 
         $array = array();
