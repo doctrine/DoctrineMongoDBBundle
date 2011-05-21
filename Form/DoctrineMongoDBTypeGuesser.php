@@ -151,6 +151,10 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
         }
     }
 
+    public function guessMinLength($class, $property)
+    {
+    }
+
     /**
      * Returns whether Doctrine 2 metadata exists for that class
      *
