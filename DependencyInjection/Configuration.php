@@ -33,7 +33,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('doctrine_mongo_db');
+        $rootNode = $treeBuilder->root('doctrine_mongodb');
 
         $this->addDocumentManagersSection($rootNode);
         $this->addConnectionsSection($rootNode);
@@ -66,16 +66,49 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('document_managers')
                     ->useAttributeAsKey('id')
                     ->prototype('array')
-                        //->performNoDeepMerging()
                         ->treatNullLike(array())
-                        ->append($this->getMetadataCacheDriverNode())
                         ->children()
                             ->scalarNode('connection')->end()
                             ->scalarNode('database')->end()
                             ->booleanNode('logging')->defaultValue($this->debug)->end()
+                            ->scalarNode('auto_mapping')->defaultFalse()->end()
+                            ->arrayNode('metadata_cache_driver')
+                                ->beforeNormalization()
+                                    ->ifTrue(function($v) { return !is_array($v); })
+                                    ->then(function($v) { return array('type' => $v); })
+                                ->end()
+                                ->children()
+                                    ->scalarNode('type')->end()
+                                    ->scalarNode('class')->end()
+                                    ->scalarNode('host')->end()
+                                    ->scalarNode('port')->end()
+                                    ->scalarNode('instance_class')->end()
+                                ->end()
+                            ->end()
                         ->end()
                         ->fixXmlConfig('mapping')
-                        ->append($this->getMappingsNode())
+                        ->children()
+                            ->arrayNode('mappings')
+                                ->useAttributeAsKey('name')
+                                ->prototype('array')
+                                    ->beforeNormalization()
+                                        ->ifString()
+                                        ->then(function($v) { return array ('type' => $v); })
+                                    ->end()
+                                    ->treatNullLike(array())
+                                    ->treatFalseLike(array('mapping' => false))
+                                    ->performNoDeepMerging()
+                                    ->children()
+                                        ->scalarNode('mapping')->defaultValue(true)->end()
+                                        ->scalarNode('type')->end()
+                                        ->scalarNode('dir')->end()
+                                        ->scalarNode('prefix')->end()
+                                        ->scalarNode('alias')->end()
+                                        ->booleanNode('is_bundle')->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
                     ->end()
                 ->end()
             ->end()
@@ -96,98 +129,22 @@ class Configuration implements ConfigurationInterface
                         ->performNoDeepMerging()
                         ->children()
                             ->scalarNode('server')->defaultNull()->end()
+                            ->arrayNode('options')
+                                ->performNoDeepMerging()
+                                ->addDefaultsIfNotSet()
+                                ->children()
+                                    ->booleanNode('connect')->end()
+                                    ->scalarNode('persist')->end()
+                                    ->scalarNode('timeout')->end()
+                                    ->booleanNode('replicaSet')->end()
+                                    ->scalarNode('username')->end()
+                                    ->scalarNode('password')->end()
+                                ->end()
+                            ->end()
                         ->end()
-                        ->append($this->addConnectionOptionsNode())
                     ->end()
                 ->end()
             ->end()
         ;
-    }
-
-    /**
-     * Returns the array node used for "mappings".
-     *
-     * This is used in two different parts of the tree.
-     *
-     * @param NodeBuilder $rootNode The parent node
-     * @return NodeBuilder
-     */
-    protected function getMappingsNode()
-    {
-        $builder = new TreeBuilder();
-        $node = $builder->root('mappings');
-
-        $node
-            ->useAttributeAsKey('name')
-            ->prototype('array')
-                ->beforeNormalization()
-                    // if it's not an array, then the scalar is the type key
-                    ->ifString()
-                    ->then(function($v) { return array ('type' => $v); })
-                ->end()
-                // I believe that "null" should *not* set the type
-                // it's guessed in AbstractDoctrineExtension::detectMetadataDriver
-                ->treatNullLike(array())
-                ->children()
-                    ->scalarNode('type')->end()
-                    ->scalarNode('dir')->end()
-                    ->scalarNode('prefix')->end()
-                    ->scalarNode('alias')->end()
-                    ->booleanNode('is_bundle')->end()
-                ->end()
-                ->performNoDeepMerging()
-            ->end()
-        ;
-
-        return $node;
-    }
-
-    /**
-     * Adds the NodeBuilder for the "options" key of a connection.
-     */
-    private function addConnectionOptionsNode()
-    {
-        $builder = new TreeBuilder();
-        $node = $builder->root('options');
-
-        $node
-            ->performNoDeepMerging()
-            ->addDefaultsIfNotSet() // adds an empty array of omitted
-            // options go into the Mongo constructor
-            // http://www.php.net/manual/en/mongo.construct.php
-            ->children()
-                ->booleanNode('connect')->end()
-                ->scalarNode('persist')->end()
-                ->scalarNode('timeout')->end()
-                ->booleanNode('replicaSet')->end()
-                ->scalarNode('username')->end()
-                ->scalarNode('password')->end()
-            ->end()
-        ->end();
-
-        return $node;
-    }
-
-    private function getMetadataCacheDriverNode()
-    {
-        $builder = new TreeBuilder();
-        $node = $builder->root('metadata_cache_driver');
-
-        $node
-            ->beforeNormalization()
-                // if scalar
-                ->ifTrue(function($v) { return !is_array($v); })
-                ->then(function($v) { return array('type' => $v); })
-            ->end()
-            ->children()
-                ->scalarNode('type')->end()
-                ->scalarNode('class')->end()
-                ->scalarNode('host')->end()
-                ->scalarNode('port')->end()
-                ->scalarNode('instance_class')->end()
-            ->end()
-        ->end();
-
-        return $node;
     }
 }

@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\Log\LoggerInterface;
  * The {@link logQuery()} method is configured as the logger callable in the
  * service container.
  *
- * @author Kris Wallsmith <kris.wallsmith@symfony.com>
+ * @author Kris Wallsmith <kris@symfony.com>
  */
 class DoctrineMongoDBLogger
 {

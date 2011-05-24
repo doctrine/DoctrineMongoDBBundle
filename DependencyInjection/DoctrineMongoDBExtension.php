@@ -24,13 +24,13 @@ use Symfony\Bundle\DoctrineAbstractBundle\DependencyInjection\AbstractDoctrineEx
  * Doctrine MongoDB ODM extension.
  *
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
- * @author Kris Wallsmith <kris.wallsmith@symfony.com>
+ * @author Kris Wallsmith <kris@symfony.com>
  * @author Jonathan H. Wage <jonwage@gmail.com>
  */
 class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 {
     /**
-     * Responds to the doctrine_mongo_db configuration parameter.
+     * Responds to the doctrine_mongodb configuration parameter.
      */
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -321,7 +321,17 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
     protected function getMappingResourceConfigDirectory()
     {
-        return 'Resources/config/doctrine/metadata/mongodb';
+        return 'Resources/config/doctrine';
+    }
+
+    protected function getMappingResourceExtension()
+    {
+        return 'mongodb';
+    }
+
+    public function getAlias()
+    {
+        return 'doctrine_mongodb';
     }
 
     /**
