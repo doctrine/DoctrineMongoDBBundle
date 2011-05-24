@@ -11,6 +11,7 @@
 
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests;
 
+use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
@@ -33,6 +34,8 @@ class ContainerTest extends TestCase
         $configs = array();
         $configs[] = array('connections' => array('default' => array()), 'document_managers' => array('default' => array('mappings' => array('YamlBundle' => array()))));
         $loader->load($configs, $container);
+
+        $container->set('annotation_reader', new AnnotationReader());
 
         return $container;
     }
