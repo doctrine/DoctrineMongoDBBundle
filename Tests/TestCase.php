@@ -11,9 +11,8 @@
 
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests;
 
-use Symfony\Bundle\DoctrineMongoDBBundle\Annotations\IndexedReader;
-
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\IndexedReader;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\MongoDB\Connection;

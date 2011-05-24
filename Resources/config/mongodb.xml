@@ -34,7 +34,7 @@
         <!-- metadata -->
         <parameter key="doctrine.odm.mongodb.metadata.driver_chain.class">Doctrine\ODM\MongoDB\Mapping\Driver\DriverChain</parameter>
         <parameter key="doctrine.odm.mongodb.metadata.annotation.class">Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver</parameter>
-        <parameter key="doctrine.odm.mongodb.metadata.annotation_reader.class">Symfony\Bundle\DoctrineMongoDBBundle\Annotations\IndexedReader</parameter>
+        <parameter key="doctrine.odm.mongodb.metadata.annotation_reader.class">Doctrine\Common\Annotations\IndexedReader</parameter>
         <parameter key="doctrine.odm.mongodb.metadata.xml.class">Symfony\Bundle\DoctrineMongoDBBundle\Mapping\Driver\XmlDriver</parameter>
         <parameter key="doctrine.odm.mongodb.metadata.yml.class">Symfony\Bundle\DoctrineMongoDBBundle\Mapping\Driver\YamlDriver</parameter>
 
