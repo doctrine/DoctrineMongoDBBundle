@@ -331,25 +331,6 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertTrue($container->getParameter('doctrine.odm.mongodb.auto_generate_proxy_classes'));
     }
 
-    public function testRegistersValidatorNamespace()
-    {
-        $container = $this->getContainer();
-        $container->register('validator.mapping.loader.annotation_loader')
-            ->setClass('stdClass')
-            ->addArgument(array('foo' => 'Foo\\'));
-        $container->getCompilerPassConfig()->setOptimizationPasses(array());
-        $container->getCompilerPassConfig()->setRemovingPasses(array());
-        $container->addCompilerPass(new AddValidatorNamespaceAliasPass());
-        $container->compile();
-
-        $definition = $container->getDefinition('validator.mapping.loader.annotation_loader');
-        $arguments = $definition->getArguments();
-        $this->assertEquals(array(
-            'assertMongoDB' => 'Symfony\\Bundle\\DoctrineMongoDBBundle\\Validator\\Constraints\\',
-            'foo' => 'Foo\\',
-        ), $arguments[0], 'compiler adds constraint alias to validator');
-    }
-
     protected function getContainer($bundle = 'YamlBundle')
     {
         require_once __DIR__.'/Fixtures/Bundles/'.$bundle.'/'.$bundle.'.php';
