@@ -11,6 +11,7 @@
 
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests;
 
+use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
@@ -34,6 +35,8 @@ class ContainerTest extends TestCase
         $configs[] = array('connections' => array('default' => array()), 'document_managers' => array('default' => array('mappings' => array('YamlBundle' => array()))));
         $loader->load($configs, $container);
 
+        $container->set('annotation_reader', new AnnotationReader());
+
         return $container;
     }
 
@@ -42,7 +45,7 @@ class ContainerTest extends TestCase
         $container = $this->getContainer();
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Mapping\Driver\DriverChain', $container->get('doctrine.odm.mongodb.metadata.chain'));
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver', $container->get('doctrine.odm.mongodb.metadata.annotation'));
-        $this->assertInstanceOf('Doctrine\Common\Annotations\AnnotationReader', $container->get('doctrine.odm.mongodb.metadata.annotation_reader'));
+        $this->assertInstanceOf('Doctrine\Common\Annotations\Reader', $container->get('doctrine.odm.mongodb.metadata.annotation_reader'));
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver', $container->get('doctrine.odm.mongodb.metadata.xml'));
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver', $container->get('doctrine.odm.mongodb.metadata.yml'));
         $this->assertInstanceOf('Doctrine\Common\Cache\ArrayCache', $container->get('doctrine.odm.mongodb.cache.array'));

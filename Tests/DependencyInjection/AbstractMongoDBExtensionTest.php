@@ -43,7 +43,6 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertEquals('Doctrine\Common\Cache\XcacheCache', $container->getParameter('doctrine.odm.mongodb.cache.xcache.class'));
         $this->assertEquals('Doctrine\ODM\MongoDB\Mapping\Driver\DriverChain', $container->getParameter('doctrine.odm.mongodb.metadata.driver_chain.class'));
         $this->assertEquals('Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver', $container->getParameter('doctrine.odm.mongodb.metadata.annotation.class'));
-        $this->assertEquals('Doctrine\Common\Annotations\AnnotationReader', $container->getParameter('doctrine.odm.mongodb.metadata.annotation_reader.class'));
         $this->assertEquals('Symfony\Bundle\DoctrineMongoDBBundle\Mapping\Driver\XmlDriver', $container->getParameter('doctrine.odm.mongodb.metadata.xml.class'));
         $this->assertEquals('Symfony\Bundle\DoctrineMongoDBBundle\Mapping\Driver\YamlDriver', $container->getParameter('doctrine.odm.mongodb.metadata.yml.class'));
 
@@ -330,25 +329,6 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $container->compile();
 
         $this->assertTrue($container->getParameter('doctrine.odm.mongodb.auto_generate_proxy_classes'));
-    }
-
-    public function testRegistersValidatorNamespace()
-    {
-        $container = $this->getContainer();
-        $container->register('validator.mapping.loader.annotation_loader')
-            ->setClass('stdClass')
-            ->addArgument(array('foo' => 'Foo\\'));
-        $container->getCompilerPassConfig()->setOptimizationPasses(array());
-        $container->getCompilerPassConfig()->setRemovingPasses(array());
-        $container->addCompilerPass(new AddValidatorNamespaceAliasPass());
-        $container->compile();
-
-        $definition = $container->getDefinition('validator.mapping.loader.annotation_loader');
-        $arguments = $definition->getArguments();
-        $this->assertEquals(array(
-            'assertMongoDB' => 'Symfony\\Bundle\\DoctrineMongoDBBundle\\Validator\\Constraints\\',
-            'foo' => 'Foo\\',
-        ), $arguments[0], 'compiler adds constraint alias to validator');
     }
 
     protected function getContainer($bundle = 'YamlBundle')
