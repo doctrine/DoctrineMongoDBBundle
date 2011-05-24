@@ -387,13 +387,11 @@ class AclProvider implements AclProviderInterface
                 $auditFailure = $entry['auditFailure'];
                 $auditSuccess = $entry['auditSuccess'];
 
-                // has the ACL been hydrated during this hydration cycle?
                 if (isset($acls[$aclId])) {
+                    // the ACL been hydrated during this hydration cycle
                     $acl = $acls[$aclId];
-                }
-                    // has the ACL been hydrated during any previous cycle, or was possibly loaded
-                    // from cache?
-                else if (isset($loadedAcls[$classType][$objectIdentifier])) {
+                } else if (isset($loadedAcls[$classType][$objectIdentifier])) {
+                    // the ACL been hydrated during any previous cycle or loaded from cache
                     $acl = $loadedAcls[$classType][$objectIdentifier];
 
                     // keep reference in local array (saves us some hash calculations)
@@ -407,10 +405,9 @@ class AclProvider implements AclProviderInterface
                         $oidCache[$oidLookupKey] = $acl->getObjectIdentity();
                     }
                     $result->attach($oidCache[$oidLookupKey], $acl);
-                }
+                } else {
+                    // this hasn't been hydrated yet
 
-                    // so, this hasn't been hydrated yet
-                else {
                     // create object identity if we haven't done so yet
                     $oidLookupKey = $objectIdentifier . $classType;
                     if (!isset($oidCache[$oidLookupKey])) {
@@ -513,11 +510,9 @@ class AclProvider implements AclProviderInterface
             $aclObjectFieldAcesProperty->setValue($acl, $aceData[3]);
         }
 
-        // fill-in parent ACLs where this hasn't been done yet cause the parent ACL was not
-        // yet available
+        // fill-in parent ACLs where this hasn't been done yet cause the parent ACL was not yet available
         $processed = 0;
-        foreach ($parentIdToFill as $acl)
-        {
+        foreach ($parentIdToFill as $acl) {
             $parentId = $parentIdToFill->offsetGet($acl);
 
             // let's see if we have already hydrated this
