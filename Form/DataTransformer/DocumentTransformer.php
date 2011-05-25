@@ -13,6 +13,7 @@ namespace Symfony\Bundle\DoctrineMongoDBBundle\Form\DataTransformer;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\UnitOfWork;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
@@ -23,12 +24,12 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
  */
 class DocumentTransformer implements DataTransformerInterface
 {
-    private $meta;
+    private $uow;
     private $repo;
 
-    public function __construct(ClassMetadataInfo $meta, DocumentRepository $repo)
+    public function __construct(UnitOfWork $uow, DocumentRepository $repo)
     {
-        $this->meta = $meta;
+        $this->uow  = $uow;
         $this->repo = $repo;
     }
 
@@ -38,7 +39,7 @@ class DocumentTransformer implements DataTransformerInterface
             return '';
         }
 
-        return $this->meta->getIdentifierValue($document);
+        return $this->uow->getDocumentIdentifier($document);
     }
 
     public function reverseTransform($id)
