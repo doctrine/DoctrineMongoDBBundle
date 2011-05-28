@@ -12,7 +12,6 @@
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\IndexedReader;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\MongoDB\Connection;
@@ -37,7 +36,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
         $config->setHydratorDir(\sys_get_temp_dir());
         $config->setProxyNamespace('SymfonyTests\Doctrine');
         $config->setHydratorNamespace('SymfonyTests\Doctrine');
-        $config->setMetadataDriverImpl(new AnnotationDriver(new IndexedReader(new AnnotationReader()), $paths));
+        $config->setMetadataDriverImpl(new AnnotationDriver(new AnnotationReader(), $paths));
         $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache());
 
         return DocumentManager::create(new Connection(), $config);
