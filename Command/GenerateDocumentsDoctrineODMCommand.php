@@ -60,7 +60,7 @@ EOT
             $documentGenerator = $this->getDocumentGenerator();
 
             foreach ($metadatas as $metadata) {
-                if ($filterDocument && $metadata->reflClass->getShortName() == $filterDocument) {
+                if ($filterDocument && $metadata->reflClass->getShortName() != $filterDocument) {
                     continue;
                 }
 
