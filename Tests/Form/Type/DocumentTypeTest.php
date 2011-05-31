@@ -307,8 +307,6 @@ class DocumentTypeTest extends TypeTestCase
 
     public function testOverrideChoices()
     {
-        $this->markTestIncomplete('Fix me');
-
         $document1 = new Document(1, 'Foo');
         $document2 = new Document(2, 'Bar');
         $document3 = new Document(3, 'Baz');
@@ -325,7 +323,7 @@ class DocumentTypeTest extends TypeTestCase
 
         $field->bind('2');
 
-        $this->assertEquals(array(1 => 'Foo', 2 => 'Bar'), $field->getRenderer()->getVar('choices'));
+        $this->assertEquals(array(1 => 'Foo', 2 => 'Bar'), $field->createView()->get('choices'));
         $this->assertTrue($field->isSynchronized());
         $this->assertEquals($document2, $field->getData());
         $this->assertEquals(2, $field->getClientData());
