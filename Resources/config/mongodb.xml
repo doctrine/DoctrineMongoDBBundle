@@ -34,7 +34,6 @@
         <!-- metadata -->
         <parameter key="doctrine.odm.mongodb.metadata.driver_chain.class">Doctrine\ODM\MongoDB\Mapping\Driver\DriverChain</parameter>
         <parameter key="doctrine.odm.mongodb.metadata.annotation.class">Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver</parameter>
-        <parameter key="doctrine.odm.mongodb.metadata.annotation_reader.class">Doctrine\Common\Annotations\IndexedReader</parameter>
         <parameter key="doctrine.odm.mongodb.metadata.xml.class">Symfony\Bundle\DoctrineMongoDBBundle\Mapping\Driver\XmlDriver</parameter>
         <parameter key="doctrine.odm.mongodb.metadata.yml.class">Symfony\Bundle\DoctrineMongoDBBundle\Mapping\Driver\YamlDriver</parameter>
 
@@ -77,15 +76,13 @@
             <argument type="service" id="doctrine.odm.mongodb.metadata.annotation_reader" />
             <argument>%doctrine.odm.mongodb.document_dirs%</argument>
         </service>
-        <service id="doctrine.odm.mongodb.metadata.annotation_reader" class="%doctrine.odm.mongodb.metadata.annotation_reader.class%">
-            <argument type="service" id="annotation_reader" />
-        </service>
         <service id="doctrine.odm.mongodb.metadata.xml" class="%doctrine.odm.mongodb.metadata.xml.class%">
             <argument>%doctrine.odm.mongodb.xml_mapping_dirs%</argument>
         </service>
         <service id="doctrine.odm.mongodb.metadata.yml" class="%doctrine.odm.mongodb.metadata.yml.class%">
             <argument>%doctrine.odm.mongodb.yml_mapping_dirs%</argument>
         </service>
+        <service alias="annotation_reader" id="doctrine.odm.mongodb.metadata.annotation_reader" />
 
         <!-- cache -->
         <service id="doctrine.odm.mongodb.cache.array" class="%doctrine.odm.mongodb.cache.array.class%" />
