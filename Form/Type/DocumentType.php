@@ -47,17 +47,15 @@ class DocumentType extends AbstractType
     public function getDefaultOptions(array $options)
     {
         $defaultOptions = array(
-            'template' => 'choice',
-            'multiple' => false,
-            'expanded' => false,
-            'document_manager' => $this->documentManager,
-            'class' => null,
-            'property' => null,
-            'query_builder' => null,
-            'choices' => array(),
+            'choices'           => array(),
+            'class'             => null,
+            'document_manager'  => $this->documentManager,
+            'expanded'          => false,
+            'multiple'          => false,
             'preferred_choices' => array(),
-            'multiple' => false,
-            'expanded' => false,
+            'property'          => null,
+            'query_builder'     => null,
+            'template'          => 'choice',
         );
 
         $options = array_replace($defaultOptions, $options);
