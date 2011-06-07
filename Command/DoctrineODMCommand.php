@@ -42,7 +42,6 @@ abstract class DoctrineODMCommand extends Command
     protected function getDocumentGenerator()
     {
         $documentGenerator = new DocumentGenerator();
-        $documentGenerator->setAnnotationPrefix('mongodb:');
         $documentGenerator->setGenerateAnnotations(false);
         $documentGenerator->setGenerateStubMethods(true);
         $documentGenerator->setRegenerateDocumentIfExists(false);
