@@ -12,6 +12,7 @@
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Mapping\Driver;
 
 use Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver as BaseYamlDriver;
+use Doctrine\ODM\MongoDB\MongoDBException;
 
 /**
  * YamlDriver that additionally looks for mapping information in a global file.
@@ -21,9 +22,30 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver as BaseYamlDriver;
  */
 class YamlDriver extends BaseYamlDriver
 {
+    protected $prefixes = array();
+    protected $globalBasename;
     protected $classCache;
-    protected $globalFile = 'mapping';
     protected $fileExtension = '.mongodb.yml';
+
+    public function setGlobalBasename($file)
+    {
+        $this->globalBasename = $file;
+    }
+
+    public function getGlobalBasename()
+    {
+        return $this->globalBasename;
+    }
+
+    public function setNamespacePrefixes($prefixes)
+    {
+        $this->prefixes = $prefixes;
+    }
+
+    public function getNamespacePrefixes()
+    {
+        return $this->prefixes;
+    }
 
     public function isTransient($className)
     {
@@ -36,7 +58,37 @@ class YamlDriver extends BaseYamlDriver
             $this->initialize();
         }
 
-        return array_merge(parent::getAllClassNames(), array_keys($this->classCache));
+        $classes = array();
+
+        if ($this->paths) {
+            foreach ((array) $this->paths as $path) {
+                if (!is_dir($path)) {
+                    throw MongoDBException::fileMappingDriversRequireConfiguredDirectoryPath($path);
+                }
+
+                $iterator = new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($path),
+                    \RecursiveIteratorIterator::LEAVES_ONLY
+                );
+
+                foreach ($iterator as $file) {
+                    $fileName = $file->getBasename($this->fileExtension);
+
+                    if ($fileName == $file->getBasename() || $fileName == $this->globalBasename) {
+                        continue;
+                    }
+
+                    // NOTE: All files found here means classes are not transient!
+                    if (isset($this->prefixes[$path])) {
+                        $classes[] = $this->prefixes[$path].'\\'.str_replace('.', '\\', $fileName);
+                    } else {
+                        $classes[] = str_replace('.', '\\', $fileName);
+                    }
+                }
+            }
+        }
+
+        return array_merge($classes, array_keys($this->classCache));
     }
 
     public function getElement($className)
@@ -55,10 +107,41 @@ class YamlDriver extends BaseYamlDriver
     protected function initialize()
     {
         $this->classCache = array();
-        foreach ($this->paths as $path) {
-            if (file_exists($file = $path.'/'.$this->globalFile.$this->fileExtension)) {
-                $this->classCache = array_merge($this->classCache, $this->loadMappingFile($file));
+        if (null !== $this->globalBasename) {
+            foreach ($this->paths as $path) {
+                if (file_exists($file = $path.'/'.$this->globalBasename.$this->fileExtension)) {
+                    $this->classCache = array_merge($this->classCache, $this->loadMappingFile($file));
+                }
             }
         }
+    }
+
+    protected function findMappingFile($className)
+    {
+        $defaultFileName = str_replace('\\', '.', $className) . $this->fileExtension;
+        foreach ($this->paths as $path) {
+            if (!isset($this->prefixes[$path])) {
+                if (file_exists($path . DIRECTORY_SEPARATOR . $defaultFileName)) {
+                    return $path . DIRECTORY_SEPARATOR . $defaultFileName;
+                }
+
+                continue;
+            }
+
+            $prefix = $this->prefixes[$path];
+
+            if (0 !== strpos($className, $prefix.'\\')) {
+                continue;
+            }
+
+            $filename = $path.'/'.strtr(substr($className, strlen($prefix)+1), '\\', '.').$this->fileExtension;
+            if (file_exists($filename)) {
+                return $filename;
+            }
+
+            throw MongoDBException::mappingNotFound($className, $filename);
+        }
+
+        throw MongoDBException::mappingNotFound($className, substr($className, strrpos($className, '\\') + 1).$this->fileExtension);
     }
 }
