@@ -137,7 +137,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      */
     protected function loadDocumentManager(array $documentManager, $defaultDM, $defaultDB, $defaultMetadataCache, ContainerBuilder $container)
     {
-        $defaultDatabase = isset($documentManager['default_database']) ? $documentManager['default_database'] : $defaultDB;
+        $defaultDatabase = isset($documentManager['database']) ? $documentManager['database'] : $defaultDB;
         $configServiceName = sprintf('doctrine.odm.mongodb.%s_configuration', $documentManager['name']);
 
         if ($container->hasDefinition($configServiceName)) {
