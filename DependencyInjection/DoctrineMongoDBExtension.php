@@ -59,7 +59,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         }
 
         if (isset($config['acl_provider'])) {
-            $this->loadAcl($config, $container);
+            $this->loadAcl($config['acl_provider'], $config['default_database'], $container);
         }
 
         // set some options as parameters and unset them
@@ -107,20 +107,13 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         return $options;
     }
 
-    protected function loadAcl($config, ContainerBuilder $container)
+    protected function loadAcl($config, $defaultDatabase, ContainerBuilder $container)
     {
-        $aclConfig = $config['acl_provider'];
-        $defaultDatabase = isset($aclConfig['default_database']) ? $aclConfig['default_database'] : $config['default_database'];
-        $container->setParameter('doctrine.odm.mongodb.security.acl.database', $defaultDatabase);
+        $database = isset($config['database']) ? $config['database'] : $defaultDatabase;
+        $container->setParameter('doctrine.odm.mongodb.security.acl.database', $database);
 
-        if (isset($config['collections'])) {
-            if (isset($config['collections']['entry'])) {
-                $container->setParameter('doctrine.odm.mongodb.security.acl.entry_collection', $config['collections']['entry']);
-            }
-            if (isset($config['collections']['object_identity'])) {
-                $container->setParameter('doctrine.odm.mongodb.security.acl.oid_collection', $config['collections']['object_identity']);
-            }
-        }
+        $container->setParameter('doctrine.odm.mongodb.security.acl.entry_collection', $config['collections']['entry']);
+        $container->setParameter('doctrine.odm.mongodb.security.acl.oid_collection', $config['collections']['object_identity']);
     }
 
     /**

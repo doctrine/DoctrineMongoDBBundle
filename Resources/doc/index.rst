@@ -25,7 +25,7 @@ The full acl provider configuration options are listed below::
     # app/config/config.yml
     doctrine_mongodb:
         acl_provider:
-            default_database: ~
+            database: ~
             collections:
                 entry: ~
                 object_identity: ~
