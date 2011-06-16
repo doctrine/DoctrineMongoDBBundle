@@ -92,7 +92,7 @@ class AclProvider implements AclProviderInterface
     /**
      * {@inheritDoc}
      */
-    function findAcl(ObjectIdentityInterface $oid, array $sids = array())
+    public function findAcl(ObjectIdentityInterface $oid, array $sids = array())
     {
         return $this->findAcls(array($oid), $sids)->offsetGet($oid);
     }
@@ -100,7 +100,7 @@ class AclProvider implements AclProviderInterface
     /**
      * {@inheritDoc}
      */
-    function findAcls(array $oids, array $sids = array())
+    public function findAcls(array $oids, array $sids = array())
     {
         $result = new \SplObjectStorage();
         $currentBatch = array();

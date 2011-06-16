@@ -52,7 +52,7 @@ class MutableAclProvider extends AclProvider implements MutableAclProviderInterf
     /**
      * {@inheritDoc}
      */
-    function createAcl(ObjectIdentityInterface $oid)
+    public function createAcl(ObjectIdentityInterface $oid)
     {
         $key = $this->retrieveObjectIdentityPrimaryKey($oid);
         if ($this->retrieveObjectIdentityPrimaryKey($oid)) {
@@ -68,7 +68,7 @@ class MutableAclProvider extends AclProvider implements MutableAclProviderInterf
     /**
      * {@inheritDoc}
      */
-    function deleteAcl(ObjectIdentityInterface $oid)
+    public function deleteAcl(ObjectIdentityInterface $oid)
     {
         // TODO: safe options
 
@@ -113,7 +113,7 @@ class MutableAclProvider extends AclProvider implements MutableAclProviderInterf
     /**
      * {@inheritDoc}
      */
-    function updateAcl(MutableAclInterface $acl)
+    public function updateAcl(MutableAclInterface $acl)
     {
         if (!$this->propertyChanges->contains($acl)) {
             throw new \InvalidArgumentException('$acl is not tracked by this provider.');
