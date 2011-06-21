@@ -64,7 +64,7 @@ EOT
         $dmName = $dmName ? $dmName : 'default';
         $dmServiceName = sprintf('doctrine.odm.mongodb.%s_document_manager', $dmName);
 
-        if (!$this->container->has($dmServiceName)) {
+        if (!$this->getContainer()->has($dmServiceName)) {
             throw new InvalidArgumentException(
                 sprintf(
                     'Could not find a document manager configured with the name "%s". Check your '.
@@ -73,18 +73,18 @@ EOT
             );
         }
 
-        $dm = $this->container->get($dmServiceName);
+        $dm = $this->getContainer()->get($dmServiceName);
         $dirOrFile = $input->getOption('fixtures');
         if ($dirOrFile) {
             $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
         } else {
             $paths = array();
-            foreach ($this->container->get('kernel')->getBundles() as $bundle) {
+            foreach ($this->getContainer()->get('kernel')->getBundles() as $bundle) {
                 $paths[] = $bundle->getPath().'/DataFixtures/MongoDB';
             }
         }
 
-        $loader = new DataFixturesLoader($this->container);
+        $loader = new DataFixturesLoader($this->getContainer());
         foreach ($paths as $path) {
             if (is_dir($path)) {
                 $loader->loadFromDirectory($path);
