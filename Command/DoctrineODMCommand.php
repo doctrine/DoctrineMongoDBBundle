@@ -11,7 +11,7 @@
 
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\Command;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Doctrine\ODM\MongoDB\Tools\Console\Helper\DocumentManagerHelper;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
@@ -23,7 +23,7 @@ use Doctrine\ODM\MongoDB\Tools\DocumentGenerator;
  *
  * @author     Justin Hileman <justin@shopopensky.com>
  */
-abstract class DoctrineODMCommand extends Command
+abstract class DoctrineODMCommand extends ContainerAwareCommand
 {
     public static function setApplicationDocumentManager(Application $application, $dmName)
     {
@@ -52,10 +52,10 @@ abstract class DoctrineODMCommand extends Command
 
     protected function getDoctrineDocumentManagers()
     {
-        $documentManagerNames = $this->container->getParameter('doctrine.odm.mongodb.document_managers');
+        $documentManagerNames = $this->getContainer()->getParameter('doctrine.odm.mongodb.document_managers');
         $documentManagers = array();
         foreach ($documentManagerNames as $documentManagerName) {
-            $dm = $this->container->get(sprintf('doctrine.odm.mongodb.%s_document_manager', $documentManagerName));
+            $dm = $this->getContainer()->get(sprintf('doctrine.odm.mongodb.%s_document_manager', $documentManagerName));
             $documentManagers[] = $dm;
         }
         return $documentManagers;

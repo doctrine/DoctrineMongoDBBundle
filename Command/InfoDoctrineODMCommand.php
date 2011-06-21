@@ -47,12 +47,12 @@ EOT
     {
         $documentManagerName = $input->getOption('dm') ?
             $input->getOption('dm') :
-            $this->container->getParameter('doctrine.odm.mongodb.default_document_manager');
+            $this->getContainer()->getParameter('doctrine.odm.mongodb.default_document_manager');
 
         $documentManagerService = sprintf('doctrine.odm.mongodb.%s_document_manager', $documentManagerName);
 
         /* @var $documentManager Doctrine\ODM\MongoDB\DocumentManager */
-        $documentManager = $this->container->get($documentManagerService);
+        $documentManager = $this->getContainer()->get($documentManagerService);
 
         $documentClassNames = $documentManager->getConfiguration()
                                           ->getMetadataDriverImpl()
