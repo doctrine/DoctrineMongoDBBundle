@@ -19,6 +19,7 @@ use Symfony\Bundle\DoctrineMongoDBBundle\Form\DataTransformer\DocumentsToArrayTr
 use Symfony\Bundle\DoctrineMongoDBBundle\Form\DataTransformer\DocumentToIdTransformer;
 use Symfony\Component\Form\AbstractType;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Symfony\Bundle\DoctrineMongoDBBundle\RegistryInterface;
 
 /**
  * Form type for a MongoDB document
@@ -27,11 +28,11 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  */
 class DocumentType extends AbstractType
 {
-    private $documentManager;
+    private $registry;
 
-    public function __construct(DocumentManager $documentManager)
+    public function __construct(RegistryInterface $registry)
     {
-        $this->documentManager = $documentManager;
+        $this->registry = $registry;
     }
 
     public function buildForm(FormBuilder $builder, array $options)
@@ -49,7 +50,7 @@ class DocumentType extends AbstractType
         $defaultOptions = array(
             'choices'           => array(),
             'class'             => null,
-            'document_manager'  => $this->documentManager,
+            'document_manager'  => null,
             'expanded'          => false,
             'multiple'          => false,
             'preferred_choices' => array(),
@@ -62,7 +63,7 @@ class DocumentType extends AbstractType
 
         if (!isset($options['choice_list'])) {
             $defaultOptions['choice_list'] = new DocumentChoiceList(
-                $options['document_manager'],
+                $this->registry->getDocumentManager($options['document_manager']),
                 $options['class'],
                 $options['property'],
                 $options['query_builder'],
