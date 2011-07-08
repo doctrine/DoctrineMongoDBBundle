@@ -54,6 +54,9 @@
 
         <!-- validator -->
         <parameter key="doctrine_odm.mongodb.validator.unique.class">Symfony\Bundle\DoctrineMongoDBBundle\Validator\Constraints\UniqueValidator</parameter>
+
+        <!-- registry -->
+        <parameter key="doctrine.odm.mongodb.class">Symfony\Bundle\DoctrineMongoDBBundle\Registry</parameter>
     </parameters>
 
     <services>
@@ -118,5 +121,14 @@
             <argument type="service" id="doctrine.odm.mongodb.security.user.document_manager" />
         </service>
         <service id="doctrine.odm.mongodb.security.user.document_manager" alias="doctrine.odm.mongodb.default_document_manager" public="false" />
+
+        <!-- Registry -->
+        <service id="doctrine.odm.mongodb" class="%doctrine.odm.mongodb.class%">
+            <argument type="service" id="service_container" />
+            <argument>%doctrine.odm.mongodb.connections%</argument>
+            <argument>%doctrine.odm.mongodb.document_managers%</argument>
+            <argument>%doctrine.odm.mongodb.default_connection%</argument>
+            <argument>%doctrine.odm.mongodb.default_document_manager%</argument>
+        </service>
     </services>
 </container>
