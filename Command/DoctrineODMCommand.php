@@ -27,14 +27,7 @@ abstract class DoctrineODMCommand extends ContainerAwareCommand
 {
     public static function setApplicationDocumentManager(Application $application, $dmName)
     {
-        $container = $application->getKernel()->getContainer();
-        $dmName = $dmName ? $dmName : 'default';
-        $dmServiceName = sprintf('doctrine.odm.mongodb.%s_document_manager', $dmName);
-        if (!$container->has($dmServiceName)) {
-            throw new \InvalidArgumentException(sprintf('Could not find Doctrine ODM DocumentManager named "%s"', $dmName));
-        }
-
-        $dm = $container->get($dmServiceName);
+        $dm = $application->getKernel()->getContainer()->get('doctrine.odm.mongodb')->getDocumentManager($dmName);
         $helperSet = $application->getHelperSet();
         $helperSet->set(new DocumentManagerHelper($dm), 'dm');
     }
@@ -52,13 +45,7 @@ abstract class DoctrineODMCommand extends ContainerAwareCommand
 
     protected function getDoctrineDocumentManagers()
     {
-        $documentManagerNames = $this->getContainer()->getParameter('doctrine.odm.mongodb.document_managers');
-        $documentManagers = array();
-        foreach ($documentManagerNames as $documentManagerName) {
-            $dm = $this->getContainer()->get(sprintf('doctrine.odm.mongodb.%s_document_manager', $documentManagerName));
-            $documentManagers[] = $dm;
-        }
-        return $documentManagers;
+        return $this->getContainer()->get('doctrine.odm.mongodb')->getDocumentManagers();
     }
 
     protected function getBundleMetadatas(Bundle $bundle)
