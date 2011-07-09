@@ -15,6 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\ODM\MongoDB\Proxy\Proxy:
 
 /**
  * References all Doctrine connections and document managers in a given Container.
@@ -156,10 +157,17 @@ class Registry implements RegistryInterface
      */
     public function getDocumentManagerForObject($object)
     {
+        if ($object instanceof Proxy) {
+            $proxyClass = new \ReflectionClass($object);
+            $class = $proxyClass->getParentClass()->getName();
+        } else {
+            $class = get_class($object);
+        }
+
         foreach ($this->documentManagers as $id) {
             $dm = $this->container->get($id);
 
-            if ($dm->getConfiguration()->getMetadataDriverImpl()->isTransient($object)) {
+            if (!$dm->getConfiguration()->getMetadataDriverImpl()->isTransient($class)) {
                 return $dm;
             }
         }
