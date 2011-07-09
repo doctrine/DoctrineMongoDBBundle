@@ -66,11 +66,11 @@
         <!-- form -->
         <service id="form.type.mongodb_document" class="Symfony\Bundle\DoctrineMongoDBBundle\Form\Type\DocumentType">
             <tag name="form.type" alias="document" />
-            <argument type="service" id="doctrine.odm.mongodb.document_manager" />
+            <argument type="service" id="doctrine.odm.mongodb" />
         </service>
         <service id="form.type_guesser.doctrine.mongodb" class="Symfony\Bundle\DoctrineMongoDBBundle\Form\DoctrineMongoDBTypeGuesser">
             <tag name="form.type_guesser" />
-            <argument type="service" id="doctrine.odm.mongodb.document_manager" />
+            <argument type="service" id="doctrine.odm.mongodb" />
         </service>
 
         <!-- metadata -->
