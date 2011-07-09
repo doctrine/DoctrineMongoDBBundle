@@ -113,7 +113,7 @@
         <!--  validator -->
         <service id="doctrine_odm.mongodb.validator.unique" class="%doctrine_odm.mongodb.validator.unique.class%">
             <tag name="validator.constraint_validator" alias="doctrine_odm.mongodb.unique" />
-            <argument type="service" id="service_container" />
+            <argument type="service" id="doctrine.odm.mongodb" />
         </service>
 
         <!-- Security -->

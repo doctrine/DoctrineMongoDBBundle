@@ -23,8 +23,7 @@ class UniqueValidatorTest extends TestCase
         $this->classMetadata = $this->getClassMetadata();
         $this->repository = $this->getDocumentRepository();
         $this->dm = $this->getDocumentManager($this->classMetadata, $this->repository);
-        $container = $this->getContainer();
-        $this->validator = new UniqueValidator($container);
+        $this->validator = new UniqueValidator($this->getRegistry());
     }
 
     public function tearDown()
@@ -89,15 +88,15 @@ class UniqueValidatorTest extends TestCase
         );
     }
 
-    private function getContainer()
+    private function getRegistry()
     {
-        $container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+        $registry = $this->getMock('Symfony\Bundle\DoctrineMongoDBBundle\RegistryInterface');
 
-        $container->expects($this->once())
-            ->method('get')
+        $registry->expects($this->once())
+            ->method('getDocumentManager')
             ->will($this->returnValue($this->dm));
 
-        return $container;
+        return $registry;
     }
 
     private function getDocumentManager(ClassMetadata $classMetadata, DocumentRepository $repository)
