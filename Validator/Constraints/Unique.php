@@ -16,6 +16,7 @@ use Symfony\Component\Validator\Constraint;
 /**
  * Doctrine MongoDB ODM unique value constraint.
  *
+ * @Annotation
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
  */
 class Unique extends Constraint
