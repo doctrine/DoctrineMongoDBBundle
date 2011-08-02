@@ -77,7 +77,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                         'persist'    => 'persist_val',
                         'timeout'    => 500,
                         'replicaSet' => 'foo',
-                        'slaveOkey'  => true,
+                        'slaveOkay'  => true,
                         'username'   => 'username_val',
                         'password'   => 'password_val',
                     ),
