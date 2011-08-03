@@ -12,6 +12,7 @@
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests\CacheWarmer;
 
 use Symfony\Bundle\DoctrineMongoDBBundle\CacheWarmer\HydratorCacheWarmer;
+use Symfony\Bundle\DoctrineMongoDBBundle\Registry;
 
 class HydratorCacheWarmerTest extends \Symfony\Bundle\DoctrineMongoDBBundle\Tests\TestCase
 {
@@ -29,7 +30,10 @@ class HydratorCacheWarmerTest extends \Symfony\Bundle\DoctrineMongoDBBundle\Test
             __DIR__ . "/../DependencyInjection/Fixtures/Bundles/AnnotationsBundle/Document")
         );
 
-        $container = $this->getMock('Symfony\Component\DependencyInjection\Container');
+        $container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+
+        $registry = new Registry($container, array(), array('default' => 'doctrine.odm.mongodb.default_document_manager', 'foo' => 'doctrine.odm.mongodb.foo_document_manager'), 'default', 'default');
+
         $container->expects($this->at(0))
                   ->method('getParameter')
                   ->with($this->equalTo('doctrine.odm.mongodb.hydrator_dir'))
@@ -39,9 +43,9 @@ class HydratorCacheWarmerTest extends \Symfony\Bundle\DoctrineMongoDBBundle\Test
                   ->with($this->equalTo('doctrine.odm.mongodb.auto_generate_hydrator_classes'))
                   ->will($this->returnValue(false));
         $container->expects($this->at(2))
-                  ->method('getParameter')
-                  ->with($this->equalTo('doctrine.odm.mongodb.document_managers'))
-                  ->will($this->returnValue(array('default', 'foo')));
+                  ->method('get')
+                  ->with($this->equalTo('doctrine.odm.mongodb'))
+                  ->will($this->returnValue($registry));
         $container->expects($this->at(3))
                   ->method('get')
                   ->with($this->equalTo('doctrine.odm.mongodb.default_document_manager'))
@@ -64,7 +68,7 @@ class HydratorCacheWarmerTest extends \Symfony\Bundle\DoctrineMongoDBBundle\Test
             __DIR__ . "/../DependencyInjection/Fixtures/Bundles/AnnotationsBundle/Document")
         );
 
-        $container = $this->getMock('Symfony\Component\DependencyInjection\Container');
+        $container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
         $container->expects($this->at(0))
                   ->method('getParameter')
                   ->with($this->equalTo('doctrine.odm.mongodb.hydrator_dir'))
@@ -89,7 +93,7 @@ class HydratorCacheWarmerTest extends \Symfony\Bundle\DoctrineMongoDBBundle\Test
      */
     public function testHydratorCacheWarmingIsNotOptional()
     {
-        $container = $this->getMock('Symfony\Component\DependencyInjection\Container');
+        $container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
         $cacheWarmer = new HydratorCacheWarmer($container);
 
         $this->assertFalse($cacheWarmer->isOptional());

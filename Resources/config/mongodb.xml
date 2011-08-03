@@ -54,6 +54,9 @@
 
         <!-- validator -->
         <parameter key="doctrine_odm.mongodb.validator.unique.class">Symfony\Bundle\DoctrineMongoDBBundle\Validator\Constraints\UniqueValidator</parameter>
+
+        <!-- registry -->
+        <parameter key="doctrine.odm.mongodb.class">Symfony\Bundle\DoctrineMongoDBBundle\Registry</parameter>
     </parameters>
 
     <services>
@@ -63,11 +66,11 @@
         <!-- form -->
         <service id="form.type.mongodb_document" class="Symfony\Bundle\DoctrineMongoDBBundle\Form\Type\DocumentType">
             <tag name="form.type" alias="document" />
-            <argument type="service" id="doctrine.odm.mongodb.document_manager" />
+            <argument type="service" id="doctrine.odm.mongodb" />
         </service>
         <service id="form.type_guesser.doctrine.mongodb" class="Symfony\Bundle\DoctrineMongoDBBundle\Form\DoctrineMongoDBTypeGuesser">
             <tag name="form.type_guesser" />
-            <argument type="service" id="doctrine.odm.mongodb.document_manager" />
+            <argument type="service" id="doctrine.odm.mongodb" />
         </service>
 
         <!-- metadata -->
@@ -110,7 +113,7 @@
         <!--  validator -->
         <service id="doctrine_odm.mongodb.validator.unique" class="%doctrine_odm.mongodb.validator.unique.class%">
             <tag name="validator.constraint_validator" alias="doctrine_odm.mongodb.unique" />
-            <argument type="service" id="service_container" />
+            <argument type="service" id="doctrine.odm.mongodb" />
         </service>
 
         <!-- Security -->
@@ -118,5 +121,14 @@
             <argument type="service" id="doctrine.odm.mongodb.security.user.document_manager" />
         </service>
         <service id="doctrine.odm.mongodb.security.user.document_manager" alias="doctrine.odm.mongodb.default_document_manager" public="false" />
+
+        <!-- Registry -->
+        <service id="doctrine.odm.mongodb" class="%doctrine.odm.mongodb.class%">
+            <argument type="service" id="service_container" />
+            <argument>%doctrine.odm.mongodb.connections%</argument>
+            <argument>%doctrine.odm.mongodb.document_managers%</argument>
+            <argument>%doctrine.odm.mongodb.default_connection%</argument>
+            <argument>%doctrine.odm.mongodb.default_document_manager%</argument>
+        </service>
     </services>
 </container>

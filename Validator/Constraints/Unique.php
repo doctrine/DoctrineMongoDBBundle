@@ -44,14 +44,4 @@ class Unique extends Constraint
     {
         return Constraint::CLASS_CONSTRAINT;
     }
-
-    public function getDocumentManagerId()
-    {
-        $id = 'doctrine.odm.mongodb.document_manager';
-        if (null !== $this->documentManager) {
-            $id = sprintf('doctrine.odm.mongodb.%s_document_manager', $this->documentManager);
-        }
-
-        return $id;
-    }
 }

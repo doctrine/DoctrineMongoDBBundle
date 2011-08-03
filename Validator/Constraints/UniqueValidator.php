@@ -14,7 +14,7 @@ namespace Symfony\Bundle\DoctrineMongoDBBundle\Validator\Constraints;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Bundle\DoctrineMongoDBBundle\RegistryInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
@@ -25,12 +25,11 @@ use Symfony\Component\Validator\ConstraintValidator;
  */
 class UniqueValidator extends ConstraintValidator
 {
+    private $registry;
 
-    private $container;
-
-    public function __construct(ContainerInterface $container)
+    public function __construct(RegistryInterface $registry)
     {
-        $this->container = $container;
+        $this->registry = $registry;
     }
 
     /**
@@ -41,7 +40,7 @@ class UniqueValidator extends ConstraintValidator
     public function isValid($document, Constraint $constraint)
     {
         $class    = get_class($document);
-        $dm       = $this->getDocumentManager($constraint);
+        $dm       = $this->registry->getDocumentManager($constraint->documentManager);
         $metadata = $dm->getClassMetadata($class);
 
         if ($metadata->isEmbeddedDocument) {
@@ -117,6 +116,7 @@ class UniqueValidator extends ConstraintValidator
     private function getFieldNameFromPropertyPath($field)
     {
         $pieces = explode('.', $field);
+
         return $pieces[0];
     }
 
@@ -127,12 +127,7 @@ class UniqueValidator extends ConstraintValidator
         foreach ($pieces as $piece) {
             $value = $value[$piece];
         }
+
         return $value;
     }
-
-    private function getDocumentManager(Unique $constraint)
-    {
-        return $this->container->get($constraint->getDocumentManagerId());
-    }
-
 }
