@@ -628,7 +628,7 @@ Configuration
 -------------
 
 For detailed information on configuration options available when using the
-Doctrine ODM, see the :doc:`MongoDB Reference</reference/configuration/mongodb>` section.
+Doctrine ODM, see the :doc:`MongoDB Reference</bundles/DoctrineMongoDBBundle/config>` section.
 
 Registering Event Listeners and Subscribers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
