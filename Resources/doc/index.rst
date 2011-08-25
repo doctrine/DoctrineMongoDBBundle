@@ -687,6 +687,11 @@ powerful, allowing you to create complex queries and subscribe to events
 that allow you to take different actions as objects go through their persistence
 lifecycle.
 
+Learn more from the Cookbook
+----------------------------
+
+* :doc:`/bundles/DoctrineMongoDBBundle/form`
+
 .. _`MongoDB`:          http://www.mongodb.org/
 .. _`documentation`:    http://www.doctrine-project.org/docs/mongodb_odm/1.0/en
 .. _`Quick Start`:      http://www.mongodb.org/display/DOCS/Quickstart
