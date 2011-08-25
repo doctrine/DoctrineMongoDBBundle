@@ -1,6 +1,12 @@
 DoctrineMongoDBBundle
 =====================
 
+.. toctree::
+   :hidden:
+
+   config
+   form
+
 The `MongoDB`_ Object Document Mapper (ODM) is much like the Doctrine2 ORM
 in its philosophy and how it works. In other words, like the :doc:`Doctrine2 ORM</book/doctrine>`,
 with the Doctrine ODM, you deal only with plain PHP objects, which are then

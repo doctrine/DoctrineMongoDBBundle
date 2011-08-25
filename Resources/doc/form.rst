@@ -6,12 +6,6 @@ database. In this example, we'll create a registration form with some extra
 fields and (like a "terms accepted" checkbox field) and embed the form that
 actually stores the account information. We'll use MongoDB for storing the data.
 
-.. tip::
-
-    If you are not familiar with Doctrine's MongoDB library, read
-    ":doc:`/cookbook/doctrine/mongodb`" cookbook entry first to learn
-    how to setup and work with MongoDB inside Symfony.
-
 The simple User model
 ---------------------
 
