@@ -23,7 +23,7 @@ use Symfony\Bundle\DoctrineAbstractBundle\DependencyInjection\AbstractDoctrineEx
 /**
  * Doctrine MongoDB ODM extension.
  *
- * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
+ * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
  * @author Kris Wallsmith <kris@symfony.com>
  * @author Jonathan H. Wage <jonwage@gmail.com>
  */

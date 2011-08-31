@@ -21,7 +21,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 /**
  * Doctrine MongoDB ODM unique value validator.
  *
- * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
+ * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
 class UniqueValidator extends ConstraintValidator
 {
