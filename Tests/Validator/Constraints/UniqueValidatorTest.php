@@ -82,6 +82,9 @@ class UniqueValidatorTest extends TestCase
         // Unlike SQL, MongoDB will consider two null values on a unique index as conflicting
         $violationsList = $validator->validate($document1);
         $this->assertEquals(1, $violationsList->count(), 'Violation found on document due to non-unique null value.');
+
+        $violationsList = $validator->validate($document2);
+        $this->assertEquals(1, $violationsList->count(), 'Violation found on document due to non-unique null value.');
     }
 
     private function dropDocumentCollection()

@@ -53,9 +53,13 @@ class UniqueValidator extends ConstraintValidator
         $criteria = $this->getQueryArray($metadata, $document, $constraint->path);
 
         $repository = $dm->getRepository($className);
-        $result = $dm->getRepository($className)->findOneBy($criteria);
+        $result = $dm->getRepository($className)->findBy($criteria);
+        $numResult = count($result);
 
-        if (null !== $result && $document !== $result) {
+        /* If any results were found, the document's criteria is not unique
+         * unless the single result is the document itself.
+         */
+        if (1 < $numResult || (1 == $numResult && $document !== $result->current())) {
             $oldPath = $this->context->getPropertyPath();
             $this->context->setPropertyPath(empty($oldPath) ? $constraint->path : $oldPath.'.'.$constraint->path);
             // TODO: specify invalidValue when adding violation
