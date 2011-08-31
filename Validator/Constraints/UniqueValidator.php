@@ -21,6 +21,7 @@ use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
  * Unique document validator checks if one field contains a unique value.
  *
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
+ * @author Jeremy Mikola <jmikola@gmail.com>
  */
 class UniqueValidator extends ConstraintValidator
 {
