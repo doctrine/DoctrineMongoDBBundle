@@ -19,7 +19,23 @@ class Document
     /** @ODM\Collection */
     public $collection;
 
+    /** @ODM\ReferenceOne(targetDocument="Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\Document") */
+    public $referenceOne;
+
+    /** @ODM\EmbedOne(targetDocument="Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument") */
+    public $embedOne;
+
+    /** @ODM\EmbedMany(targetDocument="Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument") */
+    public $embedMany = array();
+
     public function __construct($id) {
         $this->id = $id;
     }
+}
+
+/** @ODM\EmbeddedDocument */
+class EmbeddedDocument
+{
+    /** @ODM\String */
+    public $name;
 }
