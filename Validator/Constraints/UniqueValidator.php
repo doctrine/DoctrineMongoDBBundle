@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 /**
- * Doctrine MongoDB ODM unique value validator.
+ * Unique document validator checks if one field contains a unique value.
  *
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
  */
@@ -34,47 +34,36 @@ class UniqueValidator extends ConstraintValidator
     }
 
     /**
-     * @param Doctrine\ODM\MongoDB\Document $value
+     * @param object     $document
      * @param Constraint $constraint
      * @return Boolean
+     * @throws InvalidArgumentException if the document is an embedded document
      */
     public function isValid($document, Constraint $constraint)
     {
-        $class    = get_class($document);
-        $dm       = $this->getDocumentManager($constraint);
-        $metadata = $dm->getClassMetadata($class);
+        $dm = $this->container->get($constraint->getDocumentManagerId());
+
+        $className = $this->context->getCurrentClass();
+        $metadata = $dm->getClassMetadata($className);
 
         if ($metadata->isEmbeddedDocument) {
             throw new \InvalidArgumentException(sprintf("Document '%s' is an embedded document, and cannot be validated", $class));
         }
 
-        $query = $this->getQueryArray($metadata, $document, $constraint->path);
+        $criteria = $this->getQueryArray($metadata, $document, $constraint->path);
 
-        // check if document exists in mongodb
-        if (null === ($doc = $dm->getRepository($class)->findOneBy($query))) {
-            return true;
+        $repository = $dm->getRepository($className);
+        $result = $dm->getRepository($className)->findOneBy($criteria);
+
+        if (null !== $result && $document !== $result) {
+            $oldPath = $this->context->getPropertyPath();
+            $this->context->setPropertyPath(empty($oldPath) ? $constraint->path : $oldPath.'.'.$constraint->path);
+            // TODO: specify invalidValue when adding violation
+            $this->context->addViolation($constraint->message, array('{{ property }}' => $constraint->path), null);
+            $this->context->setPropertyPath($oldPath);
         }
 
-        // check if document in mongodb is the same document as the checked one
-        if ($doc === $document) {
-            return true;
-        }
-
-        // check if returned document is proxy and initialize the minimum identifier if needed
-        if ($doc instanceof Proxy) {
-            $metadata->setIdentifierValue($doc, $doc->__identifier);
-        }
-
-        // check if document has the same identifier as the current one
-        if ($metadata->getIdentifierValue($doc) === $metadata->getIdentifierValue($document)) {
-            return true;
-        }
-
-        $this->context->setPropertyPath($this->context->getPropertyPath() . '.' . $constraint->path);
-        $this->setMessage($constraint->message, array(
-            '{{ property }}' => $constraint->path,
-        ));
-        return false;
+        return true;
     }
 
     protected function getQueryArray(ClassMetadata $metadata, $document, $path)
@@ -129,10 +118,4 @@ class UniqueValidator extends ConstraintValidator
         }
         return $value;
     }
-
-    private function getDocumentManager(Unique $constraint)
-    {
-        return $this->container->get($constraint->getDocumentManagerId());
-    }
-
 }
