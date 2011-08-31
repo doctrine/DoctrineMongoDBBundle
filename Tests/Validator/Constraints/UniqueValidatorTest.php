@@ -39,13 +39,14 @@ class UniqueValidatorTest extends TestCase
         $this->dropDocumentCollection();
     }
 
-    public function testValidateUniqueness()
+    public function testValidateUniquenessForScalarField()
     {
         $container = $this->createMockContainer();
         $constraint = new Unique('name');
         $validator = $this->createValidator($container, $constraint);
 
-        $document1 = new Document(1, 'Foo');
+        $document1 = new Document(1);
+        $document1->name = 'Foo';
         $violationsList = $validator->validate($document1);
         $this->assertEquals(0, $violationsList->count(), 'No violations found on document before it is saved to the database.');
 
@@ -55,7 +56,8 @@ class UniqueValidatorTest extends TestCase
         $violationsList = $validator->validate($document1);
         $this->assertEquals(0, $violationsList->count(), 'No violations found on document after it was saved to the database.');
 
-        $document2 = new Document(2, 'Foo');
+        $document2 = new Document(2);
+        $document2->name = 'Foo';
 
         $violationsList = $validator->validate($document2);
         $this->assertEquals(1, $violationsList->count(), 'Violation found on document due to non-unique value.');
@@ -66,14 +68,14 @@ class UniqueValidatorTest extends TestCase
         $this->assertEquals('Foo', $violation->getInvalidValue());
     }
 
-    public function testValidateUniquenessWithNull()
+    public function testValidateUniquenessForScalarFieldWithNull()
     {
         $container = $this->createMockContainer();
         $constraint = new Unique('name');
         $validator = $this->createValidator($container, $constraint);
 
-        $document1 = new Document(1, null);
-        $document2 = new Document(2, null);
+        $document1 = new Document(1);
+        $document2 = new Document(2);
 
         $this->documentManager->persist($document1);
         $this->documentManager->persist($document2);
@@ -85,6 +87,64 @@ class UniqueValidatorTest extends TestCase
 
         $violationsList = $validator->validate($document2);
         $this->assertEquals(1, $violationsList->count(), 'Violation found on document due to non-unique null value.');
+    }
+
+    public function testValidateUniquenessForCollectionField()
+    {
+        $container = $this->createMockContainer();
+        $constraint = new Unique('collection');
+        $validator = $this->createValidator($container, $constraint);
+
+        $document1 = new Document(1);
+        $document1->collection = array('a', 'b', 'c');
+        $violationsList = $validator->validate($document1);
+        $this->assertEquals(0, $violationsList->count(), 'No violations found on document before it is saved to the database.');
+
+        $this->documentManager->persist($document1);
+        $this->documentManager->flush();
+
+        $violationsList = $validator->validate($document1);
+        $this->assertEquals(0, $violationsList->count(), 'No violations found on document after it was saved to the database.');
+
+        $document2 = new Document(2);
+        $document2->collection = array('b');
+
+        $violationsList = $validator->validate($document2);
+        $this->assertEquals(1, $violationsList->count(), 'Violation found on document due to non-unique value in a collection field.');
+
+        $violation = $violationsList[0];
+        $this->assertEquals('This value is already used.', $violation->getMessage());
+        $this->assertEquals('collection', $violation->getPropertyPath());
+        $this->assertEquals(array('b'), $violation->getInvalidValue());
+    }
+
+    public function testValidateUniquenessForHashField()
+    {
+        $container = $this->createMockContainer();
+        $constraint = new Unique('hash.foo');
+        $validator = $this->createValidator($container, $constraint);
+
+        $document1 = new Document(1);
+        $document1->hash = array('foo' => 'bar');
+        $violationsList = $validator->validate($document1);
+        $this->assertEquals(0, $violationsList->count(), 'No violations found on document before it is saved to the database.');
+
+        $this->documentManager->persist($document1);
+        $this->documentManager->flush();
+
+        $violationsList = $validator->validate($document1);
+        $this->assertEquals(0, $violationsList->count(), 'No violations found on document after it was saved to the database.');
+
+        $document2 = new Document(2);
+        $document2->hash = array('foo' => 'bar');
+
+        $violationsList = $validator->validate($document2);
+        $this->assertEquals(1, $violationsList->count(), 'Violation found on document due to non-unique value in a hash field.');
+
+        $violation = $violationsList[0];
+        $this->assertEquals('This value is already used.', $violation->getMessage());
+        $this->assertEquals('hash.foo', $violation->getPropertyPath());
+        $this->assertEquals('bar', $violation->getInvalidValue());
     }
 
     private function dropDocumentCollection()

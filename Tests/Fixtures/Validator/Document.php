@@ -13,8 +13,13 @@ class Document
     /** @ODM\String */
     public $name;
 
-    public function __construct($id, $name) {
+    /** @ODM\Hash */
+    public $hash;
+
+    /** @ODM\Collection */
+    public $collection;
+
+    public function __construct($id) {
         $this->id = $id;
-        $this->name = $name;
     }
 }
