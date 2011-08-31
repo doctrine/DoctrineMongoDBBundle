@@ -41,7 +41,7 @@ class UniqueValidator extends ConstraintValidator
      */
     public function isValid($document, Constraint $constraint)
     {
-        $dm = $this->container->get($constraint->getDocumentManagerId());
+        $dm = $this->getDocumentManager($constraint);
 
         $className = $this->context->getCurrentClass();
         $metadata = $dm->getClassMetadata($className);
@@ -121,5 +121,22 @@ class UniqueValidator extends ConstraintValidator
             $value = $value[$piece];
         }
         return $value;
+    }
+
+    /**
+     * Get the preferred document manager for the given Constraint.
+     *
+     * The default document manager will be returned by default if no document
+     * manager name has been specified on the Constraint.
+     *
+     * @return Doctrine\ODM\MongoDB\DocumentManager
+     */
+    private function getDocumentManager(Constraint $constraint)
+    {
+        $id = isset($constraint->documentManager)
+            ? sprintf('doctrine.odm.mongodb.%s_document_manager', $constraint->documentManager)
+            : 'doctrine.odm.mongodb.document_manager';
+
+        return $this->container->get($id);
     }
 }

@@ -56,19 +56,4 @@ class Unique extends Constraint
     {
         return 'doctrine_odm.mongodb.unique';
     }
-
-    /**
-     * Get the document manager ID to use for validating uniqueness.
-     *
-     * The default document manager will be returned by default if a document
-     * manager ID has not been configured.
-     *
-     * @return string
-     */
-    public function getDocumentManagerId()
-    {
-        return null !== $this->documentManager
-            ? sprintf('doctrine.odm.mongodb.%s_document_manager', $this->documentManager)
-            : 'doctrine.odm.mongodb.document_manager';
-    }
 }
