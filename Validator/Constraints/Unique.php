@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraint;
  * Constraint for the unique document validator
  *
  * @Annotation
- * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
+ * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
 class Unique extends Constraint
 {

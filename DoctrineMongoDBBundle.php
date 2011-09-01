@@ -22,7 +22,7 @@ use Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection\DoctrineMongoDBExte
 /**
  * Doctrine MongoDB ODM bundle.
  *
- * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
+ * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
  * @author Kris Wallsmith <kris@symfony.com>
  * @author Jonathan H. Wage <jonwage@gmail.com>
  */
