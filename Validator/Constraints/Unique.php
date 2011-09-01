@@ -14,44 +14,46 @@ namespace Symfony\Bundle\DoctrineMongoDBBundle\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
 
 /**
- * Doctrine MongoDB ODM unique value constraint.
+ * Constraint for the unique document validator
  *
  * @Annotation
  * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
 class Unique extends Constraint
 {
-    public $message = 'The value for {{ property }} already exists.';
-    public $path;
     public $documentManager;
+    public $message = 'This value is already used.';
+    public $path;
 
+    /**
+     * @see Symfony\Component\Validator\Constraint::getDefaultOption()
+     */
     public function getDefaultOption()
     {
         return 'path';
     }
 
+    /**
+     * @see Symfony\Component\Validator\Constraint::getRequiredOptions()
+     */
     public function getRequiredOptions()
     {
         return array('path');
     }
 
-    public function validatedBy()
-    {
-        return 'doctrine_odm.mongodb.unique';
-    }
-
+    /**
+     * @see Symfony\Component\Validator\Constraint::getTargets()
+     */
     public function getTargets()
     {
         return Constraint::CLASS_CONSTRAINT;
     }
 
-    public function getDocumentManagerId()
+    /**
+     * @see Symfony\Component\Validator\Constraint::validatedBy()
+     */
+    public function validatedBy()
     {
-        $id = 'doctrine.odm.mongodb.document_manager';
-        if (null !== $this->documentManager) {
-            $id = sprintf('doctrine.odm.mongodb.%s_document_manager', $this->documentManager);
-        }
-
-        return $id;
+        return 'doctrine_odm.mongodb.unique';
     }
 }
