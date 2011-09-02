@@ -11,21 +11,20 @@
 
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Validator\Constraints;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
+use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
 
 /**
- * Doctrine MongoDB ODM unique value validator.
+ * Unique document validator checks if one field contains a unique value.
  *
  * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
+ * @author Jeremy Mikola <jmikola@gmail.com>
  */
 class UniqueValidator extends ConstraintValidator
 {
-
     private $container;
 
     public function __construct(ContainerInterface $container)
@@ -34,105 +33,155 @@ class UniqueValidator extends ConstraintValidator
     }
 
     /**
-     * @param Doctrine\ODM\MongoDB\Document $value
+     * @param object     $document
      * @param Constraint $constraint
      * @return Boolean
+     * @throws InvalidArgumentException if the document is an embedded document
      */
     public function isValid($document, Constraint $constraint)
     {
-        $class    = get_class($document);
-        $dm       = $this->getDocumentManager($constraint);
-        $metadata = $dm->getClassMetadata($class);
+        $dm = $this->getDocumentManager($constraint);
+
+        $className = $this->context->getCurrentClass();
+        $metadata = $dm->getClassMetadata($className);
 
         if ($metadata->isEmbeddedDocument) {
-            throw new \InvalidArgumentException(sprintf("Document '%s' is an embedded document, and cannot be validated", $class));
+            throw new ConstraintDefinitionException('Unique validation of embedded documents is not supported');
         }
 
-        $query = $this->getQueryArray($metadata, $document, $constraint->path);
+        $criteria = $this->createQueryArray($metadata, $document, $constraint->path);
+        $results = $dm->getRepository($className)->findBy($criteria);
+        $numResults = $results->count();
 
-        // check if document exists in mongodb
-        if (null === ($doc = $dm->getRepository($class)->findOneBy($query))) {
+        // No documents match the query criteria. The criteria is unique.
+        if (0 == $numResults) {
             return true;
         }
 
-        // check if document in mongodb is the same document as the checked one
-        if ($doc === $document) {
+        /* Note: Doctrine\ODM\MongoDB\Cursor only hydrates through calls to
+         * current(), so getNext() cannot be used here.
+         */
+        $results->next();
+        $firstResult = $results->current();
+
+        /* One document matched the query criteria and it is either the same as
+         * the document being validated, or both documents share the same
+         * identifier. The criteria is unique.
+         */
+        if (1 == $numResults && ($document === $firstResult || $metadata->getIdentifierValue($document) === $metadata->getIdentifierValue($firstResult))) {
             return true;
         }
 
-        // check if returned document is proxy and initialize the minimum identifier if needed
-        if ($doc instanceof Proxy) {
-            $metadata->setIdentifierValue($doc, $doc->__identifier);
-        }
+        /* One or more documents matched the query criteria and they were not
+         * the same as the document being validated. The criteria is not unique.
+         */
+        $invalidValue = $this->getFieldValueForPropertyPath($metadata, $document, $constraint->path);
 
-        // check if document has the same identifier as the current one
-        if ($metadata->getIdentifierValue($doc) === $metadata->getIdentifierValue($document)) {
-            return true;
-        }
+        $oldPath = $this->context->getPropertyPath();
+        $this->context->setPropertyPath(empty($oldPath) ? $constraint->path : $oldPath.'.'.$constraint->path);
+        $this->context->addViolation($constraint->message, array(), $invalidValue);
+        $this->context->setPropertyPath($oldPath);
 
-        $this->context->setPropertyPath($this->context->getPropertyPath() . '.' . $constraint->path);
-        $this->setMessage($constraint->message, array(
-            '{{ property }}' => $constraint->path,
-        ));
-        return false;
+        // Be consistent with unique entity validator and return true after adding violation
+        return true;
     }
 
-    protected function getQueryArray(ClassMetadata $metadata, $document, $path)
+    /**
+     * Creates query criteria for the validator.
+     *
+     * @param ClassMetadata $metadata
+     * @param object        $document
+     * @param string        $path
+     * @return array
+     * @throws ConstraintDefinitionException if the field is not mapped or its type is unsupported
+     */
+    protected function createQueryArray(ClassMetadata $metadata, $document, $path)
     {
-        $class = $metadata->name;
-        $field = $this->getFieldNameFromPropertyPath($path);
-        if (!isset($metadata->fieldMappings[$field])) {
-            throw new \LogicException('Mapping for \'' . $path . '\' doesn\'t exist for ' . $class);
+        $fieldMapping = $this->getFieldMappingForPropertyPath($metadata, $document, $path);
+
+        if (!empty($fieldMapping['reference'])) {
+            throw new ConstraintDefinitionException('Unique validation of document references is not supported');
         }
-        $mapping = $metadata->fieldMappings[$field];
-        if (isset($mapping['reference']) && $mapping['reference']) {
-            throw new \LogicException('Cannot determine uniqueness of referenced document values');
-        }
-        switch ($mapping['type']) {
+
+        switch ($fieldMapping['type']) {
             case 'one':
-                // TODO: implement support for embed one documents
             case 'many':
-                // TODO: implement support for embed many documents
-                throw new \RuntimeException('Not Implemented.');
+                // TODO: implement support for validating embedded documents
+                throw new ConstraintDefinitionException('Unique validation of embedded documents is not supported');
             case 'hash':
-                $value = $metadata->getFieldValue($document, $mapping['fieldName']);
-                return array($path => $this->getFieldValueRecursively($path, $value));
+                return array($path => $this->getFieldValueForPropertyPath($metadata, $document, $path));
             case 'collection':
-                return array($mapping['fieldName'] => array('$in' => $metadata->getFieldValue($document, $mapping['fieldName'])));
+                return array($fieldMapping['fieldName'] => array('$in' => $metadata->getFieldValue($document, $fieldMapping['fieldName'])));
             default:
-                return array($mapping['fieldName'] => $metadata->getFieldValue($document, $mapping['fieldName']));
+                return array($fieldMapping['fieldName'] => $metadata->getFieldValue($document, $fieldMapping['fieldName']));
         }
     }
 
     /**
-     * Returns the actual document field value
+     * Return the value of the field being checked for uniqueness.
      *
-     * E.g. document.someVal -> document
-     *      user.emails      -> user
-     *      username         -> username
-     *
-     * @param string $field
-     * @return string
+     * @param ClassMetadata $metadata
+     * @param object        $document
+     * @param string        $path
+     * @return mixed
+     * @throw ConstraintDefinitionException if no field mapping exists for the property path
      */
-    private function getFieldNameFromPropertyPath($field)
+    private function getFieldValueForPropertyPath(ClassMetadata $metadata, $document, $path)
     {
-        $pieces = explode('.', $field);
-        return $pieces[0];
-    }
+        $fieldMapping = $this->getFieldMappingForPropertyPath($metadata, $document, $path);
+        $fieldValue = $metadata->getFieldValue($document, $fieldMapping['fieldName']);
 
-    private function getFieldValueRecursively($fieldName, $value)
-    {
-        $pieces = explode('.', $fieldName);
-        unset($pieces[0]);
-        foreach ($pieces as $piece) {
-            $value = $value[$piece];
+        /* For hash fields, traverse into the field value starting from the
+         * second part of the property path. Null will be returned if traversal
+         * cannot continue.
+         */
+        if ('hash' == $fieldMapping['type']) {
+            $parts = explode('.', $path);
+            array_shift($parts);
+
+            foreach ($parts as $part) {
+                $fieldValue = isset($fieldValue[$part]) ? $fieldValue[$part] : null;
+            }
         }
-        return $value;
+
+        return $fieldValue;
     }
 
-    private function getDocumentManager(Unique $constraint)
+    /**
+     * Return the document field mapping for a property path.
+     *
+     * @param ClassMetadata $metadata
+     * @param object        $document
+     * @param string        $path
+     * @return array
+     * @throw ConstraintDefinitionException if no field mapping exists for the property path
+     */
+    private function getFieldMappingForPropertyPath(ClassMetadata $metadata, $document, $path)
     {
-        return $this->container->get($constraint->getDocumentManagerId());
+        // Extract the first part of the property path before any dot separator
+        $fieldName = false !== ($beforeDot = strstr($path, '.', true)) ? $beforeDot : $path;
+
+        if (!$metadata->hasField($fieldName)) {
+            throw new ConstraintDefinitionException(sprintf('Mapping for "%s" does not exist for "%s"', $path, $metadata->name));
+        }
+
+        return $metadata->getFieldMapping($fieldName);
     }
 
+    /**
+     * Get the preferred document manager for the given Constraint.
+     *
+     * The default document manager will be returned by default if no document
+     * manager name has been specified on the Constraint.
+     *
+     * @return Doctrine\ODM\MongoDB\DocumentManager
+     */
+    private function getDocumentManager(Constraint $constraint)
+    {
+        $id = isset($constraint->documentManager)
+            ? sprintf('doctrine.odm.mongodb.%s_document_manager', $constraint->documentManager)
+            : 'doctrine.odm.mongodb.document_manager';
+
+        return $this->container->get($id);
+    }
 }
