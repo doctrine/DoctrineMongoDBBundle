@@ -80,6 +80,25 @@ abstract class DoctrineODMCommand extends ContainerAwareCommand
 
         return $bundleMetadatas;
     }
+    
+    protected function getDocumentMetadata($className)
+    {
+        $documentManagers = $this->getDoctrineDocumentManagers();
+        foreach ($documentManagers as $key => $dm) {
+            $cmf = new DisconnectedClassMetadataFactory();
+            $cmf->setDocumentManager($dm);
+            $cmf->setConfiguration($dm->getConfiguration());
+            $metadatas = $cmf->getAllMetadata();
+            return $cmf->getMetadataFor($className);
+            /*foreach ($metadatas as $metadata) {
+                if (strpos($metadata->name, $namespace) === 0) {
+                    $bundleMetadatas[$metadata->name] = $metadata;
+                }
+            }*/
+        }
+
+        return $bundleMetadatas;
+    }
 
     protected function findBundle($bundleName)
     {
@@ -116,5 +135,16 @@ abstract class DoctrineODMCommand extends ContainerAwareCommand
         }
 
         return $destination;
+    }
+    
+    protected function parseShortcutNotation($shortcut)
+    {
+        $entity = str_replace('/', '\\', $shortcut);
+
+        if (false === $pos = strpos($entity, ':')) {
+            throw new \InvalidArgumentException(sprintf('The entity name must contain a : ("%s" given, expecting something like AcmeBlogBundle:Blog/Post)', $entity));
+        }
+
+        return array(substr($entity, 0, $pos), substr($entity, $pos + 1));
     }
 }
