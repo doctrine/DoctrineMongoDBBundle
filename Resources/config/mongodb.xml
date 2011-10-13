@@ -99,11 +99,11 @@
 
         <!-- Cache Warmers -->
         <service id="doctrine.odm.mongodb.proxy_cache_warmer" class="%doctrine.odm.mongodb.proxy_cache_warmer.class%" public="false">
-            <tag name="kernel.cache_warmer" />
+            <tag name="kernel.cache_warmer" priority="25" />
             <argument type="service" id="service_container" />
         </service>
         <service id="doctrine.odm.mongodb.hydrator_cache_warmer" class="%doctrine.odm.mongodb.hydrator_cache_warmer.class%" public="false">
-            <tag name="kernel.cache_warmer" />
+            <tag name="kernel.cache_warmer" priority="25" />
             <argument type="service" id="service_container" />
         </service>
 
