@@ -47,7 +47,7 @@ class DocumentTypeTest extends TypeTestCase
     protected function getExtensions()
     {
         return array_merge(parent::getExtensions(), array(
-            new DoctrineMongoDBExtension($this->documentManager),
+            new DoctrineMongoDBExtension($this->createRegistryMock('default', $this->documentManager)),
         ));
     }
 
@@ -68,7 +68,7 @@ class DocumentTypeTest extends TypeTestCase
     public function testConfigureQueryBuilderWithNonQueryBuilderAndNonClosure()
     {
         $field = $this->factory->createNamed('document', 'name', null, array(
-            'document_manager' => $this->documentManager,
+            'document_manager' => 'default',
             'class' => self::DOCUMENT_CLASS,
             'query_builder' => new \stdClass(),
         ));
@@ -80,7 +80,7 @@ class DocumentTypeTest extends TypeTestCase
     public function testConfigureQueryBuilderWithClosureReturningNonQueryBuilder()
     {
         $field = $this->factory->createNamed('document', 'name', null, array(
-            'document_manager' => $this->documentManager,
+            'document_manager' => 'default',
             'class' => self::DOCUMENT_CLASS,
             'query_builder' => function () {
                 return new \stdClass();
@@ -94,7 +94,7 @@ class DocumentTypeTest extends TypeTestCase
     {
         $field = $this->factory->createNamed('document', 'name', null, array(
             'multiple' => false,
-            'document_manager' => $this->documentManager,
+            'document_manager' => 'default',
             'class' => self::DOCUMENT_CLASS,
         ));
         $field->setData(null);
@@ -108,7 +108,7 @@ class DocumentTypeTest extends TypeTestCase
         $field = $this->factory->createNamed('document', 'name', null, array(
             'multiple' => true,
             'expanded' => true,
-            'document_manager' => $this->documentManager,
+            'document_manager' => 'default',
             'class' => self::DOCUMENT_CLASS,
         ));
         $field->setData(null);
@@ -122,7 +122,7 @@ class DocumentTypeTest extends TypeTestCase
         $field = $this->factory->createNamed('document', 'name', null, array(
             'multiple' => true,
             'expanded' => false,
-            'document_manager' => $this->documentManager,
+            'document_manager' => 'default',
             'class' => self::DOCUMENT_CLASS,
         ));
         $field->setData(null);
@@ -136,7 +136,7 @@ class DocumentTypeTest extends TypeTestCase
         $field = $this->factory->createNamed('document', 'name', null, array(
             'multiple' => false,
             'expanded' => true,
-            'document_manager' => $this->documentManager,
+            'document_manager' => 'default',
             'class' => self::DOCUMENT_CLASS,
         ));
         $field->bind(null);
@@ -150,7 +150,7 @@ class DocumentTypeTest extends TypeTestCase
         $field = $this->factory->createNamed('document', 'name', null, array(
             'multiple' => false,
             'expanded' => false,
-            'document_manager' => $this->documentManager,
+            'document_manager' => 'default',
             'class' => self::DOCUMENT_CLASS,
         ));
         $field->bind(null);
@@ -163,7 +163,7 @@ class DocumentTypeTest extends TypeTestCase
     {
         $field = $this->factory->createNamed('document', 'name', null, array(
             'multiple' => true,
-            'document_manager' => $this->documentManager,
+            'document_manager' => 'default',
             'class' => self::DOCUMENT_CLASS,
         ));
         $field->bind(null);
@@ -182,7 +182,7 @@ class DocumentTypeTest extends TypeTestCase
         $field = $this->factory->createNamed('document', 'name', null, array(
             'multiple' => false,
             'expanded' => false,
-            'document_manager' => $this->documentManager,
+            'document_manager' => 'default',
             'class' => self::DOCUMENT_CLASS,
             'property' => 'name',
         ));
@@ -205,7 +205,7 @@ class DocumentTypeTest extends TypeTestCase
         $field = $this->factory->createNamed('document', 'name', null, array(
             'multiple' => true,
             'expanded' => false,
-            'document_manager' => $this->documentManager,
+            'document_manager' => 'default',
             'class' => self::DOCUMENT_CLASS,
             'property' => 'name',
         ));
@@ -230,7 +230,7 @@ class DocumentTypeTest extends TypeTestCase
         $field = $this->factory->createNamed('document', 'name', null, array(
             'multiple' => true,
             'expanded' => false,
-            'document_manager' => $this->documentManager,
+            'document_manager' => 'default',
             'class' => self::DOCUMENT_CLASS,
             'property' => 'name',
         ));
@@ -260,7 +260,7 @@ class DocumentTypeTest extends TypeTestCase
         $field = $this->factory->createNamed('document', 'name', null, array(
             'multiple' => false,
             'expanded' => true,
-            'document_manager' => $this->documentManager,
+            'document_manager' => 'default',
             'class' => self::DOCUMENT_CLASS,
             'property' => 'name',
         ));
@@ -286,7 +286,7 @@ class DocumentTypeTest extends TypeTestCase
         $field = $this->factory->createNamed('document', 'name', null, array(
             'multiple' => true,
             'expanded' => true,
-            'document_manager' => $this->documentManager,
+            'document_manager' => 'default',
             'class' => self::DOCUMENT_CLASS,
             'property' => 'name',
         ));
@@ -314,7 +314,7 @@ class DocumentTypeTest extends TypeTestCase
         $this->persist(array($document1, $document2, $document3));
 
         $field = $this->factory->createNamed('document', 'name', null, array(
-            'document_manager' => $this->documentManager,
+            'document_manager' => 'default',
             'class' => self::DOCUMENT_CLASS,
             // not all persisted documents should be displayed
             'choices' => array($document1, $document2),
@@ -338,7 +338,7 @@ class DocumentTypeTest extends TypeTestCase
         $this->persist(array($document1, $document2, $document3));
 
         $field = $this->factory->createNamed('document', 'name', null, array(
-            'document_manager' => $this->documentManager,
+            'document_manager' => 'default',
             'class' => self::DOCUMENT_CLASS,
             'choices' => array($document1, $document2),
             'property' => 'name',
@@ -361,7 +361,7 @@ class DocumentTypeTest extends TypeTestCase
         $repository = $this->documentManager->getRepository(self::DOCUMENT_CLASS);
 
         $field = $this->factory->createNamed('document', 'name', null, array(
-            'document_manager' => $this->documentManager,
+            'document_manager' => 'default',
             'class' => self::DOCUMENT_CLASS,
             'query_builder' => $repository->createQueryBuilder()
                 ->field('id')->in(array(1,2)),
@@ -383,7 +383,7 @@ class DocumentTypeTest extends TypeTestCase
         $this->persist(array($document1, $document2, $document3));
 
         $field = $this->factory->createNamed('document', 'name', null, array(
-            'document_manager' => $this->documentManager,
+            'document_manager' => 'default',
             'class' => self::DOCUMENT_CLASS,
             'query_builder' => function ($repository) {
                 return $repository->createQueryBuilder()
@@ -396,5 +396,16 @@ class DocumentTypeTest extends TypeTestCase
 
         $this->assertFalse($field->isSynchronized());
         $this->assertNull($field->getData());
+    }
+
+    protected function createRegistryMock($name, $dm)
+    {
+        $registry = $this->getMock('Doctrine\Common\Persistence\ManagerRegistry');
+        $registry->expects($this->any())
+                 ->method('getManager')
+                 ->with($this->equalTo($name))
+                 ->will($this->returnValue($dm));
+
+        return $registry;
     }
 }
