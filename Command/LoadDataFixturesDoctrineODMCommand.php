@@ -60,20 +60,7 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $dmName = $input->getOption('dm');
-        $dmName = $dmName ? $dmName : 'default';
-        $dmServiceName = sprintf('doctrine.odm.mongodb.%s_document_manager', $dmName);
-
-        if (!$this->getContainer()->has($dmServiceName)) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'Could not find a document manager configured with the name "%s". Check your '.
-                    'application configuration to configure your Doctrine document managers.', $dmName
-                )
-            );
-        }
-
-        $dm = $this->getContainer()->get($dmServiceName);
+        $dm = $this->getContainer()->get('doctrine.odm.mongodb')->getManager($input->getOption('dm'));
         $dirOrFile = $input->getOption('fixtures');
         if ($dirOrFile) {
             $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
