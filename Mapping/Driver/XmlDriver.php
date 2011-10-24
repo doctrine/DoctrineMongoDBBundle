@@ -27,7 +27,7 @@ class XmlDriver extends BaseXmlDriver
     protected $classCache;
     protected $fileExtension = '.mongodb.xml';
 
-    public function __construct($prefixes)
+    public function __construct($prefixes = array())
     {
         $this->setNamespacePrefixes($prefixes);
     }

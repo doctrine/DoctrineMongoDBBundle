@@ -27,7 +27,7 @@ class YamlDriver extends BaseYamlDriver
     protected $classCache;
     protected $fileExtension = '.mongodb.yml';
 
-    public function __construct($prefixes)
+    public function __construct($prefixes = array())
     {
         $this->setNamespacePrefixes($prefixes);
     }
