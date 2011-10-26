@@ -20,6 +20,9 @@ class TestCase extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
+        if (!class_exists('Mongo')) {
+            $this->markTestSkipped('Mongo PHP/PECL Extension is not available.');
+        }
         if (!class_exists('Doctrine\\ODM\\MongoDB\\Version')) {
             $this->markTestSkipped('Doctrine MongoDB ODM is not available.');
         }

@@ -28,6 +28,8 @@ class UniqueValidatorTest extends TestCase
 
     protected function setUp()
     {
+        parent::setUp();
+
         $this->documentManager = $this->createTestDocumentManager(array(
             __DIR__ . '/../DependencyInjection/Fixtures/Bundles/AnnotationsBundle/Document'
         ));
@@ -221,7 +223,9 @@ class UniqueValidatorTest extends TestCase
 
     private function dropDocumentCollection()
     {
-        $this->documentManager->getDocumentCollection('Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\Document')->drop();
+        if ($this->documentManager) {
+            $this->documentManager->getDocumentCollection('Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\Document')->drop();
+        }
     }
 
     private function createMockContainer($documentManagerId = self::DEFAULT_DOCUMENT_MANAGER)

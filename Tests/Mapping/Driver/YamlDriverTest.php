@@ -22,8 +22,7 @@ class YamlDriverTest extends AbstractDriverTest
 
     protected function getDriver(array $paths = array())
     {
-        $driver = new YamlDriver(array_values($paths));
-        $driver->setNamespacePrefixes(array_flip($paths));
+        $driver = new YamlDriver(array_flip($paths));
 
         return $driver;
     }
