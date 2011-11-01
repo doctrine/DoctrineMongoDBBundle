@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Definition\Processor;
-use Symfony\Bridge\DependencyInjection\AbstractDoctrineExtension;
+use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 
 /**
  * Doctrine MongoDB ODM extension.

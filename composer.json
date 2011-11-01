@@ -1,6 +1,6 @@
 {
     "name": "symfony/mongodb-odm-bundle",
-    "type": "library",
+    "type": "symfony-bundle",
     "description": "Symfony2 Doctrine MongoDB Bundle",
     "keywords": ["persistence", "mongodb", "symfony"],
     "homepage": "http://www.doctrine-project.org",
@@ -15,5 +15,10 @@
         "doctrine/mongodb-odm": "*",
         "symfony/doctrine-bridge": "*",
         "symfony/framework-bundle": "*"
+    },
+    "autoload": {
+        "psr-0": { "Doctrine\\CouchDB": "lib/",
+            "Doctrine\\ODM": "lib/"
+        }
     }
 }
