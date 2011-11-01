@@ -12,7 +12,7 @@
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Validator\Constraints;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
@@ -25,11 +25,11 @@ use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
  */
 class UniqueValidator extends ConstraintValidator
 {
-    private $container;
+    private $registry;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(ManagerRegistry $registry)
     {
-        $this->container = $container;
+        $this->registry = $registry;
     }
 
     /**
@@ -40,7 +40,7 @@ class UniqueValidator extends ConstraintValidator
      */
     public function isValid($document, Constraint $constraint)
     {
-        $dm = $this->getDocumentManager($constraint);
+        $dm = $this->registry->getManager($constraint->documentManager);
 
         $className = $this->context->getCurrentClass();
         $metadata = $dm->getClassMetadata($className);
@@ -166,22 +166,5 @@ class UniqueValidator extends ConstraintValidator
         }
 
         return $metadata->getFieldMapping($fieldName);
-    }
-
-    /**
-     * Get the preferred document manager for the given Constraint.
-     *
-     * The default document manager will be returned by default if no document
-     * manager name has been specified on the Constraint.
-     *
-     * @return Doctrine\ODM\MongoDB\DocumentManager
-     */
-    private function getDocumentManager(Constraint $constraint)
-    {
-        $id = isset($constraint->documentManager)
-            ? sprintf('doctrine.odm.mongodb.%s_document_manager', $constraint->documentManager)
-            : 'doctrine.odm.mongodb.document_manager';
-
-        return $this->container->get($id);
     }
 }
