@@ -11,19 +11,17 @@
 
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests\Validator\Constraints;
 
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
 use Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\Document;
 use Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument;
 use Symfony\Bundle\DoctrineMongoDBBundle\Validator\Constraints\Unique;
 use Symfony\Bundle\DoctrineMongoDBBundle\Validator\Constraints\UniqueValidator;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Validator;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class UniqueValidatorTest extends TestCase
 {
-    const DEFAULT_DOCUMENT_MANAGER = 'doctrine.odm.mongodb.document_manager';
-
     private $documentManager;
 
     protected function setUp()
@@ -44,9 +42,9 @@ class UniqueValidatorTest extends TestCase
 
     public function testValidateUniquenessForScalarField()
     {
-        $container = $this->createMockContainer();
+        $registry = $this->createMockRegistry();
         $constraint = new Unique('name');
-        $validator = $this->createValidator($container, $constraint);
+        $validator = $this->createValidator($registry, $constraint);
 
         $document1 = new Document(1);
         $document1->name = 'Foo';
@@ -73,9 +71,9 @@ class UniqueValidatorTest extends TestCase
 
     public function testValidateUniquenessForScalarFieldWithNull()
     {
-        $container = $this->createMockContainer();
+        $registry = $this->createMockRegistry();
         $constraint = new Unique('name');
-        $validator = $this->createValidator($container, $constraint);
+        $validator = $this->createValidator($registry, $constraint);
 
         $document1 = new Document(1);
         $document2 = new Document(2);
@@ -94,9 +92,9 @@ class UniqueValidatorTest extends TestCase
 
     public function testValidateUniquenessForCollectionField()
     {
-        $container = $this->createMockContainer();
+        $registry = $this->createMockRegistry();
         $constraint = new Unique('collection');
-        $validator = $this->createValidator($container, $constraint);
+        $validator = $this->createValidator($registry, $constraint);
 
         $document1 = new Document(1);
         $document1->collection = array('a', 'b', 'c');
@@ -123,9 +121,9 @@ class UniqueValidatorTest extends TestCase
 
     public function testValidateUniquenessForHashField()
     {
-        $container = $this->createMockContainer();
+        $registry = $this->createMockRegistry();
         $constraint = new Unique('hash.foo');
-        $validator = $this->createValidator($container, $constraint);
+        $validator = $this->createValidator($registry, $constraint);
 
         $document1 = new Document(1);
         $document1->hash = array('foo' => 'bar');
@@ -155,9 +153,9 @@ class UniqueValidatorTest extends TestCase
      */
     public function testShouldThrowExceptionForUnmappedField()
     {
-        $container = $this->createMockContainer();
+        $registry = $this->createMockRegistry();
         $constraint = new Unique('unmappedField');
-        $validator = $this->createValidator($container, $constraint);
+        $validator = $this->createValidator($registry, $constraint);
 
         $violationsList = $validator->validate(new Document(1));
     }
@@ -167,9 +165,9 @@ class UniqueValidatorTest extends TestCase
      */
     public function testReferenceFieldTypeIsUnsupported()
     {
-        $container = $this->createMockContainer();
+        $registry = $this->createMockRegistry();
         $constraint = new Unique('referenceOne');
-        $validator = $this->createValidator($container, $constraint);
+        $validator = $this->createValidator($registry, $constraint);
 
         $violationsList = $validator->validate(new Document(1));
     }
@@ -179,9 +177,9 @@ class UniqueValidatorTest extends TestCase
      */
     public function testEmbedManyFieldTypeIsUnsupported()
     {
-        $container = $this->createMockContainer();
+        $registry = $this->createMockRegistry();
         $constraint = new Unique('embedMany');
-        $validator = $this->createValidator($container, $constraint);
+        $validator = $this->createValidator($registry, $constraint);
 
         $violationsList = $validator->validate(new Document(1));
     }
@@ -191,9 +189,9 @@ class UniqueValidatorTest extends TestCase
      */
     public function testEmbedOneFieldTypeIsUnsupported()
     {
-        $container = $this->createMockContainer();
+        $registry = $this->createMockRegistry();
         $constraint = new Unique('embedOne');
-        $validator = $this->createValidator($container, $constraint);
+        $validator = $this->createValidator($registry, $constraint);
 
         $violationsList = $validator->validate(new Document(1));
     }
@@ -205,10 +203,10 @@ class UniqueValidatorTest extends TestCase
     {
         require_once __DIR__.'/../../Fixtures/Validator/Document.php';
 
-        $container = $this->createMockContainer();
+        $registry = $this->createMockRegistry();
         $constraint = new Unique('name');
 
-        $uniqueValidator = new UniqueValidator($container);
+        $uniqueValidator = new UniqueValidator($registry);
 
         $metadata = new ClassMetadata('Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument');
         $metadata->addConstraint($constraint);
@@ -228,16 +226,16 @@ class UniqueValidatorTest extends TestCase
         }
     }
 
-    private function createMockContainer($documentManagerId = self::DEFAULT_DOCUMENT_MANAGER)
+    private function createMockRegistry($documentManagerName = null)
     {
-        $container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+        $registry = $this->getMock('Doctrine\Common\Persistence\ManagerRegistry');
 
-        $container->expects($this->any())
-            ->method('get')
-            ->with($documentManagerId)
+        $registry->expects($this->any())
+            ->method('getManager')
+            ->with($documentManagerName)
             ->will($this->returnValue($this->documentManager));
 
-        return $container;
+        return $registry;
     }
 
     private function createMockMetadataFactory($metadata)
@@ -262,9 +260,9 @@ class UniqueValidatorTest extends TestCase
         return $validatorFactory;
     }
 
-    private function createValidator(ContainerInterface $container, Unique $constraint)
+    private function createValidator(ManagerRegistry $registry, Unique $constraint)
     {
-        $uniqueValidator = new UniqueValidator($container);
+        $uniqueValidator = new UniqueValidator($registry);
 
         $metadata = new ClassMetadata('Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\Document');
         $metadata->addConstraint($constraint);
