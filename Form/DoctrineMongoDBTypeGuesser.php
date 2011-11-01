@@ -16,6 +16,7 @@ use Symfony\Component\Form\Guess\Guess;
 use Symfony\Component\Form\Guess\TypeGuess;
 use Symfony\Component\Form\Guess\ValueGuess;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 
 /**
  * Tries to guess form types according to ODM mappings
@@ -44,60 +45,69 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
             $metadata = $this->documentManager->getClassMetadata($class);
 
             if ($metadata->hasAssociation($property)) {
-                $multiple = $metadata->isCollectionValuedAssociation($property);
-                $mapping = $metadata->getFieldMapping($property);
+                try {
+                    $multiple = $metadata->isCollectionValuedAssociation($property);
+                    $mapping = $metadata->getFieldMapping($property);
 
-                return new TypeGuess(
-                    'document',
-                    array(
-                        'document_manager' => $this->documentManager,
-                        'class' => $mapping['targetDocument'],
-                        'multiple' => $multiple,
-                        'expanded' => $multiple
-                    ),
-                    Guess::HIGH_CONFIDENCE
-                );
+                    return new TypeGuess(
+                        'document',
+                        array(
+                            'document_manager' => $this->documentManager,
+                            'class' => $mapping['targetDocument'],
+                            'multiple' => $multiple,
+                            'expanded' => $multiple
+                        ),
+                        Guess::HIGH_CONFIDENCE
+                    );
+                } catch (MongoDBException $e) {
+
+                }
             } else {
-                $fieldMapping = $metadata->getFieldMapping($property);
-                switch ($fieldMapping['type'])
-                {
-                    case 'collection':
-                        return new TypeGuess(
-                            'Collection',
-                            array(),
-                            Guess::MEDIUM_CONFIDENCE
-                        );
-                    case 'boolean':
-                        return new TypeGuess(
-                            'checkbox',
-                            array(),
-                            Guess::HIGH_CONFIDENCE
-                        );
-                    case 'date':
-                    case 'timestamp':
-                        return new TypeGuess(
-                            'datetime',
-                            array(),
-                           Guess::HIGH_CONFIDENCE
-                        );
-                    case 'float':
-                        return new TypeGuess(
-                            'number',
-                            array(),
-                            Guess::MEDIUM_CONFIDENCE
-                        );
-                    case 'int':
-                        return new TypeGuess(
-                            'integer',
-                            array(),
-                            Guess::MEDIUM_CONFIDENCE
-                        );
-                    case 'string':
-                        return new TypeGuess(
-                            'text',
-                            array(),
-                            Guess::MEDIUM_CONFIDENCE
-                        );
+                try {
+                    $fieldMapping = $metadata->getFieldMapping($property);
+
+                    switch ($fieldMapping['type'])
+                    {
+                        case 'collection':
+                            return new TypeGuess(
+                                'Collection',
+                                array(),
+                                Guess::MEDIUM_CONFIDENCE
+                            );
+                        case 'boolean':
+                            return new TypeGuess(
+                                'checkbox',
+                                array(),
+                                Guess::HIGH_CONFIDENCE
+                            );
+                        case 'date':
+                        case 'timestamp':
+                            return new TypeGuess(
+                                'datetime',
+                                array(),
+                               Guess::HIGH_CONFIDENCE
+                            );
+                        case 'float':
+                            return new TypeGuess(
+                                'number',
+                                array(),
+                                Guess::MEDIUM_CONFIDENCE
+                            );
+                        case 'int':
+                            return new TypeGuess(
+                                'integer',
+                                array(),
+                                Guess::MEDIUM_CONFIDENCE
+                            );
+                        case 'string':
+                            return new TypeGuess(
+                                'text',
+                                array(),
+                                Guess::MEDIUM_CONFIDENCE
+                            );
+                    }
+                } catch (MongoDBException $e) {
+
                 }
             }
         }
@@ -138,14 +148,18 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
             $metadata = $this->documentManager->getClassMetadata($class);
 
             if (!$metadata->hasAssociation($property)) {
-                $mapping = $metadata->getFieldMapping($property);
+                try {
+                    $mapping = $metadata->getFieldMapping($property);
 
 
-                if (isset($mapping['length'])) {
-                    return new ValueGuess(
-                        $mapping['length'],
-                        Guess::HIGH_CONFIDENCE
-                    );
+                    if (isset($mapping['length'])) {
+                        return new ValueGuess(
+                            $mapping['length'],
+                            Guess::HIGH_CONFIDENCE
+                        );
+                    }
+                } catch (MongoDBException $e) {
+
                 }
             }
         }
