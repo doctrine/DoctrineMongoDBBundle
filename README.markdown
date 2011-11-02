@@ -6,3 +6,8 @@ into Symfony so that you can persist and retrieve objects to and from MongoDB.
 
 Documentation on how to install and use this bundle is available in the
 Symfony2 [documentation](http://symfony.com/doc/current/bundles/DoctrineMongoDBBundle/index.html).
+
+Compatibility
+=============
+
+For compatibility with Symfony 2.0.x use the 2.0 branch or v2.0.0 tag!
