@@ -17,8 +17,9 @@
         "symfony/framework-bundle": "*"
     },
     "autoload": {
-        "psr-0": { "Doctrine\\CouchDB": "lib/",
-            "Doctrine\\ODM": "lib/"
+        "psr-0": {
+            "Symfony\\Bundle\\DoctrineMongoDBBundle": ""
         }
-    }
+    },
+    "target-dir" : "Symfony/Bundle/DoctrineMongoDBBundle"
 }
