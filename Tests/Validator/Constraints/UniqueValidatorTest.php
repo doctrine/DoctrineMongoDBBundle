@@ -1,156 +1,275 @@
 <?php
 
+/*
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests\Validator\Constraints;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\DocumentRepository;
-use Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\Document;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
+use Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\Document;
+use Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument;
 use Symfony\Bundle\DoctrineMongoDBBundle\Validator\Constraints\Unique;
 use Symfony\Bundle\DoctrineMongoDBBundle\Validator\Constraints\UniqueValidator;
+use Symfony\Component\Validator\Validator;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class UniqueValidatorTest extends TestCase
 {
-    private $dm;
-    private $repository;
-    private $validator;
-    private $classMetadata;
-    private $uniqueFieldName = 'unique';
+    private $documentManager;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
-        $this->classMetadata = $this->getClassMetadata();
-        $this->repository = $this->getDocumentRepository();
-        $this->dm = $this->getDocumentManager($this->classMetadata, $this->repository);
-        $container = $this->getContainer();
-        $this->validator = new UniqueValidator($container);
+
+        $this->documentManager = $this->createTestDocumentManager(array(
+            __DIR__ . '/../DependencyInjection/Fixtures/Bundles/AnnotationsBundle/Document'
+        ));
+
+        $this->dropDocumentCollection();
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
-        unset($this->validator, $this->dm, $this->repository, $this->classMetadata);
+        $this->dropDocumentCollection();
+    }
+
+    public function testValidateUniquenessForScalarField()
+    {
+        $registry = $this->createMockRegistry();
+        $constraint = new Unique('name');
+        $validator = $this->createValidator($registry, $constraint);
+
+        $document1 = new Document(1);
+        $document1->name = 'Foo';
+        $violationsList = $validator->validate($document1);
+        $this->assertEquals(0, $violationsList->count(), 'No violations found on document before it is saved to the database.');
+
+        $this->documentManager->persist($document1);
+        $this->documentManager->flush();
+
+        $violationsList = $validator->validate($document1);
+        $this->assertEquals(0, $violationsList->count(), 'No violations found on document after it was saved to the database.');
+
+        $document2 = new Document(2);
+        $document2->name = 'Foo';
+
+        $violationsList = $validator->validate($document2);
+        $this->assertEquals(1, $violationsList->count(), 'Violation found on document due to non-unique value.');
+
+        $violation = $violationsList[0];
+        $this->assertEquals('This value is already used.', $violation->getMessage());
+        $this->assertEquals('name', $violation->getPropertyPath());
+        $this->assertEquals('Foo', $violation->getInvalidValue());
+    }
+
+    public function testValidateUniquenessForScalarFieldWithNull()
+    {
+        $registry = $this->createMockRegistry();
+        $constraint = new Unique('name');
+        $validator = $this->createValidator($registry, $constraint);
+
+        $document1 = new Document(1);
+        $document2 = new Document(2);
+
+        $this->documentManager->persist($document1);
+        $this->documentManager->persist($document2);
+        $this->documentManager->flush();
+
+        // Unlike SQL, MongoDB will consider two null values on a unique index as conflicting
+        $violationsList = $validator->validate($document1);
+        $this->assertEquals(1, $violationsList->count(), 'Violation found on document due to non-unique null value.');
+
+        $violationsList = $validator->validate($document2);
+        $this->assertEquals(1, $violationsList->count(), 'Violation found on document due to non-unique null value.');
+    }
+
+    public function testValidateUniquenessForCollectionField()
+    {
+        $registry = $this->createMockRegistry();
+        $constraint = new Unique('collection');
+        $validator = $this->createValidator($registry, $constraint);
+
+        $document1 = new Document(1);
+        $document1->collection = array('a', 'b', 'c');
+        $violationsList = $validator->validate($document1);
+        $this->assertEquals(0, $violationsList->count(), 'No violations found on document before it is saved to the database.');
+
+        $this->documentManager->persist($document1);
+        $this->documentManager->flush();
+
+        $violationsList = $validator->validate($document1);
+        $this->assertEquals(0, $violationsList->count(), 'No violations found on document after it was saved to the database.');
+
+        $document2 = new Document(2);
+        $document2->collection = array('b');
+
+        $violationsList = $validator->validate($document2);
+        $this->assertEquals(1, $violationsList->count(), 'Violation found on document due to non-unique value in a collection field.');
+
+        $violation = $violationsList[0];
+        $this->assertEquals('This value is already used.', $violation->getMessage());
+        $this->assertEquals('collection', $violation->getPropertyPath());
+        $this->assertEquals(array('b'), $violation->getInvalidValue());
+    }
+
+    public function testValidateUniquenessForHashField()
+    {
+        $registry = $this->createMockRegistry();
+        $constraint = new Unique('hash.foo');
+        $validator = $this->createValidator($registry, $constraint);
+
+        $document1 = new Document(1);
+        $document1->hash = array('foo' => 'bar');
+        $violationsList = $validator->validate($document1);
+        $this->assertEquals(0, $violationsList->count(), 'No violations found on document before it is saved to the database.');
+
+        $this->documentManager->persist($document1);
+        $this->documentManager->flush();
+
+        $violationsList = $validator->validate($document1);
+        $this->assertEquals(0, $violationsList->count(), 'No violations found on document after it was saved to the database.');
+
+        $document2 = new Document(2);
+        $document2->hash = array('foo' => 'bar');
+
+        $violationsList = $validator->validate($document2);
+        $this->assertEquals(1, $violationsList->count(), 'Violation found on document due to non-unique value in a hash field.');
+
+        $violation = $violationsList[0];
+        $this->assertEquals('This value is already used.', $violation->getMessage());
+        $this->assertEquals('hash.foo', $violation->getPropertyPath());
+        $this->assertEquals('bar', $violation->getInvalidValue());
     }
 
     /**
-     * @dataProvider getFieldsPathsValuesDocumentsAndReturns
+     * @expectedException Symfony\Component\Validator\Exception\ConstraintDefinitionException
      */
-    public function testShouldValidateValidStringMappingValues($field, $path, $value, $document, $return)
+    public function testShouldThrowExceptionForUnmappedField()
     {
-        $this->setFieldMapping($field, 'string');
+        $registry = $this->createMockRegistry();
+        $constraint = new Unique('unmappedField');
+        $validator = $this->createValidator($registry, $constraint);
 
-        $this->repository->expects($this->once())
-            ->method('findOneBy')
-            ->with(array($path => $value))
-            ->will($this->returnValue($return));
-
-        $this->assertTrue($this->validator->isValid($document, new Unique($path)));
-    }
-
-    public function getFieldsPathsValuesDocumentsAndReturns()
-    {
-        $field    = 'unique';
-        $path     = $field;
-        $value    = 'someUniqueValueToBeValidated';
-        $document = $this->getFixtureDocument($field, $value);
-
-        return array(
-            array('unique', 'unique', 'someUniqueValueToBeValidated', $document, null),
-            array('unique', 'unique', 'someUniqueValueToBeValidated', $document, $document),
-            array('unique', 'unique', 'someUniqueValueToBeValidated', $document, $this->getFixtureDocument($field, $value)),
-        );
+        $violationsList = $validator->validate(new Document(1));
     }
 
     /**
-     * @dataProvider getFieldTypesFieldsPathsValuesAndQueries
+     * @expectedException Symfony\Component\Validator\Exception\ConstraintDefinitionException
      */
-    public function testGetsCorrectQueryArrayForCollection($type, $field, $path, $value, $query)
+    public function testReferenceFieldTypeIsUnsupported()
     {
-        $this->setFieldMapping($field, $type);
-        $document = $this->getFixtureDocument($field, $value);
+        $registry = $this->createMockRegistry();
+        $constraint = new Unique('referenceOne');
+        $validator = $this->createValidator($registry, $constraint);
 
-        $this->repository->expects($this->once())
-            ->method('findOneBy')
-            ->with($query);
-
-        $this->validator->isValid($document, new Unique($path));
+        $violationsList = $validator->validate(new Document(1));
     }
 
-    public function getFieldTypesFieldsPathsValuesAndQueries()
+    /**
+     * @expectedException Symfony\Component\Validator\Exception\ConstraintDefinitionException
+     */
+    public function testEmbedManyFieldTypeIsUnsupported()
     {
-        $field = 'unique';
-        $key   = 'uniqueValue';
-        $path  = $field.'.'.$key;
-        $value = 'someUniqueValueToBeValidated';
+        $registry = $this->createMockRegistry();
+        $constraint = new Unique('embedMany');
+        $validator = $this->createValidator($registry, $constraint);
 
-        return array(
-            array('collection', $field, $path, array($value), array($field => array('$in' => array($value)))),
-            array('hash', $field, $path, array($key => $value), array($path => $value)),
-        );
+        $violationsList = $validator->validate(new Document(1));
     }
 
-    private function getContainer()
+    /**
+     * @expectedException Symfony\Component\Validator\Exception\ConstraintDefinitionException
+     */
+    public function testEmbedOneFieldTypeIsUnsupported()
     {
-        $container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+        $registry = $this->createMockRegistry();
+        $constraint = new Unique('embedOne');
+        $validator = $this->createValidator($registry, $constraint);
 
-        $container->expects($this->once())
-            ->method('get')
-            ->will($this->returnValue($this->dm));
-
-        return $container;
+        $violationsList = $validator->validate(new Document(1));
     }
 
-    private function getDocumentManager(ClassMetadata $classMetadata, DocumentRepository $repository)
+    /**
+     * @expectedException Symfony\Component\Validator\Exception\ConstraintDefinitionException
+     */
+    public function testEmbeddedDocumentIsNotUnsupported()
     {
-        $dm = $this->getMockBuilder('Doctrine\ODM\MongoDB\DocumentManager')
-            ->disableOriginalConstructor()
-            ->setMethods(array('getClassMetadata', 'getRepository'))
-            ->getMock();
-        $dm->expects($this->any())
+        require_once __DIR__.'/../../Fixtures/Validator/Document.php';
+
+        $registry = $this->createMockRegistry();
+        $constraint = new Unique('name');
+
+        $uniqueValidator = new UniqueValidator($registry);
+
+        $metadata = new ClassMetadata('Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument');
+        $metadata->addConstraint($constraint);
+
+        $metadataFactory = $this->createMockMetadataFactory($metadata);
+        $validatorFactory = $this->createMockValidatorFactory($uniqueValidator);
+
+        $validator = new Validator($metadataFactory, $validatorFactory);
+
+        $violationsList = $validator->validate(new EmbeddedDocument());
+    }
+
+    private function dropDocumentCollection()
+    {
+        if ($this->documentManager) {
+            $this->documentManager->getDocumentCollection('Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\Document')->drop();
+        }
+    }
+
+    private function createMockRegistry($documentManagerName = null)
+    {
+        $registry = $this->getMock('Doctrine\Common\Persistence\ManagerRegistry');
+
+        $registry->expects($this->any())
+            ->method('getManager')
+            ->with($documentManagerName)
+            ->will($this->returnValue($this->documentManager));
+
+        return $registry;
+    }
+
+    private function createMockMetadataFactory($metadata)
+    {
+        $metadataFactory = $this->getMock('Symfony\Component\Validator\Mapping\ClassMetadataFactoryInterface');
+        $metadataFactory->expects($this->any())
             ->method('getClassMetadata')
-            ->will($this->returnValue($classMetadata));
-        $dm->expects($this->any())
-            ->method('getRepository')
-            ->will($this->returnValue($repository));
+            ->with($this->equalTo($metadata->name))
+            ->will($this->returnValue($metadata));
 
-        return $dm;
+        return $metadataFactory;
     }
 
-    protected function getDocumentRepository()
+    private function createMockValidatorFactory($uniqueValidator)
     {
-        $dm = $this->getMock('Doctrine\ODM\MongoDB\DocumentRepository', array('findOneBy'), array(), '', false, false);
+        $validatorFactory = $this->getMock('Symfony\Component\Validator\ConstraintValidatorFactoryInterface');
+        $validatorFactory->expects($this->any())
+             ->method('getInstance')
+             ->with($this->isInstanceOf('Symfony\Bundle\DoctrineMongoDBBundle\Validator\Constraints\Unique'))
+             ->will($this->returnValue($uniqueValidator));
 
-        return $dm;
+        return $validatorFactory;
     }
 
-    protected function getClassMetadata()
+    private function createValidator(ManagerRegistry $registry, Unique $constraint)
     {
-        $classMetadata = $this->getMock('Doctrine\ODM\MongoDB\Mapping\ClassMetadata', array(), array(), '', false, false);
-        $classMetadata->expects($this->any())
-            ->method('getFieldValue')
-            ->will($this->returnCallback(function($document, $fieldName) {
-                        return $document->{$fieldName};
-                    }));
+        $uniqueValidator = new UniqueValidator($registry);
 
-        $classMetadata->fieldmappings = array();
+        $metadata = new ClassMetadata('Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\Document');
+        $metadata->addConstraint($constraint);
 
-        return $classMetadata;
-    }
+        $metadataFactory = $this->createMockMetadataFactory($metadata);
+        $validatorFactory = $this->createMockValidatorFactory($uniqueValidator);
 
-    protected function setFieldMapping($fieldName, $type, array $attributes = array())
-    {
-        $this->classMetadata->fieldMappings[$fieldName] = array_merge(array(
-                'fieldName' => $fieldName,
-                'type' => $type,
-                ), $attributes);
-    }
-
-    protected function getFixtureDocument($field, $value, $id = 1)
-    {
-        $document = new Document();
-        $document->{$field} = $value;
-        $document->id = 1;
-
-        return $document;
+        return new Validator($metadataFactory, $validatorFactory);
     }
 }

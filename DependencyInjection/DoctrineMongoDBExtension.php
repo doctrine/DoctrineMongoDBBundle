@@ -18,12 +18,12 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Definition\Processor;
-use Symfony\Bundle\DoctrineAbstractBundle\DependencyInjection\AbstractDoctrineExtension;
+use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 
 /**
  * Doctrine MongoDB ODM extension.
  *
- * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
+ * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
  * @author Kris Wallsmith <kris@symfony.com>
  * @author Jonathan H. Wage <jonwage@gmail.com>
  */
@@ -51,11 +51,13 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $keys = array_keys($config['connections']);
             $config['default_connection'] = reset($keys);
         }
+        $container->setParameter('doctrine.odm.mongodb.default_connection', $config['default_connection']);
 
         if (empty ($config['default_document_manager'])) {
             $keys = array_keys($config['document_managers']);
             $config['default_document_manager'] = reset($keys);
         }
+        $container->setParameter('doctrine.odm.mongodb.default_document_manager', $config['default_document_manager']);
 
         // set some options as parameters and unset them
         $config = $this->overrideParameters($config, $container);
@@ -113,6 +115,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      */
     protected function loadDocumentManagers(array $dmConfigs, $defaultDM, $defaultDB, $defaultMetadataCache, ContainerBuilder $container)
     {
+        $dms = array();
         foreach ($dmConfigs as $name => $documentManager) {
             $documentManager['name'] = $name;
             $this->loadDocumentManager(
@@ -122,8 +125,9 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 $defaultMetadataCache,
                 $container
             );
+            $dms[$name] = sprintf('doctrine.odm.mongodb.%s_document_manager', $name);
         }
-        $container->setParameter('doctrine.odm.mongodb.document_managers', array_keys($dmConfigs));
+        $container->setParameter('doctrine.odm.mongodb.document_managers', $dms);
     }
 
     /**
@@ -243,6 +247,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      */
     protected function loadConnections(array $connections, ContainerBuilder $container)
     {
+        $cons = array();
         foreach ($connections as $name => $connection) {
             $odmConnArgs = array(
                 isset($connection['server']) ? $connection['server'] : null,
@@ -250,8 +255,11 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 new Reference(sprintf('doctrine.odm.mongodb.%s_configuration', $name))
             );
             $odmConnDef = new Definition('%doctrine.odm.mongodb.connection.class%', $odmConnArgs);
-            $container->setDefinition(sprintf('doctrine.odm.mongodb.%s_connection', $name), $odmConnDef);
+            $id = sprintf('doctrine.odm.mongodb.%s_connection', $name);
+            $container->setDefinition($id, $odmConnDef);
+            $cons[$name] = $id;
         }
+        $container->setParameter('doctrine.odm.mongodb.connections', $cons);
     }
 
     /**

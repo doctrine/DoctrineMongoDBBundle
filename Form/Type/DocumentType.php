@@ -11,6 +11,7 @@
 
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Form\Type;
 
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Bundle\DoctrineMongoDBBundle\Form\ChoiceList\DocumentChoiceList;
@@ -18,7 +19,6 @@ use Symfony\Bundle\DoctrineMongoDBBundle\Form\EventListener\MergeCollectionListe
 use Symfony\Bundle\DoctrineMongoDBBundle\Form\DataTransformer\DocumentsToArrayTransformer;
 use Symfony\Bundle\DoctrineMongoDBBundle\Form\DataTransformer\DocumentToIdTransformer;
 use Symfony\Component\Form\AbstractType;
-use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Form type for a MongoDB document
@@ -27,11 +27,11 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  */
 class DocumentType extends AbstractType
 {
-    private $documentManager;
+    private $registry;
 
-    public function __construct(DocumentManager $documentManager)
+    public function __construct(ManagerRegistry $registry)
     {
-        $this->documentManager = $documentManager;
+        $this->registry = $registry;
     }
 
     public function buildForm(FormBuilder $builder, array $options)
@@ -49,7 +49,7 @@ class DocumentType extends AbstractType
         $defaultOptions = array(
             'choices'           => array(),
             'class'             => null,
-            'document_manager'  => $this->documentManager,
+            'document_manager'  => null,
             'expanded'          => false,
             'multiple'          => false,
             'preferred_choices' => array(),
@@ -62,7 +62,7 @@ class DocumentType extends AbstractType
 
         if (!isset($options['choice_list'])) {
             $defaultOptions['choice_list'] = new DocumentChoiceList(
-                $options['document_manager'],
+                $this->registry->getManager($options['document_manager']),
                 $options['class'],
                 $options['property'],
                 $options['query_builder'],
