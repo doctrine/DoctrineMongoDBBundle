@@ -98,7 +98,7 @@ class DocumentType extends AbstractType
         $hasAlready = false;
         $transformers = $builder->getClientTransformers();
         foreach ($transformers as $transformer) {
-            if (gettype($prependedTransformer) === gettype($transformer)) {
+            if ($prependedTransformer == $transformer) {
                 $hasAlready = true;
             }
         }
