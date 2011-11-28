@@ -56,6 +56,7 @@ class DocumentType extends AbstractType
             'property'          => null,
             'query_builder'     => null,
             'template'          => 'choice',
+            'group_by'          => null,
         );
 
         $options = array_replace($defaultOptions, $options);
@@ -66,7 +67,8 @@ class DocumentType extends AbstractType
                 $options['class'],
                 $options['property'],
                 $options['query_builder'],
-                $options['choices']
+                $options['choices'],
+                $options['group_by']
             );
         }
 

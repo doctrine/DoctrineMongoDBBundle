@@ -88,7 +88,14 @@ class DocumentChoiceList extends ArrayChoiceList
 
     private $propertyPath;
 
-    public function __construct(DocumentManager $documentManager, $class, $property = null, $queryBuilder = null, $choices = array())
+    /**
+     * PropertyPath string on Document to use for grouping of documents
+     *
+     * @var mixed
+     */
+    private $groupBy;
+
+    public function __construct(DocumentManager $documentManager, $class, $property = null, $queryBuilder = null, $choices = array(), $groupBy = null)
     {
         // If a query builder was passed, it must be a closure or Builder
         // instance
@@ -109,6 +116,7 @@ class DocumentChoiceList extends ArrayChoiceList
         $this->queryBuilder    = $queryBuilder;
         $this->unitOfWork      = $documentManager->getUnitOfWork();
         $this->identifier      = $documentManager->getClassMetadata($class)->getIdentifier();
+        $this->groupBy         = $groupBy;
 
         // The property option defines, which property (path) is used for
         // displaying documents as strings
@@ -161,8 +169,22 @@ class DocumentChoiceList extends ArrayChoiceList
             }
 
             $id = $this->getIdentifierValue($document);
-            $this->choices[$id] = $value;
             $this->documents[$id] = $document;
+
+            $group = null;
+
+            if ($this->groupBy) {
+                // Get group name from property path
+                try {
+                    $path   = new PropertyPath($this->groupBy);
+                    $group  = (string) $path->getValue($document);
+                } catch (UnexpectedTypeException $e) {
+                    // PropertyPath cannot traverse entity
+                    $group = null;
+                }
+            }
+
+            $this->addChoice($id, $value, $group);
         }
     }
 
@@ -245,5 +267,19 @@ class DocumentChoiceList extends ArrayChoiceList
         }
 
         return $this->unitOfWork->getDocumentIdentifier($document);
+    }
+
+    /**
+     * @param string $id
+     * @param mixed $value
+     * @param null|string $group
+     */
+    private function addChoice($id, $value, $group = null)
+    {
+        if (!$group) {
+            $this->choices[$id] = $value;
+        } else {
+            $this->choices[$group][$id] = $value;
+        }
     }
 }
