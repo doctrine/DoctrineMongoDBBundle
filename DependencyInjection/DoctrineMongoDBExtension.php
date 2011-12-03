@@ -47,13 +47,13 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $config['metadata_cache_driver'] = array('type' => 'array');
         }
 
-        if (empty ($config['default_connection'])) {
+        if (empty($config['default_connection'])) {
             $keys = array_keys($config['connections']);
             $config['default_connection'] = reset($keys);
         }
         $container->setParameter('doctrine.odm.mongodb.default_connection', $config['default_connection']);
 
-        if (empty ($config['default_document_manager'])) {
+        if (empty($config['default_document_manager'])) {
             $keys = array_keys($config['document_managers']);
             $config['default_document_manager'] = reset($keys);
         }
