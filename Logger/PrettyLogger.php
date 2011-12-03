@@ -12,7 +12,7 @@
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Logger;
 
 use Doctrine\MongoDB\GridFSFile;
-use Symfony\Component\HttpKernel\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Log\LoggerInterface as SymfonyLogger;
 
 /**
  * Logger for the Doctrine MongoDB ODM.
@@ -22,16 +22,14 @@ use Symfony\Component\HttpKernel\Log\LoggerInterface;
  *
  * @author Kris Wallsmith <kris@symfony.com>
  */
-class DoctrineMongoDBLogger
+class PrettyLogger implements LoggerInterface
 {
-    protected $logger;
-
-    protected $prefix;
-    protected $queries;
-
-    protected $processed;
-    protected $formattedQueries;
-    protected $nbRealQueries;
+    private $logger;
+    private $prefix;
+    private $queries;
+    private $processed;
+    private $formattedQueries;
+    private $nbRealQueries;
 
     /**
      * Constructor.

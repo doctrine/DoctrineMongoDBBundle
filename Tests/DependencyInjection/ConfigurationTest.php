@@ -89,7 +89,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             ),
             'document_managers' => array(
                 'dm1' => array(
-                    'logging'      => false,
+                    'logging'      => 'off',
                     'auto_mapping' => false,
                     'metadata_cache_driver' => array(
                         'type'           => 'memcache',
@@ -108,7 +108,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 'dm2' => array(
                     'connection'   => 'dm2_connection',
                     'database'     => 'db1',
-                    'logging'      => true,
+                    'logging'      => 'pretty',
                     'auto_mapping' => false,
                     'metadata_cache_driver' => array(
                         'type' => 'apc',
@@ -201,7 +201,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 array('document_managers' => array('default' => array('mappings' => array('foomap' => array('type' => 'val1'), 'barmap' => array('dir' => 'val2'))))),
                 array('document_managers' => array('default' => array('mappings' => array('barmap' => array('prefix' => 'val3'))))),
             ),
-            array('document_managers' => array('default' => array('logging' => false, 'auto_mapping' => false, 'mappings' => array('foomap' => array('type' => 'val1', 'mapping' => true), 'barmap' => array('prefix' => 'val3', 'mapping' => true))))),
+            array('document_managers' => array('default' => array('logging' => 'off', 'auto_mapping' => false, 'mappings' => array('foomap' => array('type' => 'val1', 'mapping' => true), 'barmap' => array('prefix' => 'val3', 'mapping' => true))))),
         );
 
         // connections are merged non-recursively.
@@ -223,8 +223,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 array('document_managers' => array('bardm' => array('database' => 'val3'))),
             ),
             array('document_managers' => array(
-                'foodm' => array('database' => 'val1', 'logging' => false, 'auto_mapping' => false, 'mappings' => array()),
-                'bardm' => array('database' => 'val3', 'logging' => false, 'auto_mapping' => false, 'mappings' => array()),
+                'foodm' => array('database' => 'val1', 'logging' => 'off', 'auto_mapping' => false, 'mappings' => array()),
+                'bardm' => array('database' => 'val3', 'logging' => 'off', 'auto_mapping' => false, 'mappings' => array()),
             )),
         );
 
@@ -265,8 +265,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 )),
                 'document_managers',
                 array(
-                    'foo' => array('connection' => 'conn1', 'logging' => false, 'auto_mapping' => false, 'mappings' => array()),
-                    'bar' => array('connection' => 'conn2', 'logging' => false, 'auto_mapping' => false, 'mappings' => array()),
+                    'foo' => array('connection' => 'conn1', 'logging' => 'off', 'auto_mapping' => false, 'mappings' => array()),
+                    'bar' => array('connection' => 'conn2', 'logging' => 'off', 'auto_mapping' => false, 'mappings' => array()),
                 ),
             ),
             // mapping configuration that's beneath a specific document manager
@@ -281,7 +281,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                     'foo' => array(
                         'connection'   => 'conn1', 
                         'mappings'     => array('foo-mapping' => array('type' => 'xml', 'mapping' => true)),
-                        'logging'      => false,
+                        'logging'      => 'off',
                         'auto_mapping' => false,
                     ),
                 ),

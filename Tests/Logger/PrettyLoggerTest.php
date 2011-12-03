@@ -11,15 +11,15 @@
 
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests\Logger;
 
-use Symfony\Bundle\DoctrineMongoDBBundle\Logger\DoctrineMongoDBLogger;
+use Symfony\Bundle\DoctrineMongoDBBundle\Logger\PrettyLogger;
 
-class DoctrineMongoDBLoggerTest extends \PHPUnit_Framework_TestCase
+class PrettyLoggerTest extends \PHPUnit_Framework_TestCase
 {
     protected $logger;
 
     protected function setUp()
     {
-        $this->logger = new DoctrineMongoDBLogger();
+        $this->logger = new PrettyLogger();
     }
 
     /**

@@ -222,6 +222,17 @@ connection services::
     $dm1 = $container->get('doctrine.odm.mongodb.dm1_document_manager');
     $dm2 = $container->get('doctrine.odm.mongodb.dm2_document_manager');
 
+Logging
+~~~~~~~
+
+There are three logging modes: ``off``, ``standard``, and ``pretty``. When set
+to ``off``, queries will not be logged. When set to ``standard``, queries will
+be logged but not formatted in a readable way. When set to ``pretty``, queries
+will be logged as you might enter then in the MongoDB Javascript shell.
+
+It is best practice to use either ``off`` or ``standard`` in production and
+either ``standard`` or ``pretty`` during development.
+
 Full Default Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -236,7 +247,7 @@ Full Default Configuration
                 id:
                     connection:           ~
                     database:             ~
-                    logging:              true
+                    logging:              standard
                     auto_mapping:         false
                     metadata_cache_driver:
                         type:                 ~
