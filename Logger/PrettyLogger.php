@@ -259,9 +259,9 @@ class PrettyLogger implements LoggerInterface
             } elseif ($value instanceof \MongoId) {
                 $formatted = 'ObjectId("'.$value.'")';
             } elseif ($value instanceof \MongoDate) {
-                $formatted = 'new Date("'.date('r', $value->sec).'")';
+                $formatted = 'new ISODate("'.date('c', $value->sec).'")';
             } elseif ($value instanceof \DateTime) {
-                $formatted = 'new Date("'.date('r', $value->getTimestamp()).'")';
+                $formatted = 'new ISODate("'.date('c', $value->getTimestamp()).'")';
             } elseif ($value instanceof \MongoRegex) {
                 $formatted = 'new RegExp("'.$value->regex.'", "'.$value->flags.'")';
             } elseif ($value instanceof \MongoMinKey) {
