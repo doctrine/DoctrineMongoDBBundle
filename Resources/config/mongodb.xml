@@ -5,10 +5,12 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
+        <!-- classes -->
         <parameter key="doctrine.odm.mongodb.connection.class">Doctrine\MongoDB\Connection</parameter>
         <parameter key="doctrine.odm.mongodb.configuration.class">Doctrine\ODM\MongoDB\Configuration</parameter>
         <parameter key="doctrine.odm.mongodb.document_manager.class">Doctrine\ODM\MongoDB\DocumentManager</parameter>
-        <parameter key="doctrine.odm.mongodb.logger.class">Symfony\Bundle\DoctrineMongoDBBundle\Logger\DoctrineMongoDBLogger</parameter>
+        <parameter key="doctrine.odm.mongodb.logger.standard.class">Symfony\Bundle\DoctrineMongoDBBundle\Logger\StandardLogger</parameter>
+        <parameter key="doctrine.odm.mongodb.logger.pretty.class">Symfony\Bundle\DoctrineMongoDBBundle\Logger\PrettyLogger</parameter>
         <parameter key="doctrine.odm.mongodb.data_collector.class">Symfony\Bundle\DoctrineMongoDBBundle\DataCollector\DoctrineMongoDBDataCollector</parameter>
         <parameter key="doctrine.odm.mongodb.event_manager.class">Doctrine\Common\EventManager</parameter>
 
@@ -91,9 +93,11 @@
         <service id="doctrine.odm.mongodb.cache.array" class="%doctrine.odm.mongodb.cache.array.class%" />
 
         <!-- logger -->
-        <service id="doctrine.odm.mongodb.logger" class="%doctrine.odm.mongodb.logger.class%">
+        <service id="doctrine.odm.mongodb.logger.standard" class="%doctrine.odm.mongodb.logger.standard.class%" abstract="true">
             <argument type="service" id="logger" on-invalid="null" />
-            <tag name="monolog.logger" channel="doctrine" />
+        </service>
+        <service id="doctrine.odm.mongodb.logger.pretty" class="%doctrine.odm.mongodb.logger.pretty.class%" abstract="true">
+            <argument type="service" id="logger" on-invalid="null" />
         </service>
         <service id="doctrine.odm.mongodb.data_collector" class="%doctrine.odm.mongodb.data_collector.class%" public="false">
             <tag name="data_collector" template="DoctrineMongoDBBundle:Collector:mongodb" id="mongodb" />

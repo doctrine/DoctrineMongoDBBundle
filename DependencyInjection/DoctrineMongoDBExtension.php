@@ -11,14 +11,15 @@
 
 namespace Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Alias;
-use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Config\Definition\Processor;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
+use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Alias;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\DefinitionDecorator;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Doctrine MongoDB ODM extension.
@@ -166,7 +167,14 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             'setDefaultDB' => $defaultDatabase,
         );
 
-        if ($documentManager['logging']) {
+        if ('off' == $documentManager['logging']) {
+            $container->removeDefinition('doctrine.odm.mongodb.data_collector');
+        } else {
+            $container
+                ->setDefinition('doctrine.odm.mongodb.logger', new DefinitionDecorator('doctrine.odm.mongodb.logger.'.$documentManager['logging']))
+                ->addTag('monolog.logger', array('channel' => 'doctrine'))
+            ;
+
             $methods['setLoggerCallable'] = array(new Reference('doctrine.odm.mongodb.logger'), 'logQuery');
         }
 

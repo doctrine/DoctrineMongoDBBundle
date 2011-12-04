@@ -45,4 +45,4 @@ doctrine_mongodb:
                     alias:  alias_val
                     is_bundle: false
             metadata_cache_driver: apc
-            logging: true
+            logging: pretty

@@ -11,10 +11,10 @@
 
 namespace Symfony\Bundle\DoctrineMongoDBBundle\DataCollector;
 
-use Symfony\Component\HttpKernel\DataCollector\DataCollector;
-use Symfony\Bundle\DoctrineMongoDBBundle\Logger\DoctrineMongoDBLogger;
+use Symfony\Bundle\DoctrineMongoDBBundle\Logger\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
 /**
  * Data collector for the Doctrine MongoDB ODM.
@@ -25,7 +25,7 @@ class DoctrineMongoDBDataCollector extends DataCollector
 {
     protected $logger;
 
-    public function __construct(DoctrineMongoDBLogger $logger)
+    public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }

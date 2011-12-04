@@ -12,7 +12,7 @@
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Logger;
 
 use Doctrine\MongoDB\GridFSFile;
-use Symfony\Component\HttpKernel\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Log\LoggerInterface as SymfonyLogger;
 
 /**
  * Logger for the Doctrine MongoDB ODM.
@@ -22,16 +22,14 @@ use Symfony\Component\HttpKernel\Log\LoggerInterface;
  *
  * @author Kris Wallsmith <kris@symfony.com>
  */
-class DoctrineMongoDBLogger
+class PrettyLogger implements LoggerInterface
 {
-    protected $logger;
-
-    protected $prefix;
-    protected $queries;
-
-    protected $processed;
-    protected $formattedQueries;
-    protected $nbRealQueries;
+    private $logger;
+    private $prefix;
+    private $queries;
+    private $processed;
+    private $formattedQueries;
+    private $nbRealQueries;
 
     /**
      * Constructor.
@@ -261,9 +259,9 @@ class DoctrineMongoDBLogger
             } elseif ($value instanceof \MongoId) {
                 $formatted = 'ObjectId("'.$value.'")';
             } elseif ($value instanceof \MongoDate) {
-                $formatted = 'new Date("'.date('r', $value->sec).'")';
+                $formatted = 'new ISODate("'.date('c', $value->sec).'")';
             } elseif ($value instanceof \DateTime) {
-                $formatted = 'new Date("'.date('r', $value->getTimestamp()).'")';
+                $formatted = 'new ISODate("'.date('c', $value->getTimestamp()).'")';
             } elseif ($value instanceof \MongoRegex) {
                 $formatted = 'new RegExp("'.$value->regex.'", "'.$value->flags.'")';
             } elseif ($value instanceof \MongoMinKey) {
