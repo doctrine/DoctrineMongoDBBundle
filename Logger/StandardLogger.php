@@ -12,7 +12,6 @@
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Logger;
 
 use Symfony\Component\HttpKernel\Log\LoggerInterface as SymfonyLogger;
-use Symfony\Component\HttpKernel\Log\DebugLoggerInterface as SymfonyDebugLogger;
 
 /**
  * A lightweight query logger.
@@ -23,45 +22,35 @@ class StandardLogger implements LoggerInterface
 {
     private $logger;
     private $prefix;
-    private $nbQueries;
+    private $queries;
 
     public function __construct(SymfonyLogger $logger = null, $prefix = 'MongoDB query: ')
     {
         $this->logger = $logger;
         $this->prefix = $prefix;
-        $this->nbQueries = 0;
+        $this->queries = array();
     }
 
     public function logQuery(array $query)
     {
-        ++$this->nbQueries;
+        if (isset($query['batchInsert']) && 3 < $query['num']) {
+            $query['data'] = '('.$query['num'].' items)';
+        }
+
+        $this->queries[] = $log = json_encode($query);
 
         if (null !== $this->logger) {
-            if (isset($query['batchInsert'])) {
-                $this->logger->info($this->prefix.json_encode(array('data' => '[omitted]') + $query));
-            } else {
-                $this->logger->info($this->prefix.json_encode($query));
-            }
+            $this->logger->info($this->prefix.$log);
         }
     }
 
     public function getNbQueries()
     {
-        return $this->nbQueries;
+        return count($this->queries);
     }
 
     public function getQueries()
     {
-        $queries = array();
-
-        if ($this->logger && $this->logger instanceof SymfonyDebugLogger) {
-            foreach ($this->logger->getLogs() as $log) {
-                if (0 === strpos($log['message'], $this->prefix)) {
-                    $queries[] = $log['message'];
-                }
-            }
-        }
-
-        return $queries;
+        return $this->queries;
     }
 }
