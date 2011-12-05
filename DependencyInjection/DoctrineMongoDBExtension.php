@@ -11,14 +11,15 @@
 
 namespace Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Alias;
-use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Config\Definition\Processor;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
+use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Alias;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\DefinitionDecorator;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Doctrine MongoDB ODM extension.
@@ -166,8 +167,29 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             'setDefaultDB' => $defaultDatabase,
         );
 
+        // logging
+        $loggers = array();
         if ($documentManager['logging']) {
-            $methods['setLoggerCallable'] = array(new Reference('doctrine.odm.mongodb.logger'), 'logQuery');
+            $loggers[] = new Reference('doctrine.odm.mongodb.logger');
+        }
+
+        // profiler
+        if (isset($documentManager['profiler']['enabled']) && $documentManager['profiler']['enabled']) {
+            $loggers[] = new Reference('doctrine.odm.mongodb.data_collector.'.$documentManager['profiler']['format']);
+            $container
+                ->getDefinition('doctrine.odm.mongodb.data_collector.'.$documentManager['profiler']['format'])
+                ->addTag('data_collector', array( 'id' => 'mongodb', 'template' => 'DoctrineMongoDBBundle:Collector:mongodb'))
+            ;
+        }
+
+        if (1 < count($loggers)) {
+            $methods['setLoggerCallable'] = array(new Reference('doctrine.odm.mongodb.logger.aggregate'), 'logQuery');
+            $container
+                ->getDefinition('doctrine.odm.mongodb.logger.aggregate')
+                ->addArgument($loggers)
+            ;
+        } elseif ($loggers) {
+            $methods['setLoggerCallable'] = array($loggers[0], 'logQuery');
         }
 
         foreach ($methods as $method => $arg) {

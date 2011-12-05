@@ -5,11 +5,14 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
+        <!-- classes -->
         <parameter key="doctrine.odm.mongodb.connection.class">Doctrine\MongoDB\Connection</parameter>
         <parameter key="doctrine.odm.mongodb.configuration.class">Doctrine\ODM\MongoDB\Configuration</parameter>
         <parameter key="doctrine.odm.mongodb.document_manager.class">Doctrine\ODM\MongoDB\DocumentManager</parameter>
-        <parameter key="doctrine.odm.mongodb.logger.class">Symfony\Bundle\DoctrineMongoDBBundle\Logger\DoctrineMongoDBLogger</parameter>
-        <parameter key="doctrine.odm.mongodb.data_collector.class">Symfony\Bundle\DoctrineMongoDBBundle\DataCollector\DoctrineMongoDBDataCollector</parameter>
+        <parameter key="doctrine.odm.mongodb.logger.class">Symfony\Bundle\DoctrineMongoDBBundle\Logger\Logger</parameter>
+        <parameter key="doctrine.odm.mongodb.logger.aggregate.class">Symfony\Bundle\DoctrineMongoDBBundle\Logger\AggregateLogger</parameter>
+        <parameter key="doctrine.odm.mongodb.data_collector.standard.class">Symfony\Bundle\DoctrineMongoDBBundle\DataCollector\StandardDataCollector</parameter>
+        <parameter key="doctrine.odm.mongodb.data_collector.pretty.class">Symfony\Bundle\DoctrineMongoDBBundle\DataCollector\PrettyDataCollector</parameter>
         <parameter key="doctrine.odm.mongodb.event_manager.class">Doctrine\Common\EventManager</parameter>
 
         <!-- proxies -->
@@ -91,14 +94,15 @@
         <service id="doctrine.odm.mongodb.cache.array" class="%doctrine.odm.mongodb.cache.array.class%" />
 
         <!-- logger -->
-        <service id="doctrine.odm.mongodb.logger" class="%doctrine.odm.mongodb.logger.class%">
-            <argument type="service" id="logger" on-invalid="null" />
+        <service id="doctrine.odm.mongodb.logger" class="%doctrine.odm.mongodb.logger.class%" public="false">
             <tag name="monolog.logger" channel="doctrine" />
+            <argument type="service" id="logger" on-invalid="null" />
         </service>
-        <service id="doctrine.odm.mongodb.data_collector" class="%doctrine.odm.mongodb.data_collector.class%" public="false">
-            <tag name="data_collector" template="DoctrineMongoDBBundle:Collector:mongodb" id="mongodb" />
-            <argument type="service" id="doctrine.odm.mongodb.logger" />
-        </service>
+        <service id="doctrine.odm.mongodb.logger.aggregate" class="%doctrine.odm.mongodb.logger.aggregate.class%" public="false" />
+
+        <!-- profiler -->
+        <service id="doctrine.odm.mongodb.data_collector.standard" class="%doctrine.odm.mongodb.data_collector.standard.class%" public="false" />
+        <service id="doctrine.odm.mongodb.data_collector.pretty" class="%doctrine.odm.mongodb.data_collector.pretty.class%" public="false" />
 
         <!-- Cache Warmers -->
         <service id="doctrine.odm.mongodb.proxy_cache_warmer" class="%doctrine.odm.mongodb.proxy_cache_warmer.class%" public="false">

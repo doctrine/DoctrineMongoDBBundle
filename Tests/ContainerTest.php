@@ -11,11 +11,11 @@
 
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
 class ContainerTest extends TestCase
 {
@@ -24,18 +24,26 @@ class ContainerTest extends TestCase
         require_once __DIR__.'/DependencyInjection/Fixtures/Bundles/YamlBundle/YamlBundle.php';
 
         $container = new ContainerBuilder(new ParameterBag(array(
-            'kernel.bundles'     => array('YamlBundle' => 'DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\YamlBundle\YamlBundle'),
-            'kernel.cache_dir'   => sys_get_temp_dir(),
-            'kernel.debug'       => false,
+            'kernel.bundles'   => array('YamlBundle' => 'DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\YamlBundle\YamlBundle'),
+            'kernel.cache_dir' => sys_get_temp_dir(),
+            'kernel.debug'     => false,
         )));
-        $loader = new DoctrineMongoDBExtension();
-        $container->registerExtension($loader);
+        $container->setDefinition('annotation_reader', new Definition('Doctrine\Common\Annotations\AnnotationReader'));
 
-        $configs = array();
-        $configs[] = array('connections' => array('default' => array()), 'document_managers' => array('default' => array('mappings' => array('YamlBundle' => array()))));
-        $loader->load($configs, $container);
+        $extension = new DoctrineMongoDBExtension();
+        $extension->load(array(array(
+            'connections' => array('default' => array()),
+            'document_managers' => array('default' => array('logging' => true, 'mappings' => array('YamlBundle' => array()))),
+        )), $container);
 
-        $container->set('annotation_reader', new AnnotationReader());
+        // make everything public
+        foreach ($container->getServiceIds() as $id) {
+            if ($container->hasDefinition($id)) {
+                $container->findDefinition($id)->setPublic(true);
+            }
+        }
+
+        $container->compile();
 
         return $container;
     }
@@ -43,13 +51,14 @@ class ContainerTest extends TestCase
     public function testContainer()
     {
         $container = $this->getContainer();
+
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Mapping\Driver\DriverChain', $container->get('doctrine.odm.mongodb.metadata.chain'));
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver', $container->get('doctrine.odm.mongodb.metadata.annotation'));
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver', $container->get('doctrine.odm.mongodb.metadata.xml'));
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver', $container->get('doctrine.odm.mongodb.metadata.yml'));
         $this->assertInstanceOf('Doctrine\Common\Cache\ArrayCache', $container->get('doctrine.odm.mongodb.cache.array'));
-        $this->assertInstanceOf('Symfony\Bundle\DoctrineMongoDBBundle\Logger\DoctrineMongoDBLogger', $container->get('doctrine.odm.mongodb.logger'));
-        $this->assertInstanceOf('Symfony\Bundle\DoctrineMongoDBBundle\DataCollector\DoctrineMongoDBDataCollector', $container->get('doctrine.odm.mongodb.data_collector'));
+        $this->assertInstanceOf('Symfony\Bundle\DoctrineMongoDBBundle\Logger\Logger', $container->get('doctrine.odm.mongodb.logger'));
+        $this->assertInstanceOf('Symfony\Bundle\DoctrineMongoDBBundle\DataCollector\PrettyDataCollector', $container->get('doctrine.odm.mongodb.data_collector.pretty'));
         $this->assertInstanceOf('Doctrine\MongoDB\Connection', $container->get('doctrine.odm.mongodb.default_connection'));
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Configuration', $container->get('doctrine.odm.mongodb.default_configuration'));
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Mapping\Driver\DriverChain', $container->get('doctrine.odm.mongodb.default_metadata_driver'));
