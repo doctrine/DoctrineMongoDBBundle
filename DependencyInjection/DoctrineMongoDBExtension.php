@@ -40,7 +40,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $loader->load('mongodb.xml');
 
         $processor = new Processor();
-        $configuration = new Configuration($container->getParameter('kernel.debug'));
+        $configuration = new Configuration();
         $config = $processor->processConfiguration($configuration, $configs);
 
         // can't currently default this correctly in Configuration
@@ -169,15 +169,16 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
         // logging
         $loggers = array();
-        if ($documentManager['logging']) {
+        if ($container->getParameterBag()->resolveValue($documentManager['logging'])) {
             $loggers[] = new Reference('doctrine.odm.mongodb.logger');
         }
 
         // profiler
-        if (isset($documentManager['profiler']['enabled']) && $documentManager['profiler']['enabled']) {
-            $loggers[] = new Reference('doctrine.odm.mongodb.data_collector.'.$documentManager['profiler']['format']);
+        if ($container->getParameterBag()->resolveValue($documentManager['profiler']['enabled'])) {
+            $dataCollectorId = sprintf('doctrine.odm.mongodb.data_collector.%s', $container->getParameterBag()->resolveValue($documentManager['profiler']['pretty']) ? 'pretty' : 'standard');
+            $loggers[] = new Reference($dataCollectorId);
             $container
-                ->getDefinition('doctrine.odm.mongodb.data_collector.'.$documentManager['profiler']['format'])
+                ->getDefinition($dataCollectorId)
                 ->addTag('data_collector', array( 'id' => 'mongodb', 'template' => 'DoctrineMongoDBBundle:Collector:mongodb'))
             ;
         }

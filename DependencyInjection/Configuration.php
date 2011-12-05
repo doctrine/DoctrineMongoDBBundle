@@ -13,18 +13,6 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  */
 class Configuration implements ConfigurationInterface
 {
-    private $debug;
-
-    /**
-     * Constructor.
-     *
-     * @param Boolean $debug The kernel.debug value
-     */
-    public function __construct($debug)
-    {
-        $this->debug = (Boolean) $debug;
-    }
-
     /**
      * Generates the configuration tree builder.
      *
@@ -70,20 +58,14 @@ class Configuration implements ConfigurationInterface
                         ->children()
                             ->scalarNode('connection')->end()
                             ->scalarNode('database')->end()
-                            ->booleanNode('logging')->defaultValue($this->debug)->end()
+                            ->booleanNode('logging')->defaultValue('%kernel.debug%')->end()
                             ->arrayNode('profiler')
-                                ->canBeUnset()
-                                ->treatNullLike(array('enabled' => $this->debug))
+                                ->addDefaultsIfNotSet()
                                 ->treatTrueLike(array('enabled' => true))
+                                ->treatFalseLike(array('enabled' => false))
                                 ->children()
-                                    ->booleanNode('enabled')->defaultValue($this->debug)->end()
-                                    ->scalarNode('format')
-                                        ->defaultValue('pretty')
-                                        ->validate()
-                                            ->ifNotInArray(array('standard', 'pretty'))
-                                            ->thenInvalid('The %s format is not supported')
-                                        ->end()
-                                    ->end()
+                                    ->booleanNode('enabled')->defaultValue('%kernel.debug%')->end()
+                                    ->booleanNode('pretty')->defaultValue('%kernel.debug%')->end()
                                 ->end()
                             ->end()
                             ->scalarNode('auto_mapping')->defaultFalse()->end()
