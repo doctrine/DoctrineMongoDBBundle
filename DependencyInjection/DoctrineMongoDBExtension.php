@@ -11,14 +11,15 @@
 
 namespace Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Alias;
-use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Config\Definition\Processor;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
+use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Alias;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\DefinitionDecorator;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Doctrine MongoDB ODM extension.
@@ -39,7 +40,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $loader->load('mongodb.xml');
 
         $processor = new Processor();
-        $configuration = new Configuration($container->getParameter('kernel.debug'));
+        $configuration = new Configuration();
         $config = $processor->processConfiguration($configuration, $configs);
 
         // can't currently default this correctly in Configuration
@@ -166,8 +167,30 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             'setDefaultDB' => $defaultDatabase,
         );
 
-        if ($documentManager['logging']) {
-            $methods['setLoggerCallable'] = array(new Reference('doctrine.odm.mongodb.logger'), 'logQuery');
+        // logging
+        $loggers = array();
+        if ($container->getParameterBag()->resolveValue($documentManager['logging'])) {
+            $loggers[] = new Reference('doctrine.odm.mongodb.logger');
+        }
+
+        // profiler
+        if ($container->getParameterBag()->resolveValue($documentManager['profiler']['enabled'])) {
+            $dataCollectorId = sprintf('doctrine.odm.mongodb.data_collector.%s', $container->getParameterBag()->resolveValue($documentManager['profiler']['pretty']) ? 'pretty' : 'standard');
+            $loggers[] = new Reference($dataCollectorId);
+            $container
+                ->getDefinition($dataCollectorId)
+                ->addTag('data_collector', array( 'id' => 'mongodb', 'template' => 'DoctrineMongoDBBundle:Collector:mongodb'))
+            ;
+        }
+
+        if (1 < count($loggers)) {
+            $methods['setLoggerCallable'] = array(new Reference('doctrine.odm.mongodb.logger.aggregate'), 'logQuery');
+            $container
+                ->getDefinition('doctrine.odm.mongodb.logger.aggregate')
+                ->addArgument($loggers)
+            ;
+        } elseif ($loggers) {
+            $methods['setLoggerCallable'] = array($loggers[0], 'logQuery');
         }
 
         foreach ($methods as $method => $arg) {
