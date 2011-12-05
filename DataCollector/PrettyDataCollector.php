@@ -22,6 +22,13 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class PrettyDataCollector extends StandardDataCollector
 {
+    private $batchInsertThreshold;
+
+    public function setBatchInsertThreshold($batchInsertThreshold)
+    {
+        $this->batchInsertThreshold = $batchInsertThreshold;
+    }
+
     public function collect(Request $request, Response $response, \Exception $exception = null)
     {
         $this->data['queries'] = array();
@@ -79,8 +86,10 @@ class PrettyDataCollector extends StandardDataCollector
                 } elseif (isset($log['batchInsert'])) {
                     if (1 === $log['num']) {
                         $query .= '.insert('.$this->bsonEncode($log['data']).')';
-                    } else {
+                    } elseif (null !== $this->batchInsertThreshold && $this->batchInsertThreshold <= $log['num']) {
                         $query .= '.batchInsert(**'.$log['num'].' items**)';
+                    } else {
+                        $query .= '.batchInsert('.$this->bsonEncode($log['data']).')';
                     }
                 } elseif (isset($log['command'])) {
                     $query .= '.command()';

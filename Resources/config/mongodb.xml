@@ -51,6 +51,8 @@
         <parameter key="doctrine.odm.mongodb.yml_mapping_dirs">%doctrine.odm.mongodb.mapping_dirs%</parameter>
         <parameter key="doctrine.odm.mongodb.document_dirs" type="collection"></parameter>
 
+        <!-- logger -->
+        <parameter key="doctrine.odm.mongodb.logger.batch_insert_threshold">4</parameter>
     </parameters>
 
     <services>
@@ -88,12 +90,19 @@
         <service id="doctrine.odm.mongodb.logger" class="%doctrine.odm.mongodb.logger.class%" public="false">
             <tag name="monolog.logger" channel="doctrine" />
             <argument type="service" id="logger" on-invalid="null" />
+            <call method="setBatchInsertThreshold">
+                <argument>%doctrine.odm.mongodb.logger.batch_insert_threshold%</argument>
+            </call>
         </service>
         <service id="doctrine.odm.mongodb.logger.aggregate" class="%doctrine.odm.mongodb.logger.aggregate.class%" public="false" />
 
         <!-- profiler -->
         <service id="doctrine.odm.mongodb.data_collector.standard" class="%doctrine.odm.mongodb.data_collector.standard.class%" public="false" />
-        <service id="doctrine.odm.mongodb.data_collector.pretty" class="%doctrine.odm.mongodb.data_collector.pretty.class%" public="false" />
+        <service id="doctrine.odm.mongodb.data_collector.pretty" class="%doctrine.odm.mongodb.data_collector.pretty.class%" public="false">
+            <call method="setBatchInsertThreshold">
+                <argument>%doctrine.odm.mongodb.logger.batch_insert_threshold%</argument>
+            </call>
+        </service>
 
         <!-- Cache Warmers -->
         <service id="doctrine.odm.mongodb.proxy_cache_warmer" class="%doctrine.odm.mongodb.proxy_cache_warmer.class%" public="false">

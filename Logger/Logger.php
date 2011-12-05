@@ -22,11 +22,17 @@ class Logger implements LoggerInterface
 {
     private $logger;
     private $prefix;
+    private $batchInsertTreshold;
 
     public function __construct(SymfonyLogger $logger = null, $prefix = 'MongoDB query: ')
     {
         $this->logger = $logger;
         $this->prefix = $prefix;
+    }
+
+    public function setBatchInsertThreshold($batchInsertTreshold)
+    {
+        $this->batchInsertTreshold = $batchInsertTreshold;
     }
 
     public function logQuery(array $query)
@@ -35,8 +41,8 @@ class Logger implements LoggerInterface
             return;
         }
 
-        if (isset($query['batchInsert']) && 1 < $query['num']) {
-            $query['data'] = '('.$query['num'].' items)';
+        if (isset($query['batchInsert']) && null !== $this->batchInsertTreshold && $this->batchInsertTreshold <= $query['num']) {
+            $query['data'] = '**'.$query['num'].' item(s)**';
         }
 
         $this->logger->info($this->prefix.json_encode($query));
