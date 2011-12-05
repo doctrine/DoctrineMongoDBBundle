@@ -14,6 +14,11 @@
         <parameter key="doctrine.odm.mongodb.data_collector.standard.class">Symfony\Bundle\DoctrineMongoDBBundle\DataCollector\StandardDataCollector</parameter>
         <parameter key="doctrine.odm.mongodb.data_collector.pretty.class">Symfony\Bundle\DoctrineMongoDBBundle\DataCollector\PrettyDataCollector</parameter>
         <parameter key="doctrine.odm.mongodb.event_manager.class">Doctrine\Common\EventManager</parameter>
+        <parameter key="doctrine_odm.mongodb.validator.unique.class">Symfony\Bundle\DoctrineMongoDBBundle\Validator\Constraints\UniqueValidator</parameter>
+        <parameter key="doctrine.odm.mongodb.class">Symfony\Bundle\DoctrineMongoDBBundle\ManagerRegistry</parameter>
+        <parameter key="doctrine.odm.mongodb.security.user.provider.class">Symfony\Bundle\DoctrineMongoDBBundle\Security\DocumentUserProvider</parameter>
+        <parameter key="doctrine.odm.mongodb.proxy_cache_warmer.class">Symfony\Bundle\DoctrineMongoDBBundle\CacheWarmer\ProxyCacheWarmer</parameter>
+        <parameter key="doctrine.odm.mongodb.hydrator_cache_warmer.class">Symfony\Bundle\DoctrineMongoDBBundle\CacheWarmer\HydratorCacheWarmer</parameter>
 
         <!-- proxies -->
         <parameter key="doctrine.odm.mongodb.proxy_namespace">Proxies</parameter>
@@ -46,20 +51,6 @@
         <parameter key="doctrine.odm.mongodb.yml_mapping_dirs">%doctrine.odm.mongodb.mapping_dirs%</parameter>
         <parameter key="doctrine.odm.mongodb.document_dirs" type="collection"></parameter>
 
-        <!-- security/user -->
-        <parameter key="doctrine.odm.mongodb.security.user.provider.class">Symfony\Bundle\DoctrineMongoDBBundle\Security\DocumentUserProvider</parameter>
-
-        <!-- proxy cache warmer -->
-        <parameter key="doctrine.odm.mongodb.proxy_cache_warmer.class">Symfony\Bundle\DoctrineMongoDBBundle\CacheWarmer\ProxyCacheWarmer</parameter>
-
-        <!-- hydrator cache warmer -->
-        <parameter key="doctrine.odm.mongodb.hydrator_cache_warmer.class">Symfony\Bundle\DoctrineMongoDBBundle\CacheWarmer\HydratorCacheWarmer</parameter>
-
-        <!-- validator -->
-        <parameter key="doctrine_odm.mongodb.validator.unique.class">Symfony\Bundle\DoctrineMongoDBBundle\Validator\Constraints\UniqueValidator</parameter>
-
-        <!-- registry -->
-        <parameter key="doctrine.odm.mongodb.class">Symfony\Bundle\DoctrineMongoDBBundle\ManagerRegistry</parameter>
     </parameters>
 
     <services>
