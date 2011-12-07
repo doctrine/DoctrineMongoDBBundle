@@ -11,52 +11,88 @@
 
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
 class ContainerTest extends TestCase
 {
-    public function getContainer()
+    private $container;
+    private $extension;
+
+    protected function setUp()
     {
-        require_once __DIR__.'/DependencyInjection/Fixtures/Bundles/YamlBundle/YamlBundle.php';
-
-        $container = new ContainerBuilder(new ParameterBag(array(
-            'kernel.bundles'     => array('YamlBundle' => 'DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\YamlBundle\YamlBundle'),
-            'kernel.cache_dir'   => sys_get_temp_dir(),
-            'kernel.debug'       => false,
+        $this->container = new ContainerBuilder(new ParameterBag(array(
+            'kernel.bundles'   => array(),
+            'kernel.cache_dir' => sys_get_temp_dir(),
+            'kernel.debug'     => true,
         )));
-        $loader = new DoctrineMongoDBExtension();
-        $container->registerExtension($loader);
 
-        $configs = array();
-        $configs[] = array('connections' => array('default' => array()), 'document_managers' => array('default' => array('mappings' => array('YamlBundle' => array()))));
-        $loader->load($configs, $container);
-
-        $container->set('annotation_reader', new AnnotationReader());
-
-        return $container;
+        $this->container->setDefinition('annotation_reader', new Definition('Doctrine\Common\Annotations\AnnotationReader'));
+        $this->extension = new DoctrineMongoDBExtension();
     }
 
-    public function testContainer()
+    /**
+     * @dataProvider provideLoggerConfigs
+     */
+    public function testLoggerConfig($config, $logger, $debug)
     {
-        $container = $this->getContainer();
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Mapping\Driver\DriverChain', $container->get('doctrine.odm.mongodb.metadata.chain'));
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver', $container->get('doctrine.odm.mongodb.metadata.annotation'));
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver', $container->get('doctrine.odm.mongodb.metadata.xml'));
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver', $container->get('doctrine.odm.mongodb.metadata.yml'));
-        $this->assertInstanceOf('Doctrine\Common\Cache\ArrayCache', $container->get('doctrine.odm.mongodb.cache.array'));
-        $this->assertInstanceOf('Symfony\Bundle\DoctrineMongoDBBundle\Logger\DoctrineMongoDBLogger', $container->get('doctrine.odm.mongodb.logger'));
-        $this->assertInstanceOf('Symfony\Bundle\DoctrineMongoDBBundle\DataCollector\DoctrineMongoDBDataCollector', $container->get('doctrine.odm.mongodb.data_collector'));
-        $this->assertInstanceOf('Doctrine\MongoDB\Connection', $container->get('doctrine.odm.mongodb.default_connection'));
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Configuration', $container->get('doctrine.odm.mongodb.default_configuration'));
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Mapping\Driver\DriverChain', $container->get('doctrine.odm.mongodb.default_metadata_driver'));
-        $this->assertInstanceOf('Doctrine\Common\Cache\ArrayCache', $container->get('doctrine.odm.mongodb.default_metadata_cache'));
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\DocumentManager', $container->get('doctrine.odm.mongodb.default_document_manager'));
-        $this->assertInstanceOf('Doctrine\Common\Cache\ArrayCache', $container->get('doctrine.odm.mongodb.cache'));
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\DocumentManager', $container->get('doctrine.odm.mongodb.document_manager'));
-        $this->assertInstanceof('Doctrine\Common\EventManager', $container->get('doctrine.odm.mongodb.event_manager'));
+        $this->container->setParameter('kernel.debug', $debug);
+        $this->extension->load(array($config), $this->container);
+
+        $def = $this->container->getDefinition('doctrine.odm.mongodb.default_configuration');
+        if (false === $logger) {
+            $this->assertFalse($def->hasMethodCall('setLoggerCallable'));
+        } else {
+            $match = null;
+            foreach ($def->getMethodCalls() as $call) {
+                if ('setLoggerCallable' == $call[0]) {
+                    $match = (string) $call[1][0][0];
+                    break;
+                }
+            }
+            $this->assertEquals($logger, $match, 'Service "'.$logger.'" is set as the logger');
+        }
+    }
+
+    public function provideLoggerConfigs()
+    {
+        $config = array('connections' => array('default' => array()));
+
+        return array(
+            array(
+                // logging and profiler default to true when in debug mode
+                array('document_managers' => array('default' => array())) + $config,
+                'doctrine.odm.mongodb.logger.aggregate',
+                true,
+            ),
+            array(
+                // logging and profiler default to false when not in debug mode
+                array('document_managers' => array('default' => array())) + $config,
+                false,
+                false,
+            ),
+            array(
+                array('document_managers' => array('default' => array('logging' => true, 'profiler' => true))) + $config,
+                'doctrine.odm.mongodb.logger.aggregate',
+                true,
+            ),
+            array(
+                array('document_managers' => array('default' => array('logging' => false, 'profiler' => true))) + $config,
+                'doctrine.odm.mongodb.data_collector.pretty',
+                true,
+            ),
+            array(
+                array('document_managers' => array('default' => array('logging' => true, 'profiler' => false))) + $config,
+                'doctrine.odm.mongodb.logger',
+                true,
+            ),
+            array(
+                array('document_managers' => array('default' => array('logging' => false, 'profiler' => false))) + $config,
+                false,
+                true,
+            ),
+        );
     }
 }
