@@ -13,11 +13,13 @@ namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests\Form\Type;
 
 //require_once __DIR__.'/../../TestCase.php';
 require_once __DIR__.'/../../Fixtures/Form/Document.php';
+require_once __DIR__.'/../../Fixtures/Form/ItemGroupDocument.php';
 
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Tests\Component\Form\Extension\Core\Type\TypeTestCase;
 use Symfony\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
 use Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Form\Document;
+use Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Form\ItemGroupDocument;
 use Symfony\Bundle\DoctrineMongoDBBundle\Form\DoctrineMongoDBExtension;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -30,6 +32,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 class DocumentTypeTest extends TypeTestCase
 {
     const DOCUMENT_CLASS = 'Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Form\Document';
+
+    const ITEM_GROUP_CLASS = 'Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Form\ItemGroupDocument';
 
     private $documentManager;
 
@@ -414,5 +418,32 @@ class DocumentTypeTest extends TypeTestCase
                  ->will($this->returnValue($dm));
 
         return $registry;
+    }
+
+    public function testGroupByChoices()
+    {
+        $item1 = new ItemGroupDocument(1, 'Foo', 'Group1');
+        $item2 = new ItemGroupDocument(2, 'Bar', 'Group1');
+        $item3 = new ItemGroupDocument(3, 'Baz', 'Group2');
+        $item4 = new ItemGroupDocument(4, 'Boo!', null);
+
+        $this->persist(array($item1, $item2, $item3, $item4));
+
+        $field = $this->factory->createNamed('document', 'name', null, array(
+            'document_manager' => 'default',
+            'class' => self::ITEM_GROUP_CLASS,
+            'choices' => array($item1, $item2, $item3, $item4),
+            'property' => 'name',
+            'group_by' => 'groupName',
+        ));
+
+        $field->bind('2');
+
+        $this->assertEquals(2, $field->getClientData());
+        $this->assertEquals(array(
+            'Group1' => array(1 => 'Foo', '2' => 'Bar'),
+            'Group2' => array(3 => 'Baz'),
+            '4' => 'Boo!'
+        ), $field->createView()->get('choices'));
     }
 }
