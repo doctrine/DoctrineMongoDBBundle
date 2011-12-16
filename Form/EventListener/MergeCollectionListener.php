@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Form\EventListener;
+namespace Doctrine\Bundle\DoctrineMongoDBBundle\Form\EventListener;
 
-use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\Event\FilterDataEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Form\Event\FilterDataEvent;
+use Symfony\Component\Form\FormEvents;
 
 /**
  * Merge changes from the request to a Doctrine\Common\Collections\Collection instance.

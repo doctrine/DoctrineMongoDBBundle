@@ -1,5 +1,5 @@
 {
-    "name": "symfony/mongodb-odm-bundle",
+    "name": "doctrine/mongodb-odm-bundle",
     "type": "symfony-bundle",
     "description": "Symfony2 Doctrine MongoDB Bundle",
     "keywords": ["persistence", "mongodb", "symfony"],
@@ -18,8 +18,8 @@
     },
     "autoload": {
         "psr-0": {
-            "Symfony\\Bundle\\DoctrineMongoDBBundle": ""
+            "Doctrine\\Bundle\\DoctrineMongoDBBundle": ""
         }
     },
-    "target-dir" : "Symfony/Bundle/DoctrineMongoDBBundle"
+    "target-dir" : "Doctrine/Bundle/DoctrineMongoDBBundle"
 }

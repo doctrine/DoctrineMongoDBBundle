@@ -9,16 +9,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Form\Type;
+namespace Doctrine\Bundle\DoctrineMongoDBBundle\Form\Type;
 
+use Doctrine\Bundle\DoctrineMongoDBBundle\Form\ChoiceList\DocumentChoiceList;
+use Doctrine\Bundle\DoctrineMongoDBBundle\Form\DataTransformer\DocumentsToArrayTransformer;
+use Doctrine\Bundle\DoctrineMongoDBBundle\Form\DataTransformer\DocumentToIdTransformer;
+use Doctrine\Bundle\DoctrineMongoDBBundle\Form\EventListener\MergeCollectionListener;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Bundle\DoctrineMongoDBBundle\Form\ChoiceList\DocumentChoiceList;
-use Symfony\Bundle\DoctrineMongoDBBundle\Form\EventListener\MergeCollectionListener;
-use Symfony\Bundle\DoctrineMongoDBBundle\Form\DataTransformer\DocumentsToArrayTransformer;
-use Symfony\Bundle\DoctrineMongoDBBundle\Form\DataTransformer\DocumentToIdTransformer;
-use Symfony\Component\Form\AbstractType;
 
 /**
  * Form type for a MongoDB document

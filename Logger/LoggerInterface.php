@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Logger;
+namespace Doctrine\Bundle\DoctrineMongoDBBundle\Logger;
 
 /**
  * Logger for the Doctrine MongoDB ODM.

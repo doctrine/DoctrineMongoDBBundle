@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Command;
+namespace Doctrine\Bundle\DoctrineMongoDBBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Doctrine\ODM\MongoDB\Tools\Console\Helper\DocumentManagerHelper;
-use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Doctrine\ODM\MongoDB\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Tools\DocumentGenerator;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * Base class for Doctrine ODM console commands to extend.
