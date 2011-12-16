@@ -1,6 +1,6 @@
 <?php
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection;
+namespace Doctrine\Bundle\DoctrineMongoDBBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;

@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection;
+namespace Doctrine\Bundle\DoctrineMongoDBBundle\DependencyInjection;
 
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 use Symfony\Component\Config\Definition\Processor;

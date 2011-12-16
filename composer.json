@@ -18,8 +18,8 @@
     },
     "autoload": {
         "psr-0": {
-            "Symfony\\Bundle\\DoctrineMongoDBBundle": ""
+            "Doctrine\\Bundle\\DoctrineMongoDBBundle": ""
         }
     },
-    "target-dir" : "Symfony/Bundle/DoctrineMongoDBBundle"
+    "target-dir" : "Doctrine/Bundle/DoctrineMongoDBBundle"
 }

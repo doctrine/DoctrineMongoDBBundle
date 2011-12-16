@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Mapping\Driver;
+namespace Doctrine\Bundle\DoctrineMongoDBBundle\Mapping\Driver;
 
 use Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver as BaseYamlDriver;
 use Doctrine\ODM\MongoDB\MongoDBException;

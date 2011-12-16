@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests\Mapping\Driver;
+namespace Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Mapping\Driver;
 
 abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 {

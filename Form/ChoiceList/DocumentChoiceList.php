@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Form\ChoiceList;
+namespace Doctrine\Bundle\DoctrineMongoDBBundle\Form\ChoiceList;
 
 use Symfony\Component\Form\Util\PropertyPath;
 use Symfony\Component\Form\Exception\FormException;

@@ -9,17 +9,17 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests\Form\ChoiceList;
+namespace Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Form\ChoiceList;
 
 require_once __DIR__.'/../../Fixtures/Form/Document.php';
 
-use Symfony\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
-use Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Form\Document;
-use Symfony\Bundle\DoctrineMongoDBBundle\Form\ChoiceList\DocumentChoiceList;
+use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
+use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Form\Document;
+use Doctrine\Bundle\DoctrineMongoDBBundle\Form\ChoiceList\DocumentChoiceList;
 
 class DocumentChoiceListTest extends TestCase
 {
-    const DOCUMENT_CLASS = 'Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Form\Document';
+    const DOCUMENT_CLASS = 'Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Form\Document';
 
     private $documentManager;
 

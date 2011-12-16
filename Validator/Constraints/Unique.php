@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Validator\Constraints;
+namespace Doctrine\Bundle\DoctrineMongoDBBundle\Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
 

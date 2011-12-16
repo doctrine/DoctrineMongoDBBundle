@@ -1,6 +1,6 @@
 <?php
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Security;
+namespace Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Security;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Security\Core\User\UserInterface;

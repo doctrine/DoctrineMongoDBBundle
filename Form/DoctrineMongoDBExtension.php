@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Form;
+namespace Doctrine\Bundle\DoctrineMongoDBBundle\Form;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\Form\AbstractExtension;

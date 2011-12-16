@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Security;
+namespace Doctrine\Bundle\DoctrineMongoDBBundle\Security;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Security\Core\User\UserInterface;

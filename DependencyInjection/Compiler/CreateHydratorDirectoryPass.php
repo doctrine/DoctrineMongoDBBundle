@@ -1,6 +1,6 @@
 <?php
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection\Compiler;
+namespace Doctrine\Bundle\DoctrineMongoDBBundle\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;

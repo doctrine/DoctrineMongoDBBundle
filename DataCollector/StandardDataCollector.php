@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\DataCollector;
+namespace Doctrine\Bundle\DoctrineMongoDBBundle\DataCollector;
 
-use Symfony\Bundle\DoctrineMongoDBBundle\Logger\LoggerInterface;
+use Doctrine\Bundle\DoctrineMongoDBBundle\Logger\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
