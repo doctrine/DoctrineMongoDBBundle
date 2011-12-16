@@ -2,8 +2,8 @@
 
 namespace Doctrine\Bundle\DoctrineMongoDBBundle\DependencyInjection\Compiler;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class CreateHydratorDirectoryPass implements CompilerPassInterface
 {

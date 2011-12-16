@@ -12,8 +12,8 @@
 namespace Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Security;
 
 use Doctrine\Bundle\DoctrineMongoDBBundle\Security\DocumentUserProvider;
-use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
 use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Security\User;
+use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
 
 class DocumentUserProviderTest extends TestCase
 {

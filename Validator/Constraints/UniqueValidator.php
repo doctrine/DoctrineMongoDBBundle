@@ -11,8 +11,8 @@
 
 namespace Doctrine\Bundle\DoctrineMongoDBBundle\Validator\Constraints;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\ConstraintDefinitionException;

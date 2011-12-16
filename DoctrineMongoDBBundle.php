@@ -11,13 +11,13 @@
 
 namespace Doctrine\Bundle\DoctrineMongoDBBundle;
 
-use Symfony\Component\DependencyInjection\Compiler\PassConfig;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Doctrine\Bundle\DoctrineMongoDBBundle\DependencyInjection\Compiler\CreateHydratorDirectoryPass;
 use Doctrine\Bundle\DoctrineMongoDBBundle\DependencyInjection\Compiler\CreateProxyDirectoryPass;
 use Doctrine\Bundle\DoctrineMongoDBBundle\DependencyInjection\Compiler\EventManagerPass;
 use Doctrine\Bundle\DoctrineMongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * Doctrine MongoDB ODM bundle.

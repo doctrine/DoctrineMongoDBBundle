@@ -11,9 +11,9 @@
 
 namespace Doctrine\Bundle\DoctrineMongoDBBundle\Tests\DependencyInjection;
 
-use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
 use Doctrine\Bundle\DoctrineMongoDBBundle\DependencyInjection\Compiler\AddValidatorNamespaceAliasPass;
 use Doctrine\Bundle\DoctrineMongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
+use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\Reference;

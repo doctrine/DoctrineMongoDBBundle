@@ -14,13 +14,13 @@ namespace Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Form\Type;
 //require_once __DIR__.'/../../TestCase.php';
 require_once __DIR__.'/../../Fixtures/Form/Document.php';
 
+use Doctrine\Bundle\DoctrineMongoDBBundle\Form\DoctrineMongoDBExtension;
+use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Form\Document;
+use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Tests\Component\Form\Extension\Core\Type\TypeTestCase;
-use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
-use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Form\Document;
-use Doctrine\Bundle\DoctrineMongoDBBundle\Form\DoctrineMongoDBExtension;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Tests for DocumentType

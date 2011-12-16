@@ -11,14 +11,14 @@
 
 namespace Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Validator\Constraints;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
-use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
 use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\Document;
 use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument;
+use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
 use Doctrine\Bundle\DoctrineMongoDBBundle\Validator\Constraints\Unique;
 use Doctrine\Bundle\DoctrineMongoDBBundle\Validator\Constraints\UniqueValidator;
-use Symfony\Component\Validator\Validator;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Validator;
 
 class UniqueValidatorTest extends TestCase
 {

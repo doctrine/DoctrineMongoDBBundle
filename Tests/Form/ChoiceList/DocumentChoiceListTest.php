@@ -13,9 +13,9 @@ namespace Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Form\ChoiceList;
 
 require_once __DIR__.'/../../Fixtures/Form/Document.php';
 
-use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
-use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Form\Document;
 use Doctrine\Bundle\DoctrineMongoDBBundle\Form\ChoiceList\DocumentChoiceList;
+use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Form\Document;
+use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
 
 class DocumentChoiceListTest extends TestCase
 {

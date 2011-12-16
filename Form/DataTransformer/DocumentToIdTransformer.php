@@ -13,8 +13,8 @@ namespace Doctrine\Bundle\DoctrineMongoDBBundle\Form\DataTransformer;
 
 use Doctrine\Bundle\DoctrineMongoDBBundle\Form\ChoiceList\DocumentChoiceList;
 use Symfony\Component\Form\DataTransformerInterface;
-use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Form\Exception\TransformationFailedException;
+use Symfony\Component\Form\Exception\UnexpectedTypeException;
 
 /**
  * Transforms documents to ids

@@ -11,10 +11,9 @@
 
 namespace Doctrine\Bundle\DoctrineMongoDBBundle\Tests\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Doctrine\Bundle\DoctrineMongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
-
 use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class DoctrineMongoDBExtensionTest extends \PHPUnit_Framework_TestCase
 {

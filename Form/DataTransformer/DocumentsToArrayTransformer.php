@@ -12,11 +12,11 @@
 namespace Doctrine\Bundle\DoctrineMongoDBBundle\Form\DataTransformer;
 
 use Doctrine\Bundle\DoctrineMongoDBBundle\Form\ChoiceList\DocumentChoiceList;
-use Symfony\Component\Form\Exception\UnexpectedTypeException;
-use Symfony\Component\Form\Exception\TransformationFailedException;
-use Symfony\Component\Form\DataTransformerInterface;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Form\DataTransformerInterface;
+use Symfony\Component\Form\Exception\TransformationFailedException;
+use Symfony\Component\Form\Exception\UnexpectedTypeException;
 
 /**
  * Transforms collections into arrays of ids
