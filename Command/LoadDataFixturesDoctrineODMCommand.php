@@ -14,13 +14,13 @@
 
 namespace Doctrine\Bundle\MongoDBBundle\Command;
 
+use Doctrine\Bundle\FixturesBundle\Common\DataFixtures\Loader as DataFixturesLoader;
 use Doctrine\Common\DataFixtures\Executor\MongoDBExecutor;
 use Doctrine\Common\DataFixtures\Purger\MongoDBPurger;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Internal\CommitOrderCalculator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use InvalidArgumentException;
-use Symfony\Bundle\DoctrineFixturesBundle\Common\DataFixtures\Loader as DataFixturesLoader;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
