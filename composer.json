@@ -13,13 +13,13 @@
     "require": {
         "php": ">=5.3.2",
         "doctrine/mongodb-odm": "*",
-        "symfony/doctrine-bridge": "*",
-        "symfony/framework-bundle": "*"
+        "symfony/doctrine-bridge": "2.1.*",
+        "symfony/framework-bundle": "2.1.*"
     },
     "autoload": {
         "psr-0": {
-            "Doctrine\\Bundle\\DoctrineMongoDBBundle": ""
+            "Doctrine\\Bundle\\MongoDBBundle": ""
         }
     },
-    "target-dir" : "Doctrine/Bundle/DoctrineMongoDBBundle"
+    "target-dir" : "Doctrine/Bundle/MongoDBBundle"
 }
