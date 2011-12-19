@@ -1,20 +1,23 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests\CacheWarmer;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\CacheWarmer;
 
-use Symfony\Bundle\DoctrineMongoDBBundle\CacheWarmer\HydratorCacheWarmer;
-use Symfony\Bundle\DoctrineMongoDBBundle\ManagerRegistry;
+use Doctrine\Bundle\MongoDBBundle\CacheWarmer\HydratorCacheWarmer;
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 
-class HydratorCacheWarmerTest extends \Symfony\Bundle\DoctrineMongoDBBundle\Tests\TestCase
+class HydratorCacheWarmerTest extends \Doctrine\Bundle\MongoDBBundle\Tests\TestCase
 {
     /**
      * This is not necessarily a good test, it doesn't generate any hydrators

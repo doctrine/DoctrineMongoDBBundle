@@ -1,24 +1,27 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests\Validator\Constraints;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\Validator\Constraints;
 
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator\Document;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument;
+use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\UniqueValidator;
 use Doctrine\Common\Persistence\ManagerRegistry;
-use Symfony\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
-use Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\Document;
-use Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument;
-use Symfony\Bundle\DoctrineMongoDBBundle\Validator\Constraints\Unique;
-use Symfony\Bundle\DoctrineMongoDBBundle\Validator\Constraints\UniqueValidator;
-use Symfony\Component\Validator\Validator;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Validator;
 
 class UniqueValidatorTest extends TestCase
 {
@@ -208,7 +211,7 @@ class UniqueValidatorTest extends TestCase
 
         $uniqueValidator = new UniqueValidator($registry);
 
-        $metadata = new ClassMetadata('Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument');
+        $metadata = new ClassMetadata('Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument');
         $metadata->addConstraint($constraint);
 
         $metadataFactory = $this->createMockMetadataFactory($metadata);
@@ -222,7 +225,7 @@ class UniqueValidatorTest extends TestCase
     private function dropDocumentCollection()
     {
         if ($this->documentManager) {
-            $this->documentManager->getDocumentCollection('Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\Document')->drop();
+            $this->documentManager->getDocumentCollection('Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator\Document')->drop();
         }
     }
 
@@ -254,7 +257,7 @@ class UniqueValidatorTest extends TestCase
         $validatorFactory = $this->getMock('Symfony\Component\Validator\ConstraintValidatorFactoryInterface');
         $validatorFactory->expects($this->any())
              ->method('getInstance')
-             ->with($this->isInstanceOf('Symfony\Bundle\DoctrineMongoDBBundle\Validator\Constraints\Unique'))
+             ->with($this->isInstanceOf('Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique'))
              ->will($this->returnValue($uniqueValidator));
 
         return $validatorFactory;
@@ -264,7 +267,7 @@ class UniqueValidatorTest extends TestCase
     {
         $uniqueValidator = new UniqueValidator($registry);
 
-        $metadata = new ClassMetadata('Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\Document');
+        $metadata = new ClassMetadata('Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator\Document');
         $metadata->addConstraint($constraint);
 
         $metadataFactory = $this->createMockMetadataFactory($metadata);

@@ -1,22 +1,25 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Command;
+namespace Doctrine\Bundle\MongoDBBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Doctrine\ODM\MongoDB\Tools\Console\Helper\DocumentManagerHelper;
-use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Doctrine\ODM\MongoDB\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Tools\DocumentGenerator;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * Base class for Doctrine ODM console commands to extend.
@@ -40,6 +43,7 @@ abstract class DoctrineODMCommand extends ContainerAwareCommand
         $documentGenerator->setRegenerateDocumentIfExists(false);
         $documentGenerator->setUpdateDocumentIfExists(true);
         $documentGenerator->setNumSpaces(4);
+
         return $documentGenerator;
     }
 
@@ -53,7 +57,7 @@ abstract class DoctrineODMCommand extends ContainerAwareCommand
         $namespace = $bundle->getNamespace();
         $bundleMetadatas = array();
         $documentManagers = $this->getDoctrineDocumentManagers();
-        foreach ($documentManagers as $key => $dm) {
+        foreach ($documentManagers as $dm) {
             $cmf = new DisconnectedClassMetadataFactory();
             $cmf->setDocumentManager($dm);
             $cmf->setConfiguration($dm->getConfiguration());

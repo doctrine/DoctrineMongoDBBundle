@@ -1,6 +1,6 @@
 <?php
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
@@ -19,13 +19,13 @@ class Document
     /** @ODM\Collection */
     public $collection;
 
-    /** @ODM\ReferenceOne(targetDocument="Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\Document") */
+    /** @ODM\ReferenceOne(targetDocument="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator\Document") */
     public $referenceOne;
 
-    /** @ODM\EmbedOne(targetDocument="Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument") */
+    /** @ODM\EmbedOne(targetDocument="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument") */
     public $embedOne;
 
-    /** @ODM\EmbedMany(targetDocument="Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument") */
+    /** @ODM\EmbedMany(targetDocument="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument") */
     public $embedMany = array();
 
     public function __construct($id) {

@@ -1,23 +1,26 @@
 <?php
 
 /*
- * This file is part of the Symfony framework.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests\Security;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\Security;
 
-use Symfony\Bundle\DoctrineMongoDBBundle\Security\DocumentUserProvider;
-use Symfony\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
-use Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Security\User;
+use Doctrine\Bundle\MongoDBBundle\Security\DocumentUserProvider;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Security\User;
+use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 
 class DocumentUserProviderTest extends TestCase
 {
-    const DOCUMENT_CLASS = 'Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Security\User';
+    const DOCUMENT_CLASS = 'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Security\User';
 
     private $documentManager;
 

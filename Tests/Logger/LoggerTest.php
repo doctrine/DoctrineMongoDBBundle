@@ -1,17 +1,20 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests\Logger;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\Logger;
 
-use Symfony\Bundle\DoctrineMongoDBBundle\Logger\Logger;
+use Doctrine\Bundle\MongoDBBundle\Logger\Logger;
 
 class LoggerTest extends \PHPUnit_Framework_TestCase
 {

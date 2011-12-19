@@ -1,20 +1,23 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests\DependencyInjection;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection\Configuration;
-use Symfony\Component\Yaml\Yaml;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Configuration;
 use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Yaml\Yaml;
 
 class ConfigurationTest extends \PHPUnit_Framework_TestCase
 {
@@ -287,7 +290,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 'document_managers',
                 array(
                     'foo' => array(
-                        'connection'   => 'conn1', 
+                        'connection'   => 'conn1',
                         'mappings'     => array('foo-mapping' => array('type' => 'xml', 'mapping' => true)),
                         'logging'      => '%kernel.debug%',
                         'profiler'     => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'),

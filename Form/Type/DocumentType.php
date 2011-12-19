@@ -1,24 +1,27 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Form\Type;
+namespace Doctrine\Bundle\MongoDBBundle\Form\Type;
 
+use Doctrine\Bundle\MongoDBBundle\Form\ChoiceList\DocumentChoiceList;
+use Doctrine\Bundle\MongoDBBundle\Form\DataTransformer\DocumentsToArrayTransformer;
+use Doctrine\Bundle\MongoDBBundle\Form\DataTransformer\DocumentToIdTransformer;
+use Doctrine\Bundle\MongoDBBundle\Form\EventListener\MergeCollectionListener;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Bundle\DoctrineMongoDBBundle\Form\ChoiceList\DocumentChoiceList;
-use Symfony\Bundle\DoctrineMongoDBBundle\Form\EventListener\MergeCollectionListener;
-use Symfony\Bundle\DoctrineMongoDBBundle\Form\DataTransformer\DocumentsToArrayTransformer;
-use Symfony\Bundle\DoctrineMongoDBBundle\Form\DataTransformer\DocumentToIdTransformer;
-use Symfony\Component\Form\AbstractType;
 
 /**
  * Form type for a MongoDB document
