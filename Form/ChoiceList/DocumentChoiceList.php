@@ -17,7 +17,6 @@ namespace Doctrine\Bundle\MongoDBBundle\Form\ChoiceList;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\NoResultException;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Symfony\Component\Form\Exception\FormException;

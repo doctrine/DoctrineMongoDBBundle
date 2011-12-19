@@ -15,10 +15,8 @@
 namespace Doctrine\Bundle\MongoDBBundle\Command;
 
 use Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateProxiesCommand;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**

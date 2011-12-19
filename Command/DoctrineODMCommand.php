@@ -43,6 +43,7 @@ abstract class DoctrineODMCommand extends ContainerAwareCommand
         $documentGenerator->setRegenerateDocumentIfExists(false);
         $documentGenerator->setUpdateDocumentIfExists(true);
         $documentGenerator->setNumSpaces(4);
+
         return $documentGenerator;
     }
 
@@ -56,7 +57,7 @@ abstract class DoctrineODMCommand extends ContainerAwareCommand
         $namespace = $bundle->getNamespace();
         $bundleMetadatas = array();
         $documentManagers = $this->getDoctrineDocumentManagers();
-        foreach ($documentManagers as $key => $dm) {
+        foreach ($documentManagers as $dm) {
             $cmf = new DisconnectedClassMetadataFactory();
             $cmf->setDocumentManager($dm);
             $cmf->setConfiguration($dm->getConfiguration());
