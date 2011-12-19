@@ -9,12 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\DoctrineMongoDBBundle\Tests\CacheWarmer;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\CacheWarmer;
 
-use Doctrine\Bundle\DoctrineMongoDBBundle\CacheWarmer\HydratorCacheWarmer;
-use Doctrine\Bundle\DoctrineMongoDBBundle\ManagerRegistry;
+use Doctrine\Bundle\MongoDBBundle\CacheWarmer\HydratorCacheWarmer;
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 
-class HydratorCacheWarmerTest extends \Doctrine\Bundle\DoctrineMongoDBBundle\Tests\TestCase
+class HydratorCacheWarmerTest extends \Doctrine\Bundle\MongoDBBundle\Tests\TestCase
 {
     /**
      * This is not necessarily a good test, it doesn't generate any hydrators

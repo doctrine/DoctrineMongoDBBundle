@@ -9,12 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\DoctrineMongoDBBundle\Form\Type;
+namespace Doctrine\Bundle\MongoDBBundle\Form\Type;
 
-use Doctrine\Bundle\DoctrineMongoDBBundle\Form\ChoiceList\DocumentChoiceList;
-use Doctrine\Bundle\DoctrineMongoDBBundle\Form\DataTransformer\DocumentsToArrayTransformer;
-use Doctrine\Bundle\DoctrineMongoDBBundle\Form\DataTransformer\DocumentToIdTransformer;
-use Doctrine\Bundle\DoctrineMongoDBBundle\Form\EventListener\MergeCollectionListener;
+use Doctrine\Bundle\MongoDBBundle\Form\ChoiceList\DocumentChoiceList;
+use Doctrine\Bundle\MongoDBBundle\Form\DataTransformer\DocumentsToArrayTransformer;
+use Doctrine\Bundle\MongoDBBundle\Form\DataTransformer\DocumentToIdTransformer;
+use Doctrine\Bundle\MongoDBBundle\Form\EventListener\MergeCollectionListener;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilder;

@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\DoctrineMongoDBBundle\Logger;
+namespace Doctrine\Bundle\MongoDBBundle\Logger;
 
 /**
  * An aggregate query logger.
- * 
+ *
  * @author Kris Wallsmith <kris@symfony.com>
  */
 class AggregateLogger implements LoggerInterface

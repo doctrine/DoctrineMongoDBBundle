@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\DoctrineMongoDBBundle\Tests;
+namespace Doctrine\Bundle\MongoDBBundle\Tests;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\MongoDB\Connection;

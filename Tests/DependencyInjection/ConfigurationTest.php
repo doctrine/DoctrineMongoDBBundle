@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\DoctrineMongoDBBundle\Tests\DependencyInjection;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
-use Doctrine\Bundle\DoctrineMongoDBBundle\DependencyInjection\Configuration;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Configuration;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Yaml\Yaml;
@@ -287,7 +287,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 'document_managers',
                 array(
                     'foo' => array(
-                        'connection'   => 'conn1', 
+                        'connection'   => 'conn1',
                         'mappings'     => array('foo-mapping' => array('type' => 'xml', 'mapping' => true)),
                         'logging'      => '%kernel.debug%',
                         'profiler'     => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'),

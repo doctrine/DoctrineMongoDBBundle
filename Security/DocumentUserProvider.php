@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\DoctrineMongoDBBundle\Security;
+namespace Doctrine\Bundle\MongoDBBundle\Security;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;

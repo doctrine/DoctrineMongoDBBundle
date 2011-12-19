@@ -81,7 +81,7 @@ Finally, enable the new bundle in the kernel::
     {
         $bundles = array(
             // ...
-            new Doctrine\Bundle\DoctrineMongoDBBundle\DoctrineMongoDBBundle(),
+            new Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
         );
 
         // ...

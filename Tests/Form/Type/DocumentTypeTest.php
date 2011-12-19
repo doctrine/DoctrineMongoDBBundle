@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Form\Type;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\Form\Type;
 
 //require_once __DIR__.'/../../TestCase.php';
 require_once __DIR__.'/../../Fixtures/Form/Document.php';
 
-use Doctrine\Bundle\DoctrineMongoDBBundle\Form\DoctrineMongoDBExtension;
-use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Form\Document;
-use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
+use Doctrine\Bundle\MongoDBBundle\Form\DoctrineMongoDBExtension;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document;
+use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
@@ -29,7 +29,7 @@ use Symfony\Tests\Component\Form\Extension\Core\Type\TypeTestCase;
  */
 class DocumentTypeTest extends TypeTestCase
 {
-    const DOCUMENT_CLASS = 'Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Form\Document';
+    const DOCUMENT_CLASS = 'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document';
 
     private $documentManager;
 

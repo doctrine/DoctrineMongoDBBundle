@@ -1,6 +1,6 @@
 <?php
 
-namespace Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Form;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 

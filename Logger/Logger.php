@@ -9,13 +9,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\DoctrineMongoDBBundle\Logger;
+namespace Doctrine\Bundle\MongoDBBundle\Logger;
 
 use Symfony\Component\HttpKernel\Log\LoggerInterface as SymfonyLogger;
 
 /**
  * A lightweight query logger.
- * 
+ *
  * @author Kris Wallsmith <kris@symfony.com>
  */
 class Logger implements LoggerInterface

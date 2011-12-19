@@ -9,12 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\DoctrineMongoDBBundle\Tests\CacheWarmer;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\CacheWarmer;
 
-use Doctrine\Bundle\DoctrineMongoDBBundle\CacheWarmer\ProxyCacheWarmer;
-use Doctrine\Bundle\DoctrineMongoDBBundle\ManagerRegistry;
+use Doctrine\Bundle\MongoDBBundle\CacheWarmer\ProxyCacheWarmer;
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 
-class ProxyCacheWarmerTest extends \Doctrine\Bundle\DoctrineMongoDBBundle\Tests\TestCase
+class ProxyCacheWarmerTest extends \Doctrine\Bundle\MongoDBBundle\Tests\TestCase
 {
     /**
      * This is not necessarily a good test, it doesn't generate any proxies

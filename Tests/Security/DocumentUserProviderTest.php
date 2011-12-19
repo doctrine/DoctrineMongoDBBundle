@@ -9,15 +9,15 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Security;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\Security;
 
-use Doctrine\Bundle\DoctrineMongoDBBundle\Security\DocumentUserProvider;
-use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Security\User;
-use Doctrine\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
+use Doctrine\Bundle\MongoDBBundle\Security\DocumentUserProvider;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Security\User;
+use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 
 class DocumentUserProviderTest extends TestCase
 {
-    const DOCUMENT_CLASS = 'Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Security\User';
+    const DOCUMENT_CLASS = 'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Security\User';
 
     private $documentManager;
 

@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\DoctrineMongoDBBundle\DataCollector;
+namespace Doctrine\Bundle\MongoDBBundle\DataCollector;
 
 use Doctrine\MongoDB\GridFSFile;
 use Symfony\Component\HttpFoundation\Request;

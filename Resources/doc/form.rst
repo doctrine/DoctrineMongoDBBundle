@@ -16,7 +16,7 @@ So, in this tutorial we begin with the model for a ``User`` document::
 
     use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
     use Symfony\Component\Validator\Constraints as Assert;
-    use Doctrine\Bundle\DoctrineMongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+    use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
     /**
      * @MongoDB\Document(collection="users")

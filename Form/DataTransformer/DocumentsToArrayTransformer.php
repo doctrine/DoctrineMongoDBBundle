@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\DoctrineMongoDBBundle\Form\DataTransformer;
+namespace Doctrine\Bundle\MongoDBBundle\Form\DataTransformer;
 
-use Doctrine\Bundle\DoctrineMongoDBBundle\Form\ChoiceList\DocumentChoiceList;
+use Doctrine\Bundle\MongoDBBundle\Form\ChoiceList\DocumentChoiceList;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Form\DataTransformerInterface;

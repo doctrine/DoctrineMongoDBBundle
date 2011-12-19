@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Logger;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\Logger;
 
-use Doctrine\Bundle\DoctrineMongoDBBundle\Logger\Logger;
+use Doctrine\Bundle\MongoDBBundle\Logger\Logger;
 
 class LoggerTest extends \PHPUnit_Framework_TestCase
 {

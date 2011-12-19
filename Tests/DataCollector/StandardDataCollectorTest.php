@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\DoctrineMongoDBBundle\Tests\DataCollector;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\DataCollector;
 
-use Doctrine\Bundle\DoctrineMongoDBBundle\DataCollector\StandardDataCollector;
+use Doctrine\Bundle\MongoDBBundle\DataCollector\StandardDataCollector;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 

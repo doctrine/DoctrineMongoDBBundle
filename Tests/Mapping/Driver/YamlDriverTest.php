@@ -9,9 +9,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Doctrine\Bundle\DoctrineMongoDBBundle\Tests\Mapping\Driver;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\Mapping\Driver;
 
-use Doctrine\Bundle\DoctrineMongoDBBundle\Mapping\Driver\YamlDriver;
+use Doctrine\Bundle\MongoDBBundle\Mapping\Driver\YamlDriver;
 
 class YamlDriverTest extends AbstractDriverTest
 {

@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\DoctrineMongoDBBundle;
+namespace Doctrine\Bundle\MongoDBBundle;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Symfony\Bridge\Doctrine\ManagerRegistry as BaseManagerRegistry;
