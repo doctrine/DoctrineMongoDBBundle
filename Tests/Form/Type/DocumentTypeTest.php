@@ -1,26 +1,29 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests\Form\Type;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\Form\Type;
 
 //require_once __DIR__.'/../../TestCase.php';
 require_once __DIR__.'/../../Fixtures/Form/Document.php';
 
+use Doctrine\Bundle\MongoDBBundle\Form\DoctrineMongoDBExtension;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document;
+use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Tests\Component\Form\Extension\Core\Type\TypeTestCase;
-use Symfony\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
-use Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Form\Document;
-use Symfony\Bundle\DoctrineMongoDBBundle\Form\DoctrineMongoDBExtension;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Tests for DocumentType
@@ -29,7 +32,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class DocumentTypeTest extends TypeTestCase
 {
-    const DOCUMENT_CLASS = 'Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Form\Document';
+    const DOCUMENT_CLASS = 'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document';
 
     private $documentManager;
 

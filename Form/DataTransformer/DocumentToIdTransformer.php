@@ -1,20 +1,23 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Form\DataTransformer;
+namespace Doctrine\Bundle\MongoDBBundle\Form\DataTransformer;
 
-use Symfony\Bundle\DoctrineMongoDBBundle\Form\ChoiceList\DocumentChoiceList;
+use Doctrine\Bundle\MongoDBBundle\Form\ChoiceList\DocumentChoiceList;
 use Symfony\Component\Form\DataTransformerInterface;
-use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Form\Exception\TransformationFailedException;
+use Symfony\Component\Form\Exception\UnexpectedTypeException;
 
 /**
  * Transforms documents to ids

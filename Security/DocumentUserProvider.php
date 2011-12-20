@@ -1,21 +1,24 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Security;
+namespace Doctrine\Bundle\MongoDBBundle\Security;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class DocumentUserProvider implements UserProviderInterface
 {

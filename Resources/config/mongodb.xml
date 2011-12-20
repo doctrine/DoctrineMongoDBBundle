@@ -9,16 +9,16 @@
         <parameter key="doctrine.odm.mongodb.connection.class">Doctrine\MongoDB\Connection</parameter>
         <parameter key="doctrine.odm.mongodb.configuration.class">Doctrine\ODM\MongoDB\Configuration</parameter>
         <parameter key="doctrine.odm.mongodb.document_manager.class">Doctrine\ODM\MongoDB\DocumentManager</parameter>
-        <parameter key="doctrine.odm.mongodb.logger.class">Symfony\Bundle\DoctrineMongoDBBundle\Logger\Logger</parameter>
-        <parameter key="doctrine.odm.mongodb.logger.aggregate.class">Symfony\Bundle\DoctrineMongoDBBundle\Logger\AggregateLogger</parameter>
-        <parameter key="doctrine.odm.mongodb.data_collector.standard.class">Symfony\Bundle\DoctrineMongoDBBundle\DataCollector\StandardDataCollector</parameter>
-        <parameter key="doctrine.odm.mongodb.data_collector.pretty.class">Symfony\Bundle\DoctrineMongoDBBundle\DataCollector\PrettyDataCollector</parameter>
+        <parameter key="doctrine.odm.mongodb.logger.class">Doctrine\Bundle\MongoDBBundle\Logger\Logger</parameter>
+        <parameter key="doctrine.odm.mongodb.logger.aggregate.class">Doctrine\Bundle\MongoDBBundle\Logger\AggregateLogger</parameter>
+        <parameter key="doctrine.odm.mongodb.data_collector.standard.class">Doctrine\Bundle\MongoDBBundle\DataCollector\StandardDataCollector</parameter>
+        <parameter key="doctrine.odm.mongodb.data_collector.pretty.class">Doctrine\Bundle\MongoDBBundle\DataCollector\PrettyDataCollector</parameter>
         <parameter key="doctrine.odm.mongodb.event_manager.class">Doctrine\Common\EventManager</parameter>
-        <parameter key="doctrine_odm.mongodb.validator.unique.class">Symfony\Bundle\DoctrineMongoDBBundle\Validator\Constraints\UniqueValidator</parameter>
-        <parameter key="doctrine.odm.mongodb.class">Symfony\Bundle\DoctrineMongoDBBundle\ManagerRegistry</parameter>
-        <parameter key="doctrine.odm.mongodb.security.user.provider.class">Symfony\Bundle\DoctrineMongoDBBundle\Security\DocumentUserProvider</parameter>
-        <parameter key="doctrine.odm.mongodb.proxy_cache_warmer.class">Symfony\Bundle\DoctrineMongoDBBundle\CacheWarmer\ProxyCacheWarmer</parameter>
-        <parameter key="doctrine.odm.mongodb.hydrator_cache_warmer.class">Symfony\Bundle\DoctrineMongoDBBundle\CacheWarmer\HydratorCacheWarmer</parameter>
+        <parameter key="doctrine_odm.mongodb.validator.unique.class">Doctrine\Bundle\MongoDBBundle\Validator\Constraints\UniqueValidator</parameter>
+        <parameter key="doctrine.odm.mongodb.class">Doctrine\Bundle\MongoDBBundle\ManagerRegistry</parameter>
+        <parameter key="doctrine.odm.mongodb.security.user.provider.class">Doctrine\Bundle\MongoDBBundle\Security\DocumentUserProvider</parameter>
+        <parameter key="doctrine.odm.mongodb.proxy_cache_warmer.class">Doctrine\Bundle\MongoDBBundle\CacheWarmer\ProxyCacheWarmer</parameter>
+        <parameter key="doctrine.odm.mongodb.hydrator_cache_warmer.class">Doctrine\Bundle\MongoDBBundle\CacheWarmer\HydratorCacheWarmer</parameter>
 
         <!-- proxies -->
         <parameter key="doctrine.odm.mongodb.proxy_namespace">Proxies</parameter>
@@ -42,8 +42,8 @@
         <!-- metadata -->
         <parameter key="doctrine.odm.mongodb.metadata.driver_chain.class">Doctrine\ODM\MongoDB\Mapping\Driver\DriverChain</parameter>
         <parameter key="doctrine.odm.mongodb.metadata.annotation.class">Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver</parameter>
-        <parameter key="doctrine.odm.mongodb.metadata.xml.class">Symfony\Bundle\DoctrineMongoDBBundle\Mapping\Driver\XmlDriver</parameter>
-        <parameter key="doctrine.odm.mongodb.metadata.yml.class">Symfony\Bundle\DoctrineMongoDBBundle\Mapping\Driver\YamlDriver</parameter>
+        <parameter key="doctrine.odm.mongodb.metadata.xml.class">Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver</parameter>
+        <parameter key="doctrine.odm.mongodb.metadata.yml.class">Doctrine\Bundle\MongoDBBundle\Mapping\Driver\YamlDriver</parameter>
 
         <!-- directories -->
         <parameter key="doctrine.odm.mongodb.mapping_dirs" type="collection"></parameter>
@@ -60,11 +60,11 @@
         <service id="doctrine.odm.mongodb.cache" alias="doctrine.odm.mongodb.cache.array" />
 
         <!-- form -->
-        <service id="form.type.mongodb_document" class="Symfony\Bundle\DoctrineMongoDBBundle\Form\Type\DocumentType">
+        <service id="form.type.mongodb_document" class="Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType">
             <tag name="form.type" alias="document" />
             <argument type="service" id="doctrine.odm.mongodb" />
         </service>
-        <service id="form.type_guesser.doctrine.mongodb" class="Symfony\Bundle\DoctrineMongoDBBundle\Form\DoctrineMongoDBTypeGuesser">
+        <service id="form.type_guesser.doctrine.mongodb" class="Doctrine\Bundle\MongoDBBundle\Form\DoctrineMongoDBTypeGuesser">
             <tag name="form.type_guesser" />
             <argument type="service" id="doctrine.odm.mongodb" />
         </service>

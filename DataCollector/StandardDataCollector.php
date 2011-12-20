@@ -1,17 +1,20 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\DataCollector;
+namespace Doctrine\Bundle\MongoDBBundle\DataCollector;
 
-use Symfony\Bundle\DoctrineMongoDBBundle\Logger\LoggerInterface;
+use Doctrine\Bundle\MongoDBBundle\Logger\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
