@@ -36,7 +36,7 @@ class UniqueValidatorTest extends TestCase
         ));
 
         $this->documentManager
-            ->getDocumentCollection('Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\Document')
+            ->getDocumentCollection('Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator\Document')
             ->drop();
     }
 
