@@ -44,6 +44,11 @@ class DocumentTypeTest extends TypeTestCase
         if (!class_exists('Doctrine\\ODM\\MongoDB\\Version')) {
             $this->markTestSkipped('Doctrine MongoDB ODM is not available.');
         }
+        try {
+            new \Mongo();
+        } catch (\MongoException $e) {
+            $this->markTestSkipped('Unable to connect to Mongo.');
+        }
 
         $this->documentManager = TestCase::createTestDocumentManager();
         $this->documentManager->createQueryBuilder(self::DOCUMENT_CLASS)

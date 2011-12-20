@@ -17,3 +17,11 @@ if (file_exists($file = __DIR__.'/autoload.php')) {
 } elseif (file_exists($file = __DIR__.'/autoload.php.dist')) {
     require_once $file;
 }
+
+register_shutdown_function(function() {
+    try {
+        $mongo = new Mongo();
+        $mongo->doctrine->drop();
+    } catch (\MongoException $e) {
+    }
+});

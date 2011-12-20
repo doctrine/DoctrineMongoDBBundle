@@ -35,12 +35,9 @@ class UniqueValidatorTest extends TestCase
             __DIR__ . '/../DependencyInjection/Fixtures/Bundles/AnnotationsBundle/Document'
         ));
 
-        $this->dropDocumentCollection();
-    }
-
-    protected function tearDown()
-    {
-        $this->dropDocumentCollection();
+        $this->documentManager
+            ->getDocumentCollection('Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Validator\Document')
+            ->drop();
     }
 
     public function testValidateUniquenessForScalarField()
@@ -220,13 +217,6 @@ class UniqueValidatorTest extends TestCase
         $validator = new Validator($metadataFactory, $validatorFactory);
 
         $violationsList = $validator->validate(new EmbeddedDocument());
-    }
-
-    private function dropDocumentCollection()
-    {
-        if ($this->documentManager) {
-            $this->documentManager->getDocumentCollection('Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator\Document')->drop();
-        }
     }
 
     private function createMockRegistry($documentManagerName = null)

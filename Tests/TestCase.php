@@ -29,6 +29,11 @@ class TestCase extends \PHPUnit_Framework_TestCase
         if (!class_exists('Doctrine\\ODM\\MongoDB\\Version')) {
             $this->markTestSkipped('Doctrine MongoDB ODM is not available.');
         }
+        try {
+            new \Mongo();
+        } catch (\MongoException $e) {
+            $this->markTestSkipped('Unable to connect to Mongo.');
+        }
     }
 
     /**
