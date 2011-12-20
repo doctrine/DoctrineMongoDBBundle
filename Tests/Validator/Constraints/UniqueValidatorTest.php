@@ -28,6 +28,8 @@ class UniqueValidatorTest extends TestCase
 
     protected function setUp()
     {
+        parent::setUp();
+
         $this->documentManager = $this->createTestDocumentManager(array(
             __DIR__ . '/../DependencyInjection/Fixtures/Bundles/AnnotationsBundle/Document'
         ));
@@ -37,7 +39,9 @@ class UniqueValidatorTest extends TestCase
 
     protected function tearDown()
     {
-        $this->dropDocumentCollection();
+        if ($this->documentManager) {
+            $this->dropDocumentCollection();
+        }
     }
 
     public function testValidateUniquenessForScalarField()

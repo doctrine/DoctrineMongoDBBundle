@@ -23,13 +23,13 @@ class DocumentUserProviderTest extends TestCase
 
     protected function setUp()
     {
+        parent::setUp();
+
         $this->documentManager = TestCase::createTestDocumentManager();
         $this->documentManager->createQueryBuilder(self::DOCUMENT_CLASS)
             ->remove()
             ->getQuery()
             ->execute();
-
-        parent::setUp();
     }
 
     public function testRefreshUserGetsUserByIdentifier()
