@@ -44,8 +44,8 @@ of your project:
         git=http://github.com/doctrine/mongodb-odm.git
 
     [DoctrineMongoDBBundle]
-        git=http://github.com/symfony/DoctrineMongoDBBundle.git
-        target=/bundles/Symfony/Bundle/DoctrineMongoDBBundle
+        git=http://github.com/doctrine/DoctrineMongoDBBundle.git
+        target=/bundles/Doctrine/Bundle/MongoDBBundle
 
 Now, update the vendor libraries by running:
 
@@ -60,6 +60,8 @@ Be sure to add them anywhere *above* the ``Doctrine`` namespace (shown here)::
     // app/autoload.php
     $loader->registerNamespaces(array(
         // ...
+        'Doctrine\\Bundle'          => __DIR__.'/../vendor/bundles',
+        'Doctrine\\Common'          => __DIR__.'/../vendor/doctrine-common/lib',
         'Doctrine\\ODM\\MongoDB'    => __DIR__.'/../vendor/doctrine-mongodb-odm/lib',
         'Doctrine\\MongoDB'         => __DIR__.'/../vendor/doctrine-mongodb/lib',
         'Doctrine'                  => __DIR__.'/../vendor/doctrine/lib',
@@ -679,6 +681,30 @@ and then :ref:`tagging<book-service-container-tags>` it with a specific tag.
 
 *   **event subscriber**: Use the ``doctrine.odm.mongodb.<connection>_event_subscriber``
     tag. No other keys are needed in the tag.
+
+SecurityBundle integration
+--------------------------
+
+A use provider is available for your MongoDB documents, working exactly the
+same than the `entity` provider described in :doc:`the cookbook</cookbook/security/entity_provider>`
+
+.. configuration-block::
+
+    .. code-block:: yaml
+
+        security:
+            providers:
+                my_mongo_provider:
+                    mongodb: {class: Acme\DemoBundle\Document\User, property: username}
+
+    .. code-block:: xml
+
+        <!-- app/config/security.xml -->
+        <config>
+            <provider name="my_mongo_provider">
+                <mongodb class="Acme\DemoBundle\Document\User" property="username" />
+            </provider>
+        </config>
 
 Summary
 -------
