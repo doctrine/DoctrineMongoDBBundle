@@ -14,71 +14,32 @@
 
 namespace Doctrine\Bundle\MongoDBBundle\Form\Type;
 
-use Doctrine\Bundle\MongoDBBundle\Form\ChoiceList\DocumentChoiceList;
-use Doctrine\Bundle\MongoDBBundle\Form\DataTransformer\DocumentsToArrayTransformer;
-use Doctrine\Bundle\MongoDBBundle\Form\DataTransformer\DocumentToIdTransformer;
-use Doctrine\Bundle\MongoDBBundle\Form\EventListener\MergeCollectionListener;
-use Doctrine\Common\Persistence\ManagerRegistry;
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilder;
-use Symfony\Component\Form\FormFactoryInterface;
+use Doctrine\Bundle\MongoDBBundle\Form\ChoiceList\MongoDBQueryBuilderLoader;
+use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Bridge\Doctrine\Form\Type\DoctrineType;
 
 /**
  * Form type for a MongoDB document
  *
  * @author Thibault Duplessis <thibault.duplessis@gmail.com>
+ * @author Christophe Coevoet <stof@notk.org>
  */
-class DocumentType extends AbstractType
+class DocumentType extends DoctrineType
 {
-    private $registry;
-
-    public function __construct(ManagerRegistry $registry)
+    /**
+     * Return the default loader object.
+     *
+     * @param ObjectManager $manager
+     * @param array $options
+     * @return MongoDBQueryBuilderLoader
+     */
+    protected function getLoader(ObjectManager $manager, array $options)
     {
-        $this->registry = $registry;
-    }
-
-    public function buildForm(FormBuilder $builder, array $options)
-    {
-        if ($options['multiple']) {
-            $builder->addEventSubscriber(new MergeCollectionListener())
-                ->prependClientTransformer(new DocumentsToArrayTransformer($options['choice_list']));
-        } else {
-            $builder->prependClientTransformer(new DocumentToIdTransformer($options['choice_list']));
-        }
-    }
-
-    public function getDefaultOptions(array $options)
-    {
-        $defaultOptions = array(
-            'choices'           => array(),
-            'class'             => null,
-            'document_manager'  => null,
-            'expanded'          => false,
-            'multiple'          => false,
-            'preferred_choices' => array(),
-            'property'          => null,
-            'query_builder'     => null,
-            'template'          => 'choice',
+        return new MongoDBQueryBuilderLoader(
+            $options['query_builder'],
+            $manager,
+            $options['class']
         );
-
-        $options = array_replace($defaultOptions, $options);
-
-        if (!isset($options['choice_list'])) {
-            $defaultOptions['choice_list'] = new DocumentChoiceList(
-                $this->registry->getManager($options['document_manager']),
-                $options['class'],
-                $options['property'],
-                $options['query_builder'],
-                $options['choices']
-            );
-        }
-
-        return $defaultOptions;
-    }
-
-    public function getParent(array $options)
-    {
-        return 'choice';
     }
 
     public function getName()
