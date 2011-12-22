@@ -20,7 +20,7 @@ So, in this tutorial we begin with the model for a ``User`` document::
 
     /**
      * @MongoDB\Document(collection="users")
-     * @MongoDBUnique(path="email")
+     * @MongoDBUnique(fields="email")
      */
     class User
     {
