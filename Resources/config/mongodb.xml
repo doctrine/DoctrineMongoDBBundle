@@ -16,7 +16,7 @@
         <parameter key="doctrine.odm.mongodb.event_manager.class">Doctrine\Common\EventManager</parameter>
         <parameter key="doctrine_odm.mongodb.validator.unique.class">Doctrine\Bundle\MongoDBBundle\Validator\Constraints\UniqueValidator</parameter>
         <parameter key="doctrine.odm.mongodb.class">Doctrine\Bundle\MongoDBBundle\ManagerRegistry</parameter>
-        <parameter key="doctrine.odm.mongodb.security.user.provider.class">Doctrine\Bundle\MongoDBBundle\Security\DocumentUserProvider</parameter>
+        <parameter key="doctrine.odm.mongodb.security.user.provider.class">Symfony\Bridge\Doctrine\Security\EntityUserProvider</parameter>
         <parameter key="doctrine.odm.mongodb.proxy_cache_warmer.class">Doctrine\Bundle\MongoDBBundle\CacheWarmer\ProxyCacheWarmer</parameter>
         <parameter key="doctrine.odm.mongodb.hydrator_cache_warmer.class">Doctrine\Bundle\MongoDBBundle\CacheWarmer\HydratorCacheWarmer</parameter>
 
@@ -122,9 +122,8 @@
 
         <!-- Security -->
         <service id="doctrine.odm.mongodb.security.user.provider" class="%doctrine.odm.mongodb.security.user.provider.class%" public="false" abstract="true">
-            <argument type="service" id="doctrine.odm.mongodb.security.user.document_manager" />
+            <argument type="service" id="doctrine.odm.mongodb" />
         </service>
-        <service id="doctrine.odm.mongodb.security.user.document_manager" alias="doctrine.odm.mongodb.default_document_manager" public="false" />
 
         <!-- Registry -->
         <service id="doctrine.odm.mongodb" class="%doctrine.odm.mongodb.class%">
