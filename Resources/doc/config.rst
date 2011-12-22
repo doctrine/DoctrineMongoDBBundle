@@ -222,6 +222,26 @@ connection services::
     $dm1 = $container->get('doctrine.odm.mongodb.dm1_document_manager');
     $dm2 = $container->get('doctrine.odm.mongodb.dm2_document_manager');
 
+Connecting to a pool of mongodb servers on 1 connection
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It is possible to connect to several mongodb servers on one connection if
+you are using a replica set by listing all of the servers within the connection
+string as a comma separated list.
+
+.. configuration-block::
+
+    .. code-block:: yaml
+
+        doctrine_mongodb:
+            # ...
+            connections:
+                default:
+                    server: 'mongodb://mongodb-01:27017,mongodb-02:27017,mongodb-03:27017'
+
+Where mongodb-01, mongodb-02 and mongodb-03 are the machine hostnames. You
+can also use IP addresses if you prefer.
+
 Full Default Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
