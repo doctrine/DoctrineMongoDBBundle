@@ -14,6 +14,7 @@
         <parameter key="doctrine.odm.mongodb.data_collector.standard.class">Doctrine\Bundle\MongoDBBundle\DataCollector\StandardDataCollector</parameter>
         <parameter key="doctrine.odm.mongodb.data_collector.pretty.class">Doctrine\Bundle\MongoDBBundle\DataCollector\PrettyDataCollector</parameter>
         <parameter key="doctrine.odm.mongodb.event_manager.class">Doctrine\Common\EventManager</parameter>
+        <parameter key="doctrine_odm.mongodb.validator_initializer.class">Symfony\Bridge\Doctrine\Validator\DoctrineInitializer</parameter>
         <parameter key="doctrine_odm.mongodb.validator.unique.class">Doctrine\Bundle\MongoDBBundle\Validator\Constraints\UniqueValidator</parameter>
         <parameter key="doctrine.odm.mongodb.class">Doctrine\Bundle\MongoDBBundle\ManagerRegistry</parameter>
         <parameter key="doctrine.odm.mongodb.security.user.provider.class">Symfony\Bridge\Doctrine\Security\EntityUserProvider</parameter>
@@ -117,6 +118,11 @@
         <!--  validator -->
         <service id="doctrine_odm.mongodb.validator.unique" class="%doctrine_odm.mongodb.validator.unique.class%">
             <tag name="validator.constraint_validator" alias="doctrine_odm.mongodb.unique" />
+            <argument type="service" id="doctrine.odm.mongodb" />
+        </service>
+
+        <service id="doctrine_odm.mongodb.validator_initializer" class="%doctrine_odm.mongodb.validator_initializer.class%">
+            <tag name="validator.initializer" />
             <argument type="service" id="doctrine.odm.mongodb" />
         </service>
 
