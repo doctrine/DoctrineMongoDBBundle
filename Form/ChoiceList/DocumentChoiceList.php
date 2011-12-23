@@ -246,6 +246,6 @@ class DocumentChoiceList extends ArrayChoiceList
             throw new FormException('documents passed to the choice field must be managed');
         }
 
-        return $this->unitOfWork->getDocumentIdentifier($document);
+        return (string) $this->unitOfWork->getDocumentIdentifier($document);
     }
 }
