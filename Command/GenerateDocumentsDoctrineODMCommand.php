@@ -34,18 +34,25 @@ class GenerateDocumentsDoctrineODMCommand extends DoctrineODMCommand
             ->setDescription('Generate document classes and method stubs from your mapping information.')
             ->addArgument('bundle', InputArgument::REQUIRED, 'The bundle to initialize the document or documents in.')
             ->addOption('document', null, InputOption::VALUE_OPTIONAL, 'The document class to initialize (shortname without namespace).')
+            ->addOption('no-backup', null, InputOption::VALUE_NONE, 'Do not backup existing entities files.')
             ->setHelp(<<<EOT
 The <info>doctrine:mongodb:generate:documents</info> command generates document classes and method stubs from your mapping information:
 
 You have to limit generation of documents to an individual bundle:
 
-  <info>./app/console doctrine:mongodb:generate:documents MyCustomBundle</info>
+  <info>php app/console doctrine:mongodb:generate:documents MyCustomBundle</info>
 
 Alternatively, you can limit generation to a single document within a bundle:
 
-  <info>./app/console doctrine:mongodb:generate:documents "MyCustomBundle" --document="User"</info>
+  <info>php app/console doctrine:mongodb:generate:documents "MyCustomBundle" --document="User"</info>
 
 You have to specify the shortname (without namespace) of the document you want to filter for.
+
+By default, the unmodified version of each document is backed up and saved
+(e.g. ~Product.php). To prevent this task from creating the backup file,
+pass the <comment>--no-backup</comment> option:
+
+  <info>php app/console doctrine:mongodb:generate:documents MyCustomBundle --no-backup</info>
 EOT
         );
     }
@@ -60,6 +67,7 @@ EOT
         if ($metadatas = $this->getBundleMetadatas($foundBundle)) {
             $output->writeln(sprintf('Generating documents for "<info>%s</info>"', $foundBundle->getName()));
             $documentGenerator = $this->getDocumentGenerator();
+            $documentGenerator->setBackupExisting(!$input->getOption('no-backup'));
 
             foreach ($metadatas as $metadata) {
                 if ($filterDocument && $metadata->reflClass->getShortName() != $filterDocument) {
