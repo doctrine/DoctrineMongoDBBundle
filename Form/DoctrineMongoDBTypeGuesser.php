@@ -55,7 +55,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
             return new TypeGuess(
                 'document',
                 array(
-                    'document_manager' => $name,
+                    'em' => $name,
                     'class' => $mapping['targetDocument'],
                     'multiple' => $multiple,
                     'expanded' => $multiple
