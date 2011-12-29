@@ -17,7 +17,7 @@
         <parameter key="doctrine_odm.mongodb.validator_initializer.class">Symfony\Bridge\Doctrine\Validator\DoctrineInitializer</parameter>
         <parameter key="doctrine_odm.mongodb.validator.unique.class">Doctrine\Bundle\MongoDBBundle\Validator\Constraints\UniqueValidator</parameter>
         <parameter key="doctrine.odm.mongodb.class">Doctrine\Bundle\MongoDBBundle\ManagerRegistry</parameter>
-        <parameter key="doctrine.odm.mongodb.security.user.provider.class">Symfony\Bridge\Doctrine\Security\EntityUserProvider</parameter>
+        <parameter key="doctrine.odm.mongodb.security.user.provider.class">Symfony\Bridge\Doctrine\Security\User\EntityUserProvider</parameter>
         <parameter key="doctrine.odm.mongodb.proxy_cache_warmer.class">Doctrine\Bundle\MongoDBBundle\CacheWarmer\ProxyCacheWarmer</parameter>
         <parameter key="doctrine.odm.mongodb.hydrator_cache_warmer.class">Doctrine\Bundle\MongoDBBundle\CacheWarmer\HydratorCacheWarmer</parameter>
 
