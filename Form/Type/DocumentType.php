@@ -42,6 +42,23 @@ class DocumentType extends DoctrineType
         );
     }
 
+    public function getDefaultOptions(array $options)
+    {
+        $defaultOptions = parent::getDefaultOptions($options);
+
+        // alias "em" as "document_manager"
+        $defaultOptions['document_manager'] = null;
+        if (isset($options['document_manager'])) {
+            if (isset($options['em'])) {
+                throw new \InvalidArgumentException('You cannot set both an "em" and "document_manager" option.');
+            }
+
+            $defaultOptions['em'] = $options['document_manager'];
+        }
+
+        return $defaultOptions;
+    }
+
     public function getName()
     {
         return 'document';
