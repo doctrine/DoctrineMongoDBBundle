@@ -61,7 +61,7 @@ class DocumentType extends AbstractType
         $options = array_replace($defaultOptions, $options);
 
         if (!isset($options['choice_list'])) {
-            $defaultOptions['choice_list'] = new DocumentChoiceList(
+            $options['choice_list'] = new DocumentChoiceList(
                 $options['document_manager'],
                 $options['class'],
                 $options['property'],
@@ -70,7 +70,7 @@ class DocumentType extends AbstractType
             );
         }
 
-        return $defaultOptions;
+        return $options;
     }
 
     public function getParent(array $options)
