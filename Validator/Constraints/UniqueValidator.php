@@ -80,10 +80,8 @@ class UniqueValidator extends ConstraintValidator
          */
         $invalidValue = $this->getFieldValueForPropertyPath($metadata, $document, $constraint->path);
 
-        $oldPath = $this->context->getPropertyPath();
-        $this->context->setPropertyPath(empty($oldPath) ? $constraint->path : $oldPath.'.'.$constraint->path);
-        $this->context->addViolation($constraint->message, array(), $invalidValue);
-        $this->context->setPropertyPath($oldPath);
+        $path = $this->context->getPropertyPath();
+        $this->context->addViolationAtPath(empty($path) ? $constraint->path : $path.'.'.$constraint->path, $constraint->message);
 
         // Be consistent with unique entity validator and return true after adding violation
         return true;
