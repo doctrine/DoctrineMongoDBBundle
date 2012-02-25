@@ -14,7 +14,7 @@
 
 namespace Doctrine\Bundle\MongoDBBundle\Validator\Constraints;
 
-use Symfony\Component\Validator\Constraint;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Constraint for the unique document validator
@@ -22,41 +22,7 @@ use Symfony\Component\Validator\Constraint;
  * @Annotation
  * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
-class Unique extends Constraint
+class Unique extends UniqueEntity
 {
-    public $documentManager;
-    public $message = 'This value is already used.';
-    public $path;
-
-    /**
-     * @see Symfony\Component\Validator\Constraint::getDefaultOption()
-     */
-    public function getDefaultOption()
-    {
-        return 'path';
-    }
-
-    /**
-     * @see Symfony\Component\Validator\Constraint::getRequiredOptions()
-     */
-    public function getRequiredOptions()
-    {
-        return array('path');
-    }
-
-    /**
-     * @see Symfony\Component\Validator\Constraint::getTargets()
-     */
-    public function getTargets()
-    {
-        return Constraint::CLASS_CONSTRAINT;
-    }
-
-    /**
-     * @see Symfony\Component\Validator\Constraint::validatedBy()
-     */
-    public function validatedBy()
-    {
-        return 'doctrine_odm.mongodb.unique';
-    }
+    public $service = 'doctrine_odm.mongodb.unique';
 }
