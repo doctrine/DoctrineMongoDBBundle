@@ -46,6 +46,15 @@ of your project:
     [DoctrineMongoDBBundle]
         git=http://github.com/symfony/DoctrineMongoDBBundle.git
         target=/bundles/Symfony/Bundle/DoctrineMongoDBBundle
+        version=origin/2.0
+
+You also have to update ``doctrine-common`` to a newer version in your ``deps.lock`` file:
+
+    doctrine-common 2.2.0
+
+.. note::
+
+    These instructions are tested with version 2.0.11 of the Symfony Standard Edition. This document will be updated for successive versions.
 
 Now, update the vendor libraries by running:
 
