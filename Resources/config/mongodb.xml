@@ -13,7 +13,7 @@
         <parameter key="doctrine.odm.mongodb.logger.aggregate.class">Doctrine\Bundle\MongoDBBundle\Logger\AggregateLogger</parameter>
         <parameter key="doctrine.odm.mongodb.data_collector.standard.class">Doctrine\Bundle\MongoDBBundle\DataCollector\StandardDataCollector</parameter>
         <parameter key="doctrine.odm.mongodb.data_collector.pretty.class">Doctrine\Bundle\MongoDBBundle\DataCollector\PrettyDataCollector</parameter>
-        <parameter key="doctrine.odm.mongodb.event_manager.class">Doctrine\Common\EventManager</parameter>
+        <parameter key="doctrine.odm.mongodb.event_manager.class">Symfony\Bridge\Doctrine\ContainerAwareEventManager</parameter>
         <parameter key="doctrine_odm.mongodb.validator_initializer.class">Symfony\Bridge\Doctrine\Validator\DoctrineInitializer</parameter>
         <parameter key="doctrine_odm.mongodb.validator.unique.class">Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator</parameter>
         <parameter key="doctrine.odm.mongodb.class">Doctrine\Bundle\MongoDBBundle\ManagerRegistry</parameter>
@@ -59,6 +59,11 @@
     <services>
         <!-- defaults -->
         <service id="doctrine.odm.mongodb.cache" alias="doctrine.odm.mongodb.cache.array" />
+
+        <!-- events -->
+        <service id="doctrine.odm.mongodb.connection.event_manager" class="%doctrine.odm.mongodb.event_manager.class%" public="false" abstract="true">
+            <argument type="service" id="service_container" />
+        </service>
 
         <!-- form -->
         <service id="form.type.mongodb_document" class="Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType">
