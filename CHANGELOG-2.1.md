@@ -7,8 +7,12 @@ in 2.1 minor versions.
 2.1.0
 -----
 
-### Registering Event Listeners and Subscribers
+### Events
 
+ * The format for naming event manager services is now
+   `doctrine.odm.mongodb.%s_connection.event_manager` and uses the connection
+   name. The event manager shared by the default document manager is still
+   aliased as `doctrine.odm.mongodb.event_manager`.
  * Listeners and subscriber services must be tagged with 
    `doctrine.odm.mongodb.event_listener` and
    `doctrine.odm.mongodb.event_subscriber`, respectively. By default, listeners

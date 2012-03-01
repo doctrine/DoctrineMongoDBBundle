@@ -143,8 +143,9 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      */
     protected function loadDocumentManager(array $documentManager, $defaultDM, $defaultDB, $defaultMetadataCache, ContainerBuilder $container)
     {
-        $defaultDatabase = isset($documentManager['database']) ? $documentManager['database'] : $defaultDB;
         $configServiceName = sprintf('doctrine.odm.mongodb.%s_configuration', $documentManager['name']);
+        $connectionName = isset($documentManager['connection']) ? $documentManager['connection'] : $documentManager['name'];
+        $defaultDatabase = isset($documentManager['database']) ? $documentManager['database'] : $defaultDB;
 
         if ($container->hasDefinition($configServiceName)) {
             $odmConfigDef = $container->getDefinition($configServiceName);
@@ -202,10 +203,10 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         }
 
         $odmDmArgs = array(
-            new Reference(sprintf('doctrine.odm.mongodb.%s_connection', isset($documentManager['connection']) ? $documentManager['connection'] : $documentManager['name'])),
+            new Reference(sprintf('doctrine.odm.mongodb.%s_connection', $connectionName)),
             new Reference(sprintf('doctrine.odm.mongodb.%s_configuration', $documentManager['name'])),
             // Document managers will share their connection's event manager
-            new Reference(sprintf('doctrine.odm.mongodb.%s_connection.event_manager', $defaultDatabase)),
+            new Reference(sprintf('doctrine.odm.mongodb.%s_connection.event_manager', $connectionName)),
         );
         $odmDmDef = new Definition('%doctrine.odm.mongodb.document_manager.class%', $odmDmArgs);
         $odmDmDef->setFactoryClass('%doctrine.odm.mongodb.document_manager.class%');
@@ -220,7 +221,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             );
             $container->setAlias(
                 'doctrine.odm.mongodb.event_manager',
-                new Alias(sprintf('doctrine.odm.mongodb.%s_event_manager', $documentManager['name']))
+                new Alias(sprintf('doctrine.odm.mongodb.%s_connection.event_manager', $connectionName))
             );
         }
     }
