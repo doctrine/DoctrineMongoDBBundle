@@ -19,8 +19,9 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 /**
  * Doctrine MongoDB ODM extension.
@@ -200,20 +201,11 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $odmConfigDef->addMethodCall($method, array($arg));
         }
 
-        // event manager
-        $eventManagerName = isset($documentManager['event_manager']) ? $documentManager['event_manager'] : $documentManager['name'];
-        $eventManagerId = sprintf('doctrine.odm.mongodb.%s_event_manager', $eventManagerName);
-        if (!$container->hasDefinition($eventManagerId)) {
-            $eventManagerDef = new Definition('%doctrine.odm.mongodb.event_manager.class%');
-            $eventManagerDef->addTag('doctrine.odm.mongodb.event_manager');
-            $eventManagerDef->setPublic(false);
-            $container->setDefinition($eventManagerId, $eventManagerDef);
-        }
-
         $odmDmArgs = array(
             new Reference(sprintf('doctrine.odm.mongodb.%s_connection', isset($documentManager['connection']) ? $documentManager['connection'] : $documentManager['name'])),
             new Reference(sprintf('doctrine.odm.mongodb.%s_configuration', $documentManager['name'])),
-            new Reference($eventManagerId),
+            // Document managers will share their connection's event manager
+            new Reference(sprintf('doctrine.odm.mongodb.%s_connection.event_manager', $defaultDatabase)),
         );
         $odmDmDef = new Definition('%doctrine.odm.mongodb.document_manager.class%', $odmDmArgs);
         $odmDmDef->setFactoryClass('%doctrine.odm.mongodb.document_manager.class%');
@@ -272,10 +264,15 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     {
         $cons = array();
         foreach ($connections as $name => $connection) {
+            // Define an event manager for this connection
+            $eventManagerId = sprintf('doctrine.odm.mongodb.%s_connection.event_manager', $name);
+            $container->setDefinition($eventManagerId, new DefinitionDecorator('doctrine.odm.mongodb.connection.event_manager'));
+
             $odmConnArgs = array(
                 isset($connection['server']) ? $connection['server'] : null,
                 isset($connection['options']) ? $connection['options'] : array(),
-                new Reference(sprintf('doctrine.odm.mongodb.%s_configuration', $name))
+                new Reference(sprintf('doctrine.odm.mongodb.%s_configuration', $name)),
+                new Reference($eventManagerId),
             );
             $odmConnDef = new Definition('%doctrine.odm.mongodb.connection.class%', $odmConnArgs);
             $id = sprintf('doctrine.odm.mongodb.%s_connection', $name);
