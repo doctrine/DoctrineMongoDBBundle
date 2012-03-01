@@ -645,14 +645,35 @@ Doctrine allows you to register listeners and subscribers that are notified
 when different events occur inside Doctrine's ODM. For more information,
 see Doctrine's `Event Documentation`_.
 
+.. tip::
+
+    In addition to ODM events, you may also listen on lower-level MongoDB
+    events, which you'll find defined in the ``Doctrine\MongoDB\Events`` class.
+
+.. note::
+
+    Each connection in Doctrine has its own event manager, which is shared with
+    document managers tied to that connection. Listeners and subscribers may be
+    registered with all event managers or just one (using the connection name).
+
 In Symfony, you can register a listener or subscriber by creating a :term:`service`
 and then :ref:`tagging<book-service-container-tags>` it with a specific tag.
 
-*   **event listener**: Use the ``doctrine.odm.mongodb.<connection>_event_listener``
-    tag, where ``<connection>`` name is replaced by the name of your connection
-    (usually ``default``). Also, be sure to add an ``event`` key to the tag
-    specifying which event to listen to. Assuming your connection is called
-    ``default``, then:
+*   **event listener**: Use the ``doctrine.odm.mongodb.event_listener`` tag to
+    register a listener. The ``event`` attribute is required and should denote
+    the event on which to listen. By default, listeners will be registered with
+    event managers for all connections. To restrict a listener to a single
+    connection, specify its name in the tag's ``connection`` attribute.
+
+    The ``priority`` attribute, which defaults to ``0`` if omitted, may be used
+    to control the order that listeners are registered. Much like Symfony2's
+    :ref:`event dispatcher<event_dispatcher>`, greater numbers will result in
+    the listener executing first and listeners with the same priority will be
+    executed in the order that they were registered with the event manager.
+
+    Lastly, the ``lazy`` attribute, which defaults to ``false`` if omitted, may
+    be used to request that the listener be lazily loaded by the event manager
+    when its event is dispatched.
 
     .. configuration-block::
 
@@ -663,24 +684,37 @@ and then :ref:`tagging<book-service-container-tags>` it with a specific tag.
                     class:   Acme\HelloBundle\Listener\MyDoctrineListener
                     # ...
                     tags:
-                        -  { name: doctrine.odm.mongodb.default_event_listener, event: postPersist }
+                        -  { name: doctrine.odm.mongodb.event_listener, event: postPersist }
 
         .. code-block:: xml
 
             <service id="my_doctrine_listener" class="Acme\HelloBundle\Listener\MyDoctrineListener">
                 <!-- ... -->
-                <tag name="doctrine.odm.mongodb.default_event_listener" event="postPersist" />
+                <tag name="doctrine.odm.mongodb.event_listener" event="postPersist" />
             </service>.
 
         .. code-block:: php
 
             $definition = new Definition('Acme\HelloBundle\Listener\MyDoctrineListener');
             // ...
-            $definition->addTag('doctrine.odm.mongodb.default_event_listener');
+            $definition->addTag('doctrine.odm.mongodb.event_listener', array(
+                'event' => 'postPersist',
+            ));
             $container->setDefinition('my_doctrine_listener', $definition);
 
-*   **event subscriber**: Use the ``doctrine.odm.mongodb.<connection>_event_subscriber``
-    tag. No other keys are needed in the tag.
+*   **event subscriber**: Use the ``doctrine.odm.mongodb.event_subscriber`` tag
+    to a subscriber. Subscribers are responsible for implementing
+    ``Doctrine\Common\EventSubscriber`` and a method for returning the events
+    they will observe. For this reason, this tag has no ``event`` attribute;
+    however, the ``connection``, ``priority`` and ``lazy`` attributes are
+    available.
+
+.. note::
+
+    Unlike Symfony2 event listeners, Doctrine's event manager expects each
+    listener and subscriber to have a method name corresponding to the observed
+    event(s). For this reason, the aforementioned tags have no ``method``
+    attribute.
 
 SecurityBundle integration
 --------------------------
