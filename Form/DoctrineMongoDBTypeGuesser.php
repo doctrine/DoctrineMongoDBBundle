@@ -138,16 +138,25 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
             $mapping = $ret[0]->getFieldMapping($property);
 
             if (isset($mapping['length'])) {
-                return new ValueGuess(
-                    $mapping['length'],
-                    Guess::HIGH_CONFIDENCE
-                );
+                return new ValueGuess($mapping['length'], Guess::HIGH_CONFIDENCE);
+            }
+
+            if ('float' === $mapping['type']) {
+                return new ValueGuess(null, Guess::MEDIUM_CONFIDENCE);
             }
         }
     }
 
     public function guessMinLength($class, $property)
     {
+        $ret = $this->getMetadata($class);
+        if ($ret && $ret[0]->hasField($property) && !$ret[0]->hasAssociation($property)) {
+            $mapping = $ret[0]->getFieldMapping($property);
+
+            if ('float' === $mapping['type']) {
+                return new ValueGuess(null, Guess::MEDIUM_CONFIDENCE);
+            }
+        }
     }
 
     protected function getMetadata($class)
