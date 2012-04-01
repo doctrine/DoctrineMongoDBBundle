@@ -31,11 +31,67 @@ Installation
 ------------
 
 To use the MongoDB ODM, you'll need two libraries provided by Doctrine and
-one bundle that integrates them into Symfony. If you're using the Symfony
-Standard Distribution, add the following to the ``deps`` file at the root
-of your project:
+one bundle that integrates them into Symfony. 
 
-.. code-block:: text
+1. Using Composer (recommended)
+-------------------------------
+
+To install DoctrineMongoDBBundle with Composer just add the following to your
+`composer.json` file:
+
+.. code-block :: js
+
+    // composer.json
+    {
+        // ...
+        require: {
+            // ...
+            "doctrine/mongodb-odm-bundle": "master-dev"
+        }
+    }
+    
+.. note ::
+
+    Please replace `master-dev` in the snippet above with the latest stable
+    branch, for example ``1.0.*``.
+    
+Then, you can install the new dependencies by running Composer's ``update``
+command from the directory where your ``composer.json`` file is located:
+
+.. code-block :: bash
+
+    php composer.phar update
+    
+Now, Composer will automatically download all required files, and install them
+for you. All that is left to do is to update your ``AppKernel.php`` file, and
+register the new bundle:
+
+.. code-block :: php
+
+    <?php
+
+    // in AppKernel::registerBundles()
+    $bundles = array(
+        // ...
+        new Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
+        // ...
+    );
+
+Next, register the annotations library by adding the following to the autoloader
+(below the existing ``AnnotationRegistry::registerFile`` line)::
+
+    // app/autoload.php
+    AnnotationRegistry::registerFile(
+        __DIR__.'/../vendor/doctrine/mongodb-odm/lib/Doctrine/ODM/MongoDB/Mapping/Annotations/DoctrineAnnotations.php'
+    );
+    
+2. Using the ``deps`` file (Symfony 2.0.x)
+------------------------------------------
+
+Just add the following to the ``deps`` 
+file of your Symfony Standard Distribution:
+
+.. code-block :: text
 
     [doctrine-mongodb]
         git=http://github.com/doctrine/mongodb.git
@@ -45,13 +101,14 @@ of your project:
 
     [DoctrineMongoDBBundle]
         git=http://github.com/doctrine/DoctrineMongoDBBundle.git
-        target=/bundles/Doctrine/Bundle/MongoDBBundle
+        target=/bundles/Doctrine/Bundle/MongoDBBundle       
 
-Now, update the vendor libraries by running:
+Now use the ``vendors`` script to clone the newly added repositories 
+into your project:
 
-.. code-block:: bash
+.. code-block :: bash
 
-    $ php bin/vendors install
+    php bin/vendors install
 
 Next, add the ``Doctrine\ODM\MongoDB`` and ``Doctrine\MongoDB`` namespaces
 to the ``app/autoload.php`` file so that these libraries can be autoloaded.
@@ -88,6 +145,7 @@ Finally, enable the new bundle in the kernel::
 
         // ...
     }
+
 
 Congratulations! You're ready to get to work.
 
