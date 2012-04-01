@@ -39,8 +39,6 @@ one bundle that integrates them into Symfony.
 To install DoctrineMongoDBBundle with Composer just add the following to your
 `composer.json` file::
 
-.. code-block :: text
-
     {
         // ...
         require: {
