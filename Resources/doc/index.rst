@@ -31,7 +31,7 @@ Installation
 ------------
 
 To use the MongoDB ODM, you'll need two libraries provided by Doctrine and
-one bundle that integrates them into Symfony. 
+one bundle that integrates them into Symfony.
 
 1. Using Composer (recommended)
 -------------------------------
@@ -53,7 +53,7 @@ command from the directory where your ``composer.json`` file is located:
 .. code-block :: bash
 
     php composer.phar update
-    
+
 Now, Composer will automatically download all required files, and install them
 for you. All that is left to do is to update your ``AppKernel.php`` file, and
 register the new bundle::
@@ -80,7 +80,7 @@ Next, register the annotations library by adding the following to the autoloader
 2. Using the ``deps`` file (Symfony 2.0.x)
 ------------------------------------------
 
-Just add the following to the ``deps`` 
+Just add the following to the ``deps``
 file of your Symfony Standard Distribution:
 
 .. code-block :: text
@@ -93,9 +93,9 @@ file of your Symfony Standard Distribution:
 
     [DoctrineMongoDBBundle]
         git=http://github.com/doctrine/DoctrineMongoDBBundle.git
-        target=/bundles/Doctrine/Bundle/MongoDBBundle       
+        target=/bundles/Doctrine/Bundle/MongoDBBundle
 
-Now use the ``vendors`` script to clone the newly added repositories 
+Now use the ``vendors`` script to clone the newly added repositories
 into your project:
 
 .. code-block :: bash
