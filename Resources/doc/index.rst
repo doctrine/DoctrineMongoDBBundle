@@ -743,14 +743,14 @@ same than the `entity` provider described in :doc:`the cookbook</cookbook/securi
 Summary
 -------
 
-With Doctrine, you can focus on your objects and how they're useful in your
+With Doctrine, you can focus first on your objects and how they're useful in your
 application and worry about persisting to MongoDB second. This is because
 Doctrine allows you to use any PHP object to hold your data and relies on
 mapping metadata information to map an object's data to a MongoDB collection.
 
 And even though Doctrine revolves around a simple concept, it's incredibly
 powerful, allowing you to create complex queries and subscribe to events
-that allow you to take different actions as objects go through their persistence
+thereby taking different actions as objects go through their persistence
 lifecycle.
 
 Learn more from the Cookbook
