@@ -703,7 +703,7 @@ and then :ref:`tagging<book-service-container-tags>` it with a specific tag.
             $container->setDefinition('my_doctrine_listener', $definition);
 
 *   **event subscriber**: Use the ``doctrine.odm.mongodb.event_subscriber`` tag
-    to a subscriber. Subscribers are responsible for implementing
+    to register a subscriber. Subscribers are responsible for implementing
     ``Doctrine\Common\EventSubscriber`` and a method for returning the events
     they will observe. For this reason, this tag has no ``event`` attribute;
     however, the ``connection``, ``priority`` and ``lazy`` attributes are
