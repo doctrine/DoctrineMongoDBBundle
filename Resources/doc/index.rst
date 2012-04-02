@@ -557,7 +557,7 @@ ordered alphabetically.
 
 You can use this new method just like the default finder methods of the repository::
 
-    $product = $this->get('doctrine.odm.mongodb.document_manager')
+    $products = $this->get('doctrine.odm.mongodb.document_manager')
         ->getRepository('AcmeStoreBundle:Product')
         ->findAllOrderedByName();
 
