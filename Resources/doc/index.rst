@@ -719,7 +719,7 @@ and then :ref:`tagging<book-service-container-tags>` it with a specific tag.
 SecurityBundle integration
 --------------------------
 
-A use provider is available for your MongoDB documents, working exactly the
+A user provider is available for your MongoDB projects, working exactly the
 same than the `entity` provider described in :doc:`the cookbook</cookbook/security/entity_provider>`
 
 .. configuration-block::
