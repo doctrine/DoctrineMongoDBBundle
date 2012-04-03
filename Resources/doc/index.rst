@@ -33,8 +33,8 @@ Installation
 To use the MongoDB ODM, you'll need two libraries provided by Doctrine and
 one bundle that integrates them into Symfony.
 
-1. Using Composer (recommended)
--------------------------------
+Install the bundle with Composer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To install DoctrineMongoDBBundle with Composer just add the following to your
 `composer.json` file::
@@ -44,7 +44,7 @@ To install DoctrineMongoDBBundle with Composer just add the following to your
             "doctrine/mongodb-odm-bundle": "dev-master"
         }
     }
-    
+
 Then, you can install the new dependencies by running Composer's ``update``
 command from the directory where your ``composer.json`` file is located:
 
@@ -53,10 +53,10 @@ command from the directory where your ``composer.json`` file is located:
     php composer.phar update
 
 Now, Composer will automatically download all required files, and install them
-for you. 
+for you.
 
-2. Register the annotations and the bundle
-------------------------------------------
+Register the annotations and the bundle
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Next, register the annotations library by adding the following to the autoloader
 (below the existing ``AnnotationRegistry::registerFile`` line)::
@@ -79,7 +79,7 @@ register the new bundle::
 
         // ...
     }
-    
+
 Congratulations! You're ready to get to work.
 
 Configuration
