@@ -17,6 +17,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Form\Type;
 use Doctrine\Bundle\MongoDBBundle\Form\ChoiceList\MongoDBQueryBuilderLoader;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Bridge\Doctrine\Form\Type\DoctrineType;
+use Symfony\Component\Form\Options;
 
 /**
  * Form type for a MongoDB document
@@ -27,38 +28,44 @@ use Symfony\Bridge\Doctrine\Form\Type\DoctrineType;
 class DocumentType extends DoctrineType
 {
     /**
-     * Return the default loader object.
-     *
-     * @param ObjectManager $manager
-     * @param array $options
-     * @return MongoDBQueryBuilderLoader
+     * @see Symfony\Bridge\Doctrine\Form\Type\DoctrineType::getLoader()
      */
-    protected function getLoader(ObjectManager $manager, array $options)
+    public function getLoader(ObjectManager $manager, $queryBuilder, $class)
     {
         return new MongoDBQueryBuilderLoader(
-            $options['query_builder'],
+            $queryBuilder,
             $manager,
-            $options['class']
+            $class
         );
     }
 
-    public function getDefaultOptions(array $options)
+    /**
+     * @see Symfony\Bridge\Doctrine\Form\Type\DoctrineType::getDefaultOptions()
+     */
+    public function getDefaultOptions()
     {
-        $defaultOptions = parent::getDefaultOptions($options);
+        $defaultOptions = parent::getDefaultOptions();
 
         // alias "em" as "document_manager"
         $defaultOptions['document_manager'] = null;
-        if (isset($options['document_manager'])) {
-            if (isset($options['em'])) {
-                throw new \InvalidArgumentException('You cannot set both an "em" and "document_manager" option.');
+        $defaultOptions['em'] = function (Options $options) {
+            if (isset($options['document_manager'])) {
+                if (isset($options['em'])) {
+                    throw new \InvalidArgumentException('You cannot set both an "em" and "document_manager" option.');
+                }
+
+                return $options['document_manager'];
             }
 
-            $defaultOptions['em'] = $options['document_manager'];
-        }
+            return null;
+        };
 
         return $defaultOptions;
     }
 
+    /**
+     * @see Symfony\Component\Form\FormTypeInterface::getName()
+     */
     public function getName()
     {
         return 'document';
