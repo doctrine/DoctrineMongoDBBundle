@@ -240,7 +240,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $serviceName = sprintf('doctrine.odm.mongodb.%s_metadata_cache', $documentManager['name']);
 
         if ('service' === $type) {
-            $container->setAlias($serviceName, $dmMetadataCacheDriver['id']);
+            $container->setAlias($serviceName, new Alias($dmMetadataCacheDriver['id'], false));
 
             return;
         }
@@ -258,6 +258,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         } else {
              $cacheDef = new Definition(sprintf('%%doctrine.odm.mongodb.cache.%s.class%%', $type));
         }
+
+        $cacheDef->setPublic(false);
 
         $container->setDefinition($serviceName, $cacheDef);
     }
