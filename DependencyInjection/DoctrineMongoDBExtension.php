@@ -237,6 +237,13 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     {
         $dmMetadataCacheDriver = isset($documentManager['metadata_cache_driver']) ? $documentManager['metadata_cache_driver'] : $defaultMetadataCache;
         $type = $dmMetadataCacheDriver['type'];
+        $serviceName = sprintf('doctrine.odm.mongodb.%s_metadata_cache', $documentManager['name']);
+
+        if ('service' === $type) {
+            $container->setAlias($serviceName, $dmMetadataCacheDriver['id']);
+
+            return;
+        }
 
         if ('memcache' === $type) {
             $memcacheClass = isset($dmMetadataCacheDriver['class']) ? $dmMetadataCacheDriver['class'] : sprintf('%%doctrine.odm.mongodb.cache.%s.class%%', $type);
@@ -252,7 +259,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
              $cacheDef = new Definition(sprintf('%%doctrine.odm.mongodb.cache.%s.class%%', $type));
         }
 
-        $container->setDefinition(sprintf('doctrine.odm.mongodb.%s_metadata_cache', $documentManager['name']), $cacheDef);
+        $container->setDefinition($serviceName, $cacheDef);
     }
 
     /**
