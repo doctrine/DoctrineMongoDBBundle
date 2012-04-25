@@ -92,6 +92,7 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('host')->end()
                                     ->scalarNode('port')->end()
                                     ->scalarNode('instance_class')->end()
+                                    ->scalarNode('id')->end()
                                 ->end()
                             ->end()
                         ->end()
