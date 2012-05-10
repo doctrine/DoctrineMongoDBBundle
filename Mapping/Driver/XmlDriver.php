@@ -130,12 +130,8 @@ class XmlDriver extends BaseXmlDriver
     {
         $defaultFileName = str_replace('\\', '.', $className) . $this->fileExtension;
         foreach ($this->paths as $path) {
-            if (!isset($this->prefixes[$path])) {
-                if (file_exists($path . DIRECTORY_SEPARATOR . $defaultFileName)) {
-                    return $path . DIRECTORY_SEPARATOR . $defaultFileName;
-                }
-
-                continue;
+            if (file_exists($path . DIRECTORY_SEPARATOR . $defaultFileName)) {
+               return $path . DIRECTORY_SEPARATOR . $defaultFileName;
             }
 
             $prefix = $this->prefixes[$path];
