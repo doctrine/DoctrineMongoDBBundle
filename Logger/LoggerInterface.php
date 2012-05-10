@@ -12,17 +12,17 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\MongoDBBundle\Validator\Constraints;
-
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+namespace Doctrine\Bundle\MongoDBBundle\Logger;
 
 /**
- * Constraint for the unique document validator
+ * Logger for the Doctrine MongoDB ODM.
  *
- * @Annotation
- * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
+ * The {@link logQuery()} method must be configured as the logger callable in
+ * the service container.
+ *
+ * @author Kris Wallsmith <kris@symfony.com>
  */
-class Unique extends UniqueEntity
+interface LoggerInterface
 {
-    public $service = 'doctrine_odm.mongodb.unique';
+    function logQuery(array $query);
 }

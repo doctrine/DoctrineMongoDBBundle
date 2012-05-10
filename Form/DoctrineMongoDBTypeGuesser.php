@@ -1,21 +1,25 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Form;
+namespace Doctrine\Bundle\MongoDBBundle\Form;
 
+use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Symfony\Component\Form\FormTypeGuesserInterface;
 use Symfony\Component\Form\Guess\Guess;
 use Symfony\Component\Form\Guess\TypeGuess;
 use Symfony\Component\Form\Guess\ValueGuess;
-use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Tries to guess form types according to ODM mappings
@@ -24,15 +28,13 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  */
 class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
 {
-    /**
-     * The Doctrine MongoDB document manager
-     * @var DocumentManager
-     */
-    protected $documentManager = null;
+    protected $registry;
 
-    public function __construct(DocumentManager $documentManager)
+    private $cache = array();
+
+    public function __construct(ManagerRegistry $registry)
     {
-        $this->documentManager = $documentManager;
+        $this->registry = $registry;
     }
 
     /**
@@ -40,69 +42,69 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
      */
     public function guessType($class, $property)
     {
-        if ($this->isMappedClass($class)) {
-            $metadata = $this->documentManager->getClassMetadata($class);
-
-            if ($metadata->hasAssociation($property)) {
-                $multiple = $metadata->isCollectionValuedAssociation($property);
-                $mapping = $metadata->getFieldMapping($property);
-
-                return new TypeGuess(
-                    'document',
-                    array(
-                        'document_manager' => $this->documentManager,
-                        'class' => $mapping['targetDocument'],
-                        'multiple' => $multiple,
-                        'expanded' => $multiple
-                    ),
-                    Guess::HIGH_CONFIDENCE
-                );
-            } else {
-                $fieldMapping = $metadata->getFieldMapping($property);
-                switch ($fieldMapping['type'])
-                {
-                    case 'collection':
-                        return new TypeGuess(
-                            'Collection',
-                            array(),
-                            Guess::MEDIUM_CONFIDENCE
-                        );
-                    case 'boolean':
-                        return new TypeGuess(
-                            'checkbox',
-                            array(),
-                            Guess::HIGH_CONFIDENCE
-                        );
-                    case 'date':
-                    case 'timestamp':
-                        return new TypeGuess(
-                            'datetime',
-                            array(),
-                           Guess::HIGH_CONFIDENCE
-                        );
-                    case 'float':
-                        return new TypeGuess(
-                            'number',
-                            array(),
-                            Guess::MEDIUM_CONFIDENCE
-                        );
-                    case 'int':
-                        return new TypeGuess(
-                            'integer',
-                            array(),
-                            Guess::MEDIUM_CONFIDENCE
-                        );
-                    case 'string':
-                        return new TypeGuess(
-                            'text',
-                            array(),
-                            Guess::MEDIUM_CONFIDENCE
-                        );
-                }
-            }
+        if (!$ret = $this->getMetadata($class)) {
+            return new TypeGuess('text', array(), Guess::LOW_CONFIDENCE);
         }
 
-        return new TypeGuess('text', array(), Guess::LOW_CONFIDENCE);
+        list($metadata, $name) = $ret;
+
+        if ($metadata->hasAssociation($property)) {
+            $multiple = $metadata->isCollectionValuedAssociation($property);
+            $mapping = $metadata->getFieldMapping($property);
+
+            return new TypeGuess(
+                'document',
+                array(
+                    'em' => $name,
+                    'class' => $mapping['targetDocument'],
+                    'multiple' => $multiple,
+                    'expanded' => $multiple
+                ),
+                Guess::HIGH_CONFIDENCE
+            );
+        }
+
+        $fieldMapping = $metadata->getFieldMapping($property);
+        switch ($fieldMapping['type'])
+        {
+            case 'collection':
+                return new TypeGuess(
+                    'Collection',
+                    array(),
+                    Guess::MEDIUM_CONFIDENCE
+                );
+            case 'boolean':
+                return new TypeGuess(
+                    'checkbox',
+                    array(),
+                    Guess::HIGH_CONFIDENCE
+                );
+            case 'date':
+            case 'timestamp':
+                return new TypeGuess(
+                    'datetime',
+                    array(),
+                   Guess::HIGH_CONFIDENCE
+                );
+            case 'float':
+                return new TypeGuess(
+                    'number',
+                    array(),
+                    Guess::MEDIUM_CONFIDENCE
+                );
+            case 'int':
+                return new TypeGuess(
+                    'integer',
+                    array(),
+                    Guess::MEDIUM_CONFIDENCE
+                );
+            case 'string':
+                return new TypeGuess(
+                    'text',
+                    array(),
+                    Guess::MEDIUM_CONFIDENCE
+                );
+        }
     }
 
     /**
@@ -110,22 +112,19 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
      */
     public function guessRequired($class, $property)
     {
-        if ($this->isMappedClass($class)) {
-            $metadata = $this->documentManager->getClassMetadata($class);
-
-            if ($metadata->hasField($property)) {
-                if (!$metadata->isNullable($property)) {
-                    return new ValueGuess(
-                        true,
-                        Guess::HIGH_CONFIDENCE
-                    );
-                }
-
+        $ret = $this->getMetadata($class);
+        if ($ret && $ret[0]->hasField($property)) {
+            if (!$ret[0]->isNullable($property)) {
                 return new ValueGuess(
-                    false,
-                    Guess::MEDIUM_CONFIDENCE
+                    true,
+                    Guess::HIGH_CONFIDENCE
                 );
             }
+
+            return new ValueGuess(
+                false,
+                Guess::MEDIUM_CONFIDENCE
+            );
         }
     }
 
@@ -134,35 +133,55 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
      */
     public function guessMaxLength($class, $property)
     {
-        if ($this->isMappedClass($class)) {
-            $metadata = $this->documentManager->getClassMetadata($class);
+        $ret = $this->getMetadata($class);
+        if ($ret && $ret[0]->hasField($property) && !$ret[0]->hasAssociation($property)) {
+            $mapping = $ret[0]->getFieldMapping($property);
 
-            if (!$metadata->hasAssociation($property)) {
-                $mapping = $metadata->getFieldMapping($property);
+            if (isset($mapping['length'])) {
+                return new ValueGuess($mapping['length'], Guess::HIGH_CONFIDENCE);
+            }
 
-
-                if (isset($mapping['length'])) {
-                    return new ValueGuess(
-                        $mapping['length'],
-                        Guess::HIGH_CONFIDENCE
-                    );
-                }
+            if ('float' === $mapping['type']) {
+                return new ValueGuess(null, Guess::MEDIUM_CONFIDENCE);
             }
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function guessMinLength($class, $property)
     {
     }
 
     /**
-     * Returns whether Doctrine 2 metadata exists for that class
-     *
-     * @param string $class
-     * @return Boolean
+     * @inheritDoc
      */
-    protected function isMappedClass($class)
+    public function guessPattern($class, $property)
     {
-        return !$this->documentManager->getConfiguration()->getMetadataDriverImpl()->isTransient($class);
+        $ret = $this->getMetadata($class);
+        if ($ret && $ret[0]->hasField($property) && !$ret[0]->hasAssociation($property)) {
+            $mapping = $ret[0]->getFieldMapping($property);
+
+            if ('float' === $mapping['type']) {
+                return new ValueGuess(null, Guess::MEDIUM_CONFIDENCE);
+            }
+        }
+    }
+
+    protected function getMetadata($class)
+    {
+        if (array_key_exists($class, $this->cache)) {
+            return $this->cache[$class];
+        }
+
+        $this->cache[$class] = null;
+        foreach ($this->registry->getManagers() as $name => $dm) {
+            try {
+                return $this->cache[$class] = array($dm->getClassMetadata($class), $name);
+            } catch (MongoDBException $e) {
+                // not an entity or mapped super class
+            }
+        }
     }
 }

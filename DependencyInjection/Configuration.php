@@ -1,6 +1,18 @@
 <?php
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection;
+/*
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -13,18 +25,6 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  */
 class Configuration implements ConfigurationInterface
 {
-    private $debug;
-
-    /**
-     * Constructor.
-     *
-     * @param Boolean $debug The kernel.debug value
-     */
-    public function __construct($debug)
-    {
-        $this->debug = (Boolean) $debug;
-    }
-
     /**
      * Generates the configuration tree builder.
      *
@@ -70,7 +70,16 @@ class Configuration implements ConfigurationInterface
                         ->children()
                             ->scalarNode('connection')->end()
                             ->scalarNode('database')->end()
-                            ->booleanNode('logging')->defaultValue($this->debug)->end()
+                            ->booleanNode('logging')->defaultValue('%kernel.debug%')->end()
+                            ->arrayNode('profiler')
+                                ->addDefaultsIfNotSet()
+                                ->treatTrueLike(array('enabled' => true))
+                                ->treatFalseLike(array('enabled' => false))
+                                ->children()
+                                    ->booleanNode('enabled')->defaultValue('%kernel.debug%')->end()
+                                    ->booleanNode('pretty')->defaultValue('%kernel.debug%')->end()
+                                ->end()
+                            ->end()
                             ->scalarNode('auto_mapping')->defaultFalse()->end()
                             ->arrayNode('metadata_cache_driver')
                                 ->beforeNormalization()
@@ -83,6 +92,7 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('host')->end()
                                     ->scalarNode('port')->end()
                                     ->scalarNode('instance_class')->end()
+                                    ->scalarNode('id')->end()
                                 ->end()
                             ->end()
                         ->end()
@@ -136,7 +146,8 @@ class Configuration implements ConfigurationInterface
                                     ->booleanNode('connect')->end()
                                     ->scalarNode('persist')->end()
                                     ->scalarNode('timeout')->end()
-                                    ->booleanNode('replicaSet')->end()
+                                    ->scalarNode('replicaSet')->end()
+                                    ->booleanNode('slaveOkay')->end()
                                     ->scalarNode('username')->end()
                                     ->scalarNode('password')->end()
                                 ->end()

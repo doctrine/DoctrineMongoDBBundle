@@ -1,29 +1,33 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle;
+namespace Doctrine\Bundle\MongoDBBundle;
 
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CreateHydratorDirectoryPass;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CreateProxyDirectoryPass;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
+use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\DoctrineValidationPass;
+use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\RegisterEventListenersAndSubscribersPass;
+use Symfony\Bridge\Doctrine\DependencyInjection\Security\UserProvider\EntityFactory;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection\Compiler\AddValidatorNamespaceAliasPass;
-use Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection\Compiler\CreateHydratorDirectoryPass;
-use Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection\Compiler\CreateProxyDirectoryPass;
-use Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection\Compiler\RegisterEventListenersAndSubscribersPass;
-use Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 
 /**
  * Doctrine MongoDB ODM bundle.
  *
- * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
+ * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
  * @author Kris Wallsmith <kris@symfony.com>
  * @author Jonathan H. Wage <jonwage@gmail.com>
  */
@@ -31,12 +35,14 @@ class DoctrineMongoDBBundle extends Bundle
 {
     public function build(ContainerBuilder $container)
     {
-        parent::build($container);
-
-        $container->addCompilerPass(new AddValidatorNamespaceAliasPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION);
-        $container->addCompilerPass(new RegisterEventListenersAndSubscribersPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION);
+        $container->addCompilerPass(new RegisterEventListenersAndSubscribersPass('doctrine.odm.mongodb.connections', 'doctrine.odm.mongodb.%s_connection.event_manager', 'doctrine.odm.mongodb'), PassConfig::TYPE_BEFORE_OPTIMIZATION);
         $container->addCompilerPass(new CreateProxyDirectoryPass(), PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new CreateHydratorDirectoryPass(), PassConfig::TYPE_BEFORE_REMOVING);
+        $container->addCompilerPass(new DoctrineValidationPass('mongodb'));
+
+        if ($container->hasExtension('security')) {
+            $container->getExtension('security')->addUserProviderFactory(new EntityFactory('mongodb', 'doctrine.odm.mongodb.security.user.provider'));
+        }
     }
 
     public function getContainerExtension()

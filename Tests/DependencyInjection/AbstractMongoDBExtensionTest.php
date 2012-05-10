@@ -1,22 +1,24 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests\DependencyInjection;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
-use Symfony\Bundle\DoctrineMongoDBBundle\Tests\TestCase;
-use Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection\Compiler\AddValidatorNamespaceAliasPass;
-use Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\AddValidatorNamespaceAliasPass;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
+use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
-use Symfony\Component\DependencyInjection\Reference;
 
 abstract class AbstractMongoDBExtensionTest extends TestCase
 {
@@ -43,11 +45,10 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertEquals('Doctrine\Common\Cache\XcacheCache', $container->getParameter('doctrine.odm.mongodb.cache.xcache.class'));
         $this->assertEquals('Doctrine\ODM\MongoDB\Mapping\Driver\DriverChain', $container->getParameter('doctrine.odm.mongodb.metadata.driver_chain.class'));
         $this->assertEquals('Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver', $container->getParameter('doctrine.odm.mongodb.metadata.annotation.class'));
-        $this->assertEquals('Doctrine\Common\Annotations\AnnotationReader', $container->getParameter('doctrine.odm.mongodb.metadata.annotation_reader.class'));
-        $this->assertEquals('Symfony\Bundle\DoctrineMongoDBBundle\Mapping\Driver\XmlDriver', $container->getParameter('doctrine.odm.mongodb.metadata.xml.class'));
-        $this->assertEquals('Symfony\Bundle\DoctrineMongoDBBundle\Mapping\Driver\YamlDriver', $container->getParameter('doctrine.odm.mongodb.metadata.yml.class'));
+        $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver', $container->getParameter('doctrine.odm.mongodb.metadata.xml.class'));
+        $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Mapping\Driver\YamlDriver', $container->getParameter('doctrine.odm.mongodb.metadata.yml.class'));
 
-        $this->assertEquals('Symfony\Bundle\DoctrineMongoDBBundle\Validator\Constraints\UniqueValidator', $container->getParameter('doctrine_odm.mongodb.validator.unique.class'));
+        $this->assertEquals('Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator', $container->getParameter('doctrine_odm.mongodb.validator.unique.class'));
 
         $config = array(
             'proxy_namespace' => 'MyProxies',
@@ -62,7 +63,14 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $definition = $container->getDefinition('doctrine.odm.mongodb.default_connection');
         $this->assertEquals('%doctrine.odm.mongodb.connection.class%', $definition->getClass());
-        $this->assertEquals(array(null, array(), new Reference('doctrine.odm.mongodb.default_configuration')), $definition->getArguments());
+
+        $arguments = $definition->getArguments();
+        $this->assertEquals(null, $arguments[0]);
+        $this->assertEquals(array(), $arguments[1]);
+        $this->assertInstanceOf('Symfony\Component\DependencyInjection\Reference', $arguments[2]);
+        $this->assertEquals('doctrine.odm.mongodb.default_configuration', (string) $arguments[2]);
+        $this->assertInstanceOf('Symfony\Component\DependencyInjection\Reference', $arguments[3]);
+        $this->assertEquals('doctrine.odm.mongodb.default_connection.event_manager', (string) $arguments[3]);
 
         $definition = $container->getDefinition('doctrine.odm.mongodb.default_document_manager');
         $this->assertEquals('%doctrine.odm.mongodb.document_manager.class%', $definition->getClass());
@@ -95,7 +103,14 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $definition = $container->getDefinition('doctrine.odm.mongodb.default_connection');
         $this->assertEquals('%doctrine.odm.mongodb.connection.class%', $definition->getClass());
-        $this->assertEquals(array('mongodb://localhost:27017', array('connect' => true), new Reference('doctrine.odm.mongodb.default_configuration')), $definition->getArguments());
+
+        $arguments = $definition->getArguments();
+        $this->assertEquals('mongodb://localhost:27017', $arguments[0]);
+        $this->assertEquals(array('connect' => true), $arguments[1]);
+        $this->assertInstanceOf('Symfony\Component\DependencyInjection\Reference', $arguments[2]);
+        $this->assertEquals('doctrine.odm.mongodb.default_configuration', (string) $arguments[2]);
+        $this->assertInstanceOf('Symfony\Component\DependencyInjection\Reference', $arguments[3]);
+        $this->assertEquals('doctrine.odm.mongodb.default_connection.event_manager', (string) $arguments[3]);
 
         $definition = $container->getDefinition('doctrine.odm.mongodb.default_document_manager');
         $this->assertEquals('%doctrine.odm.mongodb.document_manager.class%', $definition->getClass());
@@ -124,7 +139,14 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $definition = $container->getDefinition('doctrine.odm.mongodb.default_connection');
         $this->assertEquals('%doctrine.odm.mongodb.connection.class%', $definition->getClass());
-        $this->assertEquals(array('mongodb://localhost:27017', array('connect' => true), new Reference('doctrine.odm.mongodb.default_configuration')), $definition->getArguments());
+
+        $arguments = $definition->getArguments();
+        $this->assertEquals('mongodb://localhost:27017', $arguments[0]);
+        $this->assertEquals(array('connect' => true), $arguments[1]);
+        $this->assertInstanceOf('Symfony\Component\DependencyInjection\Reference', $arguments[2]);
+        $this->assertEquals('doctrine.odm.mongodb.default_configuration', (string) $arguments[2]);
+        $this->assertInstanceOf('Symfony\Component\DependencyInjection\Reference', $arguments[3]);
+        $this->assertEquals('doctrine.odm.mongodb.default_connection.event_manager', (string) $arguments[3]);
 
         $definition = $container->getDefinition('doctrine.odm.mongodb.default_configuration');
         $methodCalls = $definition->getMethodCalls();
@@ -143,6 +165,9 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertEquals('doctrine.odm.mongodb.default_connection', (string) $arguments[0]);
         $this->assertInstanceOf('Symfony\Component\DependencyInjection\Reference', $arguments[1]);
         $this->assertEquals('doctrine.odm.mongodb.default_configuration', (string) $arguments[1]);
+
+        $this->assertEquals('doctrine.odm.mongodb.default_document_manager', (string) $container->getAlias('doctrine.odm.mongodb.document_manager'));
+        $this->assertEquals('doctrine.odm.mongodb.default_connection.event_manager', (string) $container->getAlias('doctrine.odm.mongodb.event_manager'));
     }
 
     public function testLoadSingleConnection()
@@ -159,7 +184,14 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $definition = $container->getDefinition('doctrine.odm.mongodb.default_connection');
         $this->assertEquals('%doctrine.odm.mongodb.connection.class%', $definition->getClass());
-        $this->assertEquals(array('mongodb://localhost:27017', array('connect' => true), new Reference('doctrine.odm.mongodb.default_configuration')), $definition->getArguments());
+
+        $arguments = $definition->getArguments();
+        $this->assertEquals('mongodb://localhost:27017', $arguments[0]);
+        $this->assertEquals(array('connect' => true), $arguments[1]);
+        $this->assertInstanceOf('Symfony\Component\DependencyInjection\Reference', $arguments[2]);
+        $this->assertEquals('doctrine.odm.mongodb.default_configuration', (string) $arguments[2]);
+        $this->assertInstanceOf('Symfony\Component\DependencyInjection\Reference', $arguments[3]);
+        $this->assertEquals('doctrine.odm.mongodb.default_connection.event_manager', (string) $arguments[3]);
 
         $definition = $container->getDefinition('doctrine.odm.mongodb.default_document_manager');
         $this->assertEquals('%doctrine.odm.mongodb.document_manager.class%', $definition->getClass());
@@ -172,6 +204,9 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertEquals('doctrine.odm.mongodb.default_connection', (string) $arguments[0]);
         $this->assertInstanceOf('Symfony\Component\DependencyInjection\Reference', $arguments[1]);
         $this->assertEquals('doctrine.odm.mongodb.default_configuration', (string) $arguments[1]);
+
+        $this->assertEquals('doctrine.odm.mongodb.default_document_manager', (string) $container->getAlias('doctrine.odm.mongodb.document_manager'));
+        $this->assertEquals('doctrine.odm.mongodb.default_connection.event_manager', (string) $container->getAlias('doctrine.odm.mongodb.event_manager'));
     }
 
     public function testLoadMultipleConnections()
@@ -188,9 +223,14 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $definition = $container->getDefinition('doctrine.odm.mongodb.conn1_connection');
         $this->assertEquals('%doctrine.odm.mongodb.connection.class%', $definition->getClass());
-        $this->assertEquals(array('mongodb://localhost:27017', array('connect' => true), new Reference('doctrine.odm.mongodb.conn1_configuration')), $definition->getArguments());
 
-        $this->assertEquals('doctrine.odm.mongodb.dm2_document_manager', (string) $container->getAlias('doctrine.odm.mongodb.document_manager'));
+        $arguments = $definition->getArguments();
+        $this->assertEquals('mongodb://localhost:27017', $arguments[0]);
+        $this->assertEquals(array('connect' => true), $arguments[1]);
+        $this->assertInstanceOf('Symfony\Component\DependencyInjection\Reference', $arguments[2]);
+        $this->assertEquals('doctrine.odm.mongodb.conn1_configuration', (string) $arguments[2]);
+        $this->assertInstanceOf('Symfony\Component\DependencyInjection\Reference', $arguments[3]);
+        $this->assertEquals('doctrine.odm.mongodb.conn1_connection.event_manager', (string) $arguments[3]);
 
         $definition = $container->getDefinition('doctrine.odm.mongodb.dm1_document_manager');
         $this->assertEquals('%doctrine.odm.mongodb.document_manager.class%', $definition->getClass());
@@ -206,7 +246,14 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $definition = $container->getDefinition('doctrine.odm.mongodb.conn2_connection');
         $this->assertEquals('%doctrine.odm.mongodb.connection.class%', $definition->getClass());
-        $this->assertEquals(array('mongodb://localhost:27017', array('connect' => true), new Reference('doctrine.odm.mongodb.conn2_configuration')), $definition->getArguments());
+
+        $arguments = $definition->getArguments();
+        $this->assertEquals('mongodb://localhost:27017', $arguments[0]);
+        $this->assertEquals(array('connect' => true), $arguments[1]);
+        $this->assertInstanceOf('Symfony\Component\DependencyInjection\Reference', $arguments[2]);
+        $this->assertEquals('doctrine.odm.mongodb.conn2_configuration', (string) $arguments[2]);
+        $this->assertInstanceOf('Symfony\Component\DependencyInjection\Reference', $arguments[3]);
+        $this->assertEquals('doctrine.odm.mongodb.conn2_connection.event_manager', (string) $arguments[3]);
 
         $definition = $container->getDefinition('doctrine.odm.mongodb.dm2_document_manager');
         $this->assertEquals('%doctrine.odm.mongodb.document_manager.class%', $definition->getClass());
@@ -219,6 +266,9 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertEquals('doctrine.odm.mongodb.conn2_connection', (string) $arguments[0]);
         $this->assertInstanceOf('Symfony\Component\DependencyInjection\Reference', $arguments[1]);
         $this->assertEquals('doctrine.odm.mongodb.dm2_configuration', (string) $arguments[1]);
+
+        $this->assertEquals('doctrine.odm.mongodb.dm2_document_manager', (string) $container->getAlias('doctrine.odm.mongodb.document_manager'));
+        $this->assertEquals('doctrine.odm.mongodb.conn2_connection.event_manager', (string) $container->getAlias('doctrine.odm.mongodb.event_manager'));
     }
 
     public function testBundleDocumentAliases()
@@ -330,25 +380,6 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $container->compile();
 
         $this->assertTrue($container->getParameter('doctrine.odm.mongodb.auto_generate_proxy_classes'));
-    }
-
-    public function testRegistersValidatorNamespace()
-    {
-        $container = $this->getContainer();
-        $container->register('validator.mapping.loader.annotation_loader')
-            ->setClass('stdClass')
-            ->addArgument(array('foo' => 'Foo\\'));
-        $container->getCompilerPassConfig()->setOptimizationPasses(array());
-        $container->getCompilerPassConfig()->setRemovingPasses(array());
-        $container->addCompilerPass(new AddValidatorNamespaceAliasPass());
-        $container->compile();
-
-        $definition = $container->getDefinition('validator.mapping.loader.annotation_loader');
-        $arguments = $definition->getArguments();
-        $this->assertEquals(array(
-            'assertMongoDB' => 'Symfony\\Bundle\\DoctrineMongoDBBundle\\Validator\\Constraints\\',
-            'foo' => 'Foo\\',
-        ), $arguments[0], 'compiler adds constraint alias to validator');
     }
 
     protected function getContainer($bundle = 'YamlBundle')

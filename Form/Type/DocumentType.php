@@ -1,85 +1,71 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Form\Type;
+namespace Doctrine\Bundle\MongoDBBundle\Form\Type;
 
-use Symfony\Component\Form\FormBuilder;
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Bundle\DoctrineMongoDBBundle\Form\ChoiceList\DocumentChoiceList;
-use Symfony\Bundle\DoctrineMongoDBBundle\Form\EventListener\MergeCollectionListener;
-use Symfony\Bundle\DoctrineMongoDBBundle\Form\DataTransformer\DocumentsToArrayTransformer;
-use Symfony\Bundle\DoctrineMongoDBBundle\Form\DataTransformer\DocumentToIdTransformer;
-use Symfony\Component\Form\AbstractType;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Bundle\MongoDBBundle\Form\ChoiceList\MongoDBQueryBuilderLoader;
+use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Bridge\Doctrine\Form\Type\DoctrineType;
+use Symfony\Component\Form\Options;
 
 /**
  * Form type for a MongoDB document
  *
  * @author Thibault Duplessis <thibault.duplessis@gmail.com>
+ * @author Christophe Coevoet <stof@notk.org>
  */
-class DocumentType extends AbstractType
+class DocumentType extends DoctrineType
 {
-    private $documentManager;
-
-    public function __construct(DocumentManager $documentManager)
+    /**
+     * @see Symfony\Bridge\Doctrine\Form\Type\DoctrineType::getLoader()
+     */
+    public function getLoader(ObjectManager $manager, $queryBuilder, $class)
     {
-        $this->documentManager = $documentManager;
-    }
-
-    public function buildForm(FormBuilder $builder, array $options)
-    {
-        if ($options['multiple']) {
-            $builder->addEventSubscriber(new MergeCollectionListener())
-                ->prependClientTransformer(new DocumentsToArrayTransformer($options['choice_list']));
-        } else {
-            $builder->prependClientTransformer(new DocumentToIdTransformer($options['choice_list']));
-        }
-    }
-
-    public function getDefaultOptions(array $options)
-    {
-        $defaultOptions = array(
-            'template' => 'choice',
-            'multiple' => false,
-            'expanded' => false,
-            'document_manager' => $this->documentManager,
-            'class' => null,
-            'property' => null,
-            'query_builder' => null,
-            'choices' => array(),
-            'preferred_choices' => array(),
-            'multiple' => false,
-            'expanded' => false,
+        return new MongoDBQueryBuilderLoader(
+            $queryBuilder,
+            $manager,
+            $class
         );
+    }
 
-        $options = array_replace($defaultOptions, $options);
+    /**
+     * @see Symfony\Bridge\Doctrine\Form\Type\DoctrineType::getDefaultOptions()
+     */
+    public function getDefaultOptions()
+    {
+        $defaultOptions = parent::getDefaultOptions();
 
-        if (!isset($options['choice_list'])) {
-            $defaultOptions['choice_list'] = new DocumentChoiceList(
-                $options['document_manager'],
-                $options['class'],
-                $options['property'],
-                $options['query_builder'],
-                $options['choices']
-            );
-        }
+        // alias "em" as "document_manager"
+        $defaultOptions['document_manager'] = null;
+        $defaultOptions['em'] = function (Options $options) {
+            if (isset($options['document_manager'])) {
+                if (isset($options['em'])) {
+                    throw new \InvalidArgumentException('You cannot set both an "em" and "document_manager" option.');
+                }
+
+                return $options['document_manager'];
+            }
+
+            return null;
+        };
 
         return $defaultOptions;
     }
 
-    public function getParent(array $options)
-    {
-        return 'choice';
-    }
-
+    /**
+     * @see Symfony\Component\Form\FormTypeInterface::getName()
+     */
     public function getName()
     {
         return 'document';

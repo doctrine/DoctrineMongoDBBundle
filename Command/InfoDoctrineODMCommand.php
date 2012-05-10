@@ -1,19 +1,21 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Command;
+namespace Doctrine\Bundle\MongoDBBundle\Command;
 
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -47,12 +49,10 @@ EOT
     {
         $documentManagerName = $input->getOption('dm') ?
             $input->getOption('dm') :
-            $this->container->getParameter('doctrine.odm.mongodb.default_document_manager');
-
-        $documentManagerService = sprintf('doctrine.odm.mongodb.%s_document_manager', $documentManagerName);
+            $this->getContainer()->get('doctrine.odm.mongodb')->getDefaultManagerName();
 
         /* @var $documentManager Doctrine\ODM\MongoDB\DocumentManager */
-        $documentManager = $this->container->get($documentManagerService);
+        $documentManager = $this->getContainer()->get('doctrine.odm.mongodb')->getManager($documentManagerName);
 
         $documentClassNames = $documentManager->getConfiguration()
                                           ->getMetadataDriverImpl()

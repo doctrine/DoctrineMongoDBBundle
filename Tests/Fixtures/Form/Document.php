@@ -1,14 +1,16 @@
 <?php
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests\Fixtures\Form;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form;
 
-/** @Document */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document */
 class Document
 {
-    /** @Id(strategy="none") */
+    /** @ODM\Id(strategy="none") */
     protected $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
     public function __construct($id, $name) {

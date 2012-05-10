@@ -1,20 +1,23 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests\DependencyInjection;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Bundle\DoctrineMongoDBBundle\DependencyInjection\Configuration;
-use Symfony\Component\Yaml\Yaml;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Configuration;
 use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Yaml\Yaml;
 
 class ConfigurationTest extends \PHPUnit_Framework_TestCase
 {
@@ -76,7 +79,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                         'connect'    => true,
                         'persist'    => 'persist_val',
                         'timeout'    => 500,
-                        'replicaSet' => true,
+                        'replicaSet' => 'foo',
+                        'slaveOkay'  => true,
                         'username'   => 'username_val',
                         'password'   => 'password_val',
                     ),
@@ -88,7 +92,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             ),
             'document_managers' => array(
                 'dm1' => array(
-                    'logging'      => false,
+                    'logging'      => '%kernel.debug%',
                     'auto_mapping' => false,
                     'metadata_cache_driver' => array(
                         'type'           => 'memcache',
@@ -102,6 +106,10 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                             'type'    => 'annotations',
                             'mapping' => true,
                         ),
+                    ),
+                    'profiler' => array(
+                        'enabled' => '%kernel.debug%',
+                        'pretty'  => '%kernel.debug%',
                     ),
                 ),
                 'dm2' => array(
@@ -122,6 +130,10 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                             'mapping'   => true,
                         )
                     ),
+                    'profiler' => array(
+                        'enabled' => '%kernel.debug%',
+                        'pretty'  => '%kernel.debug%',
+                    ),
                 )
             )
         );
@@ -131,7 +143,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
 
     public function fullConfigurationProvider()
     {
-      $yaml = Yaml::load(__DIR__.'/Fixtures/config/yml/full.yml');
+      $yaml = Yaml::parse(__DIR__.'/Fixtures/config/yml/full.yml');
       $yaml = $yaml['doctrine_mongodb'];
 
        return array(
@@ -200,7 +212,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 array('document_managers' => array('default' => array('mappings' => array('foomap' => array('type' => 'val1'), 'barmap' => array('dir' => 'val2'))))),
                 array('document_managers' => array('default' => array('mappings' => array('barmap' => array('prefix' => 'val3'))))),
             ),
-            array('document_managers' => array('default' => array('logging' => false, 'auto_mapping' => false, 'mappings' => array('foomap' => array('type' => 'val1', 'mapping' => true), 'barmap' => array('prefix' => 'val3', 'mapping' => true))))),
+            array('document_managers' => array('default' => array('logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'mappings' => array('foomap' => array('type' => 'val1', 'mapping' => true), 'barmap' => array('prefix' => 'val3', 'mapping' => true))))),
         );
 
         // connections are merged non-recursively.
@@ -222,8 +234,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 array('document_managers' => array('bardm' => array('database' => 'val3'))),
             ),
             array('document_managers' => array(
-                'foodm' => array('database' => 'val1', 'logging' => false, 'auto_mapping' => false, 'mappings' => array()),
-                'bardm' => array('database' => 'val3', 'logging' => false, 'auto_mapping' => false, 'mappings' => array()),
+                'foodm' => array('database' => 'val1', 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'mappings' => array()),
+                'bardm' => array('database' => 'val3', 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'mappings' => array()),
             )),
         );
 
@@ -264,8 +276,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 )),
                 'document_managers',
                 array(
-                    'foo' => array('connection' => 'conn1', 'logging' => false, 'auto_mapping' => false, 'mappings' => array()),
-                    'bar' => array('connection' => 'conn2', 'logging' => false, 'auto_mapping' => false, 'mappings' => array()),
+                    'foo' => array('connection' => 'conn1', 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'mappings' => array()),
+                    'bar' => array('connection' => 'conn2', 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'mappings' => array()),
                 ),
             ),
             // mapping configuration that's beneath a specific document manager
@@ -278,9 +290,10 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 'document_managers',
                 array(
                     'foo' => array(
-                        'connection'   => 'conn1', 
+                        'connection'   => 'conn1',
                         'mappings'     => array('foo-mapping' => array('type' => 'xml', 'mapping' => true)),
-                        'logging'      => false,
+                        'logging'      => '%kernel.debug%',
+                        'profiler'     => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'),
                         'auto_mapping' => false,
                     ),
                 ),

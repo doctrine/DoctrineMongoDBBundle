@@ -1,40 +1,36 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Command;
+namespace Doctrine\Bundle\MongoDBBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\Command;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Doctrine\ODM\MongoDB\Tools\Console\Helper\DocumentManagerHelper;
-use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Doctrine\ODM\MongoDB\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Tools\DocumentGenerator;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * Base class for Doctrine ODM console commands to extend.
  *
  * @author     Justin Hileman <justin@shopopensky.com>
  */
-abstract class DoctrineODMCommand extends Command
+abstract class DoctrineODMCommand extends ContainerAwareCommand
 {
     public static function setApplicationDocumentManager(Application $application, $dmName)
     {
-        $container = $application->getKernel()->getContainer();
-        $dmName = $dmName ? $dmName : 'default';
-        $dmServiceName = sprintf('doctrine.odm.mongodb.%s_document_manager', $dmName);
-        if (!$container->has($dmServiceName)) {
-            throw new \InvalidArgumentException(sprintf('Could not find Doctrine ODM DocumentManager named "%s"', $dmName));
-        }
-
-        $dm = $container->get($dmServiceName);
+        $dm = $application->getKernel()->getContainer()->get('doctrine.odm.mongodb')->getManager($dmName);
         $helperSet = $application->getHelperSet();
         $helperSet->set(new DocumentManagerHelper($dm), 'dm');
     }
@@ -42,24 +38,18 @@ abstract class DoctrineODMCommand extends Command
     protected function getDocumentGenerator()
     {
         $documentGenerator = new DocumentGenerator();
-        $documentGenerator->setAnnotationPrefix('mongodb:');
         $documentGenerator->setGenerateAnnotations(false);
         $documentGenerator->setGenerateStubMethods(true);
         $documentGenerator->setRegenerateDocumentIfExists(false);
         $documentGenerator->setUpdateDocumentIfExists(true);
         $documentGenerator->setNumSpaces(4);
+
         return $documentGenerator;
     }
 
     protected function getDoctrineDocumentManagers()
     {
-        $documentManagerNames = $this->container->getParameter('doctrine.odm.mongodb.document_managers');
-        $documentManagers = array();
-        foreach ($documentManagerNames as $documentManagerName) {
-            $dm = $this->container->get(sprintf('doctrine.odm.mongodb.%s_document_manager', $documentManagerName));
-            $documentManagers[] = $dm;
-        }
-        return $documentManagers;
+        return $this->getContainer()->get('doctrine.odm.mongodb')->getManagers();
     }
 
     protected function getBundleMetadatas(Bundle $bundle)
@@ -67,7 +57,7 @@ abstract class DoctrineODMCommand extends Command
         $namespace = $bundle->getNamespace();
         $bundleMetadatas = array();
         $documentManagers = $this->getDoctrineDocumentManagers();
-        foreach ($documentManagers as $key => $dm) {
+        foreach ($documentManagers as $dm) {
             $cmf = new DisconnectedClassMetadataFactory();
             $cmf->setDocumentManager($dm);
             $cmf->setConfiguration($dm->getConfiguration());

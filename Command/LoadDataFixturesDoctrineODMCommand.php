@@ -1,30 +1,26 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Command;
+namespace Doctrine\Bundle\MongoDBBundle\Command;
 
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Output\Output;
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\HttpKernel\Util\Filesystem;
-use Symfony\Bundle\DoctrineFixturesBundle\Common\DataFixtures\Loader as DataFixturesLoader;
 use Doctrine\Common\DataFixtures\Executor\MongoDBExecutor;
 use Doctrine\Common\DataFixtures\Purger\MongoDBPurger;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Internal\CommitOrderCalculator;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use InvalidArgumentException;
+use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Load data fixtures from bundles.
@@ -60,31 +56,18 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $dmName = $input->getOption('dm');
-        $dmName = $dmName ? $dmName : 'default';
-        $dmServiceName = sprintf('doctrine.odm.mongodb.%s_document_manager', $dmName);
-
-        if (!$this->container->has($dmServiceName)) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'Could not find a document manager configured with the name "%s". Check your '.
-                    'application configuration to configure your Doctrine document managers.', $dmName
-                )
-            );
-        }
-
-        $dm = $this->container->get($dmServiceName);
+        $dm = $this->getContainer()->get('doctrine.odm.mongodb')->getManager($input->getOption('dm'));
         $dirOrFile = $input->getOption('fixtures');
         if ($dirOrFile) {
             $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
         } else {
             $paths = array();
-            foreach ($this->container->get('kernel')->getBundles() as $bundle) {
+            foreach ($this->getContainer()->get('kernel')->getBundles() as $bundle) {
                 $paths[] = $bundle->getPath().'/DataFixtures/MongoDB';
             }
         }
 
-        $loader = new DataFixturesLoader($this->container);
+        $loader = new ContainerAwareLoader($this->getContainer());
         foreach ($paths as $path) {
             if (is_dir($path)) {
                 $loader->loadFromDirectory($path);

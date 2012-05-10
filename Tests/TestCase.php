@@ -1,25 +1,38 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests;
+namespace Doctrine\Bundle\MongoDBBundle\Tests;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\MongoDB\Connection;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 
 class TestCase extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
+        if (!class_exists('Mongo')) {
+            $this->markTestSkipped('Mongo PHP/PECL Extension is not available.');
+        }
         if (!class_exists('Doctrine\\ODM\\MongoDB\\Version')) {
             $this->markTestSkipped('Doctrine MongoDB ODM is not available.');
+        }
+        try {
+            new \Mongo();
+        } catch (\MongoException $e) {
+            $this->markTestSkipped('Unable to connect to Mongo.');
         }
     }
 
@@ -34,7 +47,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
         $config->setHydratorDir(\sys_get_temp_dir());
         $config->setProxyNamespace('SymfonyTests\Doctrine');
         $config->setHydratorNamespace('SymfonyTests\Doctrine');
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver($paths));
+        $config->setMetadataDriverImpl(new AnnotationDriver(new AnnotationReader(), $paths));
         $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache());
 
         return DocumentManager::create(new Connection(), $config);

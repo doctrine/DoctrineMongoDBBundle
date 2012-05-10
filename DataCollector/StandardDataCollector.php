@@ -1,42 +1,47 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\DataCollector;
+namespace Doctrine\Bundle\MongoDBBundle\DataCollector;
 
-use Symfony\Component\HttpKernel\DataCollector\DataCollector;
-use Symfony\Bundle\DoctrineMongoDBBundle\Logger\DoctrineMongoDBLogger;
+use Doctrine\Bundle\MongoDBBundle\Logger\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
 /**
  * Data collector for the Doctrine MongoDB ODM.
  *
  * @author Kris Wallsmith <kris@symfony.com>
  */
-class DoctrineMongoDBDataCollector extends DataCollector
+class StandardDataCollector extends DataCollector implements LoggerInterface
 {
-    protected $logger;
+    protected $queries;
 
-    public function __construct(DoctrineMongoDBLogger $logger)
+    public function __construct()
     {
-        $this->logger = $logger;
+        $this->queries = array();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    public function logQuery(array $query)
+    {
+        $this->queries[] = $query;
+    }
+
     public function collect(Request $request, Response $response, \Exception $exception = null)
     {
-        $this->data['nb_queries'] = $this->logger->getNbQueries();
-        $this->data['queries'] = $this->logger->getQueries();
+        $this->data['nb_queries'] = count($this->queries);
+        $this->data['queries'] = array_map('json_encode', $this->queries);
     }
 
     public function getQueryCount()
@@ -49,9 +54,6 @@ class DoctrineMongoDBDataCollector extends DataCollector
         return $this->data['queries'];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getName()
     {
         return 'mongodb';

@@ -1,109 +1,41 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine MongoDBBundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Logger;
+namespace Doctrine\Bundle\MongoDBBundle\DataCollector;
 
 use Doctrine\MongoDB\GridFSFile;
-use Symfony\Component\HttpKernel\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Logger for the Doctrine MongoDB ODM.
- *
- * The {@link logQuery()} method is configured as the logger callable in the
- * service container.
+ * A data collector that formats pretty queries.
  *
  * @author Kris Wallsmith <kris@symfony.com>
  */
-class DoctrineMongoDBLogger
+class PrettyDataCollector extends StandardDataCollector
 {
-    protected $logger;
+    private $batchInsertThreshold;
 
-    protected $prefix;
-    protected $queries;
-
-    protected $processed;
-    protected $formattedQueries;
-    protected $nbRealQueries;
-
-    /**
-     * Constructor.
-     *
-     * @param LoggerInterface $logger The Symfony logger
-     * @param string          $prefix A prefix for messages sent to the Symfony logger
-     */
-    public function __construct(LoggerInterface $logger = null, $prefix = 'MongoDB query: ')
+    public function setBatchInsertThreshold($batchInsertThreshold)
     {
-        $this->logger = $logger;
-        $this->prefix = $prefix;
-        $this->queries = array();
-        $this->processed = false;
+        $this->batchInsertThreshold = $batchInsertThreshold;
     }
 
-    /**
-     * Logs a query.
-     *
-     * This method is configured as the logger callable in the service
-     * container.
-     *
-     * @param array $query A query log array from Doctrine
-     */
-    public function logQuery(array $query)
+    public function collect(Request $request, Response $response, \Exception $exception = null)
     {
-        $this->queries[] = $query;
-        $this->processed = false;
-
-        if (null !== $this->logger) {
-            $this->logger->info($this->prefix.static::bsonEncode($query));
-        }
-    }
-
-    /**
-     * Returns the number of queries that have been logged.
-     *
-     * @return integer The number of queries logged
-     */
-    public function getNbQueries()
-    {
-        if (!$this->processed) {
-            $this->processQueries();
-        }
-
-        return $this->nbRealQueries;
-    }
-
-    /**
-     * Returns a human-readable array of queries logged.
-     *
-     * @return array An array of queries
-     */
-    public function getQueries()
-    {
-        if (!$this->processed) {
-            $this->processQueries();
-        }
-
-        return $this->formattedQueries;
-    }
-
-    /**
-     * Groups and formats query arrays.
-     *
-     * @param array $queries An array of query arrays
-     *
-     * @return array An array of human-readable queries
-     */
-    protected function processQueries()
-    {
-        $this->formattedQueries = array();
-        $this->nbRealQueries = 0;
+        $this->data['queries'] = array();
+        $this->data['nb_queries'] = 0;
 
         $grouped = array();
         $ordered = array();
@@ -133,7 +65,7 @@ class DoctrineMongoDBLogger
             foreach ($logs as $log) {
                 if (isset($log['db']) && $db != $log['db']) {
                     // for readability
-                    $this->formattedQueries[$i++] = 'use '.$log['db'].';';
+                    $this->data['queries'][$i++] = 'use '.$log['db'].';';
                     $db = $log['db'];
                 }
 
@@ -144,8 +76,8 @@ class DoctrineMongoDBLogger
                             $query  = 'db'.$query;
                         }
 
-                        $this->formattedQueries[$i++] = $query.';';
-                        ++$this->nbRealQueries;
+                        $this->data['queries'][$i++] = $query.';';
+                        ++$this->data['nb_queries'];
                     }
 
                     $query = 'db.'.$log['collection'];
@@ -155,17 +87,23 @@ class DoctrineMongoDBLogger
                 if (isset($log['authenticate'])) {
                     $query .= '.authenticate()';
                 } elseif (isset($log['batchInsert'])) {
-                    $query .= '.batchInsert(**'.$log['num'].' item(s)**)';
+                    if (1 === $log['num']) {
+                        $query .= '.insert('.$this->bsonEncode($log['data']).')';
+                    } elseif (null !== $this->batchInsertThreshold && $this->batchInsertThreshold <= $log['num']) {
+                        $query .= '.batchInsert(**'.$log['num'].' items**)';
+                    } else {
+                        $query .= '.batchInsert('.$this->bsonEncode($log['data']).')';
+                    }
                 } elseif (isset($log['command'])) {
                     $query .= '.command()';
                 } elseif (isset($log['count'])) {
                     $query .= '.count(';
                     if ($log['query'] || $log['limit'] || $log['skip']) {
-                        $query .= static::bsonEncode($log['query']);
+                        $query .= $this->bsonEncode($log['query']);
                         if ($log['limit'] || $log['skip']) {
-                            $query .= ', '.static::bsonEncode($log['limit']);
+                            $query .= ', '.$this->bsonEncode($log['limit']);
                             if ($log['skip']) {
-                                $query .= ', '.static::bsonEncode($log['skip']);
+                                $query .= ', '.$this->bsonEncode($log['skip']);
                             }
                         }
                     }
@@ -175,7 +113,7 @@ class DoctrineMongoDBLogger
                 } elseif (isset($log['createDBRef'])) {
                     $query .= '.createDBRef()';
                 } elseif (isset($log['deleteIndex'])) {
-                    $query .= '.dropIndex('.static::bsonEncode($log['keys']).')';
+                    $query .= '.dropIndex('.$this->bsonEncode($log['keys']).')';
                 } elseif (isset($log['deleteIndexes'])) {
                     $query .= '.dropIndexes()';
                 } elseif (isset($log['drop'])) {
@@ -183,46 +121,46 @@ class DoctrineMongoDBLogger
                 } elseif (isset($log['dropDatabase'])) {
                     $query .= '.dropDatabase()';
                 } elseif (isset($log['ensureIndex'])) {
-                    $query .= '.ensureIndex('.static::bsonEncode($log['keys']).', '.static::bsonEncode($log['options']).')';
+                    $query .= '.ensureIndex('.$this->bsonEncode($log['keys']).', '.$this->bsonEncode($log['options']).')';
                 } elseif (isset($log['execute'])) {
                     $query .= '.execute()';
                 } elseif (isset($log['find'])) {
                     $query .= '.find(';
                     if ($log['query'] || $log['fields']) {
-                        $query .= static::bsonEncode($log['query']);
+                        $query .= $this->bsonEncode($log['query']);
                         if ($log['fields']) {
-                            $query .= ', '.static::bsonEncode($log['fields']);
+                            $query .= ', '.$this->bsonEncode($log['fields']);
                         }
                     }
                     $query .= ')';
                 } elseif (isset($log['findOne'])) {
                     $query .= '.findOne(';
                     if ($log['query'] || $log['fields']) {
-                        $query .= static::bsonEncode($log['query']);
+                        $query .= $this->bsonEncode($log['query']);
                         if ($log['fields']) {
-                            $query .= ', '.static::bsonEncode($log['fields']);
+                            $query .= ', '.$this->bsonEncode($log['fields']);
                         }
                     }
                     $query .= ')';
                 } elseif (isset($log['getDBRef'])) {
                     $query .= '.getDBRef()';
                 } elseif (isset($log['group'])) {
-                    $query .= '.group('.static::bsonEncode(array(
+                    $query .= '.group('.$this->bsonEncode(array(
                         'keys'    => $log['keys'],
                         'initial' => $log['initial'],
                         'reduce'  => $log['reduce'],
                     )).')';
                 } elseif (isset($log['insert'])) {
-                    $query .= '.insert('.static::bsonEncode($log['document']).')';
+                    $query .= '.insert('.$this->bsonEncode($log['document']).')';
                 } elseif (isset($log['remove'])) {
-                    $query .= '.remove('.static::bsonEncode($log['query']).')';
+                    $query .= '.remove('.$this->bsonEncode($log['query']).')';
                 } elseif (isset($log['save'])) {
-                    $query .= '.save('.static::bsonEncode($log['document']).')';
+                    $query .= '.save('.$this->bsonEncode($log['document']).')';
                 } elseif (isset($log['sort'])) {
-                    $query .= '.sort('.static::bsonEncode($log['sortFields']).')';
+                    $query .= '.sort('.$this->bsonEncode($log['sortFields']).')';
                 } elseif (isset($log['update'])) {
                     // todo: include $log['options']
-                    $query .= '.update('.static::bsonEncode($log['query']).', '.static::bsonEncode($log['newObj']).')';
+                    $query .= '.update('.$this->bsonEncode($log['query']).', '.$this->bsonEncode($log['newObj']).')';
                 } elseif (isset($log['validate'])) {
                     $query .= '.validate()';
                 }
@@ -234,12 +172,15 @@ class DoctrineMongoDBLogger
                 $query  = 'db'.$query;
             }
 
-            $this->formattedQueries[$i++] = $query.';';
-            ++$this->nbRealQueries;
+            $this->data['queries'][$i++] = $query.';';
+            ++$this->data['nb_queries'];
         }
     }
 
-    static protected function bsonEncode($query, $array = true)
+    /**
+     * @todo Move this to a collaborator
+     */
+    private function bsonEncode($query, $array = true)
     {
         $parts = array();
 
@@ -257,13 +198,13 @@ class DoctrineMongoDBLogger
             } elseif (is_scalar($value)) {
                 $formatted = '"'.$value.'"';
             } elseif (is_array($value)) {
-                $formatted = static::bsonEncode($value);
+                $formatted = $this->bsonEncode($value);
             } elseif ($value instanceof \MongoId) {
                 $formatted = 'ObjectId("'.$value.'")';
             } elseif ($value instanceof \MongoDate) {
-                $formatted = 'new Date("'.date('r', $value->sec).'")';
+                $formatted = 'new ISODate("'.date('c', $value->sec).'")';
             } elseif ($value instanceof \DateTime) {
-                $formatted = 'new Date("'.date('r', $value->getTimestamp()).'")';
+                $formatted = 'new ISODate("'.date('c', $value->getTimestamp()).'")';
             } elseif ($value instanceof \MongoRegex) {
                 $formatted = 'new RegExp("'.$value->regex.'", "'.$value->flags.'")';
             } elseif ($value instanceof \MongoMinKey) {
@@ -275,7 +216,7 @@ class DoctrineMongoDBLogger
             } elseif ($value instanceof \MongoGridFSFile || $value instanceof GridFSFile) {
                 $formatted = 'new MongoGridFSFile("'.$value->getFilename().'")';
             } elseif ($value instanceof \stdClass) {
-                $formatted = static::bsonEncode((array) $value);
+                $formatted = $this->bsonEncode((array) $value);
             } else {
                 $formatted = (string) $value;
             }
