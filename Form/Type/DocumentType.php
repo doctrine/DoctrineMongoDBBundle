@@ -17,7 +17,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Form\Type;
 use Doctrine\Bundle\MongoDBBundle\Form\ChoiceList\MongoDBQueryBuilderLoader;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Bridge\Doctrine\Form\Type\DoctrineType;
-use Symfony\Component\Form\Options;
+use Symfony\Component\OptionsResolver\Options;
 
 /**
  * Form type for a MongoDB document
