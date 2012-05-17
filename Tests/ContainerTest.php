@@ -29,6 +29,8 @@ class ContainerTest extends TestCase
         $this->container = new ContainerBuilder(new ParameterBag(array(
             'kernel.bundles'   => array(),
             'kernel.cache_dir' => sys_get_temp_dir(),
+            'kernel.root_dir'  => sys_get_temp_dir(),
+            'kernel.environment'  => 'test',
             'kernel.debug'     => true,
         )));
 
