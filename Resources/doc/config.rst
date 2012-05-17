@@ -190,7 +190,7 @@ following syntax:
                     default-database="hello_%kernel.environment%"
                     default-document-manager="dm2"
                     default-connection="dm2"
-                    proxy-namespace="Proxies"
+                    proxy-namespace="MongoDBODMProxies"
                     auto-generate-proxy-classes="true">
                 <doctrine_mongodb:connection id="conn1" server="mongodb://localhost:27017">
                     <doctrine_mongodb:options>
@@ -286,7 +286,7 @@ Full Default Configuration
                         replicaSet:           ~
                         username:             ~
                         password:             ~
-            proxy_namespace:      Proxies
+            proxy_namespace:      MongoDBODMProxies
             proxy_dir:            %kernel.cache_dir%/doctrine/odm/mongodb/Proxies
             auto_generate_proxy_classes:  false
             hydrator_namespace:   Hydrators

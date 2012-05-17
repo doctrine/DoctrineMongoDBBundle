@@ -34,7 +34,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertEquals('Doctrine\MongoDB\Connection', $container->getParameter('doctrine.odm.mongodb.connection.class'));
         $this->assertEquals('Doctrine\ODM\MongoDB\Configuration', $container->getParameter('doctrine.odm.mongodb.configuration.class'));
         $this->assertEquals('Doctrine\ODM\MongoDB\DocumentManager', $container->getParameter('doctrine.odm.mongodb.document_manager.class'));
-        $this->assertEquals('Proxies', $container->getParameter('doctrine.odm.mongodb.proxy_namespace'));
+        $this->assertEquals('MongoDBODMProxies', $container->getParameter('doctrine.odm.mongodb.proxy_namespace'));
         $this->assertEquals(false, $container->getParameter('doctrine.odm.mongodb.auto_generate_proxy_classes'));
         $this->assertEquals('Doctrine\Common\Cache\ArrayCache', $container->getParameter('doctrine.odm.mongodb.cache.array.class'));
         $this->assertEquals('Doctrine\Common\Cache\ApcCache', $container->getParameter('doctrine.odm.mongodb.cache.apc.class'));
