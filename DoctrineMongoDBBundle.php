@@ -66,8 +66,8 @@ class DoctrineMongoDBBundle extends Bundle
 
             $this->autoloader = function($class) use ($namespace, $dir, &$container) {
                 if (0 === strpos($class, $namespace)) {
-                    $className = str_replace('\\', '', substr($class, strlen($namespace) +1));
-                    $file = $dir.DIRECTORY_SEPARATOR.$className.'.php';
+                    $fileName = str_replace('\\', '', substr($class, strlen($namespace) +1));
+                    $file = $dir.DIRECTORY_SEPARATOR.$fileName.'.php';
 
                     if (!is_file($file) && $container->getParameter('kernel.debug')) {
                         $originalClassName = ClassUtils::getRealClass($class);
@@ -79,11 +79,9 @@ class DoctrineMongoDBBundle extends Bundle
                             if ($dm->getConfiguration()->getAutoGenerateProxyClasses()) {
                                 $classes = $dm->getMetadataFactory()->getAllMetadata();
 
-                                foreach ($classes as $class) {
-                                    $name = str_replace('\\', '', $class->name);
-
-                                    if ($name == $originalClassName) {
-                                        $dm->getProxyFactory()->generateProxyClasses(array($class));
+                                foreach ($classes as $classMetadata) {
+                                    if ($classMetadata->name == $originalClassName) {
+                                        $dm->getProxyFactory()->generateProxyClasses(array($classMetadata));
                                     }
                                 }
                             }
