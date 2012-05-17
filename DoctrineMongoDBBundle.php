@@ -14,6 +14,7 @@
 
 namespace Doctrine\Bundle\MongoDBBundle;
 
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CreateHydratorDirectoryPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CreateProxyDirectoryPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
@@ -69,7 +70,7 @@ class DoctrineMongoDBBundle extends Bundle
                     $file = $dir.DIRECTORY_SEPARATOR.$className.'.php';
 
                     if (!is_file($file) && $container->getParameter('kernel.debug')) {
-                        $originalClassName = substr($className, 0, -5);
+                        $originalClassName = ClassUtils::getRealClass($class);
                         $registry = $container->get('doctrine.odm.mongodb');
 
                         // Tries to auto-generate the proxy file
@@ -89,13 +90,11 @@ class DoctrineMongoDBBundle extends Bundle
                         }
 
                         clearstatcache($file);
-
-                        if (!is_file($file)) {
-                            throw new \RuntimeException(sprintf('The proxy file "%s" does not exist. If you still have objects serialized in the session, you need to clear the session manually.', $file));
-                        }
                     }
 
-                    require $file;
+                    if (is_file($file)) {
+                        require $file;
+                    }
                 }
             };
             spl_autoload_register($this->autoloader);
