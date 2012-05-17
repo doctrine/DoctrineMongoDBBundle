@@ -1,27 +1,17 @@
 <?php
 
-/*
- * This file is part of the Doctrine MongoDBBundle
- *
- * The code was originally distributed inside the Symfony framework.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- * (c) Doctrine Project
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
+use Doctrine\Common\Annotations\AnnotationRegistry;
 
-if (file_exists($file = __DIR__.'/autoload.php')) {
-    require_once $file;
-} elseif (file_exists($file = __DIR__.'/autoload.php.dist')) {
-    require_once $file;
+if (!$loader = @include __DIR__ . '/../vendor/.composer/autoload.php') {
+    die("You must set up the project dependencies, run the following commands:
+wget http://getcomposer.org/composer.phar
+php composer.phar install
+");
 }
 
-register_shutdown_function(function() {
-    try {
-        $mongo = new Mongo();
-        $mongo->doctrine->drop();
-    } catch (\MongoException $e) {
-    }
+AnnotationRegistry::registerLoader(function($class) use ($loader) {
+    $loader->loadClass($class);
+    return class_exists($class, false);
 });
+
+AnnotationRegistry::registerFile(__DIR__ . '/../vendor/doctrine/mongodb-odm/lib/Doctrine/ODM/MongoDB/Mapping/Annotations/DoctrineAnnotations.php');

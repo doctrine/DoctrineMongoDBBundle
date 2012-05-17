@@ -44,11 +44,6 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        // can't currently default this correctly in Configuration
-        if (!isset($config['metadata_cache_driver'])) {
-            $config['metadata_cache_driver'] = array('type' => 'array');
-        }
-
         if (empty($config['default_connection'])) {
             $keys = array_keys($config['connections']);
             $config['default_connection'] = reset($keys);
@@ -72,7 +67,6 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $config['document_managers'],
             $config['default_document_manager'],
             $config['default_database'],
-            $config['metadata_cache_driver'],
             $container
         );
     }
@@ -112,10 +106,9 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      * @param array $dmConfigs An array of document manager configs
      * @param string $defaultDM The default document manager name
      * @param string $defaultDB The default db name
-     * @param string $defaultMetadataCache The default metadata cache configuration
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
-    protected function loadDocumentManagers(array $dmConfigs, $defaultDM, $defaultDB, $defaultMetadataCache, ContainerBuilder $container)
+    protected function loadDocumentManagers(array $dmConfigs, $defaultDM, $defaultDB, ContainerBuilder $container)
     {
         $dms = array();
         foreach ($dmConfigs as $name => $documentManager) {
@@ -124,7 +117,6 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 $documentManager,
                 $defaultDM,
                 $defaultDB,
-                $defaultMetadataCache,
                 $container
             );
             $dms[$name] = sprintf('doctrine.odm.mongodb.%s_document_manager', $name);
@@ -138,10 +130,9 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      * @param array $documentManager        A document manager configuration array
      * @param string $defaultDM The default document manager name
      * @param string $defaultDB The default db name
-     * @param string $defaultMetadataCache The default metadata cache configuration
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
-    protected function loadDocumentManager(array $documentManager, $defaultDM, $defaultDB, $defaultMetadataCache, ContainerBuilder $container)
+    protected function loadDocumentManager(array $documentManager, $defaultDM, $defaultDB, ContainerBuilder $container)
     {
         $configServiceName = sprintf('doctrine.odm.mongodb.%s_configuration', $documentManager['name']);
         $connectionName = isset($documentManager['connection']) ? $documentManager['connection'] : $documentManager['name'];
@@ -155,7 +146,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         }
 
         $this->loadDocumentManagerBundlesMappingInformation($documentManager, $odmConfigDef, $container);
-        $this->loadDocumentManagerMetadataCacheDriver($documentManager, $container, $defaultMetadataCache);
+        $this->loadObjectManagerCacheDriver($documentManager, $container, 'metadata_cache');
 
         $methods = array(
             'setMetadataCacheImpl' => new Reference(sprintf('doctrine.odm.mongodb.%s_metadata_cache', $documentManager['name'])),
@@ -224,44 +215,6 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 new Alias(sprintf('doctrine.odm.mongodb.%s_connection.event_manager', $connectionName))
             );
         }
-    }
-
-    /**
-     * Loads the configured document manager metadata cache driver.
-     *
-     * @param array $config                 A configured document manager array
-     * @param ContainerBuilder $container   A ContainerBuilder instance
-     * @param array $defaultMetadataCache   The default metadata cache configuration array
-     */
-    protected function loadDocumentManagerMetadataCacheDriver(array $documentManager, ContainerBuilder $container, $defaultMetadataCache)
-    {
-        $dmMetadataCacheDriver = isset($documentManager['metadata_cache_driver']) ? $documentManager['metadata_cache_driver'] : $defaultMetadataCache;
-        $type = $dmMetadataCacheDriver['type'];
-        $serviceName = sprintf('doctrine.odm.mongodb.%s_metadata_cache', $documentManager['name']);
-
-        if ('service' === $type) {
-            $container->setAlias($serviceName, new Alias($dmMetadataCacheDriver['id'], false));
-
-            return;
-        }
-
-        if ('memcache' === $type) {
-            $memcacheClass = isset($dmMetadataCacheDriver['class']) ? $dmMetadataCacheDriver['class'] : sprintf('%%doctrine.odm.mongodb.cache.%s.class%%', $type);
-            $cacheDef = new Definition($memcacheClass);
-            $memcacheHost = isset($dmMetadataCacheDriver['host']) ? $dmMetadataCacheDriver['host'] : '%doctrine.odm.mongodb.cache.memcache_host%';
-            $memcachePort = isset($dmMetadataCacheDriver['port']) ? $dmMetadataCacheDriver['port'] : '%doctrine.odm.mongodb.cache.memcache_port%';
-            $memcacheInstanceClass = isset($dmMetadataCacheDriver['instance-class']) ? $dmMetadataCacheDriver['instance-class'] : (isset($dmMetadataCacheDriver['instance_class']) ? $dmMetadataCacheDriver['instance_class'] : '%doctrine.odm.mongodb.cache.memcache_instance.class%');
-            $memcacheInstance = new Definition($memcacheInstanceClass);
-            $memcacheInstance->addMethodCall('connect', array($memcacheHost, $memcachePort));
-            $container->setDefinition(sprintf('doctrine.odm.mongodb.%s_memcache_instance', $documentManager['name']), $memcacheInstance);
-            $cacheDef->addMethodCall('setMemcache', array(new Reference(sprintf('doctrine.odm.mongodb.%s_memcache_instance', $documentManager['name']))));
-        } else {
-             $cacheDef = new Definition(sprintf('%%doctrine.odm.mongodb.cache.%s.class%%', $type));
-        }
-
-        $cacheDef->setPublic(false);
-
-        $container->setDefinition($serviceName, $cacheDef);
     }
 
     /**
