@@ -1,17 +1,12 @@
 <?php
 
-use Doctrine\Common\Annotations\AnnotationRegistry;
-
-if (!$loader = @include __DIR__ . '/../vendor/.composer/autoload.php') {
-    die("You must set up the project dependencies, run the following commands:
-wget http://getcomposer.org/composer.phar
-php composer.phar install
-");
+$file = __DIR__.'/../vendor/autoload.php';
+if (!file_exists($file)) {
+    throw new RuntimeException('Install dependencies to run test suite.');
 }
 
-AnnotationRegistry::registerLoader(function($class) use ($loader) {
-    $loader->loadClass($class);
-    return class_exists($class, false);
-});
+require_once $file;
 
-AnnotationRegistry::registerFile(__DIR__ . '/../vendor/doctrine/mongodb-odm/lib/Doctrine/ODM/MongoDB/Mapping/Annotations/DoctrineAnnotations.php');
+use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+
+AnnotationDriver::registerAnnotationClasses();
