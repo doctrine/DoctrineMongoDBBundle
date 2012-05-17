@@ -286,8 +286,8 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
     public function testYamlBundleMappingDetection()
     {
-        $container = $this->getContainer();
-        $loader = new DoctrineMongoDBExtension('YamlBundle');
+        $container = $this->getContainer('YamlBundle');
+        $loader = new DoctrineMongoDBExtension();
 
         $loader->load(array(array('document_managers' => array('default' => array('mappings' => array('YamlBundle' => array()))))), $container);
 
@@ -387,9 +387,13 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         require_once __DIR__.'/Fixtures/Bundles/'.$bundle.'/'.$bundle.'.php';
 
         return new ContainerBuilder(new ParameterBag(array(
-            'kernel.bundles'     => array($bundle => 'DoctrineMongoDBBundle\\Tests\\DependencyInjection\\Fixtures\\Bundles\\'.$bundle.'\\'.$bundle),
-            'kernel.cache_dir'   => sys_get_temp_dir(),
-            'kernel.debug'       => false,
+            'kernel.bundles'          => array($bundle => 'DoctrineMongoDBBundle\\Tests\\DependencyInjection\\Fixtures\\Bundles\\'.$bundle.'\\'.$bundle),
+            'kernel.cache_dir'        => __DIR__,
+            'kernel.compiled_classes' => array(),
+            'kernel.debug'            => false,
+            'kernel.environment'      => 'test',
+            'kernel.name'             => 'kernel',
+            'kernel.root_dir'         => __DIR__,
         )));
     }
 }
