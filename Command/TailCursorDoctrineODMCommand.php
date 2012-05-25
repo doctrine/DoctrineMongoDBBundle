@@ -68,6 +68,7 @@ class TailCursorDoctrineODMCommand extends ContainerAwareCommand
                 // read all results so far, wait for more
                 sleep($sleepTime);
             }
+
             $cursor->next();
             $document = $cursor->current();
             $id = $document->getId();
@@ -84,8 +85,9 @@ class TailCursorDoctrineODMCommand extends ContainerAwareCommand
 
             if (!$input->getOption('no-flush')) {
                 $dm->flush();
-                $dm->clear();
             }
+
+            $dm->clear();
         }
     }
 }
