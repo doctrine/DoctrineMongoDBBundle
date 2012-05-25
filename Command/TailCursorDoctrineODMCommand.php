@@ -37,6 +37,7 @@ class TailCursorDoctrineODMCommand extends ContainerAwareCommand
             ->addArgument('document', InputArgument::REQUIRED, 'The document we are going to tail the cursor for.')
             ->addArgument('finder', InputArgument::REQUIRED, 'The repository finder method which returns the cursor to tail.')
             ->addArgument('processor', InputArgument::REQUIRED, 'The service id to use to process the documents.')
+            ->addOption('no-flush', null, InputOption::VALUE_NONE, 'If set, the document manager won\'t be flushed after each document processing')
             ->addOption('sleep-time', null, InputOption::VALUE_REQUIRED, 'The number of seconds to wait between two checks.', 10)
         ;
     }
@@ -45,7 +46,7 @@ class TailCursorDoctrineODMCommand extends ContainerAwareCommand
     {
         $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
         $repository = $dm->getRepository($input->getArgument('document'));
-        $repositoryReflection = new \ReflectionClass(get_class($repository));
+        $repositoryReflection = new \ReflectionClass($repository);
         $documentReflection = $repository->getDocumentManager()->getMetadataFactory()->getMetadataFor($input->getArgument('document'))->getReflectionClass();
         $processor = $this->getContainer()->get($input->getArgument('processor'));
         $sleepTime = $input->getOption('sleep-time');
@@ -54,7 +55,7 @@ class TailCursorDoctrineODMCommand extends ContainerAwareCommand
             throw new \InvalidArgumentException('A tailable cursor processor must implement the ProcessorInterface.');
         }
 
-        $processorReflection = new \ReflectionClass(get_class($processor));
+        $processorReflection = new \ReflectionClass($processor);
         $method = $input->getArgument('finder');
 
         $output->writeln(sprintf('Getting cursor for <info>%s</info> from <info>%s#%s</info>', $input->getArgument('document'), $repositoryReflection->getShortName(), $method));
@@ -81,8 +82,10 @@ class TailCursorDoctrineODMCommand extends ContainerAwareCommand
                 continue;
             }
 
-            $dm->flush();
-            $dm->clear();
+            if (!$input->getOption('no-flush')) {
+                $dm->flush();
+                $dm->clear();
+            }
         }
     }
 }
