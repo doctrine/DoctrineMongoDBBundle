@@ -64,6 +64,10 @@ class TailCursorDoctrineODMCommand extends ContainerAwareCommand
 
         while (true) {
             while (!$cursor->hasNext()) {
+                if (!$cursor->valid()) {
+                    $output->writeln('<error>Invalid cursor, requerying</error>');
+                    $cursor = $repository->$method();
+                }
                 $output->writeln('<comment>Nothing found, waiting to try again</comment>');
                 // read all results so far, wait for more
                 sleep($sleepTime);
