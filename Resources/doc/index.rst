@@ -44,8 +44,9 @@ of your project:
         git=http://github.com/doctrine/mongodb-odm.git
 
     [DoctrineMongoDBBundle]
-        git=http://github.com/symfony/DoctrineMongoDBBundle.git
+        git=http://github.com/doctrine/DoctrineMongoDBBundle.git
         target=/bundles/Symfony/Bundle/DoctrineMongoDBBundle
+        version=version=origin/2.0
 
 Now, update the vendor libraries by running:
 
