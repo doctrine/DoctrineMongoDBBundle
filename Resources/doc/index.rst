@@ -46,7 +46,7 @@ of your project:
     [DoctrineMongoDBBundle]
         git=http://github.com/doctrine/DoctrineMongoDBBundle.git
         target=/bundles/Symfony/Bundle/DoctrineMongoDBBundle
-        version=version=origin/2.0
+        version=origin/2.0
 
 Now, update the vendor libraries by running:
 
