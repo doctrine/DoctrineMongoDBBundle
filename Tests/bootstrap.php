@@ -1,24 +1,15 @@
 <?php
 
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
-if (file_exists($file = __DIR__.'/autoload.php')) {
-    require_once $file;
-} elseif (file_exists($file = __DIR__.'/autoload.php.dist')) {
-    require_once $file;
+$file = __DIR__.'/../vendor/autoload.php';
+if (!file_exists($file)) {
+    throw new RuntimeException('Install dependencies to run test suite.');
 }
 
-register_shutdown_function(function() {
-    try {
-        $mongo = new Mongo();
-        $mongo->doctrine->drop();
-    } catch (\MongoException $e) {
-    }
-});
+$loader = require_once $file;
+
+// Specify autoloading for Symfony component test classes (2.0 only)
+$loader->add('Symfony\Tests',  __DIR__.'/../vendor/symfony/symfony/tests/');
+
+use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+
+AnnotationDriver::registerAnnotationClasses();
