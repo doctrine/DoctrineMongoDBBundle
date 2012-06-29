@@ -86,6 +86,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             'hydrator_namespace',
             'hydrator_dir',
             'auto_generate_hydrator_classes',
+            'default_commit_options',
         );
 
         foreach ($overrides as $key) {
@@ -158,6 +159,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             'setHydratorNamespace' => '%doctrine.odm.mongodb.hydrator_namespace%',
             'setAutoGenerateHydratorClasses' => '%doctrine.odm.mongodb.auto_generate_hydrator_classes%',
             'setDefaultDB' => $defaultDatabase,
+            'setDefaultCommitOptions' => '%doctrine.odm.mongodb.default_commit_options%'
         );
 
         // logging

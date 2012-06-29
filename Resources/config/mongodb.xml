@@ -31,6 +31,12 @@
         <parameter key="doctrine.odm.mongodb.hydrator_dir">%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators</parameter>
         <parameter key="doctrine.odm.mongodb.auto_generate_hydrator_classes">false</parameter>
 
+        <!-- commit options -->
+        <parameter key="doctrine.odm.mongodb.default_commit_options" type="collection">
+            <parameter key="safe">true</parameter>
+            <parameter key="fsync">false</parameter>
+        </parameter>
+
         <!-- cache -->
         <parameter key="doctrine.odm.mongodb.cache.array.class">Doctrine\Common\Cache\ArrayCache</parameter>
         <parameter key="doctrine.odm.mongodb.cache.apc.class">Doctrine\Common\Cache\ApcCache</parameter>
