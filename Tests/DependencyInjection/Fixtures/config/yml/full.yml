@@ -5,6 +5,10 @@ doctrine_mongodb:
     hydrator_namespace: Test_Hydrators
     auto_generate_hydrator_classes: true
 
+    default_commit_options:
+        safe: false
+        timeout: 10
+
     default_document_manager:  default_dm_name
     default_database:          default_db_name
 

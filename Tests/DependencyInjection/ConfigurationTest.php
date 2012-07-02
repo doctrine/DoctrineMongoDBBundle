@@ -30,6 +30,11 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $defaults = array(
             'auto_generate_hydrator_classes' => false,
             'auto_generate_proxy_classes'    => false,
+            'default_commit_options'         => array(
+                'safe' => true,
+                'fsync' => false,
+                'timeout' => \MongoCursor::$timeout,
+            ),
             'default_database'               => 'default',
             'document_managers'              => array(),
             'connections'                    => array(),
@@ -69,6 +74,11 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             'hydrator_dir'                   => '%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators',
             'hydrator_namespace'             => 'Test_Hydrators',
             'auto_generate_hydrator_classes' => true,
+            'default_commit_options'         => array(
+                'safe' => false,
+                'fsync' => false,
+                'timeout' => 10,
+            ),
             'default_document_manager'       => 'default_dm_name',
             'default_database'               => 'default_db_name',
             'default_connection'             => 'conn1',
