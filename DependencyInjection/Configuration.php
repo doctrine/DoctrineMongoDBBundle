@@ -49,6 +49,13 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('default_document_manager')->end()
                 ->scalarNode('default_connection')->end()
                 ->scalarNode('default_database')->defaultValue('default')->end()
+                ->arrayNode('default_commit_options')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode('safe')->defaultTrue()->end()
+                        ->booleanNode('fsync')->defaultFalse()->end()
+                    ->end()
+                ->end()
             ->end()
         ;
 
