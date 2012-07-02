@@ -54,6 +54,7 @@ class Configuration implements ConfigurationInterface
                     ->children()
                         ->booleanNode('safe')->defaultTrue()->end()
                         ->booleanNode('fsync')->defaultFalse()->end()
+                        ->scalarNode('timeout')->defaultValue(\MongoCursor::$timeout)->end()
                     ->end()
                 ->end()
             ->end()

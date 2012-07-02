@@ -159,7 +159,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             'setHydratorNamespace' => '%doctrine.odm.mongodb.hydrator_namespace%',
             'setAutoGenerateHydratorClasses' => '%doctrine.odm.mongodb.auto_generate_hydrator_classes%',
             'setDefaultDB' => $defaultDatabase,
-            'setDefaultCommitOptions' => '%doctrine.odm.mongodb.default_commit_options%'
+            'setDefaultCommitOptions' => '%doctrine.odm.mongodb.default_commit_options%',
         );
 
         // logging
