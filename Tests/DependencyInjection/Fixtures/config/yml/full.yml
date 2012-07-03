@@ -6,7 +6,7 @@ doctrine_mongodb:
     auto_generate_hydrator_classes: true
 
     default_commit_options:
-        safe: false
+        safe: 2
         timeout: 10
 
     default_document_manager:  default_dm_name

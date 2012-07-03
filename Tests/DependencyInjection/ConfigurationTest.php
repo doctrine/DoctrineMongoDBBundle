@@ -75,7 +75,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             'hydrator_namespace'             => 'Test_Hydrators',
             'auto_generate_hydrator_classes' => true,
             'default_commit_options'         => array(
-                'safe' => false,
+                'safe' => 2,
                 'fsync' => false,
                 'timeout' => 10,
             ),
@@ -309,6 +309,48 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                     ),
                 ),
             ),
+        );
+    }
+
+    /**
+     * @dataProvider getInvalidSafeCommitOptions
+     * @expectedException Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
+     */
+    public function testInvalidSafeCommitOptions($safeCommitOption)
+    {
+        $invalidConfig = array('default_commit_options' => array('safe' => $safeCommitOption));
+
+        $processor = new Processor();
+        $configuration = new Configuration(false);
+        $options = $processor->processConfiguration($configuration, array($invalidConfig));
+    }
+
+    public function getInvalidSafeCommitOptions()
+    {
+        return array(
+            array('NaN'),
+            array(-1.0),
+        );
+    }
+
+    /**
+     * @dataProvider getInvalidTimeoutCommitOptions
+     * @expectedException Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
+     */
+    public function testInvalidTimeoutCommitOptions($timeoutCommitOption)
+    {
+        $invalidConfig = array('default_commit_options' => array('timeout' => $timeoutCommitOption));
+
+        $processor = new Processor();
+        $configuration = new Configuration(false);
+        $options = $processor->processConfiguration($configuration, array($invalidConfig));
+    }
+
+    public function getInvalidTimeoutCommitOptions()
+    {
+        return array(
+            array('NaN'),
+            array(-2),
         );
     }
 }
