@@ -16,6 +16,7 @@
         "symfony/doctrine-bridge": "2.1.*@beta",
         "symfony/framework-bundle": "2.1.*@beta"
     },
+    "minimum-stability": "dev",
     "autoload": {
         "psr-0": {
             "Doctrine\\Bundle\\MongoDBBundle": ""
