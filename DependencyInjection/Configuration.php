@@ -72,6 +72,8 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('database')->end()
                             ->booleanNode('logging')->defaultValue($this->debug)->end()
                             ->scalarNode('auto_mapping')->defaultFalse()->end()
+                            ->scalarNode('retry_connect')->defaultValue(0)->end()
+                            ->scalarNode('retry_query')->defaultValue(0)->end()
                             ->arrayNode('metadata_cache_driver')
                                 ->beforeNormalization()
                                     ->ifTrue(function($v) { return !is_array($v); })
