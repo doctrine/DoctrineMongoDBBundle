@@ -43,7 +43,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertEquals('11211', $container->getParameter('doctrine.odm.mongodb.cache.memcache_port'));
         $this->assertEquals('Memcache', $container->getParameter('doctrine.odm.mongodb.cache.memcache_instance.class'));
         $this->assertEquals('Doctrine\Common\Cache\XcacheCache', $container->getParameter('doctrine.odm.mongodb.cache.xcache.class'));
-        $this->assertEquals('Doctrine\ODM\MongoDB\Mapping\Driver\DriverChain', $container->getParameter('doctrine.odm.mongodb.metadata.driver_chain.class'));
+        $this->assertEquals('Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain', $container->getParameter('doctrine.odm.mongodb.metadata.driver_chain.class'));
         $this->assertEquals('Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver', $container->getParameter('doctrine.odm.mongodb.metadata.annotation.class'));
         $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver', $container->getParameter('doctrine.odm.mongodb.metadata.xml.class'));
         $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Mapping\Driver\YamlDriver', $container->getParameter('doctrine.odm.mongodb.metadata.yml.class'));
