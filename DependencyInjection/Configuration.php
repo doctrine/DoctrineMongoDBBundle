@@ -108,6 +108,8 @@ class Configuration implements ConfigurationInterface
                                     ->end()
                                 ->end()
                             ->end()
+                            ->scalarNode('retry_connect')->end()
+                            ->scalarNode('retry_query')->end()
                         ->end()
                     ->end()
                 ->end()

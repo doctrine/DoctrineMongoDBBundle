@@ -69,7 +69,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $config['default_document_manager'],
             $config['default_database'],
             $config['metadata_cache_driver'],
-            $container
+            $container,
+            $config
         );
     }
 
@@ -111,7 +112,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      * @param string $defaultMetadataCache The default metadata cache configuration
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
-    protected function loadDocumentManagers(array $dmConfigs, $defaultDM, $defaultDB, $defaultMetadataCache, ContainerBuilder $container)
+    protected function loadDocumentManagers(array $dmConfigs, $defaultDM, $defaultDB, $defaultMetadataCache, ContainerBuilder $container, array $config)
     {
         foreach ($dmConfigs as $name => $documentManager) {
             $documentManager['name'] = $name;
@@ -120,7 +121,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 $defaultDM,
                 $defaultDB,
                 $defaultMetadataCache,
-                $container
+                $container,
+                $config[$name]
             );
         }
         $container->setParameter('doctrine.odm.mongodb.document_managers', array_keys($dmConfigs));
@@ -135,10 +137,12 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      * @param string $defaultMetadataCache The default metadata cache configuration
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
-    protected function loadDocumentManager(array $documentManager, $defaultDM, $defaultDB, $defaultMetadataCache, ContainerBuilder $container)
+    protected function loadDocumentManager(array $documentManager, $defaultDM, $defaultDB, $defaultMetadataCache, ContainerBuilder $container, array $config)
     {
         $defaultDatabase = isset($documentManager['database']) ? $documentManager['database'] : $defaultDB;
         $configServiceName = sprintf('doctrine.odm.mongodb.%s_configuration', $documentManager['name']);
+        $retryConnect = isset($config['retry_connect']) ? $config['retry_connect'] : 0;
+        $retryQuery = isset($config['retry_query']) ? $config['retry_query'] : 0;
 
         if ($container->hasDefinition($configServiceName)) {
             $odmConfigDef = $container->getDefinition($configServiceName);
@@ -160,6 +164,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             'setHydratorNamespace' => '%doctrine.odm.mongodb.hydrator_namespace%',
             'setAutoGenerateHydratorClasses' => '%doctrine.odm.mongodb.auto_generate_hydrator_classes%',
             'setDefaultDB' => $defaultDatabase,
+            'setRetryConnect' => $retryConnect,
+            'setRetryQuery' => $retryQuery
         );
 
         if ($documentManager['logging']) {
