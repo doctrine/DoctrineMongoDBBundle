@@ -122,7 +122,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 $defaultDB,
                 $defaultMetadataCache,
                 $container,
-                $config[$name]
+                isset($config['connections'][$name]) ? $config['connections'][$name] : array()
             );
         }
         $container->setParameter('doctrine.odm.mongodb.document_managers', array_keys($dmConfigs));
