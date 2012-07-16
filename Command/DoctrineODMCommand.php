@@ -11,17 +11,17 @@
 
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Doctrine\ODM\MongoDB\Tools\Console\Helper\DocumentManagerHelper;
-use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Doctrine\ODM\MongoDB\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Tools\DocumentGenerator;
+use Doctrine\ODM\MongoDB\Tools\Console\Helper\DocumentManagerHelper;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * Base class for Doctrine ODM console commands to extend.
  *
- * @author     Justin Hileman <justin@shopopensky.com>
+ * @author Justin Hileman <justin@justinhileman.info>
  */
 abstract class DoctrineODMCommand extends ContainerAwareCommand
 {

@@ -11,17 +11,16 @@
 
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Command;
 
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Output\Output;
 use Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\DropCommand;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Command to create the database schema for a set of classes based on their mappings.
+ * Command to drop the database schema for a set of classes based on their
+ * mappings.
  *
- * @author     Justin Hileman <justin@shopopensky.com>
+ * @author Justin Hileman <justin@justinhileman.info>
  */
 class DropSchemaDoctrineODMCommand extends DropCommand
 {
