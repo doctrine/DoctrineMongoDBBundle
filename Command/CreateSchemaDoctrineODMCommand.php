@@ -20,9 +20,10 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Command to create the database schema for a set of classes based on their mappings.
+ * Command to create the database schema for a set of classes based on their
+ * mappings.
  *
- * @author     Justin Hileman <justin@shopopensky.com>
+ * @author Justin Hileman <justin@justinhileman.info>
  */
 class CreateSchemaDoctrineODMCommand extends CreateCommand
 {
