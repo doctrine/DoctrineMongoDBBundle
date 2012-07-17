@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineMongoDBBundle\Command;
+namespace Doctrine\Bundle\DoctrineMongoDBBundle\Command;
 
 use Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\UpdateCommand;
 use Symfony\Component\Console\Input\InputInterface;
