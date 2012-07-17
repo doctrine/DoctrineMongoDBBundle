@@ -160,6 +160,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             'setAutoGenerateHydratorClasses' => '%doctrine.odm.mongodb.auto_generate_hydrator_classes%',
             'setDefaultDB' => $defaultDatabase,
             'setDefaultCommitOptions' => '%doctrine.odm.mongodb.default_commit_options%',
+            'setRetryConnect' => $documentManager['retry_connect'],
+            'setRetryQuery' => $documentManager['retry_query']
         );
 
         // logging

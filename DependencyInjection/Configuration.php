@@ -109,6 +109,8 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                             ->scalarNode('auto_mapping')->defaultFalse()->end()
+                            ->scalarNode('retry_connect')->defaultValue(0)->end()
+                            ->scalarNode('retry_query')->defaultValue(0)->end()
                             ->arrayNode('metadata_cache_driver')
                                 ->addDefaultsIfNotSet()
                                 ->beforeNormalization()
