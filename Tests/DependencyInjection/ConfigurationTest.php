@@ -103,6 +103,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                             'mapping' => true,
                         ),
                     ),
+                    'retry_connect' => 0,
+                    'retry_query' => 0,
                 ),
                 'dm2' => array(
                     'connection'   => 'dm2_connection',
@@ -122,6 +124,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                             'mapping'   => true,
                         )
                     ),
+                    'retry_connect' => 0,
+                    'retry_query' => 0,
                 )
             )
         );
@@ -200,7 +204,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 array('document_managers' => array('default' => array('mappings' => array('foomap' => array('type' => 'val1'), 'barmap' => array('dir' => 'val2'))))),
                 array('document_managers' => array('default' => array('mappings' => array('barmap' => array('prefix' => 'val3'))))),
             ),
-            array('document_managers' => array('default' => array('logging' => false, 'auto_mapping' => false, 'mappings' => array('foomap' => array('type' => 'val1', 'mapping' => true), 'barmap' => array('prefix' => 'val3', 'mapping' => true))))),
+            array('document_managers' => array('default' => array('logging' => false, 'auto_mapping' => false, 'mappings' => array('foomap' => array('type' => 'val1', 'mapping' => true), 'barmap' => array('prefix' => 'val3', 'mapping' => true)), 'retry_connect' => 0, 'retry_query' => 0))),
         );
 
         // connections are merged non-recursively.
@@ -222,8 +226,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 array('document_managers' => array('bardm' => array('database' => 'val3'))),
             ),
             array('document_managers' => array(
-                'foodm' => array('database' => 'val1', 'logging' => false, 'auto_mapping' => false, 'mappings' => array()),
-                'bardm' => array('database' => 'val3', 'logging' => false, 'auto_mapping' => false, 'mappings' => array()),
+                'foodm' => array('database' => 'val1', 'logging' => false, 'auto_mapping' => false, 'mappings' => array(), 'retry_connect' => 0, 'retry_query' => 0),
+                'bardm' => array('database' => 'val3', 'logging' => false, 'auto_mapping' => false, 'mappings' => array(), 'retry_connect' => 0, 'retry_query' => 0),
             )),
         );
 
@@ -238,7 +242,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $processor = new Processor();
         $configuration = new Configuration(false);
         $options = $processor->processConfiguration($configuration, array($config));
-        $this->assertSame($normalized, $options[$targetKey]);
+        $this->assertEquals($normalized, $options[$targetKey]);
     }
 
     public function getNormalizationTests()
@@ -264,8 +268,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 )),
                 'document_managers',
                 array(
-                    'foo' => array('connection' => 'conn1', 'logging' => false, 'auto_mapping' => false, 'mappings' => array()),
-                    'bar' => array('connection' => 'conn2', 'logging' => false, 'auto_mapping' => false, 'mappings' => array()),
+                    'foo' => array('connection' => 'conn1', 'logging' => false, 'auto_mapping' => false, 'mappings' => array(), 'retry_connect' => 0, 'retry_query' => 0),
+                    'bar' => array('connection' => 'conn2', 'logging' => false, 'auto_mapping' => false, 'mappings' => array(), 'retry_connect' => 0, 'retry_query' => 0),
                 ),
             ),
             // mapping configuration that's beneath a specific document manager
@@ -282,6 +286,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                         'mappings'     => array('foo-mapping' => array('type' => 'xml', 'mapping' => true)),
                         'logging'      => false,
                         'auto_mapping' => false,
+                        'retry_connect' => 0,
+                        'retry_query' => 0,
                     ),
                 ),
             ),
