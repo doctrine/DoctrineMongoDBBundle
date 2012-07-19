@@ -37,7 +37,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
     public function testFindMappingFileNamespacedFoundFileNotFound()
     {
         $this->setExpectedException(
-            'Doctrine\ODM\MongoDB\MongoDBException',
+            'Doctrine\ODM\MongoDB\Mapping\MappingException',
             'No mapping found for field \''.$this->dir.'/Foo'.$this->getFileExtension().'\' in class \'MyNamespace\MyBundle\Document\Foo\'.'
         );
 
@@ -51,7 +51,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
     public function testFindMappingNamespaceNotFound()
     {
         $this->setExpectedException(
-            'Doctrine\ODM\MongoDB\MongoDBException',
+            'Doctrine\ODM\MongoDB\Mapping\MappingException',
             'No mapping found for field \'Foo'.$this->getFileExtension().'\' in class \'MyOtherNamespace\MyBundle\Document\Foo\'.'
         );
 
