@@ -20,11 +20,13 @@ class XmlDriverTest extends AbstractDriverTest
         return '.mongodb.xml';
     }
 
-    protected function getDriver(array $paths = array())
+    protected function getFixtureDir()
     {
-        $driver = new XmlDriver(array_values($paths));
-        $driver->setNamespacePrefixes(array_flip($paths));
+        return __DIR__ . '/Fixtures/xml';
+    }
 
-        return $driver;
+    protected function getDriver(array $prefixes = array())
+    {
+        return new XmlDriver($prefixes, $this->getFileExtension());
     }
 }
