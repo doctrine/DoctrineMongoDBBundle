@@ -121,6 +121,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                         'enabled' => '%kernel.debug%',
                         'pretty'  => '%kernel.debug%',
                     ),
+                    'retry_connect' => 0,
+                    'retry_query' => 0,
                 ),
                 'dm2' => array(
                     'connection'   => 'dm2_connection',
@@ -144,6 +146,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                         'enabled' => '%kernel.debug%',
                         'pretty'  => '%kernel.debug%',
                     ),
+                    'retry_connect' => 0,
+                    'retry_query' => 0,
                 )
             )
         );
@@ -222,7 +226,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 array('document_managers' => array('default' => array('mappings' => array('foomap' => array('type' => 'val1'), 'barmap' => array('dir' => 'val2'))))),
                 array('document_managers' => array('default' => array('mappings' => array('barmap' => array('prefix' => 'val3'))))),
             ),
-            array('document_managers' => array('default' => array('metadata_cache_driver' => array('type' => 'array'), 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'mappings' => array('foomap' => array('type' => 'val1', 'mapping' => true), 'barmap' => array('prefix' => 'val3', 'mapping' => true))))),
+            array('document_managers' => array('default' => array('metadata_cache_driver' => array('type' => 'array'), 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'mappings' => array('foomap' => array('type' => 'val1', 'mapping' => true), 'barmap' => array('prefix' => 'val3', 'mapping' => true)), 'retry_connect' => 0, 'retry_query' => 0))),
         );
 
         // connections are merged non-recursively.
@@ -244,8 +248,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 array('document_managers' => array('bardm' => array('database' => 'val3'))),
             ),
             array('document_managers' => array(
-                'foodm' => array('database' => 'val1', 'metadata_cache_driver' => array('type' => 'array'), 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'mappings' => array()),
-                'bardm' => array('database' => 'val3', 'metadata_cache_driver' => array('type' => 'array'), 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'mappings' => array()),
+                'foodm' => array('database' => 'val1', 'metadata_cache_driver' => array('type' => 'array'), 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'mappings' => array(), 'retry_connect' => 0, 'retry_query' => 0),
+                'bardm' => array('database' => 'val3', 'metadata_cache_driver' => array('type' => 'array'), 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'mappings' => array(), 'retry_connect' => 0, 'retry_query' => 0),
             )),
         );
 
@@ -286,8 +290,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 )),
                 'document_managers',
                 array(
-                    'foo' => array('connection' => 'conn1', 'metadata_cache_driver' => array('type' => 'array'), 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'mappings' => array()),
-                    'bar' => array('connection' => 'conn2', 'metadata_cache_driver' => array('type' => 'array'), 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'mappings' => array()),
+                    'foo' => array('connection' => 'conn1', 'metadata_cache_driver' => array('type' => 'array'), 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'mappings' => array(), 'retry_connect' => 0, 'retry_query' => 0),
+                    'bar' => array('connection' => 'conn2', 'metadata_cache_driver' => array('type' => 'array'), 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'mappings' => array(), 'retry_connect' => 0, 'retry_query' => 0),
                 ),
             ),
             // mapping configuration that's beneath a specific document manager
@@ -306,6 +310,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                         'logging'      => '%kernel.debug%',
                         'profiler'     => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'),
                         'auto_mapping' => false,
+                        'retry_connect' => 0,
+                        'retry_query' => 0,
                     ),
                 ),
             ),
