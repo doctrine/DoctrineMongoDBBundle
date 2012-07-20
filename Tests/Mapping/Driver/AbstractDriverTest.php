@@ -11,97 +11,75 @@
 
 namespace Symfony\Bundle\DoctrineMongoDBBundle\Tests\Mapping\Driver;
 
+use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+
 abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 {
     public function testFindMappingFile()
     {
         $driver = $this->getDriver(array(
-            'MyNamespace\MyBundle\DocumentFoo' => 'foo',
-            'MyNamespace\MyBundle\Document' => $this->dir,
+            'foo' => 'MyNamespace\MyBundle\DocumentFoo',
+            $this->getFixtureDir() => 'MyNamespace\MyBundle\Document',
         ));
 
-        touch($filename = $this->dir.'/Foo'.$this->getFileExtension());
-        $this->assertEquals($filename, $this->invoke($driver, 'findMappingFile', array('MyNamespace\MyBundle\Document\Foo')));
+        $locator = $this->getDriverLocator($driver);
+
+        $this->assertEquals(
+            $this->getFixtureDir() . '/Foo' . $this->getFileExtension(),
+            $locator->findMappingFile('MyNamespace\MyBundle\Document\Foo')
+        );
     }
 
     public function testFindMappingFileInSubnamespace()
     {
         $driver = $this->getDriver(array(
-            'MyNamespace\MyBundle\Document' => $this->dir,
+            $this->getFixtureDir() => 'MyNamespace\MyBundle\Document',
         ));
 
-        touch($filename = $this->dir.'/Foo.Bar'.$this->getFileExtension());
-        $this->assertEquals($filename, $this->invoke($driver, 'findMappingFile', array('MyNamespace\MyBundle\Document\Foo\Bar')));
+        $locator = $this->getDriverLocator($driver);
+
+        $this->assertEquals(
+            $this->getFixtureDir() . '/Foo.Bar' . $this->getFileExtension(),
+            $locator->findMappingFile('MyNamespace\MyBundle\Document\Foo\Bar')
+        );
     }
 
+    /**
+     * @expectedException Doctrine\Common\Persistence\Mapping\MappingException
+     */
     public function testFindMappingFileNamespacedFoundFileNotFound()
     {
-        $this->setExpectedException(
-            'Doctrine\ODM\MongoDB\MongoDBException',
-            'No mapping found for field \''.$this->dir.'/Foo'.$this->getFileExtension().'\' in class \'MyNamespace\MyBundle\Document\Foo\'.'
-        );
-
         $driver = $this->getDriver(array(
-            'MyNamespace\MyBundle\Document' => $this->dir,
+            $this->getFixtureDir() => 'MyNamespace\MyBundle\Document',
         ));
 
-        $this->invoke($driver, 'findMappingFile', array('MyNamespace\MyBundle\Document\Foo'));
+        $locator = $this->getDriverLocator($driver);
+        $locator->findMappingFile('MyNamespace\MyBundle\Document\Missing');
     }
 
+    /**
+     * @expectedException Doctrine\Common\Persistence\Mapping\MappingException
+     */
     public function testFindMappingNamespaceNotFound()
     {
-        $this->setExpectedException(
-            'Doctrine\ODM\MongoDB\MongoDBException',
-            'No mapping found for field \'Foo'.$this->getFileExtension().'\' in class \'MyOtherNamespace\MyBundle\Document\Foo\'.'
-        );
-
         $driver = $this->getDriver(array(
-            'MyNamespace\MyBundle\Document' => $this->dir,
+            $this->getFixtureDir() => 'MyNamespace\MyBundle\Document',
         ));
 
-        $this->invoke($driver, 'findMappingFile', array('MyOtherNamespace\MyBundle\Document\Foo'));
-    }
-
-    protected function setUp()
-    {
-        if (!class_exists('Doctrine\\Common\\Version')) {
-            $this->markTestSkipped('Doctrine is not available.');
-        }
-
-        $this->dir = sys_get_temp_dir().'/abstract_driver_test';
-        @mkdir($this->dir, 0777, true);
-    }
-
-    protected function tearDown()
-    {
-        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->dir), \RecursiveIteratorIterator::CHILD_FIRST);
-
-        foreach ($iterator as $path) {
-            if ($path->isDir()) {
-                @rmdir($path);
-            } else {
-                @unlink($path);
-            }
-        }
-
-        @rmdir($this->dir);
+        $locator = $this->getDriverLocator($driver);
+        $locator->findMappingFile('MyOtherNamespace\MyBundle\Document\Foo');
     }
 
     abstract protected function getFileExtension();
+    abstract protected function getFixtureDir();
     abstract protected function getDriver(array $paths = array());
 
-    private function setField($obj, $field, $value)
+    private function getDriverLocator(FileDriver $driver)
     {
-        $ref = new \ReflectionProperty($obj, $field);
-        $ref->setAccessible(true);
-        $ref->setValue($obj, $value);
-    }
-
-    private function invoke($obj, $method, array $args = array())
-    {
-        $ref = new \ReflectionMethod($obj, $method);
+        $ref = new \ReflectionProperty($driver, 'locator');
         $ref->setAccessible(true);
 
-        return $ref->invokeArgs($obj, $args);
+        return $ref->getValue($driver);
     }
 }
