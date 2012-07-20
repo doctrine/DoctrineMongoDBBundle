@@ -14,7 +14,8 @@
         "php": ">=5.3.2",
         "doctrine/mongodb-odm": "dev-master",
         "symfony/doctrine-bridge": "2.1.*@beta",
-        "symfony/framework-bundle": "2.1.*@beta"
+        "symfony/framework-bundle": "2.1.*@beta",
+        "doctrine/data-fixtures": "dev-master"
     },
     "minimum-stability": "dev",
     "autoload": {
