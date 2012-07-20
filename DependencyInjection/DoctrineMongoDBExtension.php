@@ -304,33 +304,6 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $odmConfigDef->addMethodCall('setDocumentNamespaces', array($this->aliasMap));
     }
 
-    protected function registerMappingDrivers($objectManager, ContainerBuilder $container)
-    {
-        parent::registerMappingDrivers($objectManager, $container);
-
-        /* In Symfony 2.0, the ORM bundle uses its own mapping drivers, while
-         * ODM utilizes those in Doctrine Common. To account for this, we must
-         * remove the setNamespacePrefixes() method call from any XML or YML
-         * drivers and pass its argument to the constructor.
-         */
-        foreach ($this->drivers as $driverType => $driverPaths) {
-            if ('xml' !== $driverType && 'yml' !== $driverType) {
-                continue;
-            }
-
-            $mappingService = $this->getObjectManagerElementName($objectManager['name'].'_'.$driverType.'_metadata_driver');
-            $mappingDriverDef = $container->getDefinition($mappingService);
-
-            foreach ($mappingDriverDef->getMethodCalls() as $call) {
-                if ($call[0] === 'setNamespacePrefixes') {
-                    $mappingDriverDef->setArguments($call[1]);
-                    break;
-                }
-            }
-            $mappingDriverDef->removeMethodCall('setNamespacePrefixes');
-        }
-    }
-
     protected function getObjectManagerElementName($name)
     {
         return 'doctrine.odm.mongodb.' . $name;
