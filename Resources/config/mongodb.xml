@@ -41,7 +41,7 @@
         <parameter key="doctrine.odm.mongodb.cache.xcache.class">Doctrine\Common\Cache\XcacheCache</parameter>
 
         <!-- metadata -->
-        <parameter key="doctrine.odm.mongodb.metadata.driver_chain.class">Doctrine\ODM\MongoDB\Mapping\Driver\DriverChain</parameter>
+        <parameter key="doctrine.odm.mongodb.metadata.driver_chain.class">Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain</parameter>
         <parameter key="doctrine.odm.mongodb.metadata.annotation.class">Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver</parameter>
         <parameter key="doctrine.odm.mongodb.metadata.xml.class">Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver</parameter>
         <parameter key="doctrine.odm.mongodb.metadata.yml.class">Doctrine\Bundle\MongoDBBundle\Mapping\Driver\YamlDriver</parameter>

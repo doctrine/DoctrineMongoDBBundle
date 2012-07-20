@@ -23,10 +23,13 @@ class YamlDriverTest extends AbstractDriverTest
         return '.mongodb.yml';
     }
 
-    protected function getDriver(array $paths = array())
+    protected function getFixtureDir()
     {
-        $driver = new YamlDriver(array_flip($paths));
+        return __DIR__ . '/Fixtures/yml';
+    }
 
-        return $driver;
+    protected function getDriver(array $prefixes = array())
+    {
+        return new YamlDriver($prefixes, $this->getFileExtension());
     }
 }
