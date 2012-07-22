@@ -42,7 +42,7 @@ class DocumentType extends DoctrineType
     /**
      * @see Symfony\Bridge\Doctrine\Form\Type\DoctrineType::getDefaultOptions()
      */
-    public function getDefaultOptions()
+    public function getDefaultOptions(array $options)
     {
         $defaultOptions = parent::getDefaultOptions();
 
