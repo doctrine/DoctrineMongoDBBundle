@@ -45,6 +45,8 @@ class DocumentType extends DoctrineType
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
+        parent::setDefaultOptions($resolver);
+
         $resolver->setDefaults(array(
             'document_manager' => null,
             'em' => function (Options $options, $previousValue) {
