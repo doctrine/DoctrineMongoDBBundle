@@ -52,7 +52,7 @@ class DocumentType extends DoctrineType
                     throw new \InvalidArgumentException('You cannot set both an "em" and "document_manager" option.');
                 }
 
-                return $options->get('document_manager') ?: null;
+                return $options->get('document_manager');
             },
         ));
     }
