@@ -18,6 +18,7 @@ use Doctrine\Bundle\MongoDBBundle\Form\ChoiceList\MongoDBQueryBuilderLoader;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Bridge\Doctrine\Form\Type\DoctrineType;
 use Symfony\Component\OptionsResolver\Options;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Form type for a MongoDB document
@@ -40,27 +41,20 @@ class DocumentType extends DoctrineType
     }
 
     /**
-     * @see Symfony\Bridge\Doctrine\Form\Type\DoctrineType::getDefaultOptions()
+     * @param OptionsResolverInterface $resolver
      */
-    public function getDefaultOptions()
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $defaultOptions = parent::getDefaultOptions();
-
-        // alias "em" as "document_manager"
-        $defaultOptions['document_manager'] = null;
-        $defaultOptions['em'] = function (Options $options) {
-            if (isset($options['document_manager'])) {
-                if (isset($options['em'])) {
+        $resolver->setDefaults(array(
+            'document_manager' => null,
+            'em' => function (Options $options, $previousValue) {
+                if ($options->get('document_manager') && $previousValue) {
                     throw new \InvalidArgumentException('You cannot set both an "em" and "document_manager" option.');
                 }
 
-                return $options['document_manager'];
-            }
-
-            return null;
-        };
-
-        return $defaultOptions;
+                return $options->get('document_manager') ?: null;
+            },
+        ));
     }
 
     /**
