@@ -12,7 +12,32 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
+        $this->classMetadata = $this->getMock('Doctrine\Common\Persistence\Mapping\ClassMetadata');
+        $this->classMetadata
+            ->expects($this->any())
+            ->method('getName')
+            ->will($this->returnValue('Document'))
+        ;
+
+        $this->manager = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
+        $this->manager
+            ->expects($this->any())
+            ->method('getClassMetadata')
+            ->will($this->returnValue($this->classMetadata))
+        ;
+
         $this->registry = $this->getMock('Doctrine\Common\Persistence\ManagerRegistry');
+        $this->registry
+            ->expects($this->any())
+            ->method('getManager')
+            ->will($this->returnValue($this->manager))
+        ;
+
+        $this->registry
+            ->expects($this->any())
+            ->method('getManagerForClass')
+            ->will($this->returnValue($this->manager))
+        ;
 
         $this->type = new DocumentType($this->registry);
     }
@@ -26,7 +51,7 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
             'document_manager' => 'document_manager',
         ));
 
-        $this->assertEquals('document_manager', $options['em']);
+        $this->assertInstanceOf('Doctrine\Common\Persistence\ObjectManager', $options['em']);
     }
 
     public function testExceptionWhenDocumentManagerAndEmIsSet()
@@ -34,14 +59,12 @@ class DocumentTypeTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('InvalidArgumentException');
 
         $resolver = new OptionsResolver();
-        $resolver->setDefaults(array(
-            'em' => 'entity_manager',
-        ));
 
         $this->type->setDefaultOptions($resolver);
+
         $options = $resolver->resolve(array(
             'document_manager' => 'document_manager',
+            'em' => 'entity_manager',
         ));
-
     }
 }

@@ -49,14 +49,27 @@ class DocumentType extends DoctrineType
 
         $resolver->setDefaults(array(
             'document_manager' => null,
-            'em' => function (Options $options, $previousValue) {
-                if ($options->get('document_manager') && $previousValue) {
-                    throw new \InvalidArgumentException('You cannot set both an "em" and "document_manager" option.');
-                }
-
-                return $options->get('document_manager');
-            },
         ));
+
+        $registry = $this->registry;
+        $normalizer = function (Options $options, $manager) use ($registry) {
+            if (isset($options['document_manager']) && $manager) {
+                throw new \InvalidArgumentException('You cannot set both an "em" and "document_manager" option.');
+            }
+
+            $manager = $options['document_manager'] ?: $manager;
+
+            if (null === $manager) {
+                return $registry->getManagerForClass($options['class']);
+            }
+
+            return $registry->getManager($manager);
+        };
+
+        $resolver->setNormalizers(array(
+            'em' => $normalizer,
+        ));
+
     }
 
     /**
