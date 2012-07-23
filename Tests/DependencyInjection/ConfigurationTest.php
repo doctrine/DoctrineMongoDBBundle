@@ -39,7 +39,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             'document_managers'              => array(),
             'connections'                    => array(),
             'proxy_dir'                      => '%kernel.cache_dir%/doctrine/odm/mongodb/Proxies',
-            'proxy_namespace'                => 'Proxies',
+            'proxy_namespace'                => 'MongoDBODMProxies',
             'hydrator_dir'                   => '%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators',
             'hydrator_namespace'             => 'Hydrators',
         );

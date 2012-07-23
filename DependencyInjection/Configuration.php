@@ -40,7 +40,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('proxy_namespace')->defaultValue('Proxies')->end()
+                ->scalarNode('proxy_namespace')->defaultValue('MongoDBODMProxies')->end()
                 ->scalarNode('proxy_dir')->defaultValue('%kernel.cache_dir%/doctrine/odm/mongodb/Proxies')->end()
                 ->scalarNode('auto_generate_proxy_classes')->defaultValue(false)->end()
                 ->scalarNode('hydrator_namespace')->defaultValue('Hydrators')->end()
