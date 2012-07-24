@@ -42,7 +42,13 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
      */
     public function guessType($class, $property)
     {
-        if (!$ret = $this->getMetadata($class)) {
+        $ret = null;
+        try {
+            $ret = $this->getMetadata($class);
+        } catch (\Doctrine\Common\Persistence\Mapping\MappingException $e) {
+            //We should ignore this error.
+        }
+        if (is_null($ret)) {
             return new TypeGuess('text', array(), Guess::LOW_CONFIDENCE);
         }
 
