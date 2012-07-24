@@ -4,11 +4,6 @@ php:
   - 5.3
   - 5.4
 
-branches:
-  only:
-    - master
-    - 2.0
-
 env:
   - MONGO_VERSION=1.2.12
 
