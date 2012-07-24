@@ -15,7 +15,8 @@
         "doctrine/mongodb-odm": "dev-master",
         "symfony/options-resolver": "2.1.*@beta",
         "symfony/doctrine-bridge": "2.1.*@beta",
-        "symfony/framework-bundle": "2.1.*@beta"
+        "symfony/framework-bundle": "2.1.*@beta",
+        "doctrine/data-fixtures": "dev-master"
     },
     "require-dev" : {
         "doctrine/data-fixtures" : "@dev"
