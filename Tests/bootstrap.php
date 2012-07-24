@@ -13,11 +13,3 @@ $loader->add('Symfony\Tests',  __DIR__.'/../vendor/symfony/symfony/tests/');
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 
 AnnotationDriver::registerAnnotationClasses();
-
-register_shutdown_function(function() {
-    try {
-        $mongo = new Mongo();
-        $mongo->doctrine->drop();
-    } catch (\MongoException $e) {
-    }
-});
