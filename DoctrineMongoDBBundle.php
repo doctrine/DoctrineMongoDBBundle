@@ -38,13 +38,13 @@ class DoctrineMongoDBBundle extends Bundle
 
     public function build(ContainerBuilder $container)
     {
-        $container->addCompilerPass(new RegisterEventListenersAndSubscribersPass('doctrine.odm.mongodb.connections', 'doctrine.odm.mongodb.%s_connection.event_manager', 'doctrine.odm.mongodb'), PassConfig::TYPE_BEFORE_OPTIMIZATION);
+        $container->addCompilerPass(new RegisterEventListenersAndSubscribersPass('doctrine_mongodb.odm.connections', 'doctrine_mongodb.odm.%s_connection.event_manager', 'doctrine_mongodb.odm'), PassConfig::TYPE_BEFORE_OPTIMIZATION);
         $container->addCompilerPass(new CreateProxyDirectoryPass(), PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new CreateHydratorDirectoryPass(), PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new DoctrineValidationPass('mongodb'));
 
         if ($container->hasExtension('security')) {
-            $container->getExtension('security')->addUserProviderFactory(new EntityFactory('mongodb', 'doctrine.odm.mongodb.security.user.provider'));
+            $container->getExtension('security')->addUserProviderFactory(new EntityFactory('mongodb', 'doctrine_mongodb.odm.security.user.provider'));
         }
     }
 
@@ -57,9 +57,9 @@ class DoctrineMongoDBBundle extends Bundle
     {
         // Register an autoloader for proxies to avoid issues when unserializing them
         // when the ODM is used.
-        if ($this->container->hasParameter('doctrine.odm.mongodb.proxy_namespace')) {
-            $namespace = $this->container->getParameter('doctrine.odm.mongodb.proxy_namespace');
-            $dir = $this->container->getParameter('doctrine.odm.mongodb.proxy_dir');
+        if ($this->container->hasParameter('doctrine_mongodb.odm.proxy_namespace')) {
+            $namespace = $this->container->getParameter('doctrine_mongodb.odm.proxy_namespace');
+            $dir = $this->container->getParameter('doctrine_mongodb.odm.proxy_dir');
             // See https://github.com/symfony/symfony/pull/3419 for usage of
             // references
             $container =& $this->container;
@@ -71,7 +71,7 @@ class DoctrineMongoDBBundle extends Bundle
 
                     if (!is_file($file) && $container->getParameter('kernel.debug')) {
                         $originalClassName = ClassUtils::getRealClass($class);
-                        $registry = $container->get('doctrine.odm.mongodb');
+                        $registry = $container->get('doctrine_mongodb');
 
                         // Tries to auto-generate the proxy file
                         foreach ($registry->getManagers() as $dm) {

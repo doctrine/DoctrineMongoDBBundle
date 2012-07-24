@@ -35,28 +35,28 @@ class ProxyCacheWarmerTest extends \Doctrine\Bundle\MongoDBBundle\Tests\TestCase
 
         $container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
 
-        $registry = new ManagerRegistry('MongodB', array(), array('default' => 'doctrine.odm.mongodb.default_document_manager', 'foo' => 'doctrine.odm.mongodb.foo_document_manager'), 'default', 'default', 'Doctrine\ODM\MongoDB\Proxy\Proxy');
+        $registry = new ManagerRegistry('MongodB', array(), array('default' => 'doctrine_mongodb.odm.default_document_manager', 'foo' => 'doctrine_mongodb.odm.foo_document_manager'), 'default', 'default', 'Doctrine\ODM\MongoDB\Proxy\Proxy');
         $registry->setContainer($container);
 
         $container->expects($this->at(0))
                   ->method('getParameter')
-                  ->with($this->equalTo('doctrine.odm.mongodb.proxy_dir'))
+                  ->with($this->equalTo('doctrine_mongodb.odm.proxy_dir'))
                   ->will($this->returnValue(sys_get_temp_dir()));
         $container->expects($this->at(1))
                   ->method('getParameter')
-                  ->with($this->equalTo('doctrine.odm.mongodb.auto_generate_proxy_classes'))
+                  ->with($this->equalTo('doctrine_mongodb.odm.auto_generate_proxy_classes'))
                   ->will($this->returnValue(false));
         $container->expects($this->at(2))
                   ->method('get')
-                  ->with($this->equalTo('doctrine.odm.mongodb'))
+                  ->with($this->equalTo('doctrine_mongodb.odm'))
                   ->will($this->returnValue($registry));
         $container->expects($this->at(3))
                   ->method('get')
-                  ->with($this->equalTo('doctrine.odm.mongodb.default_document_manager'))
+                  ->with($this->equalTo('doctrine_mongodb.odm.default_document_manager'))
                   ->will($this->returnValue($testManager));
         $container->expects($this->at(4))
                   ->method('get')
-                  ->with($this->equalTo('doctrine.odm.mongodb.foo_document_manager'))
+                  ->with($this->equalTo('doctrine_mongodb.odm.foo_document_manager'))
                   ->will($this->returnValue($testManager));
 
         $cacheWarmer = new ProxyCacheWarmer($container);
@@ -75,11 +75,11 @@ class ProxyCacheWarmerTest extends \Doctrine\Bundle\MongoDBBundle\Tests\TestCase
         $container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
         $container->expects($this->at(0))
                   ->method('getParameter')
-                  ->with($this->equalTo('doctrine.odm.mongodb.proxy_dir'))
+                  ->with($this->equalTo('doctrine_mongodb.odm.proxy_dir'))
                   ->will($this->returnValue(sys_get_temp_dir()));
         $container->expects($this->at(1))
                   ->method('getParameter')
-                  ->with($this->equalTo('doctrine.odm.mongodb.auto_generate_proxy_classes'))
+                  ->with($this->equalTo('doctrine_mongodb.odm.auto_generate_proxy_classes'))
                   ->will($this->returnValue(true));
         $container->expects($this->at(2))
                   ->method('getParameter')

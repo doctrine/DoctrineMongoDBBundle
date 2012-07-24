@@ -30,7 +30,7 @@ class DoctrineMongoDBExtensionTest extends \PHPUnit_Framework_TestCase
         $loader = new DoctrineMongoDBExtension();
         $loader->load(array(array($option => $value)), $container);
 
-        $this->assertEquals($value, $container->getParameter('doctrine.odm.mongodb.'.$parameter));
+        $this->assertEquals($value, $container->getParameter('doctrine_mongodb.odm.'.$parameter));
     }
 
     public function parameterProvider()

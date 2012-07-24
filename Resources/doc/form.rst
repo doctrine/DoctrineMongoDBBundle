@@ -245,7 +245,7 @@ the validation and saves the data into MongoDB::
 
     public function createAction()
     {
-        $dm = $this->get('doctrine.odm.mongodb.default_document_manager');
+        $dm = $this->get('doctrine_mongodb')->getManager();
 
         $form = $this->createForm(new RegistrationType(), new Registration());
 

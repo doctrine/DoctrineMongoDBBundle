@@ -44,7 +44,7 @@ class TailCursorDoctrineODMCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
+        $dm = $this->getContainer()->get('doctrine_mongodb.odm.document_manager');
         $repository = $dm->getRepository($input->getArgument('document'));
         $repositoryReflection = new \ReflectionClass($repository);
         $documentReflection = $repository->getDocumentManager()->getMetadataFactory()->getMetadataFor($input->getArgument('document'))->getReflectionClass();
