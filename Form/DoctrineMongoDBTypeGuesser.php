@@ -15,7 +15,7 @@
 namespace Doctrine\Bundle\MongoDBBundle\Form;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
-use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\Common\Persistence\Mapping\MappingException;
 use Symfony\Component\Form\FormTypeGuesserInterface;
 use Symfony\Component\Form\Guess\Guess;
 use Symfony\Component\Form\Guess\TypeGuess;
@@ -179,8 +179,8 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
         foreach ($this->registry->getManagers() as $name => $dm) {
             try {
                 return $this->cache[$class] = array($dm->getClassMetadata($class), $name);
-            } catch (MongoDBException $e) {
-                // not an entity or mapped super class
+            } catch (MappingException $e) {
+                // not a document or mapped super class
             }
         }
     }
