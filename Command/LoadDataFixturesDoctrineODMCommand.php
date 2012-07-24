@@ -30,6 +30,14 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
 {
+    /**
+     * @return boolean
+     */
+    public function isEnabled()
+    {
+        return parent::isEnabled() && class_exists('Doctrine\Common\DataFixtures\Loader');
+    }
+
     protected function configure()
     {
         $this

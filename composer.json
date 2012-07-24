@@ -17,6 +17,12 @@
         "symfony/doctrine-bridge": "2.1.*@beta",
         "symfony/framework-bundle": "2.1.*@beta"
     },
+    "require-dev" : {
+        "doctrine/data-fixtures" : "@dev"
+    },
+    "suggest" : {
+        "doctrine/data-fixtures" : "Import data into the database from Fixtures"
+    },
     "minimum-stability": "dev",
     "autoload": {
         "psr-0": {
