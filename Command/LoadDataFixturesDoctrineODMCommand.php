@@ -16,7 +16,6 @@ namespace Doctrine\Bundle\MongoDBBundle\Command;
 
 use Doctrine\Common\DataFixtures\Executor\MongoDBExecutor;
 use Doctrine\Common\DataFixtures\Purger\MongoDBPurger;
-use InvalidArgumentException;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -84,7 +83,7 @@ EOT
 
         $fixtures = $loader->getFixtures();
         if (!$fixtures) {
-            throw new InvalidArgumentException(
+            throw new \InvalidArgumentException(
                 sprintf('Could not find any fixtures to load in: %s', "\n\n- ".implode("\n- ", $paths))
             );
         }
