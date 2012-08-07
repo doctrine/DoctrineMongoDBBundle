@@ -19,7 +19,7 @@
         "doctrine/doctrine-fixtures-bundle": "2.0.*"
     },
     "suggest" : {
-        "doctrine/data-fixtures" : "Load data fixtures"
+        "doctrine/doctrine-fixtures-bundle" : "Load data fixtures"
     },
     "minimum-stability": "dev",
     "autoload": {
