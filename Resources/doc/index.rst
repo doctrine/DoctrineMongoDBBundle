@@ -39,14 +39,16 @@ of your project:
 
     [doctrine-mongodb]
         git=http://github.com/doctrine/mongodb.git
+        version=1.0.0-BETA1
 
     [doctrine-mongodb-odm]
         git=http://github.com/doctrine/mongodb-odm.git
+        version=1.0.0-BETA5
 
     [DoctrineMongoDBBundle]
         git=http://github.com/doctrine/DoctrineMongoDBBundle.git
         target=/bundles/Symfony/Bundle/DoctrineMongoDBBundle
-        version=origin/2.0
+        version=v2.2.0
 
 Now, update the vendor libraries by running:
 
