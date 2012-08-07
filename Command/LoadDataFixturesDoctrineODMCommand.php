@@ -18,13 +18,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\Util\Filesystem;
-use Symfony\Bundle\DoctrineFixturesBundle\Common\DataFixtures\Loader as DataFixturesLoader;
+use Symfony\Bundle\DoctrineFixturesBundle\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Executor\MongoDBExecutor;
 use Doctrine\Common\DataFixtures\Purger\MongoDBPurger;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Internal\CommitOrderCalculator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use InvalidArgumentException;
 
 /**
  * Load data fixtures from bundles.
@@ -58,6 +57,17 @@ EOT
         );
     }
 
+    protected function initialize(InputInterface $input, OutputInterface $output)
+    {
+        /* Symfony 2.0 does not allow commands to be disabled at runtime, so
+         * report an error if the optional data fixtures dependency is not
+         * installed.
+         */
+        if (!class_exists('Symfony\Bundle\DoctrineFixturesBundle\Common\DataFixtures\Loader')) {
+            throw new \RuntimeException('Install the Doctrine Data Fixtures library to run this command.');
+        }
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dmName = $input->getOption('dm');
@@ -65,7 +75,7 @@ EOT
         $dmServiceName = sprintf('doctrine.odm.mongodb.%s_document_manager', $dmName);
 
         if (!$this->getContainer()->has($dmServiceName)) {
-            throw new InvalidArgumentException(
+            throw new \InvalidArgumentException(
                 sprintf(
                     'Could not find a document manager configured with the name "%s". Check your '.
                     'application configuration to configure your Doctrine document managers.', $dmName
@@ -84,7 +94,7 @@ EOT
             }
         }
 
-        $loader = new DataFixturesLoader($this->getContainer());
+        $loader = new Loader($this->getContainer());
         foreach ($paths as $path) {
             if (is_dir($path)) {
                 $loader->loadFromDirectory($path);
@@ -93,7 +103,7 @@ EOT
 
         $fixtures = $loader->getFixtures();
         if (!$fixtures) {
-            throw new InvalidArgumentException(
+            throw new \InvalidArgumentException(
                 sprintf('Could not find any fixtures to load in: %s', "\n\n- ".implode("\n- ", $paths))
             );
         }

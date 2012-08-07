@@ -15,6 +15,12 @@
         "doctrine/mongodb-odm": "dev-master",
         "symfony/symfony": "2.0.*"
     },
+    "require-dev" : {
+        "doctrine/doctrine-fixtures-bundle": "2.0.*"
+    },
+    "suggest" : {
+        "doctrine/data-fixtures" : "Load data fixtures"
+    },
     "minimum-stability": "dev",
     "autoload": {
         "psr-0": {
