@@ -12,7 +12,7 @@
     ],
     "require": {
         "php": ">=5.3.2",
-        "doctrine/mongodb-odm": "1.0.0-BETA5",
+        "doctrine/mongodb-odm": ">=1.0.0-beta5,<1.1.0-dev",
         "symfony/options-resolver": "2.1.*@beta",
         "symfony/doctrine-bridge": "2.1.*@beta",
         "symfony/framework-bundle": "2.1.*@beta"
