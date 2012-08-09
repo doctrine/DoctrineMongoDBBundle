@@ -15,10 +15,10 @@
         "doctrine/mongodb-odm": ">=1.0.0-beta5,<1.1-dev",
         "symfony/symfony": "2.0.*"
     },
-    "require-dev" : {
+    "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "2.0.*"
     },
-    "suggest" : {
+    "suggest": {
         "doctrine/doctrine-fixtures-bundle" : "Load data fixtures"
     },
     "minimum-stability": "dev",
@@ -27,5 +27,11 @@
             "Symfony\\Bundle\\DoctrineMongoDBBundle": ""
         }
     },
-    "target-dir" : "Symfony/Bundle/DoctrineMongoDBBundle"
+    "target-dir": "Symfony/Bundle/DoctrineMongoDBBundle",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.0-dev",
+            "dev-2.0": "2.2-dev"
+        }
+    }
 }
