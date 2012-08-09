@@ -18,10 +18,10 @@
         "symfony/framework-bundle": "2.1.*@beta"
     },
     "require-dev": {
-        "doctrine/data-fixtures" : "@dev"
+        "doctrine/data-fixtures": "@dev"
     },
     "suggest": {
-        "doctrine/data-fixtures" : "Load data fixtures"
+        "doctrine/data-fixtures": "Load data fixtures"
     },
     "minimum-stability": "dev",
     "autoload": {
