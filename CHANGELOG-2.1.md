@@ -9,9 +9,10 @@ in 2.1 minor versions.
 
 ### Services
 
- * The id for referencing the registry have been changed from `doctrine.odm.mongodb`
-   to `doctrine_mongodb`.
- * All service ids have had their prefix changed from `doctrine.odm.mongodb` to `doctrine_mongodb.odm`
+ * The ManagerRegistry's service ID has changed from `doctrine.odm.mongodb` to
+   `doctrine_mongodb`.
+ * The prefix for all service ID's has changed from `doctrine.odm.mongodb` to
+   `doctrine_mongodb.odm`.
 
 ### Events
 
