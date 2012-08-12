@@ -20,6 +20,15 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class DoctrineMongoDBExtensionTest extends \PHPUnit_Framework_TestCase
 {
+
+    public function testBackwardCompatibilityAliases()
+    {
+        $loader = new DoctrineMongoDBExtension();
+        $loader->load(array(), $container = new ContainerBuilder());
+
+        $this->assertEquals('doctrine_mongodb.odm.document_manager', (string) $container->getAlias('doctrine.odm.mongodb.document_manager'));
+    }
+
     /**
      * @dataProvider parameterProvider
      */
@@ -30,7 +39,7 @@ class DoctrineMongoDBExtensionTest extends \PHPUnit_Framework_TestCase
         $loader = new DoctrineMongoDBExtension();
         $loader->load(array(array($option => $value)), $container);
 
-        $this->assertEquals($value, $container->getParameter('doctrine.odm.mongodb.'.$parameter));
+        $this->assertEquals($value, $container->getParameter('doctrine_mongodb.odm.'.$parameter));
     }
 
     public function parameterProvider()

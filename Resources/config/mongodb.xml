@@ -6,106 +6,106 @@
 
     <parameters>
         <!-- classes -->
-        <parameter key="doctrine.odm.mongodb.connection.class">Doctrine\MongoDB\Connection</parameter>
-        <parameter key="doctrine.odm.mongodb.configuration.class">Doctrine\ODM\MongoDB\Configuration</parameter>
-        <parameter key="doctrine.odm.mongodb.document_manager.class">Doctrine\ODM\MongoDB\DocumentManager</parameter>
-        <parameter key="doctrine.odm.mongodb.logger.class">Doctrine\Bundle\MongoDBBundle\Logger\Logger</parameter>
-        <parameter key="doctrine.odm.mongodb.logger.aggregate.class">Doctrine\Bundle\MongoDBBundle\Logger\AggregateLogger</parameter>
-        <parameter key="doctrine.odm.mongodb.data_collector.standard.class">Doctrine\Bundle\MongoDBBundle\DataCollector\StandardDataCollector</parameter>
-        <parameter key="doctrine.odm.mongodb.data_collector.pretty.class">Doctrine\Bundle\MongoDBBundle\DataCollector\PrettyDataCollector</parameter>
-        <parameter key="doctrine.odm.mongodb.event_manager.class">Symfony\Bridge\Doctrine\ContainerAwareEventManager</parameter>
+        <parameter key="doctrine_mongodb.odm.connection.class">Doctrine\MongoDB\Connection</parameter>
+        <parameter key="doctrine_mongodb.odm.configuration.class">Doctrine\ODM\MongoDB\Configuration</parameter>
+        <parameter key="doctrine_mongodb.odm.document_manager.class">Doctrine\ODM\MongoDB\DocumentManager</parameter>
+        <parameter key="doctrine_mongodb.odm.logger.class">Doctrine\Bundle\MongoDBBundle\Logger\Logger</parameter>
+        <parameter key="doctrine_mongodb.odm.logger.aggregate.class">Doctrine\Bundle\MongoDBBundle\Logger\AggregateLogger</parameter>
+        <parameter key="doctrine_mongodb.odm.data_collector.standard.class">Doctrine\Bundle\MongoDBBundle\DataCollector\StandardDataCollector</parameter>
+        <parameter key="doctrine_mongodb.odm.data_collector.pretty.class">Doctrine\Bundle\MongoDBBundle\DataCollector\PrettyDataCollector</parameter>
+        <parameter key="doctrine_mongodb.odm.event_manager.class">Symfony\Bridge\Doctrine\ContainerAwareEventManager</parameter>
         <parameter key="doctrine_odm.mongodb.validator_initializer.class">Symfony\Bridge\Doctrine\Validator\DoctrineInitializer</parameter>
         <parameter key="doctrine_odm.mongodb.validator.unique.class">Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator</parameter>
-        <parameter key="doctrine.odm.mongodb.class">Doctrine\Bundle\MongoDBBundle\ManagerRegistry</parameter>
-        <parameter key="doctrine.odm.mongodb.security.user.provider.class">Symfony\Bridge\Doctrine\Security\User\EntityUserProvider</parameter>
-        <parameter key="doctrine.odm.mongodb.proxy_cache_warmer.class">Doctrine\Bundle\MongoDBBundle\CacheWarmer\ProxyCacheWarmer</parameter>
-        <parameter key="doctrine.odm.mongodb.hydrator_cache_warmer.class">Doctrine\Bundle\MongoDBBundle\CacheWarmer\HydratorCacheWarmer</parameter>
+        <parameter key="doctrine_mongodb.odm.class">Doctrine\Bundle\MongoDBBundle\ManagerRegistry</parameter>
+        <parameter key="doctrine_mongodb.odm.security.user.provider.class">Symfony\Bridge\Doctrine\Security\User\EntityUserProvider</parameter>
+        <parameter key="doctrine_mongodb.odm.proxy_cache_warmer.class">Doctrine\Bundle\MongoDBBundle\CacheWarmer\ProxyCacheWarmer</parameter>
+        <parameter key="doctrine_mongodb.odm.hydrator_cache_warmer.class">Doctrine\Bundle\MongoDBBundle\CacheWarmer\HydratorCacheWarmer</parameter>
 
         <!-- cache -->
-        <parameter key="doctrine.odm.mongodb.cache.array.class">Doctrine\Common\Cache\ArrayCache</parameter>
-        <parameter key="doctrine.odm.mongodb.cache.apc.class">Doctrine\Common\Cache\ApcCache</parameter>
-        <parameter key="doctrine.odm.mongodb.cache.memcache.class">Doctrine\Common\Cache\MemcacheCache</parameter>
-        <parameter key="doctrine.odm.mongodb.cache.memcache_host">localhost</parameter>
-        <parameter key="doctrine.odm.mongodb.cache.memcache_port">11211</parameter>
-        <parameter key="doctrine.odm.mongodb.cache.memcache_instance.class">Memcache</parameter>
-        <parameter key="doctrine.odm.mongodb.cache.xcache.class">Doctrine\Common\Cache\XcacheCache</parameter>
+        <parameter key="doctrine_mongodb.odm.cache.array.class">Doctrine\Common\Cache\ArrayCache</parameter>
+        <parameter key="doctrine_mongodb.odm.cache.apc.class">Doctrine\Common\Cache\ApcCache</parameter>
+        <parameter key="doctrine_mongodb.odm.cache.memcache.class">Doctrine\Common\Cache\MemcacheCache</parameter>
+        <parameter key="doctrine_mongodb.odm.cache.memcache_host">localhost</parameter>
+        <parameter key="doctrine_mongodb.odm.cache.memcache_port">11211</parameter>
+        <parameter key="doctrine_mongodb.odm.cache.memcache_instance.class">Memcache</parameter>
+        <parameter key="doctrine_mongodb.odm.cache.xcache.class">Doctrine\Common\Cache\XcacheCache</parameter>
 
         <!-- metadata -->
-        <parameter key="doctrine.odm.mongodb.metadata.driver_chain.class">Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain</parameter>
-        <parameter key="doctrine.odm.mongodb.metadata.annotation.class">Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver</parameter>
-        <parameter key="doctrine.odm.mongodb.metadata.xml.class">Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver</parameter>
-        <parameter key="doctrine.odm.mongodb.metadata.yml.class">Doctrine\Bundle\MongoDBBundle\Mapping\Driver\YamlDriver</parameter>
+        <parameter key="doctrine_mongodb.odm.metadata.driver_chain.class">Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain</parameter>
+        <parameter key="doctrine_mongodb.odm.metadata.annotation.class">Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver</parameter>
+        <parameter key="doctrine_mongodb.odm.metadata.xml.class">Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver</parameter>
+        <parameter key="doctrine_mongodb.odm.metadata.yml.class">Doctrine\Bundle\MongoDBBundle\Mapping\Driver\YamlDriver</parameter>
 
         <!-- directories -->
-        <parameter key="doctrine.odm.mongodb.mapping_dirs" type="collection"></parameter>
-        <parameter key="doctrine.odm.mongodb.xml_mapping_dirs">%doctrine.odm.mongodb.mapping_dirs%</parameter>
-        <parameter key="doctrine.odm.mongodb.yml_mapping_dirs">%doctrine.odm.mongodb.mapping_dirs%</parameter>
-        <parameter key="doctrine.odm.mongodb.document_dirs" type="collection"></parameter>
+        <parameter key="doctrine_mongodb.odm.mapping_dirs" type="collection"></parameter>
+        <parameter key="doctrine_mongodb.odm.xml_mapping_dirs">%doctrine_mongodb.odm.mapping_dirs%</parameter>
+        <parameter key="doctrine_mongodb.odm.yml_mapping_dirs">%doctrine_mongodb.odm.mapping_dirs%</parameter>
+        <parameter key="doctrine_mongodb.odm.document_dirs" type="collection"></parameter>
 
         <!-- logger -->
-        <parameter key="doctrine.odm.mongodb.logger.batch_insert_threshold">4</parameter>
+        <parameter key="doctrine_mongodb.odm.logger.batch_insert_threshold">4</parameter>
     </parameters>
 
     <services>
         <!-- defaults -->
-        <service id="doctrine.odm.mongodb.cache" alias="doctrine.odm.mongodb.cache.array" />
+        <service id="doctrine_mongodb.odm.cache" alias="doctrine_mongodb.odm.cache.array" />
 
         <!-- events -->
-        <service id="doctrine.odm.mongodb.connection.event_manager" class="%doctrine.odm.mongodb.event_manager.class%" public="false" abstract="true">
+        <service id="doctrine_mongodb.odm.connection.event_manager" class="%doctrine_mongodb.odm.event_manager.class%" public="false" abstract="true">
             <argument type="service" id="service_container" />
         </service>
 
         <!-- form -->
         <service id="form.type.mongodb_document" class="Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType">
             <tag name="form.type" alias="document" />
-            <argument type="service" id="doctrine.odm.mongodb" />
+            <argument type="service" id="doctrine_mongodb.odm" />
         </service>
         <service id="form.type_guesser.doctrine.mongodb" class="Doctrine\Bundle\MongoDBBundle\Form\DoctrineMongoDBTypeGuesser">
             <tag name="form.type_guesser" />
-            <argument type="service" id="doctrine.odm.mongodb" />
+            <argument type="service" id="doctrine_mongodb.odm" />
         </service>
 
         <!-- metadata -->
-        <service id="doctrine.odm.mongodb.metadata.chain" class="%doctrine.odm.mongodb.metadata.driver_chain.class%" />
-        <service id="doctrine.odm.mongodb.metadata.annotation" class="%doctrine.odm.mongodb.metadata.annotation.class%">
-            <argument type="service" id="doctrine.odm.mongodb.metadata.annotation_reader" />
-            <argument>%doctrine.odm.mongodb.document_dirs%</argument>
+        <service id="doctrine_mongodb.odm.metadata.chain" class="%doctrine_mongodb.odm.metadata.driver_chain.class%" />
+        <service id="doctrine_mongodb.odm.metadata.annotation" class="%doctrine_mongodb.odm.metadata.annotation.class%">
+            <argument type="service" id="doctrine_mongodb.odm.metadata.annotation_reader" />
+            <argument>%doctrine_mongodb.odm.document_dirs%</argument>
         </service>
-        <service id="doctrine.odm.mongodb.metadata.annotation_reader" alias="annotation_reader" />
-        <service id="doctrine.odm.mongodb.metadata.xml" class="%doctrine.odm.mongodb.metadata.xml.class%">
-            <argument>%doctrine.odm.mongodb.xml_mapping_dirs%</argument>
+        <service id="doctrine_mongodb.odm.metadata.annotation_reader" alias="annotation_reader" />
+        <service id="doctrine_mongodb.odm.metadata.xml" class="%doctrine_mongodb.odm.metadata.xml.class%">
+            <argument>%doctrine_mongodb.odm.xml_mapping_dirs%</argument>
         </service>
-        <service id="doctrine.odm.mongodb.metadata.yml" class="%doctrine.odm.mongodb.metadata.yml.class%">
-            <argument>%doctrine.odm.mongodb.yml_mapping_dirs%</argument>
+        <service id="doctrine_mongodb.odm.metadata.yml" class="%doctrine_mongodb.odm.metadata.yml.class%">
+            <argument>%doctrine_mongodb.odm.yml_mapping_dirs%</argument>
         </service>
 
         <!-- cache -->
-        <service id="doctrine.odm.mongodb.cache.array" class="%doctrine.odm.mongodb.cache.array.class%" />
+        <service id="doctrine_mongodb.odm.cache.array" class="%doctrine_mongodb.odm.cache.array.class%" />
 
         <!-- logger -->
-        <service id="doctrine.odm.mongodb.logger" class="%doctrine.odm.mongodb.logger.class%" public="false">
+        <service id="doctrine_mongodb.odm.logger" class="%doctrine_mongodb.odm.logger.class%" public="false">
             <tag name="monolog.logger" channel="doctrine" />
             <argument type="service" id="logger" on-invalid="null" />
             <call method="setBatchInsertThreshold">
-                <argument>%doctrine.odm.mongodb.logger.batch_insert_threshold%</argument>
+                <argument>%doctrine_mongodb.odm.logger.batch_insert_threshold%</argument>
             </call>
         </service>
-        <service id="doctrine.odm.mongodb.logger.aggregate" class="%doctrine.odm.mongodb.logger.aggregate.class%" public="false" />
+        <service id="doctrine_mongodb.odm.logger.aggregate" class="%doctrine_mongodb.odm.logger.aggregate.class%" public="false" />
 
         <!-- profiler -->
-        <service id="doctrine.odm.mongodb.data_collector.standard" class="%doctrine.odm.mongodb.data_collector.standard.class%" public="false" />
-        <service id="doctrine.odm.mongodb.data_collector.pretty" class="%doctrine.odm.mongodb.data_collector.pretty.class%" public="false">
+        <service id="doctrine_mongodb.odm.data_collector.standard" class="%doctrine_mongodb.odm.data_collector.standard.class%" public="false" />
+        <service id="doctrine_mongodb.odm.data_collector.pretty" class="%doctrine_mongodb.odm.data_collector.pretty.class%" public="false">
             <call method="setBatchInsertThreshold">
-                <argument>%doctrine.odm.mongodb.logger.batch_insert_threshold%</argument>
+                <argument>%doctrine_mongodb.odm.logger.batch_insert_threshold%</argument>
             </call>
         </service>
 
         <!-- Cache Warmers -->
-        <service id="doctrine.odm.mongodb.proxy_cache_warmer" class="%doctrine.odm.mongodb.proxy_cache_warmer.class%" public="false">
+        <service id="doctrine_mongodb.odm.proxy_cache_warmer" class="%doctrine_mongodb.odm.proxy_cache_warmer.class%" public="false">
             <tag name="kernel.cache_warmer" priority="25" />
             <argument type="service" id="service_container" />
         </service>
-        <service id="doctrine.odm.mongodb.hydrator_cache_warmer" class="%doctrine.odm.mongodb.hydrator_cache_warmer.class%" public="false">
+        <service id="doctrine_mongodb.odm.hydrator_cache_warmer" class="%doctrine_mongodb.odm.hydrator_cache_warmer.class%" public="false">
             <tag name="kernel.cache_warmer" priority="25" />
             <argument type="service" id="service_container" />
         </service>
@@ -113,26 +113,26 @@
         <!--  validator -->
         <service id="doctrine_odm.mongodb.validator.unique" class="%doctrine_odm.mongodb.validator.unique.class%">
             <tag name="validator.constraint_validator" alias="doctrine_odm.mongodb.unique" />
-            <argument type="service" id="doctrine.odm.mongodb" />
+            <argument type="service" id="doctrine_mongodb.odm" />
         </service>
 
         <service id="doctrine_odm.mongodb.validator_initializer" class="%doctrine_odm.mongodb.validator_initializer.class%">
             <tag name="validator.initializer" />
-            <argument type="service" id="doctrine.odm.mongodb" />
+            <argument type="service" id="doctrine_mongodb.odm" />
         </service>
 
         <!-- Security -->
-        <service id="doctrine.odm.mongodb.security.user.provider" class="%doctrine.odm.mongodb.security.user.provider.class%" public="false" abstract="true">
-            <argument type="service" id="doctrine.odm.mongodb" />
+        <service id="doctrine_mongodb.odm.security.user.provider" class="%doctrine_mongodb.odm.security.user.provider.class%" public="false" abstract="true">
+            <argument type="service" id="doctrine_mongodb.odm" />
         </service>
 
         <!-- Registry -->
-        <service id="doctrine.odm.mongodb" class="%doctrine.odm.mongodb.class%">
+        <service id="doctrine_mongodb" class="%doctrine_mongodb.odm.class%">
             <argument>MongoDB</argument>
-            <argument>%doctrine.odm.mongodb.connections%</argument>
-            <argument>%doctrine.odm.mongodb.document_managers%</argument>
-            <argument>%doctrine.odm.mongodb.default_connection%</argument>
-            <argument>%doctrine.odm.mongodb.default_document_manager%</argument>
+            <argument>%doctrine_mongodb.odm.connections%</argument>
+            <argument>%doctrine_mongodb.odm.document_managers%</argument>
+            <argument>%doctrine_mongodb.odm.default_connection%</argument>
+            <argument>%doctrine_mongodb.odm.default_document_manager%</argument>
             <argument>Doctrine\ODM\MongoDB\Proxy\Proxy</argument>
             <call method="setContainer">
                 <argument type="service" id="service_container" />

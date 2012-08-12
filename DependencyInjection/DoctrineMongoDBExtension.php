@@ -48,13 +48,13 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $keys = array_keys($config['connections']);
             $config['default_connection'] = reset($keys);
         }
-        $container->setParameter('doctrine.odm.mongodb.default_connection', $config['default_connection']);
+        $container->setParameter('doctrine_mongodb.odm.default_connection', $config['default_connection']);
 
         if (empty($config['default_document_manager'])) {
             $keys = array_keys($config['document_managers']);
             $config['default_document_manager'] = reset($keys);
         }
-        $container->setParameter('doctrine.odm.mongodb.default_document_manager', $config['default_document_manager']);
+        $container->setParameter('doctrine_mongodb.odm.default_document_manager', $config['default_document_manager']);
 
         // set some options as parameters and unset them
         $config = $this->overrideParameters($config, $container);
@@ -69,6 +69,9 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $config['default_database'],
             $container
         );
+
+        // BC Aliases for Document Manager
+        $container->setAlias('doctrine.odm.mongodb.document_manager', new Alias('doctrine_mongodb.odm.document_manager'));
     }
 
     /**
@@ -91,7 +94,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
         foreach ($overrides as $key) {
             if (isset($options[$key])) {
-                $container->setParameter('doctrine.odm.mongodb.'.$key, $options[$key]);
+                $container->setParameter('doctrine_mongodb.odm.'.$key, $options[$key]);
 
                 // the option should not be used, the parameter should be referenced
                 unset($options[$key]);
@@ -120,9 +123,9 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 $defaultDB,
                 $container
             );
-            $dms[$name] = sprintf('doctrine.odm.mongodb.%s_document_manager', $name);
+            $dms[$name] = sprintf('doctrine_mongodb.odm.%s_document_manager', $name);
         }
-        $container->setParameter('doctrine.odm.mongodb.document_managers', $dms);
+        $container->setParameter('doctrine_mongodb.odm.document_managers', $dms);
     }
 
     /**
@@ -135,14 +138,14 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      */
     protected function loadDocumentManager(array $documentManager, $defaultDM, $defaultDB, ContainerBuilder $container)
     {
-        $configServiceName = sprintf('doctrine.odm.mongodb.%s_configuration', $documentManager['name']);
+        $configServiceName = sprintf('doctrine_mongodb.odm.%s_configuration', $documentManager['name']);
         $connectionName = isset($documentManager['connection']) ? $documentManager['connection'] : $documentManager['name'];
         $defaultDatabase = isset($documentManager['database']) ? $documentManager['database'] : $defaultDB;
 
         if ($container->hasDefinition($configServiceName)) {
             $odmConfigDef = $container->getDefinition($configServiceName);
         } else {
-            $odmConfigDef = new Definition('%doctrine.odm.mongodb.configuration.class%');
+            $odmConfigDef = new Definition('%doctrine_mongodb.odm.configuration.class%');
             $container->setDefinition($configServiceName, $odmConfigDef);
         }
 
@@ -150,16 +153,16 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $this->loadObjectManagerCacheDriver($documentManager, $container, 'metadata_cache');
 
         $methods = array(
-            'setMetadataCacheImpl' => new Reference(sprintf('doctrine.odm.mongodb.%s_metadata_cache', $documentManager['name'])),
-            'setMetadataDriverImpl' => new Reference(sprintf('doctrine.odm.mongodb.%s_metadata_driver', $documentManager['name'])),
-            'setProxyDir' => '%doctrine.odm.mongodb.proxy_dir%',
-            'setProxyNamespace' => '%doctrine.odm.mongodb.proxy_namespace%',
-            'setAutoGenerateProxyClasses' => '%doctrine.odm.mongodb.auto_generate_proxy_classes%',
-            'setHydratorDir' => '%doctrine.odm.mongodb.hydrator_dir%',
-            'setHydratorNamespace' => '%doctrine.odm.mongodb.hydrator_namespace%',
-            'setAutoGenerateHydratorClasses' => '%doctrine.odm.mongodb.auto_generate_hydrator_classes%',
+            'setMetadataCacheImpl' => new Reference(sprintf('doctrine_mongodb.odm.%s_metadata_cache', $documentManager['name'])),
+            'setMetadataDriverImpl' => new Reference(sprintf('doctrine_mongodb.odm.%s_metadata_driver', $documentManager['name'])),
+            'setProxyDir' => '%doctrine_mongodb.odm.proxy_dir%',
+            'setProxyNamespace' => '%doctrine_mongodb.odm.proxy_namespace%',
+            'setAutoGenerateProxyClasses' => '%doctrine_mongodb.odm.auto_generate_proxy_classes%',
+            'setHydratorDir' => '%doctrine_mongodb.odm.hydrator_dir%',
+            'setHydratorNamespace' => '%doctrine_mongodb.odm.hydrator_namespace%',
+            'setAutoGenerateHydratorClasses' => '%doctrine_mongodb.odm.auto_generate_hydrator_classes%',
             'setDefaultDB' => $defaultDatabase,
-            'setDefaultCommitOptions' => '%doctrine.odm.mongodb.default_commit_options%',
+            'setDefaultCommitOptions' => '%doctrine_mongodb.odm.default_commit_options%',
             'setRetryConnect' => $documentManager['retry_connect'],
             'setRetryQuery' => $documentManager['retry_query']
         );
@@ -167,12 +170,12 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         // logging
         $loggers = array();
         if ($container->getParameterBag()->resolveValue($documentManager['logging'])) {
-            $loggers[] = new Reference('doctrine.odm.mongodb.logger');
+            $loggers[] = new Reference('doctrine_mongodb.odm.logger');
         }
 
         // profiler
         if ($container->getParameterBag()->resolveValue($documentManager['profiler']['enabled'])) {
-            $dataCollectorId = sprintf('doctrine.odm.mongodb.data_collector.%s', $container->getParameterBag()->resolveValue($documentManager['profiler']['pretty']) ? 'pretty' : 'standard');
+            $dataCollectorId = sprintf('doctrine_mongodb.odm.data_collector.%s', $container->getParameterBag()->resolveValue($documentManager['profiler']['pretty']) ? 'pretty' : 'standard');
             $loggers[] = new Reference($dataCollectorId);
             $container
                 ->getDefinition($dataCollectorId)
@@ -181,9 +184,9 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         }
 
         if (1 < count($loggers)) {
-            $methods['setLoggerCallable'] = array(new Reference('doctrine.odm.mongodb.logger.aggregate'), 'logQuery');
+            $methods['setLoggerCallable'] = array(new Reference('doctrine_mongodb.odm.logger.aggregate'), 'logQuery');
             $container
-                ->getDefinition('doctrine.odm.mongodb.logger.aggregate')
+                ->getDefinition('doctrine_mongodb.odm.logger.aggregate')
                 ->addArgument($loggers)
             ;
         } elseif ($loggers) {
@@ -198,25 +201,25 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         }
 
         $odmDmArgs = array(
-            new Reference(sprintf('doctrine.odm.mongodb.%s_connection', $connectionName)),
-            new Reference(sprintf('doctrine.odm.mongodb.%s_configuration', $documentManager['name'])),
+            new Reference(sprintf('doctrine_mongodb.odm.%s_connection', $connectionName)),
+            new Reference(sprintf('doctrine_mongodb.odm.%s_configuration', $documentManager['name'])),
             // Document managers will share their connection's event manager
-            new Reference(sprintf('doctrine.odm.mongodb.%s_connection.event_manager', $connectionName)),
+            new Reference(sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $connectionName)),
         );
-        $odmDmDef = new Definition('%doctrine.odm.mongodb.document_manager.class%', $odmDmArgs);
-        $odmDmDef->setFactoryClass('%doctrine.odm.mongodb.document_manager.class%');
+        $odmDmDef = new Definition('%doctrine_mongodb.odm.document_manager.class%', $odmDmArgs);
+        $odmDmDef->setFactoryClass('%doctrine_mongodb.odm.document_manager.class%');
         $odmDmDef->setFactoryMethod('create');
-        $odmDmDef->addTag('doctrine.odm.mongodb.document_manager');
-        $container->setDefinition(sprintf('doctrine.odm.mongodb.%s_document_manager', $documentManager['name']), $odmDmDef);
+        $odmDmDef->addTag('doctrine_mongodb.odm.document_manager');
+        $container->setDefinition(sprintf('doctrine_mongodb.odm.%s_document_manager', $documentManager['name']), $odmDmDef);
 
         if ($documentManager['name'] == $defaultDM) {
             $container->setAlias(
-                'doctrine.odm.mongodb.document_manager',
-                new Alias(sprintf('doctrine.odm.mongodb.%s_document_manager', $documentManager['name']))
+                'doctrine_mongodb.odm.document_manager',
+                new Alias(sprintf('doctrine_mongodb.odm.%s_document_manager', $documentManager['name']))
             );
             $container->setAlias(
-                'doctrine.odm.mongodb.event_manager',
-                new Alias(sprintf('doctrine.odm.mongodb.%s_connection.event_manager', $connectionName))
+                'doctrine_mongodb.odm.event_manager',
+                new Alias(sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $connectionName))
             );
         }
     }
@@ -232,21 +235,21 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $cons = array();
         foreach ($connections as $name => $connection) {
             // Define an event manager for this connection
-            $eventManagerId = sprintf('doctrine.odm.mongodb.%s_connection.event_manager', $name);
-            $container->setDefinition($eventManagerId, new DefinitionDecorator('doctrine.odm.mongodb.connection.event_manager'));
+            $eventManagerId = sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $name);
+            $container->setDefinition($eventManagerId, new DefinitionDecorator('doctrine_mongodb.odm.connection.event_manager'));
 
             $odmConnArgs = array(
                 isset($connection['server']) ? $connection['server'] : null,
                 isset($connection['options']) ? $connection['options'] : array(),
-                new Reference(sprintf('doctrine.odm.mongodb.%s_configuration', $name)),
+                new Reference(sprintf('doctrine_mongodb.odm.%s_configuration', $name)),
                 new Reference($eventManagerId),
             );
-            $odmConnDef = new Definition('%doctrine.odm.mongodb.connection.class%', $odmConnArgs);
-            $id = sprintf('doctrine.odm.mongodb.%s_connection', $name);
+            $odmConnDef = new Definition('%doctrine_mongodb.odm.connection.class%', $odmConnArgs);
+            $id = sprintf('doctrine_mongodb.odm.%s_connection', $name);
             $container->setDefinition($id, $odmConnDef);
             $cons[$name] = $id;
         }
-        $container->setParameter('doctrine.odm.mongodb.connections', $cons);
+        $container->setParameter('doctrine_mongodb.odm.connections', $cons);
     }
 
     /**
@@ -306,7 +309,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
     protected function getObjectManagerElementName($name)
     {
-        return 'doctrine.odm.mongodb.' . $name;
+        return 'doctrine_mongodb.odm.' . $name;
     }
 
     protected function getMappingObjectDefaultName()

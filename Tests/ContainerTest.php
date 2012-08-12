@@ -46,7 +46,7 @@ class ContainerTest extends TestCase
         $this->container->setParameter('kernel.debug', $debug);
         $this->extension->load(array($config), $this->container);
 
-        $def = $this->container->getDefinition('doctrine.odm.mongodb.default_configuration');
+        $def = $this->container->getDefinition('doctrine_mongodb.odm.default_configuration');
         if (false === $logger) {
             $this->assertFalse($def->hasMethodCall('setLoggerCallable'));
         } else {
@@ -69,7 +69,7 @@ class ContainerTest extends TestCase
             array(
                 // logging and profiler default to true when in debug mode
                 array('document_managers' => array('default' => array())) + $config,
-                'doctrine.odm.mongodb.logger.aggregate',
+                'doctrine_mongodb.odm.logger.aggregate',
                 true,
             ),
             array(
@@ -80,17 +80,17 @@ class ContainerTest extends TestCase
             ),
             array(
                 array('document_managers' => array('default' => array('logging' => true, 'profiler' => true))) + $config,
-                'doctrine.odm.mongodb.logger.aggregate',
+                'doctrine_mongodb.odm.logger.aggregate',
                 true,
             ),
             array(
                 array('document_managers' => array('default' => array('logging' => false, 'profiler' => true))) + $config,
-                'doctrine.odm.mongodb.data_collector.pretty',
+                'doctrine_mongodb.odm.data_collector.pretty',
                 true,
             ),
             array(
                 array('document_managers' => array('default' => array('logging' => true, 'profiler' => false))) + $config,
-                'doctrine.odm.mongodb.logger',
+                'doctrine_mongodb.odm.logger',
                 true,
             ),
             array(

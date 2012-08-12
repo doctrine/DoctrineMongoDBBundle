@@ -30,7 +30,7 @@ abstract class DoctrineODMCommand extends ContainerAwareCommand
 {
     public static function setApplicationDocumentManager(Application $application, $dmName)
     {
-        $dm = $application->getKernel()->getContainer()->get('doctrine.odm.mongodb')->getManager($dmName);
+        $dm = $application->getKernel()->getContainer()->get('doctrine_mongodb')->getManager($dmName);
         $helperSet = $application->getHelperSet();
         $helperSet->set(new DocumentManagerHelper($dm), 'dm');
     }
@@ -49,7 +49,7 @@ abstract class DoctrineODMCommand extends ContainerAwareCommand
 
     protected function getDoctrineDocumentManagers()
     {
-        return $this->getContainer()->get('doctrine.odm.mongodb')->getManagers();
+        return $this->getContainer()->get('doctrine_mongodb')->getManagers();
     }
 
     protected function getBundleMetadatas(Bundle $bundle)
