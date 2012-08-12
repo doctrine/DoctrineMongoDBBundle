@@ -48,7 +48,7 @@ class ProxyCacheWarmerTest extends \Doctrine\Bundle\MongoDBBundle\Tests\TestCase
                   ->will($this->returnValue(false));
         $container->expects($this->at(2))
                   ->method('get')
-                  ->with($this->equalTo('doctrine_mongodb.odm'))
+                  ->with($this->equalTo('doctrine_mongodb'))
                   ->will($this->returnValue($registry));
         $container->expects($this->at(3))
                   ->method('get')
