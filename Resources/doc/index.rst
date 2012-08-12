@@ -280,7 +280,7 @@ of the bundle:
         $product->setName('A Foo Bar');
         $product->setPrice('19.99');
 
-        $dm = $this->get('doctrine.odm.mongodb.document_manager');
+        $dm = $this->get('doctrine_mongodb')->getManager();
         $dm->persist($product);
         $dm->flush();
 
@@ -334,7 +334,7 @@ you've configured a route to display a specific ``Product`` based on its
 
     public function showAction($id)
     {
-        $product = $this->get('doctrine.odm.mongodb.document_manager')
+        $product = $this->get('doctrine_mongodb')
             ->getRepository('AcmeStoreBundle:Product')
             ->find($id);
 
@@ -350,7 +350,8 @@ as its "repository". You can think of a repository as a PHP class whose only
 job is to help you fetch objects of a certain class. You can access the
 repository object for a document class via::
 
-    $repository = $this->get('doctrine.odm.mongodb.document_manager')
+    $repository = $this->get('doctrine_mongodb')
+        ->getManager()
         ->getRepository('AcmeStoreBundle:Product');
 
 .. note::
@@ -400,7 +401,7 @@ you have a route that maps a product id to an update action in a controller::
 
     public function updateAction($id)
     {
-        $dm = $this->get('doctrine.odm.mongodb.document_manager');
+        $dm = $this->get('doctrine_mongodb')->getManager();
         $product = $dm->getRepository('AcmeStoreBundle:Product')->find($id);
 
         if (!$product) {
@@ -453,7 +454,8 @@ a query for exactly which documents you want to return. If you use an IDE,
 you can also take advantage of auto-completion as you type the method names.
 From inside a controller::
 
-    $products = $this->get('doctrine.odm.mongodb.document_manager')
+    $products = $this->get('doctrine_mongodb')
+        ->getManager()
         ->createQueryBuilder('AcmeStoreBundle:Product')
         ->field('name')->equals('foo')
         ->limit(10)
@@ -549,7 +551,8 @@ ordered alphabetically.
 
 You can use this new method just like the default finder methods of the repository::
 
-    $products = $this->get('doctrine.odm.mongodb.document_manager')
+    $products = $this->get('doctrine_mongodb')
+        ->getManager()
         ->getRepository('AcmeStoreBundle:Product')
         ->findAllOrderedByName();
 
@@ -651,7 +654,7 @@ see Doctrine's `Event Documentation`_.
 In Symfony, you can register a listener or subscriber by creating a :term:`service`
 and then :ref:`tagging<book-service-container-tags>` it with a specific tag.
 
-*   **event listener**: Use the ``doctrine.odm.mongodb.event_listener`` tag to
+*   **event listener**: Use the ``doctrine_mongodb.odm.event_listener`` tag to
     register a listener. The ``event`` attribute is required and should denote
     the event on which to listen. By default, listeners will be registered with
     event managers for all connections. To restrict a listener to a single
@@ -676,25 +679,25 @@ and then :ref:`tagging<book-service-container-tags>` it with a specific tag.
                     class:   Acme\HelloBundle\Listener\MyDoctrineListener
                     # ...
                     tags:
-                        -  { name: doctrine.odm.mongodb.event_listener, event: postPersist }
+                        -  { name: doctrine_mongodb.odm.event_listener, event: postPersist }
 
         .. code-block:: xml
 
             <service id="my_doctrine_listener" class="Acme\HelloBundle\Listener\MyDoctrineListener">
                 <!-- ... -->
-                <tag name="doctrine.odm.mongodb.event_listener" event="postPersist" />
+                <tag name="doctrine_mongodb.odm.event_listener" event="postPersist" />
             </service>.
 
         .. code-block:: php
 
             $definition = new Definition('Acme\HelloBundle\Listener\MyDoctrineListener');
             // ...
-            $definition->addTag('doctrine.odm.mongodb.event_listener', array(
+            $definition->addTag('doctrine_mongodb.odm.event_listener', array(
                 'event' => 'postPersist',
             ));
             $container->setDefinition('my_doctrine_listener', $definition);
 
-*   **event subscriber**: Use the ``doctrine.odm.mongodb.event_subscriber`` tag
+*   **event subscriber**: Use the ``doctrine_mongodb.odm.event_subscriber`` tag
     to register a subscriber. Subscribers are responsible for implementing
     ``Doctrine\Common\EventSubscriber`` and a method for returning the events
     they will observe. For this reason, this tag has no ``event`` attribute;

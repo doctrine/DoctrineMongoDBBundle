@@ -63,7 +63,7 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $dm = $this->getContainer()->get('doctrine.odm.mongodb')->getManager($input->getOption('dm'));
+        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager($input->getOption('dm'));
         $dirOrFile = $input->getOption('fixtures');
         if ($dirOrFile) {
             $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
