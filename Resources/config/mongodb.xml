@@ -58,11 +58,11 @@
         <!-- form -->
         <service id="form.type.mongodb_document" class="Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType">
             <tag name="form.type" alias="document" />
-            <argument type="service" id="doctrine_mongodb.odm" />
+            <argument type="service" id="doctrine_mongodb" />
         </service>
         <service id="form.type_guesser.doctrine.mongodb" class="Doctrine\Bundle\MongoDBBundle\Form\DoctrineMongoDBTypeGuesser">
             <tag name="form.type_guesser" />
-            <argument type="service" id="doctrine_mongodb.odm" />
+            <argument type="service" id="doctrine_mongodb" />
         </service>
 
         <!-- metadata -->
@@ -113,17 +113,17 @@
         <!--  validator -->
         <service id="doctrine_odm.mongodb.validator.unique" class="%doctrine_odm.mongodb.validator.unique.class%">
             <tag name="validator.constraint_validator" alias="doctrine_odm.mongodb.unique" />
-            <argument type="service" id="doctrine_mongodb.odm" />
+            <argument type="service" id="doctrine_mongodb" />
         </service>
 
         <service id="doctrine_odm.mongodb.validator_initializer" class="%doctrine_odm.mongodb.validator_initializer.class%">
             <tag name="validator.initializer" />
-            <argument type="service" id="doctrine_mongodb.odm" />
+            <argument type="service" id="doctrine_mongodb" />
         </service>
 
         <!-- Security -->
         <service id="doctrine_mongodb.odm.security.user.provider" class="%doctrine_mongodb.odm.security.user.provider.class%" public="false" abstract="true">
-            <argument type="service" id="doctrine_mongodb.odm" />
+            <argument type="service" id="doctrine_mongodb" />
         </service>
 
         <!-- Registry -->
