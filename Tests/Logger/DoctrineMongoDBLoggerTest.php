@@ -40,6 +40,11 @@ class DoctrineMongoDBLoggerTest extends \PHPUnit_Framework_TestCase
                 array('db' => 'foo', 'collection' => 'bar', 'batchInsert' => true, 'num' => 1, 'data' => array('foo'), 'options' => array()),
                 array('use foo;', 'db.bar.batchInsert(**1 item(s)**);'),
             ),
+            // numeric strings
+            array(
+                array('db' => 'foo', 'collection' => 'bar', 'find' => true, 'query' => array('phone' => '+15555551234'), 'fields' => array()),
+                array('use foo;', 'db.bar.find({ "phone": "+15555551234" });'),
+            ),
             // find
             array(
                 array('db' => 'foo', 'collection' => 'bar', 'find' => true, 'query' => array('foo' => null), 'fields' => array()),
