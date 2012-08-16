@@ -193,7 +193,7 @@ class PrettyDataCollector extends StandardDataCollector
                 $formatted = 'null';
             } elseif (is_bool($value)) {
                 $formatted = $value ? 'true' : 'false';
-            } elseif (is_numeric($value)) {
+            } elseif (is_int($value) || is_float($value)) {
                 $formatted = $value;
             } elseif (is_scalar($value)) {
                 $formatted = '"'.$value.'"';
