@@ -50,6 +50,14 @@ of your project:
         target=/bundles/Symfony/Bundle/DoctrineMongoDBBundle
         version=v2.2.0
 
+Additionally, ensure that the Doctrine Common version is at least ``2.2.0``:
+
+.. code-block:: text
+
+    [doctrine-common]
+        git=http://github.com/doctrine/common.git
+        version=2.2.0
+
 Now, update the vendor libraries by running:
 
 .. code-block:: bash
