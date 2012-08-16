@@ -32,8 +32,7 @@
     "target-dir": "Doctrine/Bundle/MongoDBBundle",
     "extra": {
         "branch-alias": {
-            "dev-master": "3.0-dev",
-            "dev-2.0": "2.2-dev"
+            "dev-master": "3.0-dev"
         }
     }
 }
