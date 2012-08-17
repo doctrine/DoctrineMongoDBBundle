@@ -8,3 +8,13 @@ into Symfony so that you can persist and retrieve objects to and from MongoDB.
 
 Documentation on how to install and use this bundle is available in the
 Symfony2 [documentation](http://symfony.com/doc/current/bundles/DoctrineMongoDBBundle/index.html).
+
+Compatibility
+=============
+
+The `composer.json` file in each branch indicates Symfony2 compatibility.
+Additionally, several tags are available:
+
+ * `3.0.x` for Symfony 2.1 (this tracks the `master` branch)
+ * `2.2.x` for Symfony 2.0 (this tracks the `2.0` branch)
+ * `2.1.x` and `2.0.x` for Symfony 2.0 and older Doctrine MongoDB ODM versions
