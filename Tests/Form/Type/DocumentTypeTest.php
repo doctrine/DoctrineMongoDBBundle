@@ -2,69 +2,71 @@
 
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Form\Type;
 
-use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
+use Doctrine\Bundle\MongoDBBundle\Form\DoctrineMongoDBExtension;
+use Symfony\Component\Form\Tests\Extension\Core\Type\TypeTestCase;
 
-/**
- * @author Henrik Bjornskov <henrik@bjrnskov.dk>
- */
-class DocumentTypeTest extends \PHPUnit_Framework_TestCase
+class DocumentTypeTest extends TypeTestCase
 {
+    /**
+     * @var \Doctrine\ODM\MongoDB\DocumentManager
+     */
+    private $dm;
+
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $dmRegistry;
+
     public function setUp()
     {
-        $this->classMetadata = $this->getMock('Doctrine\Common\Persistence\Mapping\ClassMetadata');
-        $this->classMetadata
-            ->expects($this->any())
-            ->method('getName')
-            ->will($this->returnValue('Document'))
-        ;
+        $this->dm = TestCase::createTestDocumentManager(array(
+            __DIR__ . '/../../Fixtures/Form/Document',
+        ));
+        $this->dmRegistry = $this->createRegistryMock('default', $this->dm);
 
-        $this->manager = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
-        $this->manager
-            ->expects($this->any())
-            ->method('getClassMetadata')
-            ->will($this->returnValue($this->classMetadata))
-        ;
-
-        $this->registry = $this->getMock('Doctrine\Common\Persistence\ManagerRegistry');
-        $this->registry
-            ->expects($this->any())
-            ->method('getManager')
-            ->will($this->returnValue($this->manager))
-        ;
-
-        $this->registry
-            ->expects($this->any())
-            ->method('getManagerForClass')
-            ->will($this->returnValue($this->manager))
-        ;
-
-        $this->type = new DocumentType($this->registry);
+        parent::setUp();
     }
 
-    public function testDocumentManagerIsReturnedWhenGettingEm()
+    public function testDocumentManagerOptionSetsEmOption()
     {
-        $resolver = new OptionsResolver();
-        $this->type->setDefaultOptions($resolver);
-
-        $options = $resolver->resolve(array(
-            'document_manager' => 'document_manager',
+        $field = $this->factory->createNamed('name', 'document', null, array(
+            'class' => 'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document',
+            'document_manager' => 'default',
         ));
 
-        $this->assertInstanceOf('Doctrine\Common\Persistence\ObjectManager', $options['em']);
+        $this->assertSame($this->dm, $field->getConfig()->getOption('em'));
     }
 
-    public function testExceptionWhenDocumentManagerAndEmIsSet()
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testSettingDocumentManagerAndEmOptionShouldThrowException()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $field = $this->factory->createNamed('name', 'document', null, array(
+            'document_manager' => 'default',
+            'em' => 'default',
+        ));
+    }
 
-        $resolver = new OptionsResolver();
+    protected function createRegistryMock($name, $dm)
+    {
+        $registry = $this->getMock('Doctrine\Common\Persistence\ManagerRegistry');
+        $registry->expects($this->any())
+                 ->method('getManager')
+                 ->with($this->equalTo($name))
+                 ->will($this->returnValue($dm));
 
-        $this->type->setDefaultOptions($resolver);
+        return $registry;
+    }
 
-        $options = $resolver->resolve(array(
-            'document_manager' => 'document_manager',
-            'em' => 'entity_manager',
+    /**
+     * @see Symfony\Component\Form\Tests\FormIntegrationTestCase::getExtensions()
+     */
+    protected function getExtensions()
+    {
+        return array_merge(parent::getExtensions(), array(
+            new DoctrineMongoDBExtension($this->dmRegistry),
         ));
     }
 }

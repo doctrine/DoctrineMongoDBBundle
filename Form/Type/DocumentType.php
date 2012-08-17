@@ -69,7 +69,6 @@ class DocumentType extends DoctrineType
         $resolver->setNormalizers(array(
             'em' => $normalizer,
         ));
-
     }
 
     /**
