@@ -170,6 +170,11 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
 
     protected function getMetadata($class)
     {
+        // Make sure that the Class is a valid Document and not an Entity
+    	if(strpos($class, 'Entity') !== false) {
+    		return null;
+    	}
+        
         if (array_key_exists($class, $this->cache)) {
             return $this->cache[$class];
         }
