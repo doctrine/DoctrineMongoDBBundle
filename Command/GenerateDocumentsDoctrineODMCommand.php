@@ -84,7 +84,9 @@ EOT
                 $documentGenerator->generate(array($metadata), $this->findBasePathForBundle($foundBundle));
             }
         } else {
-            throw new \RuntimeException("Bundle " . $bundleName . " does not contain any mapped documents.");
+            throw new \RuntimeException(
+                "Bundle " . $bundleName . " does not contain any mapped documents.".
+                "Did you maybe forget to define a mapping configuration?");
         }
     }
 }
