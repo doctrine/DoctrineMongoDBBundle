@@ -141,6 +141,7 @@ class Configuration implements ConfigurationInterface
                                     ->booleanNode('replicaSet')->end()
                                     ->scalarNode('username')->end()
                                     ->scalarNode('password')->end()
+                                    ->scalarNode('db')->end()
                                 ->end()
                             ->end()
                         ->end()
