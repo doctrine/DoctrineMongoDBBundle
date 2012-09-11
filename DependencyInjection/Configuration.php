@@ -181,6 +181,7 @@ class Configuration implements ConfigurationInterface
                                     ->booleanNode('slaveOkay')->end()
                                     ->scalarNode('username')->end()
                                     ->scalarNode('password')->end()
+                                    ->scalarNode('db')->end()
                                 ->end()
                             ->end()
                         ->end()

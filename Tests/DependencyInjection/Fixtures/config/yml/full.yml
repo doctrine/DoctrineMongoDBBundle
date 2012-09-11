@@ -16,7 +16,7 @@ doctrine_mongodb:
 
     connections:
         conn1:
-            server:         http://server
+            server:         mongodb://localhost
             options:
                 connect:    true
                 persist:    persist_val
@@ -25,8 +25,9 @@ doctrine_mongodb:
                 slaveOkay:  true
                 username:   username_val
                 password:   password_val
+                db:         database_val
         conn2:
-            server: http://server2
+            server: mongodb://otherhost
 
     document_managers:
         dm1:

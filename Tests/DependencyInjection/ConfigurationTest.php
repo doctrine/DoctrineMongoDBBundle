@@ -84,7 +84,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             'default_connection'             => 'conn1',
             'connections'   => array(
                 'conn1'       => array(
-                    'server'  => 'http://server',
+                    'server'  => 'mongodb://localhost',
                     'options' => array(
                         'connect'    => true,
                         'persist'    => 'persist_val',
@@ -93,10 +93,11 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                         'slaveOkay'  => true,
                         'username'   => 'username_val',
                         'password'   => 'password_val',
+                        'db'         => 'database_val',
                     ),
                 ),
                 'conn2'       => array(
-                    'server'  => 'http://server2',
+                    'server'  => 'mongodb://otherhost',
                     'options' => array(),
                 ),
             ),
