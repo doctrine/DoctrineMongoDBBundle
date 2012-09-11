@@ -79,6 +79,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                         'replicaSet' => true,
                         'username'   => 'username_val',
                         'password'   => 'password_val',
+                        'db'         => 'database_val',
                     ),
                 ),
                 'conn2'       => array(
