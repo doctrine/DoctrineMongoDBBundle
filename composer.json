@@ -18,7 +18,8 @@
         "symfony/framework-bundle": "2.1.*"
     },
     "require-dev": {
-        "doctrine/data-fixtures": "@dev"
+        "doctrine/data-fixtures": "@dev",
+        "symfony/form": "2.1.*"
     },
     "suggest": {
         "doctrine/data-fixtures": "Load data fixtures"
