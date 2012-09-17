@@ -97,8 +97,7 @@ the MongoDB ODM across your application:
         connections:
             default:
                 server: mongodb://localhost:27017
-                options:
-                    connect: true
+                options: {}
         default_database: test_database
         document_managers:
             default:
@@ -754,7 +753,7 @@ Learn more from the Cookbook
 * :doc:`/bundles/DoctrineMongoDBBundle/form`
 
 .. _`MongoDB`:          http://www.mongodb.org/
-.. _`documentation`:    http://www.doctrine-project.org/docs/mongodb_odm/1.0/en
+.. _`documentation`:    http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/
 .. _`Quick Start`:      http://www.mongodb.org/display/DOCS/Quickstart
 .. _`Basic Mapping Documentation`: http://www.doctrine-project.org/docs/mongodb_odm/1.0/en/reference/basic-mapping.html
 .. _`MongoDB type`: http://us.php.net/manual/en/mongo.types.php
