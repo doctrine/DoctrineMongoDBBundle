@@ -48,7 +48,7 @@ To install DoctrineMongoDBBundle with Composer just add the following to your
 
 The ``minimum-stability`` definition is necessary until a non-beta version of
 the bundle is available. Depending on your project needs, other values than
-``dev`` may be used, which are discussed Composer's `schema documentation`_.
+``dev`` may be used, which are discussed in Composer's `schema documentation`_.
 
 You can now can install the new dependencies by running Composer's ``update``
 command from the directory where your ``composer.json`` file is located:
