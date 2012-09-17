@@ -690,6 +690,38 @@ and then :ref:`tagging<book-service-container-tags>` it with a specific tag.
 *   **event subscriber**: Use the ``doctrine.odm.mongodb.<connection>_event_subscriber``
     tag. No other keys are needed in the tag.
 
+Registering Doctrine Parameter Converter for MongoDB 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To register MongoDB Document Manager in Doctrine Parameter Conveter managers declare the service
+in your services.yml bundle:
+
+.. code-block:: yaml
+
+            services:
+                doctrine.mongodb.converter:
+                    class: Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter
+                    arguments: [@doctrine_mongodb]
+                    tags:
+                        - { name: request.param_converter }
+
+.. code-block:: xml
+
+            <service id="doctrine.mongodb.converter" class="Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter">
+                <argument type="service" id="doctrine_mongodb"/>
+                <tag name="request.param_converter" />
+            </service>.
+
+Then you can just typehint the parameters in your controller:
+
+ .. code-block:: php
+
+            public function showAction(Document $instance)
+            {
+                // ...
+            }
+
+
 Summary
 -------
 
