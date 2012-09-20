@@ -64,7 +64,7 @@ Register the annotations and the bundle
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Next, register the annotations library by adding the following to the autoloader
-(below the existing ``AnnotationRegistry::registerFile`` line)::
+(below the existing ``AnnotationRegistry::registerLoader`` line)::
 
     // app/autoload.php
     AnnotationRegistry::registerFile(
