@@ -67,9 +67,8 @@ Next, register the annotations library by adding the following to the autoloader
 (below the existing ``AnnotationRegistry::registerLoader`` line)::
 
     // app/autoload.php
-    AnnotationRegistry::registerFile(
-        __DIR__.'/../vendor/doctrine/mongodb-odm/lib/Doctrine/ODM/MongoDB/Mapping/Annotations/DoctrineAnnotations.php'
-    );
+    use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+    AnnotationDriver::registerAnnotationClasses();
 
 All that is left to do is to update your ``AppKernel.php`` file, and
 register the new bundle::
