@@ -69,7 +69,7 @@ class DoctrineMongoDBBundle extends Bundle
                     $fileName = str_replace('\\', '', substr($class, strlen($namespace) +1));
                     $file = $dir.DIRECTORY_SEPARATOR.$fileName.'.php';
 
-                    if (!is_file($file) && $container->getParameter('kernel.debug')) {
+                    if (!is_file($file) && $container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes')) {
                         $originalClassName = ClassUtils::getRealClass($class);
                         $registry = $container->get('doctrine_mongodb');
 
