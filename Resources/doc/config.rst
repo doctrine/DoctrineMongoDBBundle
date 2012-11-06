@@ -213,6 +213,18 @@ connection services::
     $dm1 = $container->get('doctrine.odm.mongodb.dm1_document_manager');
     $dm2 = $container->get('doctrine.odm.mongodb.dm2_document_manager');
 
+Retrying Connections and Queries
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Doctrine MongoDB supports automatically retrying connections and queries after
+encountering an exception, which is helpful when dealing with situations such as
+replica set failovers. This alleviates much of the need to catch exceptions from
+the MongoDB PHP driver in your application and manually retry operations.
+
+You may specify the number of times to retry connections and queries via the
+`retry_connect` and `retry_query` options in the document manager configuration.
+These options default to zero, which means that no operations will be retried.
+
 Full Default Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -229,6 +241,8 @@ Full Default Configuration
                     database:             ~
                     logging:              true
                     auto_mapping:         false
+                    retry_connect:        0
+                    retry_query:          0
                     metadata_cache_driver:
                         type:                 ~
                         class:                ~
