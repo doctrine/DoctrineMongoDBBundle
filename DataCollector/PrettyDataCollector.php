@@ -146,7 +146,7 @@ class PrettyDataCollector extends StandardDataCollector
                     $query .= '.getDBRef()';
                 } elseif (isset($log['group'])) {
                     $query .= '.group('.$this->bsonEncode(array(
-                        'keys'    => $log['keys'],
+                        'key'    => $log['keys'],
                         'initial' => $log['initial'],
                         'reduce'  => $log['reduce'],
                     )).')';
