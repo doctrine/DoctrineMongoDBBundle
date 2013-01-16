@@ -19,7 +19,8 @@
     },
     "require-dev": {
         "doctrine/data-fixtures": "@dev",
-        "symfony/form": ">=2.1,<2.3-dev"
+        "symfony/form": ">=2.1,<2.3-dev",
+        "symfony/yaml": ">=2.1,<2.3-dev"
     },
     "suggest": {
         "doctrine/data-fixtures": "Load data fixtures"
