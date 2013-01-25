@@ -1,12 +1,7 @@
 <?php
 
 /*
- * This file is part of the Doctrine Bundle
- *
- * The code was originally distributed inside the Symfony framework.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- * (c) Doctrine Project, Benjamin Eberlei <kontakt@beberlei.de>
+ * This file is part of the Doctrine MongoDB Bundle
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -17,9 +12,9 @@ namespace Doctrine\Bundle\MongoDBBundle;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
- * Configurator for an EntityManager
+ * Configurator for an DocumentManager
  *
- * @author Christophe Coevoet <stof@notk.org>
+ * @author Wesley van Opdorp <wesley.van.opdorp@freshheads.com>
  */
 class ManagerConfigurator
 {
@@ -38,7 +33,7 @@ class ManagerConfigurator
     /**
      * Create a connection by name.
      *
-     * @param EntityManager $entityManager
+     * @param DocumentManager $documentManager
      */
     public function configure(DocumentManager $documentManager)
     {
@@ -46,9 +41,9 @@ class ManagerConfigurator
     }
 
     /**
-     * Enable filters for an given entity manager
+     * Enable filters for an given document manager
      *
-     * @param EntityManager $entityManager
+     * @param DocumentManager $documentManager
      *
      * @return null
      */
