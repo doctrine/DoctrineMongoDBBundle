@@ -108,6 +108,10 @@ class PrettyDataCollector extends StandardDataCollector
                         }
                     }
                     $query .= ')';
+                } elseif (isset($log['skip'])) {
+                    $query .= '.skip('.$log['skipNum'].')';
+                } elseif (isset($log['limit'])) {
+                    $query .= '.limit('.$log['limitNum'].')';
                 } elseif (isset($log['createCollection'])) {
                     $query .= '.createCollection()';
                 } elseif (isset($log['createDBRef'])) {
