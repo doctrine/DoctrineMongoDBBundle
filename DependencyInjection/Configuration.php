@@ -109,6 +109,29 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                             ->scalarNode('auto_mapping')->defaultFalse()->end()
+                            ->arrayNode('filters')
+                                ->useAttributeAsKey('name')
+                                ->prototype('array')
+                                    ->beforeNormalization()
+                                        ->ifString()
+                                        ->then(function($v) { return array('class' => $v); })
+                                    ->end()
+                                    ->beforeNormalization()
+                                        // The content of the XML node is returned as the "value" key so we need to rename it
+                                        ->ifTrue(function($v) {return is_array($v) && isset($v['value']); })
+                                        ->then(function($v) {
+                                            $v['class'] = $v['value'];
+                                            unset($v['value']);
+
+                                            return $v;
+                                        })
+                                    ->end()
+                                    ->children()
+                                        ->scalarNode('class')->isRequired()->end()
+                                        ->booleanNode('enabled')->defaultFalse()->end()
+                                    ->end()
+                                ->end()
+                            ->end()
                             ->scalarNode('retry_connect')->defaultValue(0)->end()
                             ->scalarNode('retry_query')->defaultValue(0)->end()
                             ->arrayNode('metadata_cache_driver')
