@@ -9,6 +9,7 @@
         <parameter key="doctrine_mongodb.odm.connection.class">Doctrine\MongoDB\Connection</parameter>
         <parameter key="doctrine_mongodb.odm.configuration.class">Doctrine\ODM\MongoDB\Configuration</parameter>
         <parameter key="doctrine_mongodb.odm.document_manager.class">Doctrine\ODM\MongoDB\DocumentManager</parameter>
+        <parameter key="doctrine_mongodb.odm.manager_configurator.class">Doctrine\Bundle\MongoDBBundle\ManagerConfigurator</parameter>
         <parameter key="doctrine_mongodb.odm.logger.class">Doctrine\Bundle\MongoDBBundle\Logger\Logger</parameter>
         <parameter key="doctrine_mongodb.odm.logger.aggregate.class">Doctrine\Bundle\MongoDBBundle\Logger\AggregateLogger</parameter>
         <parameter key="doctrine_mongodb.odm.data_collector.standard.class">Doctrine\Bundle\MongoDBBundle\DataCollector\StandardDataCollector</parameter>
@@ -77,6 +78,11 @@
         </service>
         <service id="doctrine_mongodb.odm.metadata.yml" class="%doctrine_mongodb.odm.metadata.yml.class%">
             <argument>%doctrine_mongodb.odm.yml_mapping_dirs%</argument>
+        </service>
+
+        <!-- The configurator cannot be a private service -->
+        <service id="doctrine_mongodb.odm.manager_configurator.abstract" class="%doctrine_mongodb.odm.manager_configurator.class%" abstract="true">
+            <argument type="collection" />
         </service>
 
         <!-- cache -->

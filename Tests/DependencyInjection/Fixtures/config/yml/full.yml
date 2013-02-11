@@ -39,6 +39,10 @@ doctrine_mongodb:
                 host:                  host_val
                 port:                  1234
                 instance_class:        instance_val
+            filters:
+                test-filter:
+                    class:              TestClass
+                    enabled:            true
         dm2:
             connection:       dm2_connection
             database:         db1

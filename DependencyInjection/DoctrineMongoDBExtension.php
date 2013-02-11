@@ -193,6 +193,22 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $methods['setLoggerCallable'] = array($loggers[0], 'logQuery');
         }
 
+        $enabledFilters = array();
+        foreach ($documentManager['filters'] as $name => $filter) {
+            $odmConfigDef->addMethodCall('addFilter', array($name, $filter['class']));
+            if ($filter['enabled']) {
+                $enabledFilters[] = $name;
+            }
+        }
+
+        $managerConfiguratorName = sprintf('doctrine_mongodb.odm.%s_manager_configurator', $documentManager['name']);
+
+        $managerConfiguratorDef = $container
+            ->setDefinition($managerConfiguratorName, new DefinitionDecorator('doctrine_mongodb.odm.manager_configurator.abstract'))
+            ->replaceArgument(0, $enabledFilters)
+        ;
+
+
         foreach ($methods as $method => $arg) {
             if ($odmConfigDef->hasMethodCall($method)) {
                 $odmConfigDef->removeMethodCall($method);
@@ -210,7 +226,11 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $odmDmDef->setFactoryClass('%doctrine_mongodb.odm.document_manager.class%');
         $odmDmDef->setFactoryMethod('create');
         $odmDmDef->addTag('doctrine_mongodb.odm.document_manager');
-        $container->setDefinition(sprintf('doctrine_mongodb.odm.%s_document_manager', $documentManager['name']), $odmDmDef);
+
+        $container
+            ->setDefinition(sprintf('doctrine_mongodb.odm.%s_document_manager', $documentManager['name']), $odmDmDef)
+            ->setConfigurator(array(new Reference($managerConfiguratorName), 'configure'))
+        ;
 
         if ($documentManager['name'] == $defaultDM) {
             $container->setAlias(
