@@ -17,6 +17,10 @@ Sample Configuration
             default:
                 mappings:
                     AcmeDemoBundle: ~
+                filters:
+                    filter-name:
+                        class: Class\Example\Filter\ODM\ExampleFilter
+                        enabled: true # true, false
                 metadata_cache_driver: array # array, apc, xcache, memcache
 
 If you wish to use memcache to cache your metadata, you need to configure the
@@ -137,6 +141,27 @@ The following configuration shows a bunch of mapping examples:
                         dir: %kernel.root_dir%/../src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents
                         prefix: DoctrineExtensions\Documents\
                         alias: DExt
+
+Filters
+~~~~~~~~~~~~~~~~~~~~
+
+You can easily add filters to a document manager by using the
+following syntax:
+
+.. code-block:: yaml
+
+    doctrine_mongodb:
+        document_managers:
+            default:
+                filters:
+                    filter-one:
+                        class: Class\ExampleOne\Filter\ODM\ExampleFilter
+                        enabled: true # true, false
+                    filter-two:
+                        class: Class\ExampleTwo\Filter\ODM\ExampleFilter
+                        enabled: false # true, false
+
+Filters are used to append conditions to the queryBuilder regardless of where the query is generated.
 
 Multiple Connections
 ~~~~~~~~~~~~~~~~~~~~
