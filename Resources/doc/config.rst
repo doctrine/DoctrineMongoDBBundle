@@ -20,7 +20,7 @@ Sample Configuration
                 filters:
                     filter-name:
                         class: Class\Example\Filter\ODM\ExampleFilter
-                        enabled: true # true, false
+                        enabled: true
                 metadata_cache_driver: array # array, apc, xcache, memcache
 
 If you wish to use memcache to cache your metadata, you need to configure the
@@ -143,7 +143,7 @@ The following configuration shows a bunch of mapping examples:
                         alias: DExt
 
 Filters
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~
 
 You can easily add filters to a document manager by using the
 following syntax:
@@ -156,10 +156,10 @@ following syntax:
                 filters:
                     filter-one:
                         class: Class\ExampleOne\Filter\ODM\ExampleFilter
-                        enabled: true # true, false
+                        enabled: true
                     filter-two:
                         class: Class\ExampleTwo\Filter\ODM\ExampleFilter
-                        enabled: false # true, false
+                        enabled: false
 
 Filters are used to append conditions to the queryBuilder regardless of where the query is generated.
 
