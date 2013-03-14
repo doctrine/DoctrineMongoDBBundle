@@ -42,4 +42,32 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
         $logger = new Logger($this->logger);
         $logger->logQuery(array('foo' => 'bar'));
     }
+
+    public function testMongoBinDataBase64Encoded()
+    {
+        $binData = new \MongoBinData('junk data');
+        $query = array('foo' => base64_encode($binData->bin));
+        $log = json_encode($query);
+
+        $this->logger->expects($this->once())
+            ->method('info')
+            ->with('MongoDB query: '.$log);
+
+        $logger = new Logger($this->logger);
+        $logger->logQuery(array('foo' => new \MongoBinData('junk data')));
+    }
+
+    public function testMongoBinDataBase64EncodedRecursively()
+    {
+        $binData = new \MongoBinData('junk data');
+        $query = array('foo' => array('bar' => base64_encode($binData->bin)));
+        $log = json_encode($query);
+
+        $this->logger->expects($this->once())
+            ->method('info')
+            ->with('MongoDB query: '.$log);
+
+        $logger = new Logger($this->logger);
+        $logger->logQuery(array('foo' => array('bar' => new \MongoBinData('junk data'))));
+    }
 }
