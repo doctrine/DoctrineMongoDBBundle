@@ -41,14 +41,14 @@ To install DoctrineMongoDBBundle with Composer just add the following to your
 
     {
         "require": {
-            "doctrine/mongodb-odm-bundle": "3.0.*"
+            "doctrine/mongodb-odm": "1.0.*@dev",
+            "doctrine/mongodb-odm-bundle": "3.0.*@dev"
         },
-        "minimum-stability": "dev"
     }
 
-The ``minimum-stability`` definition is necessary until a non-beta version of
-the bundle is available. Depending on your project needs, other values than
-``dev`` may be used, which are discussed in Composer's `schema documentation`_.
+The ``@dev`` definition is necessary until non-beta versions of the bundle and
+ODM are available. Depending on your project needs, other version strings may
+be used, which are discussed in Composer's `schema documentation`_.
 
 You can now can install the new dependencies by running Composer's ``update``
 command from the directory where your ``composer.json`` file is located:
