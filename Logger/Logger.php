@@ -48,6 +48,12 @@ class Logger implements LoggerInterface
             $query['data'] = '**'.$query['num'].' item(s)**';
         }
 
+        array_walk_recursive($query, function(&$value, $key) {
+            if ($value instanceof \MongoBinData) {
+                $value = base64_encode($value->bin);
+            }
+        });
+
         $this->logger->info($this->prefix.json_encode($query));
     }
 }
