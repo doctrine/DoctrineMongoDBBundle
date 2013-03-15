@@ -45,7 +45,7 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 
     public function testMongoBinDataBase64Encoded()
     {
-        $binData = new \MongoBinData('junk data');
+        $binData = new \MongoBinData('junk data', \MongoBinData::BYTE_ARRAY);
         $query = array('foo' => base64_encode($binData->bin));
         $log = json_encode($query);
 
@@ -54,12 +54,12 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
             ->with('MongoDB query: '.$log);
 
         $logger = new Logger($this->logger);
-        $logger->logQuery(array('foo' => new \MongoBinData('junk data')));
+        $logger->logQuery(array('foo' => new \MongoBinData('junk data', \MongoBinData::BYTE_ARRAY)));
     }
 
     public function testMongoBinDataBase64EncodedRecursively()
     {
-        $binData = new \MongoBinData('junk data');
+        $binData = new \MongoBinData('junk data', \MongoBinData::BYTE_ARRAY);
         $query = array('foo' => array('bar' => base64_encode($binData->bin)));
         $log = json_encode($query);
 
@@ -68,6 +68,6 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
             ->with('MongoDB query: '.$log);
 
         $logger = new Logger($this->logger);
-        $logger->logQuery(array('foo' => array('bar' => new \MongoBinData('junk data'))));
+        $logger->logQuery(array('foo' => array('bar' => new \MongoBinData('junk data', \MongoBinData::BYTE_ARRAY))));
     }
 }

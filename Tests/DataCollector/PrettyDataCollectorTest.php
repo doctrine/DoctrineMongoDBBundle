@@ -45,7 +45,7 @@ class PrettyDataCollectorTest extends \PHPUnit_Framework_TestCase
                 array('use foo;', 'db.bar.find({ "foo": null });'),
             ),
             'bin data' => array(
-                array('db' => 'foo', 'collection' => 'bar', 'update' => true, 'query' => array('_id' => 'foo'), 'newObj' => array('foo' => new \MongoBinData('junk data'))),
+                array('db' => 'foo', 'collection' => 'bar', 'update' => true, 'query' => array('_id' => 'foo'), 'newObj' => array('foo' => new \MongoBinData('junk data', \MongoBinData::BYTE_ARRAY))),
                 arraY('use foo;', 'db.bar.update({ "_id": "foo" }, { "foo": new BinData(2, "' . base64_encode('junk data') . '") });'),
             )
         );
