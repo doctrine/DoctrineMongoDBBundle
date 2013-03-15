@@ -216,7 +216,7 @@ class PrettyDataCollector extends StandardDataCollector
             } elseif ($value instanceof \MongoMaxKey) {
                 $formatted = 'new MaxKey()';
             } elseif ($value instanceof \MongoBinData) {
-                $formatted = 'new BinData("'.base64_encode($value->bin).'", "'.$value->type.'")';
+                $formatted = 'new BinData('.$value->type.', "'.base64_encode($value->bin).'")';
             } elseif ($value instanceof \MongoGridFSFile || $value instanceof GridFSFile) {
                 $formatted = 'new MongoGridFSFile("'.$value->getFilename().'")';
             } elseif ($value instanceof \stdClass) {
