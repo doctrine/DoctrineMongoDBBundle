@@ -329,6 +329,29 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider getValidSafeCommitOptions
+     */
+    public function testValidSafeCommitOptions($safeCommitOption)
+    {
+        $invalidConfig = array('default_commit_options' => array('safe' => $safeCommitOption));
+
+        $processor = new Processor();
+        $configuration = new Configuration(false);
+        $options = $processor->processConfiguration($configuration, array($invalidConfig));
+    }
+
+    public function getValidSafeCommitOptions()
+    {
+        return array(
+            array(0),
+            array(1),
+            array(true),
+            array('majority'),
+            array(-1),
+        );
+    }
+
+    /**
      * @dataProvider getInvalidSafeCommitOptions
      * @expectedException Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
      */
@@ -344,8 +367,9 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
     public function getInvalidSafeCommitOptions()
     {
         return array(
-            array('NaN'),
-            array(-1.0),
+            array(array()),
+            array(new \stdClass()),
+            array(-2),
         );
     }
 
