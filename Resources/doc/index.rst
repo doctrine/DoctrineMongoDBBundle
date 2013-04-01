@@ -664,9 +664,10 @@ and then :ref:`tagging<book-service-container-tags>` it with a specific tag.
 
     The ``priority`` attribute, which defaults to ``0`` if omitted, may be used
     to control the order that listeners are registered. Much like Symfony2's
-    :ref:`event dispatcher<event_dispatcher>`, greater numbers will result in
-    the listener executing first and listeners with the same priority will be
-    executed in the order that they were registered with the event manager.
+    :doc:`event dispatcher</components/event_dispatcher/introduction>`, greater
+    numbers will result in the listener executing first and listeners with the
+    same priority will be executed in the order that they were registered with
+    the event manager.
 
     Lastly, the ``lazy`` attribute, which defaults to ``false`` if omitted, may
     be used to request that the listener be lazily loaded by the event manager
