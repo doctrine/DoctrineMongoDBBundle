@@ -690,6 +690,31 @@ and then :ref:`tagging<book-service-container-tags>` it with a specific tag.
 *   **event subscriber**: Use the ``doctrine.odm.mongodb.<connection>_event_subscriber``
     tag. No other keys are needed in the tag.
 
+Using the Abstraction Layer
+---------------------------
+
+Doctrine provides a thin wrapper for the PHP MongoDB client class which can conveniently
+be fetched from the Symfony2 service container. A similar example like the tutorial in the
+`PHP Documentation`_ might look something like this:
+
+.. code-block:: php
+
+    // connect
+    $m = $this->container->get('doctrine_mongodb.odm.default_connection');
+
+    // select a database
+    $db = $m->selectDatabase('comedy');
+
+    // select a collection (analogous to a relational database's table)
+    $collection = $db->createCollection('cartoons');
+
+    // add a record
+    $document = array( "title" => "Calvin and Hobbes", "author" => "Bill Watterson" );
+    $collection->insert($document);
+
+    // find everything in the collection
+    $cursor = $collection->find();
+
 Summary
 -------
 
@@ -717,3 +742,4 @@ Learn more from the Cookbook
 .. _`Query Builder`: http://www.doctrine-project.org/docs/mongodb_odm/1.0/en/reference/query-builder-api.html
 .. _`Conditional Operators`: http://www.doctrine-project.org/docs/mongodb_odm/1.0/en/reference/query-builder-api.html#conditional-operators
 .. _`Event Documentation`: http://www.doctrine-project.org/docs/mongodb_odm/1.0/en/reference/events.html
+.. _`PHP Documentation`: http://www.php.net/manual/en/mongo.tutorial.php
