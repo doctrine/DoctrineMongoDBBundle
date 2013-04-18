@@ -29,7 +29,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $container = $this->getContainer();
         $loader = new DoctrineMongoDBExtension();
 
-        $loader->load(array(array()), $container);
+        $loader->load(DoctrineMongoDBExtensionTest::buildConfiguration(), $container);
 
         $this->assertEquals('Doctrine\MongoDB\Connection', $container->getParameter('doctrine_mongodb.odm.connection.class'));
         $this->assertEquals('Doctrine\ODM\MongoDB\Configuration', $container->getParameter('doctrine_mongodb.odm.configuration.class'));
@@ -50,13 +50,13 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $this->assertEquals('Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator', $container->getParameter('doctrine_odm.mongodb.validator.unique.class'));
 
-        $config = array(
+        $config = DoctrineMongoDBExtensionTest::buildConfiguration(array(
             'proxy_namespace' => 'MyProxies',
             'auto_generate_proxy_classes' => true,
             'connections' => array('default' => array()),
             'document_managers' => array('default' => array())
-        );
-        $loader->load(array($config), $container);
+        ));
+        $loader->load($config, $container);
 
         $this->assertEquals('MyProxies', $container->getParameter('doctrine_mongodb.odm.proxy_namespace'));
         $this->assertEquals(true, $container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes'));
@@ -276,7 +276,10 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $container = $this->getContainer();
         $loader = new DoctrineMongoDBExtension();
 
-        $loader->load(array(array('document_managers' => array('default' => array('mappings' => array('YamlBundle' => array()))))), $container);
+        $config = DoctrineMongoDBExtensionTest::buildConfiguration(
+            array('document_managers' => array('default' => array('mappings' => array('YamlBundle' => array()))))
+        );
+        $loader->load($config, $container);
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_configuration');
         $calls = $definition->getMethodCalls();
@@ -288,8 +291,10 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
     {
         $container = $this->getContainer('YamlBundle');
         $loader = new DoctrineMongoDBExtension();
-
-        $loader->load(array(array('document_managers' => array('default' => array('mappings' => array('YamlBundle' => array()))))), $container);
+        $config = DoctrineMongoDBExtensionTest::buildConfiguration(
+            array('document_managers' => array('default' => array('mappings' => array('YamlBundle' => array()))))
+        );
+        $loader->load($config, $container);
 
         $calls = $container->getDefinition('doctrine_mongodb.odm.default_metadata_driver')->getMethodCalls();
         $this->assertEquals('doctrine_mongodb.odm.default_yml_metadata_driver', (string) $calls[0][1][0]);
@@ -300,8 +305,10 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
     {
         $container = $this->getContainer('XmlBundle');
         $loader = new DoctrineMongoDBExtension();
-
-        $loader->load(array(array('document_managers' => array('default' => array('mappings' => array('XmlBundle' => array()))))), $container);
+        $config = DoctrineMongoDBExtensionTest::buildConfiguration(
+            array('document_managers' => array('default' => array('mappings' => array('XmlBundle' => array()))))
+        );
+        $loader->load($config, $container);
 
         $calls = $container->getDefinition('doctrine_mongodb.odm.default_metadata_driver')->getMethodCalls();
         $this->assertEquals('doctrine_mongodb.odm.default_xml_metadata_driver', (string) $calls[0][1][0]);
@@ -312,8 +319,10 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
     {
         $container = $this->getContainer('AnnotationsBundle');
         $loader = new DoctrineMongoDBExtension();
-
-        $loader->load(array(array('document_managers' => array('default' => array('mappings' => array('AnnotationsBundle' => array()))))), $container);
+        $config = DoctrineMongoDBExtensionTest::buildConfiguration(
+            array('document_managers' => array('default' => array('mappings' => array('AnnotationsBundle' => array()))))
+        );
+        $loader->load($config, $container);
 
         $calls = $container->getDefinition('doctrine_mongodb.odm.default_metadata_driver')->getMethodCalls();
         $this->assertEquals('doctrine_mongodb.odm.default_annotation_metadata_driver', (string) $calls[0][1][0]);
@@ -372,6 +381,8 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $container = $this->getContainer();
         $loader = new DoctrineMongoDBExtension();
         $container->registerExtension($loader);
+        $config = DoctrineMongoDBExtensionTest::buildConfiguration();
+        $container->prependExtensionConfig($loader->getAlias(), reset($config));
 
         $this->loadFromFile($container, 'odm_imports');
 
