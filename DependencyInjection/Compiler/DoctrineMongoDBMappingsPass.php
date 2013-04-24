@@ -49,12 +49,12 @@ class DoctrineMongoDBMappingsPass extends BaseMappingPass
     }
 
     /**
-     * @param array  $mappings            Hashmap of directory path to namespace
+     * @param array    $mappings          Hashmap of directory path to namespace
      * @param string[] $managerParameters List of parameters that could which object manager name
      *                                    your bundle uses. This compiler pass will automatically
      *                                    append the parameter name for the default entity manager
      *                                    to this list.
-     * @param string $enabledParameter    Service container parameter that must be present to
+     * @param string   $enabledParameter  Service container parameter that must be present to
      *                                    enable the mapping. Set to false to not do any check,
      *                                    optional.
      */
@@ -68,12 +68,12 @@ class DoctrineMongoDBMappingsPass extends BaseMappingPass
     }
 
     /**
-     * @param array  $mappings            Hashmap of directory path to namespace
+     * @param array    $mappings          Hashmap of directory path to namespace
      * @param string[] $managerParameters List of parameters that could which object manager name
      *                                    your bundle uses. This compiler pass will automatically
      *                                    append the parameter name for the default entity manager
      *                                    to this list.
-     * @param string $enabledParameter    Service container parameter that must be present to
+     * @param string   $enabledParameter  Service container parameter that must be present to
      *                                    enable the mapping. Set to false to not do any check,
      *                                    optional.
      */
@@ -87,13 +87,32 @@ class DoctrineMongoDBMappingsPass extends BaseMappingPass
     }
 
     /**
-     * @param array  $namespaces          List of namespaces that are handled with annotation mapping
-     * @param array  $directories         List of directories to look for annotation mapping files
+     * @param array    $mappings          Hashmap of directory path to namespace
      * @param string[] $managerParameters List of parameters that could which object manager name
      *                                    your bundle uses. This compiler pass will automatically
      *                                    append the parameter name for the default entity manager
      *                                    to this list.
-     * @param string $enabledParameter    Service container parameter that must be present to
+     * @param string   $enabledParameter  Service container parameter that must be present to
+     *                                    enable the mapping. Set to false to not do any check,
+     *                                    optional.
+     */
+    public static function createPhpMappingDriver(array $mappings, array $managerParameters = array(), $enabledParameter = false)
+    {
+        $arguments = array($mappings, '.php');
+        $locator = new Definition('Doctrine\Common\Persistence\Mapping\Driver\SymfonyFileLocator', $arguments);
+        $driver = new Definition('Doctrine\Common\Persistence\Mapping\Driver\PHPDriver', array($locator));
+
+        return new DoctrineMongoDBMappingsPass($driver, $mappings, $managerParameters, $enabledParameter);
+    }
+
+    /**
+     * @param array    $namespaces        List of namespaces that are handled with annotation mapping
+     * @param array    $directories       List of directories to look for annotation mapping files
+     * @param string[] $managerParameters List of parameters that could which object manager name
+     *                                    your bundle uses. This compiler pass will automatically
+     *                                    append the parameter name for the default entity manager
+     *                                    to this list.
+     * @param string   $enabledParameter  Service container parameter that must be present to
      *                                    enable the mapping. Set to false to not do any check,
      *                                    optional.
      */
@@ -102,6 +121,25 @@ class DoctrineMongoDBMappingsPass extends BaseMappingPass
         $arguments = array(new Reference('doctrine_mongodb.odm.metadata.annotation_reader'), $directories);
         $locator = new Definition('Doctrine\Common\Persistence\Mapping\Driver\SymfonyFileLocator', $arguments);
         $driver = new Definition('Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver', array($locator));
+
+        return new DoctrineMongoDBMappingsPass($driver, $namespaces, $managerParameters, $enabledParameter);
+    }
+
+
+    /**
+     * @param array    $namespaces        List of namespaces that are handled with static php mapping
+     * @param array    $directories       List of directories to look for static php mapping files
+     * @param string[] $managerParameters List of parameters that could which object manager name
+     *                                    your bundle uses. This compiler pass will automatically
+     *                                    append the parameter name for the default entity manager
+     *                                    to this list.
+     * @param string   $enabledParameter  Service container parameter that must be present to
+     *                                    enable the mapping. Set to false to not do any check,
+     *                                    optional.
+     */
+    public static function createStaticPhpMappingDriver(array $namespaces, array $directories, array $managerParameters = array(), $enabledParameter = false)
+    {
+        $driver = new Definition('Doctrine\Common\Persistence\Mapping\Driver\StaticPHPDriver', array($directories));
 
         return new DoctrineMongoDBMappingsPass($driver, $namespaces, $managerParameters, $enabledParameter);
     }
