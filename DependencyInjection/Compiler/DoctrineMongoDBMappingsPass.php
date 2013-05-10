@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Doctrine Bundle
+ * This file is part of the Doctrine MongoDBBundle
  *
  * (c) Fabien Potencier <fabien@symfony.com>
  * (c) Doctrine Project, Benjamin Eberlei <kontakt@beberlei.de>
@@ -12,18 +12,17 @@
 
 namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler;
 
-use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\RegisterMappingsPass as BaseMappingPass;
+use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\RegisterMappingsPass;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Class for Symfony bundles to configure mappings for model classes not in the
  * automapped folder.
  *
- * @author David Buchmann <david@liip.ch>
+ * @author David Buchmann <mail@davidbu.ch>
  */
-class DoctrineMongoDBMappingsPass extends BaseMappingPass
+class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
 {
     /**
      * You should not directly instantiate this class but use one of the
@@ -124,7 +123,6 @@ class DoctrineMongoDBMappingsPass extends BaseMappingPass
 
         return new DoctrineMongoDBMappingsPass($driver, $namespaces, $managerParameters, $enabledParameter);
     }
-
 
     /**
      * @param array    $namespaces        List of namespaces that are handled with static php mapping
