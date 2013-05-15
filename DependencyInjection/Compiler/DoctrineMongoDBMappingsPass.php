@@ -34,7 +34,7 @@ class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
      * @param bool                 $enabledParameter  if specified, the compiler pass only
      *                                                executes if this parameter exists in the service container.
      */
-    public function __construct($driver, $namespaces, $managerParameters, $enabledParameter = false)
+    public function __construct($driver, array $namespaces, array $managerParameters, $enabledParameter = false)
     {
         $managerParameters[] = 'doctrine_mongodb.odm.default_document_manager';
         parent::__construct(
