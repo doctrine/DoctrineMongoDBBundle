@@ -95,7 +95,7 @@ class PrettyDataCollector extends StandardDataCollector
                         $query .= '.batchInsert('.$this->bsonEncode($log['data']).')';
                     }
                 } elseif (isset($log['command'])) {
-                    $query .= '.command()';
+                    $query .= '.runCommand('.$this->bsonEncode($log['data']).')';
                 } elseif (isset($log['count'])) {
                     $query .= '.count(';
                     if ($log['query'] || $log['limit'] || $log['skip']) {
