@@ -90,6 +90,7 @@ Next, create the form for the ``User`` model::
     use Symfony\Component\Form\AbstractType;
     use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
     use Symfony\Component\Form\FormBuilder;
+    use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
     class UserType extends AbstractType
     {
@@ -103,9 +104,11 @@ Next, create the form for the ``User`` model::
             ));
         }
 
-        public function getDefaultOptions(array $options)
+        public function setDefaultOptions(OptionsResolverInterface $resolver)
         {
-            return array('data_class' => 'Acme\AccountBundle\Document\User');
+            $resolver->setDefaults(array(
+                'data_class' => 'Acme\AccountBundle\Document\User',
+            ));
         }
 
         public function getName()
