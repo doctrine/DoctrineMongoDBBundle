@@ -23,6 +23,24 @@ Sample Configuration
                         enabled: true
                 metadata_cache_driver: array # array, apc, xcache, memcache
 
+.. tip::
+
+    If each environment requires a different MongoDB connection URI, you can
+    define it in a separate parameter and reference it in the bundle config:
+
+    .. code-block:: yaml
+
+        # app/config/parameters.yml
+        mongodb_server: mongodb://localhost:27017
+
+    .. code-block:: yaml
+
+        # app/config/config.yml
+        doctrine_mongodb:
+            connections:
+                default:
+                    server: %mongodb_server%
+
 If you wish to use memcache to cache your metadata, you need to configure the
 ``Memcache`` instance; for example, you can do the following:
 
@@ -74,6 +92,7 @@ If you wish to use memcache to cache your metadata, you need to configure the
                 </doctrine_mongodb:connection>
             </doctrine_mongodb:config>
         </container>
+
 
 Mapping Configuration
 ~~~~~~~~~~~~~~~~~~~~~
