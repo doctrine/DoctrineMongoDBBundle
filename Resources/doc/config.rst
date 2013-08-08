@@ -23,6 +23,23 @@ Sample Configuration
                         enabled: true
                 metadata_cache_driver: array # array, apc, xcache, memcache
 
+.. tip::
+
+    You should define your mongodb server in your parameters.yml because it may be different for each environment:
+
+    .. code-block:: yaml
+        # app/config/parameters.yml
+        mongodb_server: mongodb://localhost:27017
+
+    and in your configuration use the parameter instead of hardcoding it:
+
+    # app/config/config.yml
+    doctrine_mongodb:
+        connections:
+            default:
+                server: %mongodb_server%
+
+
 If you wish to use memcache to cache your metadata, you need to configure the
 ``Memcache`` instance; for example, you can do the following:
 
@@ -74,6 +91,7 @@ If you wish to use memcache to cache your metadata, you need to configure the
                 </doctrine_mongodb:connection>
             </doctrine_mongodb:config>
         </container>
+
 
 Mapping Configuration
 ~~~~~~~~~~~~~~~~~~~~~
