@@ -144,7 +144,7 @@ Multiple Connections
 If you need multiple connections and document managers you can use the
 following syntax:
 
-.. configuration-block
+.. configuration-block::
 
     .. code-block:: yaml
 
