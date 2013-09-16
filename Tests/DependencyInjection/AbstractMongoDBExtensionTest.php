@@ -382,6 +382,51 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertTrue($container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes'));
     }
 
+    public function testResolveTargetDocument ()
+    {
+        $container = $this->getContainer('YamlBundle');
+        $loader = new DoctrineMongoDBExtension();
+        $container->registerExtension($loader);
+
+        $this->loadFromFile($container, 'odm_resolve_target_document');
+
+        $container->getCompilerPassConfig()->setOptimizationPasses(array());
+        $container->getCompilerPassConfig()->setRemovingPasses(array());
+        $container->compile();
+
+        $definition = $container->getDefinition('doctrine_mongodb.odm.listeners.resolve_target_document');
+        $this->assertDICDefinitionMethodCallOnce($definition, 'addResolveTargetDocument', array('Symfony\Component\Security\Core\User\UserInterface', 'MyUserClass', array()));
+        $this->assertEquals(array('doctrine_mongodb.event_listener' => array(array('event' => 'loadClassMetadata'))), $definition->getTags());
+    }
+
+    /**
+     * Assertion for the DI Container, check if the given definition contains a method call with the given parameters.
+     *
+     * @param \Symfony\Component\DependencyInjection\Definition $definition
+     * @param string                                            $methodName
+     * @param array                                             $params
+     */
+    protected function assertDICDefinitionMethodCallOnce ($definition, $methodName, array $params = null)
+    {
+        $calls = $definition->getMethodCalls();
+        $called = false;
+        foreach ($calls as $call) {
+            if ($call[0] == $methodName) {
+                if ($called) {
+                    $this->fail("Method '" . $methodName . "' is expected to be called only once, a second call was registered though.");
+                } else {
+                    $called = true;
+                    if ($params !== null) {
+                        $this->assertEquals($params, $call[1], "Expected parameters to methods '" . $methodName . "' do not match the actual parameters.");
+                    }
+                }
+            }
+        }
+        if (!$called) {
+            $this->fail("Method '" . $methodName . "' is expected to be called once, definition does not contain a call though.");
+        }
+    }
+
     protected function getContainer($bundle = 'YamlBundle')
     {
         require_once __DIR__.'/Fixtures/Bundles/'.$bundle.'/'.$bundle.'.php';

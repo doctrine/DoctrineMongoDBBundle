@@ -5,6 +5,9 @@ doctrine_mongodb:
     hydrator_namespace: Test_Hydrators
     auto_generate_hydrator_classes: true
 
+    resolve_target_documents:
+        Foo\BarInterface: Bar\FooClass
+
     default_commit_options:
         safe: 2
         timeout: 10
