@@ -70,6 +70,15 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $container
         );
 
+        if ($config['resolve_target_documents']) {
+            $def = $container->findDefinition('doctrine_mongodb.odm.listeners.resolve_target_document');
+            foreach ($config['resolve_target_documents'] as $name => $implementation) {
+                $def->addMethodCall('addResolveTargetDocument', array($name, $implementation, array()));
+            }
+            $def->addTag('doctrine_mongodb.event_listener', array('event' => 'loadClassMetadata'));
+        }
+
+
         // BC Aliases for Document Manager
         $container->setAlias('doctrine.odm.mongodb.document_manager', new Alias('doctrine_mongodb.odm.document_manager'));
     }

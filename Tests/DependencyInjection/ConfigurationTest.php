@@ -39,6 +39,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             'document_managers'              => array(),
             'connections'                    => array(),
             'proxy_dir'                      => '%kernel.cache_dir%/doctrine/odm/mongodb/Proxies',
+            'resolve_target_documents'       => array(),
             'proxy_namespace'                => 'MongoDBODMProxies',
             'hydrator_dir'                   => '%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators',
             'hydrator_namespace'             => 'Hydrators',
@@ -70,6 +71,9 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
 
         $expected = array(
             'proxy_dir'                      => '%kernel.cache_dir%/doctrine/odm/mongodb/Proxies',
+            'resolve_target_documents'        => array(
+                'Foo\BarInterface'           => 'Bar\FooClass'
+            ),
             'proxy_namespace'                => 'Test_Proxies',
             'auto_generate_proxy_classes'    => true,
             'hydrator_dir'                   => '%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators',

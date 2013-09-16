@@ -39,9 +39,12 @@ class Configuration implements ConfigurationInterface
         $this->addConnectionsSection($rootNode);
 
         $rootNode
+            ->fixXmlConfig('resolve_target_document', 'resolve_target_documents')
             ->children()
                 ->scalarNode('proxy_namespace')->defaultValue('MongoDBODMProxies')->end()
                 ->scalarNode('proxy_dir')->defaultValue('%kernel.cache_dir%/doctrine/odm/mongodb/Proxies')->end()
+
+                ->arrayNode('resolve_target_documents')->useAttributeAsKey('interface')->prototype('scalar')->cannotBeEmpty()->end()->end()
                 ->scalarNode('auto_generate_proxy_classes')->defaultValue(false)->end()
                 ->scalarNode('hydrator_namespace')->defaultValue('Hydrators')->end()
                 ->scalarNode('hydrator_dir')->defaultValue('%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators')->end()
