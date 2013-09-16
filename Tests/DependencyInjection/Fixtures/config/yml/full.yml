@@ -9,6 +9,9 @@ doctrine_mongodb:
     proxy_dir: %kernel.cache_dir%/doctrine/odm/mongodb/Test_Proxies
     proxy_namespace: Test_Proxies
 
+    resolve_target_documents:
+        Foo\BarInterface: Bar\FooClass
+
     default_commit_options:
         j: false
         timeout: 10

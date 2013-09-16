@@ -12,6 +12,7 @@
       <xsd:element name="default-commit-options" type="default-commit-options" minOccurs="0" maxOccurs="1" />
       <xsd:element name="connection" type="connection" minOccurs="0" maxOccurs="unbounded" />
       <xsd:element name="document-manager" type="document-manager" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="resolve-target-document" type="resolve_target_document" minOccurs="0" maxOccurs="unbounded" />
     </xsd:sequence>
     <xsd:attribute name="auto-generate-hydrator-classes" type="xsd:boolean" />
     <xsd:attribute name="auto-generate-proxy-classes" type="xsd:boolean" />
@@ -31,6 +32,14 @@
     <xsd:attribute name="timeout" type="xsd:integer" />
     <xsd:attribute name="w" type="xsd:string" />
     <xsd:attribute name="wtimeout" type="xsd:integer" />
+  </xsd:complexType>
+
+  <xsd:complexType name="resolve_target_document">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="interface" type="xsd:string" use="required" />
+      </xsd:extension>
+    </xsd:simpleContent>
   </xsd:complexType>
 
   <xsd:complexType name="connection">
