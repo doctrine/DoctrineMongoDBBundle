@@ -8,6 +8,9 @@
   <xsd:element name="config" type="config" />
 
   <xsd:complexType name="config">
+    <xsd:choice minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="resolve-target-document" type="resolve_target_document" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:choice>
     <xsd:attribute name="host" type="xsd:string" />
     <xsd:attribute name="port" type="xsd:integer" />
     <xsd:attribute name="database" type="xsd:string" />
@@ -15,6 +18,14 @@
     <xsd:attribute name="auto-generate-proxy-classes" type="xsd:boolean" />
     <xsd:attribute name="cache" type="cache" />
     <xsd:attribute name="metadata" type="metadata" />
+  </xsd:complexType>
+
+  <xsd:complexType name="resolve_target_document">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="interface" type="xsd:string" use="required" />
+      </xsd:extension>
+    </xsd:simpleContent>
   </xsd:complexType>
 
   <xsd:simpleType name="cache">

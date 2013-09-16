@@ -78,9 +78,26 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
             ->end()
+            ->fixXmlConfig('resolve_target_document', 'resolve_target_documents')
+            ->append($this->getOdmTargetDocumentResolverNode())
         ;
 
         return $treeBuilder;
+    }
+
+    private function getOdmTargetDocumentResolverNode()
+    {
+        $treeBuilder = new TreeBuilder();
+        $node = $treeBuilder->root('resolve_target_documents');
+
+        $node
+            ->useAttributeAsKey('interface')
+            ->prototype('scalar')
+                ->cannotBeEmpty()
+            ->end()
+        ;
+
+        return $node;
     }
 
     /**
