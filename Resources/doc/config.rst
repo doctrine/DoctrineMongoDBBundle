@@ -335,6 +335,7 @@ Full Default Configuration
                         replicaSet:           ~
                         username:             ~
                         password:             ~
+                        db:                   ~
             proxy_namespace:      MongoDBODMProxies
             proxy_dir:            %kernel.cache_dir%/doctrine/odm/mongodb/Proxies
             auto_generate_proxy_classes:  false
