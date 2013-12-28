@@ -75,7 +75,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             foreach ($config['resolve_target_documents'] as $name => $implementation) {
                 $def->addMethodCall('addResolveTargetDocument', array($name, $implementation, array()));
             }
-            $def->addTag('doctrine_mongodb.event_listener', array('event' => 'loadClassMetadata'));
+            $def->addTag('doctrine_mongodb.odm.event_listener', array('event' => 'loadClassMetadata'));
         }
 
         // BC Aliases for Document Manager

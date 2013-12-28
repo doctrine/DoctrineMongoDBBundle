@@ -396,7 +396,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.listeners.resolve_target_document');
         $this->assertDICDefinitionMethodCallOnce($definition, 'addResolveTargetDocument', array('Symfony\Component\Security\Core\User\UserInterface', 'MyUserClass', array()));
-        $this->assertEquals(array('doctrine_mongodb.event_listener' => array(array('event' => 'loadClassMetadata'))), $definition->getTags());
+        $this->assertEquals(array('doctrine_mongodb.odm.event_listener' => array(array('event' => 'loadClassMetadata'))), $definition->getTags());
     }
 
     /**
