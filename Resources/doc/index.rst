@@ -785,7 +785,7 @@ Learn more from the Cookbook
 .. _`documentation`:    http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/
 .. _`schema documentation`: http://getcomposer.org/doc/04-schema.md#minimum-stability
 .. _`Quick Start`:      http://www.mongodb.org/display/DOCS/Quickstart
-.. _`Basic Mapping Documentation`: http://www.doctrine-project.org/docs/mongodb_odm/1.0/en/reference/basic-mapping.html
+.. _`Basic Mapping Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html
 .. _`MongoDB type`: http://us.php.net/manual/en/mongo.types.php
 .. _`Mapping Types Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html#doctrine-mapping-types
 .. _`Query Builder`: http://www.doctrine-project.org/docs/mongodb_odm/1.0/en/reference/query-builder-api.html
