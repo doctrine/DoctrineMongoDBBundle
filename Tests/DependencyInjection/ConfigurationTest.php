@@ -87,14 +87,24 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 'conn1'       => array(
                     'server'  => 'mongodb://localhost',
                     'options' => array(
-                        'connect'    => true,
-                        'persist'    => 'persist_val',
-                        'timeout'    => 500,
-                        'replicaSet' => 'foo',
-                        'slaveOkay'  => true,
-                        'username'   => 'username_val',
-                        'password'   => 'password_val',
-                        'db'         => 'database_val',
+                        'connect'           => true,
+                        'connectTimeoutMS'  => 500,
+                        'db'                => 'database_val',
+                        'journal'           => true,
+                        'password'          => 'password_val',
+                        'readPreference'    => 'secondaryPreferred',
+                        'readPreferenceTags' => array(
+                            array('dc' => 'east', 'use' => 'reporting'),
+                            array('dc' => 'west'),
+                            array()
+                        ),
+                        'replicaSet'        => 'foo',
+                        'slaveOkay'         => true,
+                        'socketTimeoutMS'   => 1000,
+                        'ssl'               => true,
+                        'username'          => 'username_val',
+                        'w'                 => 'majority',
+                        'wTimeoutMS'        => 1000
                     ),
                 ),
                 'conn2'       => array(
