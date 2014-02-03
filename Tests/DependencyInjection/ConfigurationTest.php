@@ -16,7 +16,8 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Configuration;
 use Symfony\Component\Config\Definition\Processor;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Config\Util\XmlUtils;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Yaml\Yaml;
 
 class ConfigurationTest extends \PHPUnit_Framework_TestCase
@@ -178,9 +179,13 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
     {
       $yaml = Yaml::parse(__DIR__.'/Fixtures/config/yml/full.yml');
       $yaml = $yaml['doctrine_mongodb'];
-
+      
+      $xml=XmlUtils::loadFile(__DIR__.'/Fixtures/config/xml/full.xml');
+      $xml=XmlUtils::convertDomElementToArray($xml->getElementsByTagName('config')->item(0));
+      
        return array(
            array($yaml),
+           array($xml)
        );
     }
 
