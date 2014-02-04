@@ -123,7 +123,7 @@ class Configuration implements ConfigurationInterface
                             ->arrayNode('metadata_cache_driver')
                                 ->addDefaultsIfNotSet()
                                 ->beforeNormalization()
-                                    ->ifTrue(function($v) { return !is_array($v); })
+                                    ->ifString()
                                     ->then(function($v) { return array('type' => $v); })
                                 ->end()
                                 ->children()
