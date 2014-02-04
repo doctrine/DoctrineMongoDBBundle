@@ -38,6 +38,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             'proxy_namespace'                => 'MongoDBODMProxies',
             'hydrator_dir'                   => '%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators',
             'hydrator_namespace'             => 'Hydrators',
+            'default_commit_options'         => array(),
         );
 
         $this->assertEquals($defaults, $options);

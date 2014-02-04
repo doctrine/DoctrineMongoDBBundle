@@ -50,6 +50,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('default_connection')->end()
                 ->scalarNode('default_database')->defaultValue('default')->end()
                 ->arrayNode('default_commit_options')
+                    ->addDefaultsIfNotSet()
                     ->children()
                         ->booleanNode('j')->end()
                         ->scalarNode('timeout')->end()
