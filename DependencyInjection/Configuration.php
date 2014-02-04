@@ -133,6 +133,7 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('port')->end()
                                     ->scalarNode('instance_class')->end()
                                     ->scalarNode('id')->end()
+                                    ->scalarNode('namespace')->end()
                                 ->end()
                             ->end()
                         ->end()
