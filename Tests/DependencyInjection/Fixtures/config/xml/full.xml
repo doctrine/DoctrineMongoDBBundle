@@ -64,6 +64,7 @@
                 <doctrine_mongodb:port>1234</doctrine_mongodb:port>
                 <doctrine_mongodb:instance-class>instance_val</doctrine_mongodb:instance-class>
             </doctrine_mongodb:metadata-cache-driver>
+            <doctrine_mongodb:profiler enabled="true" pretty="false" />
             <doctrine_mongodb:filter name="test_filter" enabled="true" class="TestClass" />
         </doctrine_mongodb:document-manager>
 

@@ -122,8 +122,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                         ),
                     ),
                     'profiler' => array(
-                        'enabled' => '%kernel.debug%',
-                        'pretty'  => '%kernel.debug%',
+                        'enabled' => true,
+                        'pretty'  => false,
                     ),
                     'retry_connect' => 0,
                     'retry_query' => 0,

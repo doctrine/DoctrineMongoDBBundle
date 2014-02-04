@@ -51,6 +51,9 @@ doctrine_mongodb:
                 host:                  host_val
                 port:                  1234
                 instance_class:        instance_val
+            profiler:
+                enabled: true
+                pretty:  false
             filters:
                 test-filter:
                     class:              TestClass
