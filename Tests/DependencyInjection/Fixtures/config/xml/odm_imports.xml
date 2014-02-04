@@ -10,8 +10,5 @@
         <import resource="odm_imports_import.xml" />
     </imports>
 
-    <doctrine:mongodb
-        auto-generate-proxy-classes="true"
-    >
-    </doctrine:mongodb>
+    <doctrine:mongodb auto-generate-proxy-classes="true" />
 </container>
