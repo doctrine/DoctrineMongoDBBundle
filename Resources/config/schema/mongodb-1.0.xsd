@@ -8,35 +8,130 @@
   <xsd:element name="config" type="config" />
 
   <xsd:complexType name="config">
-    <xsd:attribute name="host" type="xsd:string" />
-    <xsd:attribute name="port" type="xsd:integer" />
-    <xsd:attribute name="database" type="xsd:string" />
+    <xsd:sequence>
+      <xsd:element name="default-commit-options" type="default-commit-options" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="connection" type="connection" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="document-manager" type="document-manager" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+    <xsd:attribute name="auto-generate-hydrator-classes" type="xsd:boolean" />
+    <xsd:attribute name="auto-generate-proxy-classes" type="xsd:boolean" />
+    <xsd:attribute name="default-connection" type="xsd:string" />
+    <xsd:attribute name="default-database" type="xsd:string" />
+    <xsd:attribute name="default-document-manager" type="xsd:string" />
+    <xsd:attribute name="hydrator-dir" type="xsd:string" />
+    <xsd:attribute name="hydrator-namespace" type="xsd:string" />
     <xsd:attribute name="proxy-dir" type="xsd:string" />
     <xsd:attribute name="proxy-namespace" type="xsd:string" />
-    <xsd:attribute name="auto-generate-proxy-classes" type="xsd:boolean" />
-    <xsd:attribute name="hydrator-namespace" type="xsd:string" />
-    <xsd:attribute name="auto-generate-hydrator-classes" type="xsd:boolean" />
-    <xsd:attribute name="cache" type="cache" />
-    <xsd:attribute name="metadata" type="metadata" />
-    <xsd:attribute name="default-document-manager" type="xsd:string"/>
-    <xsd:attribute name="default-database" type="xsd:string"/>
-    <xsd:attribute name="default-connection" type="xsd:string"/>
   </xsd:complexType>
 
-  <xsd:simpleType name="cache">
+  <xsd:complexType name="default-commit-options">
+    <xsd:attribute name="fsync" type="xsd:boolean" />
+    <xsd:attribute name="j" type="xsd:boolean" />
+    <xsd:attribute name="safe" type="xsd:string" />
+    <xsd:attribute name="timeout" type="xsd:integer" />
+    <xsd:attribute name="w" type="xsd:string" />
+    <xsd:attribute name="wtimeout" type="xsd:integer" />
+  </xsd:complexType>
+
+  <xsd:complexType name="connection">
+    <xsd:sequence>
+      <xsd:element name="options" type="connection-options" minOccurs="0" maxOccurs="1" />
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:string" use="required" />
+    <xsd:attribute name="server" type="xsd:string" />
+  </xsd:complexType>
+
+  <xsd:complexType name="connection-options">
+    <xsd:sequence>
+      <xsd:element name="readPreferenceTags" type="read-preference-tag-set" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+    <xsd:attribute name="connect" type="xsd:boolean" />
+    <xsd:attribute name="connectTimeoutMS" type="xsd:integer" />
+    <xsd:attribute name="db" type="xsd:string" />
+    <xsd:attribute name="journal" type="xsd:boolean" />
+    <xsd:attribute name="password" type="xsd:string" />
+    <xsd:attribute name="readPreference" type="read-preference" />
+    <xsd:attribute name="replicaSet" type="xsd:string" />
+    <xsd:attribute name="ssl" type="xsd:boolean" />
+    <xsd:attribute name="socketTimeoutMS" type="xsd:integer" />
+    <xsd:attribute name="username" type="xsd:string" />
+    <xsd:attribute name="w" type="xsd:string" />
+    <xsd:attribute name="wTimeoutMS" type="xsd:integer" />
+    <!-- deprecated options -->
+    <xsd:attribute name="fsync" type="xsd:boolean" />
+    <xsd:attribute name="slaveOkay" type="xsd:boolean" />
+    <xsd:attribute name="timeout" type="xsd:integer" />
+    <xsd:attribute name="wTimeout" type="xsd:integer" />
+  </xsd:complexType>
+
+  <xsd:simpleType name="read-preference">
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="array" />
-      <xsd:enumeration value="apc" />
-      <xsd:enumeration value="memcache" />
-      <xsd:enumeration value="xcache" />
+      <xsd:enumeration value="primary" />
+      <xsd:enumeration value="primaryPreferred" />
+      <xsd:enumeration value="secondary" />
+      <xsd:enumeration value="secondaryPreferred" />
+      <xsd:enumeration value="nearest" />
     </xsd:restriction>
   </xsd:simpleType>
 
-  <xsd:simpleType name="metadata">
-    <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="annotation" />
-      <xsd:enumeration value="xml" />
-      <xsd:enumeration value="yml" />
-    </xsd:restriction>
-  </xsd:simpleType>
+  <xsd:complexType name="read-preference-tag-set">
+    <xsd:sequence>
+      <xsd:element name="readPreferenceTag" type="read-preference-tag" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="read-preference-tag">
+    <xsd:attribute name="name" type="xsd:string" use="required" />
+    <xsd:attribute name="value" type="xsd:string" use="required" />
+  </xsd:complexType>
+
+  <xsd:complexType name="document-manager">
+    <xsd:choice maxOccurs="unbounded">
+      <xsd:element name="filter" type="filter" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="mapping" type="mapping" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="metadata-cache-driver" type="metadata-cache-driver" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="profiler" type="profiler" minOccurs="0" maxOccurs="1" />
+    </xsd:choice>
+    <xsd:attribute name="id" type="xsd:string" use="required" />
+    <xsd:attribute name="auto-mapping" type="xsd:boolean" />
+    <xsd:attribute name="connection" type="xsd:string" />
+    <xsd:attribute name="database" type="xsd:string" />
+    <xsd:attribute name="logging" type="xsd:boolean" />
+    <xsd:attribute name="metadata-cache-driver" type="xsd:string" />
+    <xsd:attribute name="profiler" type="xsd:boolean" />
+    <xsd:attribute name="retry-connect" type="xsd:integer" />
+    <xsd:attribute name="retry-query" type="xsd:integer" />
+  </xsd:complexType>
+
+  <xsd:complexType name="filter">
+    <xsd:attribute name="name" type="xsd:string" use="required" />
+    <xsd:attribute name="class" type="xsd:string" use="required" />
+    <xsd:attribute name="enabled" type="xsd:boolean" />
+  </xsd:complexType>
+
+  <xsd:complexType name="mapping">
+    <xsd:attribute name="name" type="xsd:string" use="required" />
+    <xsd:attribute name="alias" type="xsd:string" />
+    <xsd:attribute name="dir" type="xsd:string" />
+    <xsd:attribute name="is-bundle" type="xsd:boolean" />
+    <xsd:attribute name="mapping" type="xsd:boolean" />
+    <xsd:attribute name="prefix" type="xsd:string" />
+    <xsd:attribute name="type" type="xsd:string" />
+  </xsd:complexType>
+
+  <xsd:complexType name="metadata-cache-driver">
+    <xsd:all>
+      <xsd:element name="class" type="xsd:string" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="host" type="xsd:string" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="instance-class" type="xsd:string" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="port" type="xsd:integer" minOccurs="0" maxOccurs="1" />
+    </xsd:all>
+    <xsd:attribute name="id" type="xsd:string" />
+    <xsd:attribute name="type" type="xsd:string" />
+  </xsd:complexType>
+
+  <xsd:complexType name="profiler">
+    <xsd:attribute name="enabled" type="xsd:boolean" />
+    <xsd:attribute name="pretty" type="xsd:boolean" />
+  </xsd:complexType>
 </xsd:schema>
