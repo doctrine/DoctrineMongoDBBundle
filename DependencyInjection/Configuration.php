@@ -94,7 +94,7 @@ class Configuration implements ConfigurationInterface
                                     ->booleanNode('pretty')->defaultValue('%kernel.debug%')->end()
                                 ->end()
                             ->end()
-                            ->scalarNode('auto_mapping')->defaultFalse()->end()
+                            ->booleanNode('auto_mapping')->defaultFalse()->end()
                             ->arrayNode('filters')
                                 ->useAttributeAsKey('name')
                                 ->prototype('array')
