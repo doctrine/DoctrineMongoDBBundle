@@ -1,44 +1,59 @@
 doctrine_mongodb:
-    proxy_namespace:    Test_Proxies
-    auto_generate_proxy_classes:    true
-
-    hydrator_namespace: Test_Hydrators
+    auto_generate_proxy_classes: true
     auto_generate_hydrator_classes: true
+    default_connection: conn1
+    default_database: default_db_name
+    default_document_manager: default_dm_name
+    hydrator_dir: %kernel.cache_dir%/doctrine/odm/mongodb/Test_Hydrators
+    hydrator_namespace: Test_Hydrators
+    proxy_dir: %kernel.cache_dir%/doctrine/odm/mongodb/Test_Proxies
+    proxy_namespace: Test_Proxies
 
     default_commit_options:
-        safe: 2
+        j: false
         timeout: 10
-
-    default_document_manager:  default_dm_name
-    default_database:          default_db_name
-
-    default_connection:        conn1
+        w: majority
+        wtimeout: 10
+        fsync: false
+        safe: 2
 
     connections:
         conn1:
-            server:         mongodb://localhost
+            server:               mongodb://localhost
             options:
-                connect:    true
-                persist:    persist_val
-                timeout:    500
-                replicaSet: foo
-                slaveOkay:  true
-                username:   username_val
-                password:   password_val
-                db:         database_val
+                connect:          true
+                connectTimeoutMS: 500
+                db:               database_val
+                journal:          true
+                password:         password_val
+                readPreference:   secondaryPreferred
+                readPreferenceTags:
+                  - { dc: east, use: reporting }
+                  - { dc: west }
+                  - {  }
+                replicaSet:       foo
+                slaveOkay:        true
+                socketTimeoutMS:  1000
+                ssl:              true
+                username:         username_val
+                w:                majority
+                wTimeoutMS:       1000
         conn2:
             server: mongodb://otherhost
 
     document_managers:
         dm1:
             mappings:
-                FooBundle:   annotations
+                FooBundle:   annotation
             metadata_cache_driver:
                 type:                  memcache
                 class:                 fooClass
                 host:                  host_val
                 port:                  1234
                 instance_class:        instance_val
+            profiler:
+                enabled: true
+                pretty:  false
             filters:
                 test-filter:
                     class:              TestClass
