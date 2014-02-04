@@ -117,7 +117,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                     ),
                     'mappings' => array(
                         'FooBundle' => array(
-                            'type'    => 'annotations',
+                            'type'    => 'annotation',
                             'mapping' => true,
                         ),
                     ),

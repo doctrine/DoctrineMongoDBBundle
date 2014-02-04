@@ -44,7 +44,7 @@ doctrine_mongodb:
     document_managers:
         dm1:
             mappings:
-                FooBundle:   annotations
+                FooBundle:   annotation
             metadata_cache_driver:
                 type:                  memcache
                 class:                 fooClass

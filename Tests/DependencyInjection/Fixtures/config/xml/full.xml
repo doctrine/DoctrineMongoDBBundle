@@ -57,7 +57,7 @@
         <doctrine_mongodb:connection id="conn2" server="mongodb://otherhost" />
 
         <doctrine_mongodb:document-manager id="dm1">
-            <doctrine_mongodb:mapping name="FooBundle">annotations</doctrine_mongodb:mapping>
+            <doctrine_mongodb:mapping name="FooBundle" type="annotation" />
             <doctrine_mongodb:metadata-cache-driver type="memcache">
                 <doctrine_mongodb:class>fooClass</doctrine_mongodb:class>
                 <doctrine_mongodb:host>host_val</doctrine_mongodb:host>
