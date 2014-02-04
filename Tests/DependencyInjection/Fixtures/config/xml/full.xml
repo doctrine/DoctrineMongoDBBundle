@@ -7,41 +7,55 @@
                         http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
 
     <doctrine_mongodb:config
-            proxy-namespace="Test_Proxies"
-            auto-generate-proxy-classes="true"
-            hydrator-namespace="Test_Hydrators"
-            auto-generate-hydrator-classes="true"
-            default-document-manager="default_dm_name"
-            default-database="default_db_name"
-            default-connection="conn1"
-        >
-        <doctrine_mongodb:default_commit_options safe="2" timeout="10"/>
+        auto-generate-hydrator-classes="true"
+        auto-generate-proxy-classes="true"
+        default-connection="conn1"
+        default-database="default_db_name"
+        default-document-manager="default_dm_name"
+        hydrator-dir="%kernel.cache_dir%/doctrine/odm/mongodb/Test_Hydrators"
+        hydrator-namespace="Test_Hydrators"
+        proxy-dir="%kernel.cache_dir%/doctrine/odm/mongodb/Test_Proxies"
+        proxy-namespace="Test_Proxies"
+    >
+
+        <doctrine_mongodb:default-commit-options
+            j="false"
+            timeout="10"
+            w="majority"
+            wtimeout="10"
+            fsync="false"
+            safe="2"
+        />
+
         <doctrine_mongodb:connection id="conn1" server="mongodb://localhost">
-            <doctrine_mongodb:options>
-                <doctrine_mongodb:connect>true</doctrine_mongodb:connect>
-                <doctrine_mongodb:connectTimeoutMS>500</doctrine_mongodb:connectTimeoutMS>
-                <doctrine_mongodb:db>database_val</doctrine_mongodb:db>
-                <doctrine_mongodb:journal>true</doctrine_mongodb:journal>
-                <doctrine_mongodb:password>password_val</doctrine_mongodb:password>
-                <doctrine_mongodb:readPreference>secondaryPreferred</doctrine_mongodb:readPreference>
-                <doctrine_mongodb:readPreferenceTag>
-                    <doctrine_mongodb:dc>east</doctrine_mongodb:dc>
-                    <doctrine_mongodb:use>reporting</doctrine_mongodb:use>
-                </doctrine_mongodb:readPreferenceTag>
-                <doctrine_mongodb:readPreferenceTag>
-                    <doctrine_mongodb:dc>west</doctrine_mongodb:dc>
-                </doctrine_mongodb:readPreferenceTag>
-                <doctrine_mongodb:readPreferenceTag/>
-                <doctrine_mongodb:replicaSet>foo</doctrine_mongodb:replicaSet>
-                <doctrine_mongodb:slaveOkay>true</doctrine_mongodb:slaveOkay>
-                <doctrine_mongodb:socketTimeoutMS>1000</doctrine_mongodb:socketTimeoutMS>
-                <doctrine_mongodb:ssl>true</doctrine_mongodb:ssl>
-                <doctrine_mongodb:username>username_val</doctrine_mongodb:username>
-                <doctrine_mongodb:w>majority</doctrine_mongodb:w>
-                <doctrine_mongodb:wTimeoutMS>1000</doctrine_mongodb:wTimeoutMS>
+            <doctrine_mongodb:options
+                connect="true"
+                connectTimeoutMS="500"
+                db="database_val"
+                journal="true"
+                password="password_val"
+                readPreference="secondaryPreferred"
+                replicaSet="foo"
+                slaveOkay="true"
+                socketTimeoutMS="1000"
+                ssl="true"
+                username="username_val"
+                w="majority"
+                wTimeoutMS="1000"
+            >
+                <doctrine_mongodb:readPreferenceTags>
+                    <doctrine_mongodb:readPreferenceTag name="dc" value="east" />
+                    <doctrine_mongodb:readPreferenceTag name="use" value="reporting" />
+                </doctrine_mongodb:readPreferenceTags>
+                <doctrine_mongodb:readPreferenceTags>
+                    <doctrine_mongodb:readPreferenceTag name="dc" value="west" />
+                </doctrine_mongodb:readPreferenceTags>
+                <doctrine_mongodb:readPreferenceTags />
             </doctrine_mongodb:options>
         </doctrine_mongodb:connection>
-        <doctrine_mongodb:connection id="conn2" server="mongodb://otherhost"/>
+
+        <doctrine_mongodb:connection id="conn2" server="mongodb://otherhost" />
+
         <doctrine_mongodb:document-manager id="dm1">
             <doctrine_mongodb:mapping name="FooBundle">annotations</doctrine_mongodb:mapping>
             <doctrine_mongodb:metadata-cache-driver type="memcache">
@@ -50,10 +64,24 @@
                 <doctrine_mongodb:port>1234</doctrine_mongodb:port>
                 <doctrine_mongodb:instance-class>instance_val</doctrine_mongodb:instance-class>
             </doctrine_mongodb:metadata-cache-driver>
-            <doctrine_mongodb:filter name="test_filter" enabled="true" class="TestClass"/>
+            <doctrine_mongodb:filter name="test_filter" enabled="true" class="TestClass" />
         </doctrine_mongodb:document-manager>
-        <doctrine_mongodb:document-manager id="dm2" connection="dm2_connection" database="db1" metadata-cache-driver="apc" logging="true">
-            <doctrine_mongodb:mapping name="BarBundle" type="yml" dir="%kernel.cache_dir%" prefix="prefix_val" alias="alias_val" is_bundle="false"/>
+
+        <doctrine_mongodb:document-manager
+            id="dm2"
+            connection="dm2_connection"
+            database="db1"
+            metadata-cache-driver="apc"
+            logging="true"
+        >
+            <doctrine_mongodb:mapping
+                name="BarBundle"
+                type="yml"
+                dir="%kernel.cache_dir%"
+                prefix="prefix_val"
+                alias="alias_val"
+                is-bundle="false"
+            />
         </doctrine_mongodb:document-manager>
     </doctrine_mongodb:config>
 </container>

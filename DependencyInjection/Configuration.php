@@ -28,7 +28,7 @@ class Configuration implements ConfigurationInterface
     /**
      * Generates the configuration tree builder.
      *
-     * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder The tree builder
+     * @return TreeBuilder
      */
     public function getConfigTreeBuilder()
     {
@@ -50,31 +50,14 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('default_connection')->end()
                 ->scalarNode('default_database')->defaultValue('default')->end()
                 ->arrayNode('default_commit_options')
-                    ->addDefaultsIfNotSet()
                     ->children()
-                        ->scalarNode('safe')
-                            ->defaultTrue()
-                            ->beforeNormalization()
-                                ->ifTrue(function($v) { return is_numeric($v); })
-                                ->then(function($v) { return (int) $v; })
-                            ->end()
-                            ->validate()
-                                ->ifTrue(function($v) { return is_int($v) && $v < -1; })
-                                ->thenInvalid('Integer (-1 or greater) expected for numeric "safe" commit option')
-                            ->end()
-                        ->end()
-                        ->booleanNode('fsync')->defaultFalse()->end()
-                        ->scalarNode('timeout')
-                            ->defaultValue(\MongoCursor::$timeout)
-                            ->beforeNormalization()
-                                ->ifTrue(function($v) { return is_numeric($v); })
-                                ->then(function($v) { return (int) $v; })
-                            ->end()
-                            ->validate()
-                                ->ifTrue(function($v) { return !is_int($v) || $v < -1; })
-                                ->thenInvalid('Integer (-1 or greater) expected for "timeout" commit option')
-                            ->end()
-                        ->end()
+                        ->booleanNode('j')->end()
+                        ->scalarNode('timeout')->end()
+                        ->scalarNode('w')->end()
+                        ->scalarNode('wtimeout')->end()
+                        // Deprecated options
+                        ->booleanNode('fsync')->info('Deprecated. Please use the "j" option instead.')->end()
+                        ->scalarNode('safe')->info('Deprecated. Please use the "w" option instead.')->end()
                     ->end()
                 ->end()
             ->end()
@@ -84,7 +67,9 @@ class Configuration implements ConfigurationInterface
     }
 
     /**
-     * Configures the "document_managers" section
+     * Adds the "document_managers" config section.
+     *
+     * @param ArrayNodeDefinition $rootNode
      */
     private function addDocumentManagersSection(ArrayNodeDefinition $rootNode)
     {
@@ -181,7 +166,9 @@ class Configuration implements ConfigurationInterface
     }
 
     /**
-     * Adds the configuration for the "connections" key
+     * Adds the "connections" config section.
+     *
+     * @param ArrayNodeDefinition $rootNode
      */
     private function addConnectionsSection(ArrayNodeDefinition $rootNode)
     {
@@ -193,11 +180,9 @@ class Configuration implements ConfigurationInterface
                     ->prototype('array')
                         ->performNoDeepMerging()
                         ->children()
-                            ->scalarNode('server')->defaultNull()->end()
+                            ->scalarNode('server')->end()
                             ->arrayNode('options')
                                 ->performNoDeepMerging()
-                                ->addDefaultsIfNotSet()
-                                ->fixXmlConfig('readPreferenceTag')
                                 ->children()
                                     ->booleanNode('connect')->end()
                                     ->scalarNode('connectTimeoutMS')->end()
@@ -210,26 +195,43 @@ class Configuration implements ConfigurationInterface
                                     ->arrayNode('readPreferenceTags')
                                         ->performNoDeepMerging()
                                         ->prototype('array')
+                                            ->beforeNormalization()
+                                                // Handle readPreferenceTag XML nodes
+                                                ->ifTrue(function($v) { return isset($v['readPreferenceTag']); })
+                                                ->then(function($v) {
+                                                    // Equivalent of fixXmlConfig() for inner node
+                                                    if (isset($v['readPreferenceTag']['name'])) {
+                                                        $v['readPreferenceTag'] = array($v['readPreferenceTag']);
+                                                    }
+
+                                                    return $v['readPreferenceTag'];
+                                                })
+                                            ->end()
+                                            ->useAttributeAsKey('name')
                                             ->prototype('scalar')->end()
                                         ->end()
                                     ->end()
                                     ->scalarNode('replicaSet')->end()
-                                    ->booleanNode('slaveOkay')->end()
                                     ->scalarNode('socketTimeoutMS')->end()
                                     ->booleanNode('ssl')->end()
                                     ->scalarNode('username')->end()
                                     ->scalarNode('w')->end()
                                     ->scalarNode('wTimeoutMS')->end()
-                                    // deprecated options
-                                    ->booleanNode('fsync')->info('Deprecated. Please use "journal" option instead, perhaps in combination with the "w" option')->end()
-                                    ->scalarNode('timeout')->info('Deprecated alias for "connectTimeoutMS"')->end()
-                                    ->scalarNode('wTimeout')->info('Deprecated alias for "wTimeoutMS"')->end()
+                                    // Deprecated options
+                                    ->booleanNode('fsync')->info('Deprecated. Please use the "journal" option instead.')->end()
+                                    ->booleanNode('slaveOkay')->info('Deprecated. Please use the "readPreference" option instead.')->end()
+                                    ->scalarNode('timeout')->info('Deprecated. Please use the "connectTimeoutMS" option instead.')->end()
+                                    ->scalarNode('wTimeout')->info('Deprecated. Please use the "wTimeoutMS" option instead.')->end()
+                                ->end()
+                                ->validate()
+                                    ->ifTrue(function($v) { return count($v['readPreferenceTags']) === 0; })
+                                    ->then(function($v) {
+                                        unset($v['readPreferenceTags']);
+
+                                        return $v;
+                                    })
                                 ->end()
                             ->end()
-                        ->end()
-                        ->validate()
-                            ->ifTrue(function($v) { return count($v['options']['readPreferenceTags'])==0; })
-                            ->then(function($v) { unset($v['options']['readPreferenceTags']); return $v; })
                         ->end()
                     ->end()
                 ->end()

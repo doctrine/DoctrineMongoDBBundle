@@ -31,11 +31,6 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $defaults = array(
             'auto_generate_hydrator_classes' => false,
             'auto_generate_proxy_classes'    => false,
-            'default_commit_options'         => array(
-                'safe' => true,
-                'fsync' => false,
-                'timeout' => \MongoCursor::$timeout,
-            ),
             'default_database'               => 'default',
             'document_managers'              => array(),
             'connections'                    => array(),
@@ -45,22 +40,11 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             'hydrator_namespace'             => 'Hydrators',
         );
 
-        foreach ($defaults as $key => $default) {
-            $this->assertTrue(array_key_exists($key, $options), sprintf('The default "%s" exists', $key));
-            $this->assertEquals($default, $options[$key]);
-
-            unset($options[$key]);
-        }
-
-        if (count($options)) {
-            $this->fail('Extra defaults were returned: '. print_r($options, true));
-        }
+        $this->assertEquals($defaults, $options);
     }
 
     /**
-     * Tests a full configuration.
-     *
-     * @dataProvider fullConfigurationProvider
+     * @dataProvider provideFullConfiguration
      */
     public function testFullConfiguration($config)
     {
@@ -68,24 +52,26 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $configuration = new Configuration(false);
         $options = $processor->processConfiguration($configuration, array($config));
 
-
         $expected = array(
-            'proxy_dir'                      => '%kernel.cache_dir%/doctrine/odm/mongodb/Proxies',
-            'proxy_namespace'                => 'Test_Proxies',
-            'auto_generate_proxy_classes'    => true,
-            'hydrator_dir'                   => '%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators',
-            'hydrator_namespace'             => 'Test_Hydrators',
             'auto_generate_hydrator_classes' => true,
-            'default_commit_options'         => array(
-                'safe' => 2,
-                'fsync' => false,
-                'timeout' => 10,
-            ),
-            'default_document_manager'       => 'default_dm_name',
-            'default_database'               => 'default_db_name',
+            'auto_generate_proxy_classes'    => true,
             'default_connection'             => 'conn1',
-            'connections'   => array(
-                'conn1'       => array(
+            'default_database'               => 'default_db_name',
+            'default_document_manager'       => 'default_dm_name',
+            'hydrator_dir'                   => '%kernel.cache_dir%/doctrine/odm/mongodb/Test_Hydrators',
+            'hydrator_namespace'             => 'Test_Hydrators',
+            'proxy_dir'                      => '%kernel.cache_dir%/doctrine/odm/mongodb/Test_Proxies',
+            'proxy_namespace'                => 'Test_Proxies',
+            'default_commit_options' => array(
+                'j' => false,
+                'timeout' => 10,
+                'w' => 'majority',
+                'wtimeout' => 10,
+                'fsync' => false,
+                'safe' => 2,
+            ),
+            'connections' => array(
+                'conn1' => array(
                     'server'  => 'mongodb://localhost',
                     'options' => array(
                         'connect'           => true,
@@ -97,7 +83,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                         'readPreferenceTags' => array(
                             array('dc' => 'east', 'use' => 'reporting'),
                             array('dc' => 'west'),
-                            array()
+                            array(),
                         ),
                         'replicaSet'        => 'foo',
                         'slaveOkay'         => true,
@@ -105,12 +91,11 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                         'ssl'               => true,
                         'username'          => 'username_val',
                         'w'                 => 'majority',
-                        'wTimeoutMS'        => 1000
+                        'wTimeoutMS'        => 1000,
                     ),
                 ),
-                'conn2'       => array(
+                'conn2' => array(
                     'server'  => 'mongodb://otherhost',
-                    'options' => array(),
                 ),
             ),
             'document_managers' => array(
@@ -120,8 +105,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                     'filters' => array(
                         'test_filter' => array(
                             'class' => 'TestClass',
-                            'enabled' => true
-                        )
+                            'enabled' => true,
+                        ),
                     ),
                     'metadata_cache_driver' => array(
                         'type'           => 'memcache',
@@ -148,7 +133,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                     'database'     => 'db1',
                     'logging'      => true,
                     'auto_mapping' => false,
-                    'filters'       => array(),
+                    'filters'      => array(),
                     'metadata_cache_driver' => array(
                         'type' => 'apc',
                     ),
@@ -160,7 +145,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                             'alias'     => 'alias_val',
                             'is_bundle' => false,
                             'mapping'   => true,
-                        )
+                        ),
                     ),
                     'profiler' => array(
                         'enabled' => '%kernel.debug%',
@@ -168,45 +153,44 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                     ),
                     'retry_connect' => 0,
                     'retry_query' => 0,
-                )
-            )
+                ),
+            ),
         );
 
         $this->assertEquals($expected, $options);
     }
 
-    public function fullConfigurationProvider()
+    public function provideFullConfiguration()
     {
       $yaml = Yaml::parse(__DIR__.'/Fixtures/config/yml/full.yml');
       $yaml = $yaml['doctrine_mongodb'];
       
-      $xml=XmlUtils::loadFile(__DIR__.'/Fixtures/config/xml/full.xml');
-      $xml=XmlUtils::convertDomElementToArray($xml->getElementsByTagName('config')->item(0));
+      $xml = XmlUtils::loadFile(__DIR__.'/Fixtures/config/xml/full.xml');
+      $xml = XmlUtils::convertDomElementToArray($xml->getElementsByTagName('config')->item(0));
       
        return array(
            array($yaml),
-           array($xml)
+           array($xml),
        );
     }
 
     /**
-     * @dataProvider optionProvider
-     * @param array $configs The source array of configuration arrays
-     * @param array $correctValues A key-value pair of end values to check
+     * @dataProvider provideMergeOptions
+     * @param array $configs  An array of configuration arrays to process
+     * @param array $expected Array of key/value options expected in the processed configuration
      */
-    public function testMergeOptions(array $configs, array $correctValues)
+    public function testMergeOptions(array $configs, array $expected)
     {
         $processor = new Processor();
         $configuration = new Configuration(false);
         $options = $processor->processConfiguration($configuration, $configs);
 
-        foreach ($correctValues as $key => $correctVal)
-        {
-            $this->assertEquals($correctVal, $options[$key]);
+        foreach ($expected as $key => $value) {
+            $this->assertEquals($value, $options[$key]);
         }
     }
 
-    public function optionProvider()
+    public function provideMergeOptions()
     {
         $cases = array();
 
@@ -241,7 +225,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 array('connections' => array('default' => array('options' => array('timeout' => 2000)))),
                 array('connections' => array('default' => array('options' => array('username' => 'foo')))),
             ),
-            array('connections' => array('default' => array('options' => array('username' => 'foo'), 'server' => null))),
+            array('connections' => array('default' => array('options' => array('username' => 'foo')))),
         );
 
         // mappings are merged non-recursively.
@@ -260,8 +244,30 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 array('connections' => array('barcon' => array('server' => 'val3'))),
             ),
             array('connections' => array(
-                'foocon' => array('server' => 'val1', 'options' => array()),
-                'barcon' => array('server' => 'val3', 'options' => array())
+                'foocon' => array('server' => 'val1'),
+                'barcon' => array('server' => 'val3'),
+            )),
+        );
+
+        // connection options are merged non-recursively.
+        $cases[] = array(
+            array(
+                array('connections' => array('foocon' => array('options' => array('db' => 'val1')))),
+                array('connections' => array('foocon' => array('options' => array('replicaSet' => 'val2')))),
+            ),
+            array('connections' => array(
+                'foocon' => array('options' => array('replicaSet' => 'val2')),
+            )),
+        );
+
+        // connection option readPreferenceTags are merged non-recursively.
+        $cases[] = array(
+            array(
+                array('connections' => array('foocon' => array('options' => array('readPreferenceTags' => array(array('dc' => 'east', 'use' => 'reporting')))))),
+                array('connections' => array('foocon' => array('options' => array('readPreferenceTags' => array(array('dc' => 'west'), array()))))),
+            ),
+            array('connections' => array(
+                'foocon' => array('options' => array('readPreferenceTags' => array(array('dc' => 'west'), array()))),
             )),
         );
 
@@ -281,131 +287,71 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider getNormalizationTests
+     * @dataProvider provideNormalizeOptions
+     * @param array $configs  A configuration array to process
+     * @param array $expected Array of key/value options expected in the processed configuration
      */
-    public function testNormalizeOptions(array $config, $targetKey, array $normalized)
+    public function testNormalizeOptions(array $config, array $expected)
     {
         $processor = new Processor();
         $configuration = new Configuration(false);
         $options = $processor->processConfiguration($configuration, array($config));
-        $this->assertEquals($normalized, $options[$targetKey]);
+
+        foreach ($expected as $key => $value) {
+            $this->assertEquals($value, $options[$key]);
+        }
     }
 
-    public function getNormalizationTests()
+    public function provideNormalizeOptions()
     {
-        return array(
-            // connection versus connections (id is the identifier)
-            array(
-                array('connection' => array(
-                    array('server' => 'mongodb://abc', 'id' => 'foo'),
-                    array('server' => 'mongodb://def', 'id' => 'bar'),
+        $cases = array();
+
+        // connection versus connections (id is the identifier)
+        $cases[] = array(
+            array('connection' => array(
+                array('server' => 'mongodb://abc', 'id' => 'foo'),
+                array('server' => 'mongodb://def', 'id' => 'bar'),
+            )),
+            array('connections' => array(
+                'foo' => array('server' => 'mongodb://abc'),
+                'bar' => array('server' => 'mongodb://def'),
+            )),
+        );
+
+        // document_manager versus document_managers (id is the identifier)
+        $cases[] = array(
+            array('document_manager' => array(
+                array('connection' => 'conn1', 'id' => 'foo'),
+                array('connection' => 'conn2', 'id' => 'bar'),
+            )),
+            array('document_managers' => array(
+                'foo' => array('connection' => 'conn1', 'metadata_cache_driver' => array('type' => 'array'), 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'filters' => array(), 'mappings' => array(), 'retry_connect' => 0, 'retry_query' => 0),
+                'bar' => array('connection' => 'conn2', 'metadata_cache_driver' => array('type' => 'array'), 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'filters' => array(), 'mappings' => array(), 'retry_connect' => 0, 'retry_query' => 0),
+            )),
+        );
+
+        // mapping configuration that's beneath a specific document manager
+        $cases[] = array(
+            array('document_manager' => array(
+                array('id' => 'foo', 'connection' => 'conn1', 'mapping' => array(
+                    'type' => 'xml', 'name' => 'foo-mapping'
                 )),
-                'connections',
-                array(
-                    'foo' => array('server' => 'mongodb://abc', 'options' => array()),
-                    'bar' => array('server' => 'mongodb://def', 'options' => array()),
+            )),
+            array('document_managers' => array(
+                'foo' => array(
+                    'connection'   => 'conn1',
+                    'metadata_cache_driver' => array('type' => 'array'),
+                    'mappings'     => array('foo-mapping' => array('type' => 'xml', 'mapping' => true)),
+                    'logging'      => '%kernel.debug%',
+                    'profiler'     => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'),
+                    'auto_mapping' => false,
+                    'filters'      => array(),
+                    'retry_connect' => 0,
+                    'retry_query' => 0,
                 ),
-            ),
-            // document_manager versus document_managers (id is the identifier)
-            array(
-                array('document_manager' => array(
-                    array('connection' => 'conn1', 'id' => 'foo'),
-                    array('connection' => 'conn2', 'id' => 'bar'),
-                )),
-                'document_managers',
-                array(
-                    'foo' => array('connection' => 'conn1', 'metadata_cache_driver' => array('type' => 'array'), 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'filters' => array(), 'mappings' => array(), 'retry_connect' => 0, 'retry_query' => 0),
-                    'bar' => array('connection' => 'conn2', 'metadata_cache_driver' => array('type' => 'array'), 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'filters' => array(), 'mappings' => array(), 'retry_connect' => 0, 'retry_query' => 0),
-                ),
-            ),
-            // mapping configuration that's beneath a specific document manager
-            array(
-                array('document_manager' => array(
-                    array('id' => 'foo', 'connection' => 'conn1', 'mapping' => array(
-                        'type' => 'xml', 'name' => 'foo-mapping'
-                    )),
-                )),
-                'document_managers',
-                array(
-                    'foo' => array(
-                        'connection'   => 'conn1',
-                        'metadata_cache_driver' => array('type' => 'array'),
-                        'mappings'     => array('foo-mapping' => array('type' => 'xml', 'mapping' => true)),
-                        'logging'      => '%kernel.debug%',
-                        'profiler'     => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'),
-                        'auto_mapping' => false,
-                        'filters'      => array(),
-                        'retry_connect' => 0,
-                        'retry_query' => 0,
-                    ),
-                ),
-            ),
+            )),
         );
-    }
 
-    /**
-     * @dataProvider getValidSafeCommitOptions
-     */
-    public function testValidSafeCommitOptions($safeCommitOption)
-    {
-        $invalidConfig = array('default_commit_options' => array('safe' => $safeCommitOption));
-
-        $processor = new Processor();
-        $configuration = new Configuration(false);
-        $options = $processor->processConfiguration($configuration, array($invalidConfig));
-    }
-
-    public function getValidSafeCommitOptions()
-    {
-        return array(
-            array(0),
-            array(1),
-            array(true),
-            array('majority'),
-            array(-1),
-        );
-    }
-
-    /**
-     * @dataProvider getInvalidSafeCommitOptions
-     * @expectedException Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     */
-    public function testInvalidSafeCommitOptions($safeCommitOption)
-    {
-        $invalidConfig = array('default_commit_options' => array('safe' => $safeCommitOption));
-
-        $processor = new Processor();
-        $configuration = new Configuration(false);
-        $options = $processor->processConfiguration($configuration, array($invalidConfig));
-    }
-
-    public function getInvalidSafeCommitOptions()
-    {
-        return array(
-            array(array()),
-            array(new \stdClass()),
-            array(-2),
-        );
-    }
-
-    /**
-     * @dataProvider getInvalidTimeoutCommitOptions
-     * @expectedException Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     */
-    public function testInvalidTimeoutCommitOptions($timeoutCommitOption)
-    {
-        $invalidConfig = array('default_commit_options' => array('timeout' => $timeoutCommitOption));
-
-        $processor = new Processor();
-        $configuration = new Configuration(false);
-        $options = $processor->processConfiguration($configuration, array($invalidConfig));
-    }
-
-    public function getInvalidTimeoutCommitOptions()
-    {
-        return array(
-            array('NaN'),
-            array(-2),
-        );
+        return $cases;
     }
 }

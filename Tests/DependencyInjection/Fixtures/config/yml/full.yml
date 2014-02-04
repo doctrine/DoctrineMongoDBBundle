@@ -1,18 +1,21 @@
 doctrine_mongodb:
-    proxy_namespace:    Test_Proxies
-    auto_generate_proxy_classes:    true
-
-    hydrator_namespace: Test_Hydrators
+    auto_generate_proxy_classes: true
     auto_generate_hydrator_classes: true
+    default_connection: conn1
+    default_database: default_db_name
+    default_document_manager: default_dm_name
+    hydrator_dir: %kernel.cache_dir%/doctrine/odm/mongodb/Test_Hydrators
+    hydrator_namespace: Test_Hydrators
+    proxy_dir: %kernel.cache_dir%/doctrine/odm/mongodb/Test_Proxies
+    proxy_namespace: Test_Proxies
 
     default_commit_options:
-        safe: 2
+        j: false
         timeout: 10
-
-    default_document_manager:  default_dm_name
-    default_database:          default_db_name
-
-    default_connection:        conn1
+        w: majority
+        wtimeout: 10
+        fsync: false
+        safe: 2
 
     connections:
         conn1:
