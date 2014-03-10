@@ -689,7 +689,7 @@ and then :ref:`tagging<book-service-container-tags>` it with a specific tag.
             <service id="my_doctrine_listener" class="Acme\HelloBundle\Listener\MyDoctrineListener">
                 <!-- ... -->
                 <tag name="doctrine_mongodb.odm.event_listener" event="postPersist" />
-            </service>.
+            </service>
 
         .. code-block:: php
 
