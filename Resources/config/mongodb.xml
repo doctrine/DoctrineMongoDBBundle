@@ -42,6 +42,7 @@
         <parameter key="doctrine_mongodb.odm.xml_mapping_dirs">%doctrine_mongodb.odm.mapping_dirs%</parameter>
         <parameter key="doctrine_mongodb.odm.yml_mapping_dirs">%doctrine_mongodb.odm.mapping_dirs%</parameter>
         <parameter key="doctrine_mongodb.odm.document_dirs" type="collection"></parameter>
+        <parameter key="doctrine_mongodb.odm.fixtures_dirs" type="collection"></parameter>
 
         <!-- logger -->
         <parameter key="doctrine_mongodb.odm.logger.batch_insert_threshold">4</parameter>
