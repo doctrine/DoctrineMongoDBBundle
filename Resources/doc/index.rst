@@ -50,7 +50,7 @@ The ``@dev`` definition is necessary until non-beta versions of the bundle and
 ODM are available. Depending on your project needs, other version strings may
 be used, which are discussed in Composer's `schema documentation`_.
 
-You can now can install the new dependencies by running Composer's ``update``
+You can now install the new dependencies by running Composer's ``update``
 command from the directory where your ``composer.json`` file is located:
 
 .. code-block :: bash
