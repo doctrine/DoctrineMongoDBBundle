@@ -4,12 +4,10 @@ doctrine_mongodb:
   connections:
     conn1:
       server: mongodb://localhost:27017
-      options:
-        connect: true
+      options: { connect: true }
     conn2:
       server: mongodb://localhost:27017
-      options:
-        connect: true
+      options: { connect: true }
   document_managers:
     dm1:
       connection: conn1

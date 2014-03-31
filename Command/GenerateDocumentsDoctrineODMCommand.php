@@ -70,7 +70,7 @@ EOT
             $documentGenerator->setBackupExisting(!$input->getOption('no-backup'));
 
             foreach ($metadatas as $metadata) {
-                if ($filterDocument && $metadata->reflClass->getShortName() != $filterDocument) {
+                if ($filterDocument && $metadata->getReflectionClass()->getShortName() != $filterDocument) {
                     continue;
                 }
 

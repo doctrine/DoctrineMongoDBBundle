@@ -50,12 +50,12 @@ The ``@dev`` definition is necessary until non-beta versions of the bundle and
 ODM are available. Depending on your project needs, other version strings may
 be used, which are discussed in Composer's `schema documentation`_.
 
-You can now can install the new dependencies by running Composer's ``update``
+You can now install the new dependencies by running Composer's ``update``
 command from the directory where your ``composer.json`` file is located:
 
 .. code-block :: bash
 
-    php composer.phar update
+    php composer.phar update doctrine/mongodb-odm doctrine/mongodb-odm-bundle
 
 Now, Composer will automatically download all required files, and install them
 for you.
@@ -389,7 +389,7 @@ to easily fetch objects based on multiple conditions::
     // query for one product matching be name and price
     $product = $repository->findOneBy(array('name' => 'foo', 'price' => 19.99));
 
-    // query for all prdocuts matching the name, ordered by price
+    // query for all products matching the name, ordered by price
     $product = $repository->findBy(
         array('name' => 'foo'),
         array('price', 'ASC')
@@ -689,7 +689,7 @@ and then :ref:`tagging<book-service-container-tags>` it with a specific tag.
             <service id="my_doctrine_listener" class="Acme\HelloBundle\Listener\MyDoctrineListener">
                 <!-- ... -->
                 <tag name="doctrine_mongodb.odm.event_listener" event="postPersist" />
-            </service>.
+            </service>
 
         .. code-block:: php
 
@@ -738,6 +738,31 @@ same than the `entity` provider described in :doc:`the cookbook</cookbook/securi
             </provider>
         </config>
 
+Using the Abstraction Layer
+---------------------------
+
+Doctrine provides a thin wrapper for the PHP MongoDB client class which can conveniently
+be fetched from the Symfony2 service container. A similar example like the tutorial in the
+`PHP Documentation`_ might look something like this:
+
+.. code-block:: php
+
+    // connect
+    $m = $this->container->get('doctrine_mongodb.odm.default_connection');
+
+    // select a database
+    $db = $m->selectDatabase('comedy');
+
+    // select a collection (analogous to a relational database's table)
+    $collection = $db->createCollection('cartoons');
+
+    // add a record
+    $document = array( "title" => "Calvin and Hobbes", "author" => "Bill Watterson" );
+    $collection->insert($document);
+
+    // find everything in the collection
+    $cursor = $collection->find();
+
 Summary
 -------
 
@@ -760,9 +785,10 @@ Learn more from the Cookbook
 .. _`documentation`:    http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/
 .. _`schema documentation`: http://getcomposer.org/doc/04-schema.md#minimum-stability
 .. _`Quick Start`:      http://www.mongodb.org/display/DOCS/Quickstart
-.. _`Basic Mapping Documentation`: http://www.doctrine-project.org/docs/mongodb_odm/1.0/en/reference/basic-mapping.html
+.. _`Basic Mapping Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html
 .. _`MongoDB type`: http://us.php.net/manual/en/mongo.types.php
 .. _`Mapping Types Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html#doctrine-mapping-types
 .. _`Query Builder`: http://www.doctrine-project.org/docs/mongodb_odm/1.0/en/reference/query-builder-api.html
 .. _`Conditional Operators`: http://www.doctrine-project.org/docs/mongodb_odm/1.0/en/reference/query-builder-api.html#conditional-operators
 .. _`Event Documentation`: http://www.doctrine-project.org/docs/mongodb_odm/1.0/en/reference/events.html
+.. _`PHP Documentation`: http://www.php.net/manual/en/mongo.tutorial.php

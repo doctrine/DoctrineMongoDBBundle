@@ -28,7 +28,7 @@ class Configuration implements ConfigurationInterface
     /**
      * Generates the configuration tree builder.
      *
-     * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder The tree builder
+     * @return TreeBuilder
      */
     public function getConfigTreeBuilder()
     {
@@ -52,29 +52,13 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('default_commit_options')
                     ->addDefaultsIfNotSet()
                     ->children()
-                        ->scalarNode('safe')
-                            ->defaultTrue()
-                            ->beforeNormalization()
-                                ->ifTrue(function($v) { return is_numeric($v); })
-                                ->then(function($v) { return (int) $v; })
-                            ->end()
-                            ->validate()
-                                ->ifTrue(function($v) { return is_int($v) && $v < -1; })
-                                ->thenInvalid('Integer (-1 or greater) expected for numeric "safe" commit option')
-                            ->end()
-                        ->end()
-                        ->booleanNode('fsync')->defaultFalse()->end()
-                        ->scalarNode('timeout')
-                            ->defaultValue(\MongoCursor::$timeout)
-                            ->beforeNormalization()
-                                ->ifTrue(function($v) { return is_numeric($v); })
-                                ->then(function($v) { return (int) $v; })
-                            ->end()
-                            ->validate()
-                                ->ifTrue(function($v) { return !is_int($v) || $v < -1; })
-                                ->thenInvalid('Integer (-1 or greater) expected for "timeout" commit option')
-                            ->end()
-                        ->end()
+                        ->booleanNode('j')->end()
+                        ->scalarNode('timeout')->end()
+                        ->scalarNode('w')->end()
+                        ->scalarNode('wtimeout')->end()
+                        // Deprecated options
+                        ->booleanNode('fsync')->info('Deprecated. Please use the "j" option instead.')->end()
+                        ->scalarNode('safe')->info('Deprecated. Please use the "w" option instead.')->end()
                     ->end()
                 ->end()
             ->end()
@@ -84,7 +68,9 @@ class Configuration implements ConfigurationInterface
     }
 
     /**
-     * Configures the "document_managers" section
+     * Adds the "document_managers" config section.
+     *
+     * @param ArrayNodeDefinition $rootNode
      */
     private function addDocumentManagersSection(ArrayNodeDefinition $rootNode)
     {
@@ -95,6 +81,7 @@ class Configuration implements ConfigurationInterface
                     ->useAttributeAsKey('id')
                     ->prototype('array')
                         ->treatNullLike(array())
+                        ->fixXmlConfig('filter')
                         ->children()
                             ->scalarNode('connection')->end()
                             ->scalarNode('database')->end()
@@ -108,7 +95,7 @@ class Configuration implements ConfigurationInterface
                                     ->booleanNode('pretty')->defaultValue('%kernel.debug%')->end()
                                 ->end()
                             ->end()
-                            ->scalarNode('auto_mapping')->defaultFalse()->end()
+                            ->booleanNode('auto_mapping')->defaultFalse()->end()
                             ->arrayNode('filters')
                                 ->useAttributeAsKey('name')
                                 ->prototype('array')
@@ -137,7 +124,7 @@ class Configuration implements ConfigurationInterface
                             ->arrayNode('metadata_cache_driver')
                                 ->addDefaultsIfNotSet()
                                 ->beforeNormalization()
-                                    ->ifTrue(function($v) { return !is_array($v); })
+                                    ->ifString()
                                     ->then(function($v) { return array('type' => $v); })
                                 ->end()
                                 ->children()
@@ -147,6 +134,7 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('port')->end()
                                     ->scalarNode('instance_class')->end()
                                     ->scalarNode('id')->end()
+                                    ->scalarNode('namespace')->end()
                                 ->end()
                             ->end()
                         ->end()
@@ -180,7 +168,9 @@ class Configuration implements ConfigurationInterface
     }
 
     /**
-     * Adds the configuration for the "connections" key
+     * Adds the "connections" config section.
+     *
+     * @param ArrayNodeDefinition $rootNode
      */
     private function addConnectionsSection(ArrayNodeDefinition $rootNode)
     {
@@ -192,19 +182,56 @@ class Configuration implements ConfigurationInterface
                     ->prototype('array')
                         ->performNoDeepMerging()
                         ->children()
-                            ->scalarNode('server')->defaultNull()->end()
+                            ->scalarNode('server')->end()
                             ->arrayNode('options')
                                 ->performNoDeepMerging()
-                                ->addDefaultsIfNotSet()
                                 ->children()
                                     ->booleanNode('connect')->end()
-                                    ->scalarNode('persist')->end()
-                                    ->scalarNode('timeout')->end()
-                                    ->scalarNode('replicaSet')->end()
-                                    ->booleanNode('slaveOkay')->end()
-                                    ->scalarNode('username')->end()
-                                    ->scalarNode('password')->end()
+                                    ->scalarNode('connectTimeoutMS')->end()
                                     ->scalarNode('db')->end()
+                                    ->booleanNode('journal')->end()
+                                    ->scalarNode('password')->end()
+                                    ->enumNode('readPreference')
+                                        ->values(array('primary', 'primaryPreferred', 'secondary', 'secondaryPreferred', 'nearest'))
+                                    ->end()
+                                    ->arrayNode('readPreferenceTags')
+                                        ->performNoDeepMerging()
+                                        ->prototype('array')
+                                            ->beforeNormalization()
+                                                // Handle readPreferenceTag XML nodes
+                                                ->ifTrue(function($v) { return isset($v['readPreferenceTag']); })
+                                                ->then(function($v) {
+                                                    // Equivalent of fixXmlConfig() for inner node
+                                                    if (isset($v['readPreferenceTag']['name'])) {
+                                                        $v['readPreferenceTag'] = array($v['readPreferenceTag']);
+                                                    }
+
+                                                    return $v['readPreferenceTag'];
+                                                })
+                                            ->end()
+                                            ->useAttributeAsKey('name')
+                                            ->prototype('scalar')->end()
+                                        ->end()
+                                    ->end()
+                                    ->scalarNode('replicaSet')->end()
+                                    ->scalarNode('socketTimeoutMS')->end()
+                                    ->booleanNode('ssl')->end()
+                                    ->scalarNode('username')->end()
+                                    ->scalarNode('w')->end()
+                                    ->scalarNode('wTimeoutMS')->end()
+                                    // Deprecated options
+                                    ->booleanNode('fsync')->info('Deprecated. Please use the "journal" option instead.')->end()
+                                    ->booleanNode('slaveOkay')->info('Deprecated. Please use the "readPreference" option instead.')->end()
+                                    ->scalarNode('timeout')->info('Deprecated. Please use the "connectTimeoutMS" option instead.')->end()
+                                    ->scalarNode('wTimeout')->info('Deprecated. Please use the "wTimeoutMS" option instead.')->end()
+                                ->end()
+                                ->validate()
+                                    ->ifTrue(function($v) { return count($v['readPreferenceTags']) === 0; })
+                                    ->then(function($v) {
+                                        unset($v['readPreferenceTags']);
+
+                                        return $v;
+                                    })
                                 ->end()
                             ->end()
                         ->end()
