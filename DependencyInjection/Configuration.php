@@ -61,6 +61,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('safe')->info('Deprecated. Please use the "w" option instead.')->end()
                     ->end()
                 ->end()
+                ->arrayNode('fixtures_dirs')->end()
             ->end()
         ;
 
