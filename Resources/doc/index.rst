@@ -737,15 +737,17 @@ same than the `entity` provider described in :doc:`the cookbook</cookbook/securi
                 <mongodb class="Acme\DemoBundle\Document\User" property="username" />
             </provider>
         </config>
-        
-Validation 
+
+Validation
 ----------
 
-DoctrineMongoDBBundle provides a Wrapper for the UniqueEntity Constraint, but renames it 
-to Unique. You can use this validator to validate the uniqueness of an Object property 
-against the database.
+This bundle provides a ``Unique`` constraint, which extends the `UniqueEntity`_
+constraint provided by Symfony's Doctrine bridge. This constraint allows you to
+validate the uniqueness of an document field against the database.
 
-http://symfony.com/doc/current/reference/constraints/UniqueEntity.html
+The ``Unique`` constraint shares the same options as `UniqueEntity`_, which
+means that the ``em`` option should be used if you wish to specify the document
+manager explicitly instead of having it be inferred from the document class.
 
 Using the Abstraction Layer
 ---------------------------
@@ -801,3 +803,4 @@ Learn more from the Cookbook
 .. _`Conditional Operators`: http://www.doctrine-project.org/docs/mongodb_odm/1.0/en/reference/query-builder-api.html#conditional-operators
 .. _`Event Documentation`: http://www.doctrine-project.org/docs/mongodb_odm/1.0/en/reference/events.html
 .. _`PHP Documentation`: http://www.php.net/manual/en/mongo.tutorial.php
+.. _`UniqueEntity`: http://symfony.com/doc/current/reference/constraints/UniqueEntity.html
