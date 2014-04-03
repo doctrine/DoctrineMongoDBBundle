@@ -90,6 +90,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             'hydrator_dir',
             'auto_generate_hydrator_classes',
             'default_commit_options',
+            'fixtures_dirs',
         );
 
         foreach ($overrides as $key) {
