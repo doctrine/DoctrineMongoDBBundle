@@ -35,6 +35,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             'document_managers'              => array(),
             'connections'                    => array(),
             'proxy_dir'                      => '%kernel.cache_dir%/doctrine/odm/mongodb/Proxies',
+            'resolve_target_documents'       => array(),
             'proxy_namespace'                => 'MongoDBODMProxies',
             'hydrator_dir'                   => '%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators',
             'hydrator_namespace'             => 'Hydrators',
@@ -156,6 +157,9 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                     'retry_query' => 0,
                 ),
             ),
+            'resolve_target_documents' => array(
+                'Foo\BarInterface' => 'Bar\FooClass'
+            ),
         );
 
         $this->assertEquals($expected, $options);
@@ -163,16 +167,16 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
 
     public function provideFullConfiguration()
     {
-      $yaml = Yaml::parse(__DIR__.'/Fixtures/config/yml/full.yml');
-      $yaml = $yaml['doctrine_mongodb'];
-      
-      $xml = XmlUtils::loadFile(__DIR__.'/Fixtures/config/xml/full.xml');
-      $xml = XmlUtils::convertDomElementToArray($xml->getElementsByTagName('config')->item(0));
-      
-       return array(
-           array($yaml),
-           array($xml),
-       );
+        $yaml = Yaml::parse(__DIR__.'/Fixtures/config/yml/full.yml');
+        $yaml = $yaml['doctrine_mongodb'];
+
+        $xml = XmlUtils::loadFile(__DIR__.'/Fixtures/config/xml/full.xml');
+        $xml = XmlUtils::convertDomElementToArray($xml->getElementsByTagName('config')->item(0));
+
+        return array(
+            array($yaml),
+            array($xml),
+        );
     }
 
     /**
