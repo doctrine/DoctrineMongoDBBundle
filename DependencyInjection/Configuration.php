@@ -37,6 +37,7 @@ class Configuration implements ConfigurationInterface
 
         $this->addDocumentManagersSection($rootNode);
         $this->addConnectionsSection($rootNode);
+        $this->addResolveTargetDocumentsSection($rootNode);
 
         $rootNode
             ->children()
@@ -62,26 +63,9 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
             ->end()
-            ->fixXmlConfig('resolve_target_document', 'resolve_target_documents')
-            ->append($this->getOdmTargetDocumentResolverNode())
         ;
 
         return $treeBuilder;
-    }
-
-    private function getOdmTargetDocumentResolverNode()
-    {
-        $treeBuilder = new TreeBuilder();
-        $node = $treeBuilder->root('resolve_target_documents');
-
-        $node
-            ->useAttributeAsKey('interface')
-            ->prototype('scalar')
-                ->cannotBeEmpty()
-            ->end()
-        ;
-
-        return $node;
     }
 
     /**
@@ -252,6 +236,26 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                         ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+    }
+
+    /**
+     * Adds the "resolve_target_documents" config section.
+     *
+     * @param ArrayNodeDefinition $rootNode
+     */
+    private function addResolveTargetDocumentsSection(ArrayNodeDefinition $rootNode)
+    {
+        $rootNode
+            ->fixXmlConfig('resolve_target_document')
+            ->children()
+                ->arrayNode('resolve_target_documents')
+                    ->useAttributeAsKey('interface')
+                    ->prototype('scalar')
+                        ->cannotBeEmpty()
                     ->end()
                 ->end()
             ->end()
