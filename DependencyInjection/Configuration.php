@@ -233,6 +233,8 @@ class Configuration implements ConfigurationInterface
 
                                         return $v;
                                     })
+                                ->end()
+                                ->validate()
                                     ->ifTrue(function($v) { return null === $v['username'] || null === $v['password']; })
                                     ->then(function($v) {
                                         unset($v['username']);
