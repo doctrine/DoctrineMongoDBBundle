@@ -359,4 +359,41 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
 
         return $cases;
     }
+
+    public function testPasswordAndUsernameShouldBeUnsetIfNull()
+    {
+        $config = array(
+            'connections' => array(
+                'conn1' => array(
+                    'server' => 'mongodb://localhost',
+                    'options' => array(
+                        'username' => null,
+                        'password' => 'bar',
+                    ),
+                ),
+                'conn2' => array(
+                    'server' => 'mongodb://localhost',
+                    'options' => array(
+                        'username' => 'foo',
+                        'password' => null,
+                    ),
+                ),
+                'conn3' => array(
+                    'server' => 'mongodb://localhost',
+                    'options' => array(
+                        'username' => null,
+                        'password' => null,
+                    ),
+                ),
+            ),
+        );
+
+        $processor = new Processor();
+        $configuration = new Configuration(false);
+        $options = $processor->processConfiguration($configuration, array($config));
+
+        $this->assertEquals(array('password' => 'bar'), $options['connections']['conn1']['options']);
+        $this->assertEquals(array('username' => 'foo'), $options['connections']['conn2']['options']);
+        $this->assertEquals(array(), $options['connections']['conn3']['options']);
+    }
 }
