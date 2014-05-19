@@ -191,7 +191,7 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('connectTimeoutMS')->end()
                                     ->scalarNode('db')->end()
                                     ->booleanNode('journal')->end()
-                                    ->scalarNode('password')->end()
+                                    ->scalarNode('password')->validate()->ifNull()->thenUnset()->end()->end()
                                     ->enumNode('readPreference')
                                         ->values(array('primary', 'primaryPreferred', 'secondary', 'secondaryPreferred', 'nearest'))
                                     ->end()
@@ -217,7 +217,7 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('replicaSet')->end()
                                     ->scalarNode('socketTimeoutMS')->end()
                                     ->booleanNode('ssl')->end()
-                                    ->scalarNode('username')->end()
+                                    ->scalarNode('username')->validate()->ifNull()->thenUnset()->end()->end()
                                     ->scalarNode('w')->end()
                                     ->scalarNode('wTimeoutMS')->end()
                                     // Deprecated options
