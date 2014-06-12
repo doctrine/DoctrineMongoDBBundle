@@ -109,6 +109,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                         'test_filter' => array(
                             'class' => 'TestClass',
                             'enabled' => true,
+                            'parameters' => array()
                         ),
                     ),
                     'metadata_cache_driver' => array(

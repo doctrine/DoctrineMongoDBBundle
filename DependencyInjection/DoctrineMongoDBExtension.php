@@ -203,7 +203,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
         $enabledFilters = array();
         foreach ($documentManager['filters'] as $name => $filter) {
-            $odmConfigDef->addMethodCall('addFilter', array($name, $filter['class']));
+            $parameters = isset($filter['parameters']) ? $filter['parameters'] : array();
+            $odmConfigDef->addMethodCall('addFilter', array($name, $filter['class'], $parameters));
             if ($filter['enabled']) {
                 $enabledFilters[] = $name;
             }
