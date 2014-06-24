@@ -30,11 +30,6 @@
             "Doctrine\\Bundle\\MongoDBBundle\\": ""
         }
     },
-    "autoload-dev": {
-        "psr-4": {
-            "Doctrine\\Bundle\\MongoDBBundle\\Tests\\": "Tests"
-        }
-    },
     "extra": {
         "branch-alias": {
             "dev-master": "3.0-dev"
