@@ -26,11 +26,10 @@
         "doctrine/data-fixtures": "Load data fixtures"
     },
     "autoload": {
-        "psr-0": {
-            "Doctrine\\Bundle\\MongoDBBundle": ""
+        "psr-4": {
+            "Doctrine\\Bundle\\MongoDBBundle\\": ""
         }
     },
-    "target-dir": "Doctrine/Bundle/MongoDBBundle",
     "extra": {
         "branch-alias": {
             "dev-master": "3.0-dev"
