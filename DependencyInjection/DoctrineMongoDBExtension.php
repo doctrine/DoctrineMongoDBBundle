@@ -22,6 +22,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 /**
  * Doctrine MongoDB ODM extension.
@@ -203,7 +204,12 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
         $enabledFilters = array();
         foreach ($documentManager['filters'] as $name => $filter) {
-            $odmConfigDef->addMethodCall('addFilter', array($name, $filter['class']));
+            $parameters = isset($filter['parameters']) ? $filter['parameters'] : array();
+            if (isset($parameters['value'])) {
+                $language = new ExpressionLanguage();
+                $parameters['value'] = $language->evaluate($parameters['value']);
+            }
+            $odmConfigDef->addMethodCall('addFilter', array($name, $filter['class'], $parameters));
             if ($filter['enabled']) {
                 $enabledFilters[] = $name;
             }
