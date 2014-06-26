@@ -54,6 +54,7 @@
     <xsd:sequence>
       <xsd:element name="readPreferenceTags" type="read-preference-tag-set" minOccurs="0" maxOccurs="unbounded" />
     </xsd:sequence>
+    <xsd:attribute name="authMechanism" type="auth-mechanism" />
     <xsd:attribute name="connect" type="xsd:boolean" />
     <xsd:attribute name="connectTimeoutMS" type="xsd:integer" />
     <xsd:attribute name="db" type="xsd:string" />
@@ -72,6 +73,15 @@
     <xsd:attribute name="timeout" type="xsd:integer" />
     <xsd:attribute name="wTimeout" type="xsd:integer" />
   </xsd:complexType>
+
+  <xsd:simpleType name="auth-mechanism">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="MONGODB-CR" />
+      <xsd:enumeration value="X509" />
+      <xsd:enumeration value="PLAIN" />
+      <xsd:enumeration value="GSSAPI" />
+    </xsd:restriction>
+  </xsd:simpleType>
 
   <xsd:simpleType name="read-preference">
     <xsd:restriction base="xsd:string">
