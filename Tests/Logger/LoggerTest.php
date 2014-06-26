@@ -36,7 +36,7 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
         $log = json_encode($query);
 
         $this->logger->expects($this->once())
-            ->method('info')
+            ->method('debug')
             ->with('MongoDB query: '.$log);
 
         $logger = new Logger($this->logger);
@@ -50,7 +50,7 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
         $log = json_encode(array('foo' => array('binData' => base64_encode($binData->bin))));
 
         $this->logger->expects($this->once())
-            ->method('info')
+            ->method('debug')
             ->with('MongoDB query: '.$log);
 
         $logger = new Logger($this->logger);
@@ -76,7 +76,7 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
         ));
 
         $this->logger->expects($this->once())
-            ->method('info')
+            ->method('debug')
             ->with('MongoDB query: '.$log);
 
         $logger = new Logger($this->logger);

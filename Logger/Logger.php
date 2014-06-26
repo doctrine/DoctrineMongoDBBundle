@@ -63,6 +63,6 @@ class Logger implements LoggerInterface
             }
         });
 
-        $this->logger->info($this->prefix.json_encode($query));
+        $this->logger->debug($this->prefix.json_encode($query));
     }
 }
