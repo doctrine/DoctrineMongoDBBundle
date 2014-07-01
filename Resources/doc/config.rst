@@ -164,23 +164,65 @@ The following configuration shows a bunch of mapping examples:
 Filters
 ~~~~~~~
 
-You can easily add filters to a document manager by using the
-following syntax:
+Filter classes may be used in order to add criteria to ODM queries, regardless
+of where those queries are created within your application. Typically, filters
+will limit themselves to operating on a particular class or interface. Filters
+may also take parameters, which can be used to customize the injected query
+criteria.
 
-.. code-block:: yaml
+Filters may be registered with a document manager by using the following syntax:
 
-    doctrine_mongodb:
-        document_managers:
-            default:
-                filters:
-                    filter-one:
-                        class: Class\ExampleOne\Filter\ODM\ExampleFilter
-                        enabled: true
-                    filter-two:
-                        class: Class\ExampleTwo\Filter\ODM\ExampleFilter
-                        enabled: false
+.. configuration-block::
 
-Filters are used to append conditions to the queryBuilder regardless of where the query is generated.
+    .. code-block:: yaml
+
+        doctrine_mongodb:
+            document_managers:
+                default:
+                    filters:
+                        basic_filter:
+                            class: Vendor\Filter\BasicFilter
+                            enabled: true
+                        complex_filter:
+                            class: Vendor\Filter\ComplexFilter
+                            enabled: false
+                            parameters:
+                                author: bob
+                                comments: { $gte: 10 }
+                                tags: { $in: [ 'foo', 'bar' ] }
+
+    .. code-block:: xml
+
+        <?xml version="1.0" ?>
+
+        <container xmlns="http://symfony.com/schema/dic/services"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:doctrine="http://symfony.com/schema/dic/doctrine/odm/mongodb"
+            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+                                http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+
+            <doctrine:mongodb>
+                <doctrine:connection id="default" server="mongodb://localhost:27017" />
+
+                <doctrine:document-manager id="default" connection="default">
+                    <doctrine:filter name="basic_filter" enabled="true" class="Vendor\Filter\BasicFilter" />
+                    <doctrine:filter name="complex_filter" enabled="true" class="Vendor\Filter\ComplexFilter">
+                        <doctrine:parameter name="author">bob</doctrine:parameter>
+                        <doctrine:parameter name="comments">{ "$gte": 10 }</doctrine:parameter>
+                        <doctrine:parameter name="tags">{ "$in": [ "foo", "bar" ] }</doctrine:parameter>
+                    </doctrine:filter>
+                </doctrine:document-manager>
+            </doctrine:mongodb>
+        </container>
+
+.. note::
+
+    Unlike ORM, query parameters in MongoDB ODM may be non-scalar values. Since
+    such values are difficult to express in XML, the bundle allows JSON strings
+    to be used in ``parameter`` tags. While processing the configuration, the
+    bundle will run the tag contents through ``json_decode()`` if the string is
+    wrapped in square brackets or curly braces for arrays and objects,
+    respectively.
 
 Multiple Connections
 ~~~~~~~~~~~~~~~~~~~~
