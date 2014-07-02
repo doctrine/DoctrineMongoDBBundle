@@ -1,0 +1,21 @@
+doctrine_mongodb:
+    connections:
+        default:
+            server: mongodb://localhost:27017
+    document_managers:
+        default:
+            filters:
+                disabled_filter:
+                    class:   Vendor\Filter\DisabledFilter
+                    enabled: false
+                basic_filter:
+                    class:   Vendor\Filter\BasicFilter
+                    enabled: true
+                complex_filter:
+                    class:   Vendor\Filter\ComplexFilter
+                    enabled: true
+                    parameters:
+                        integer: 1
+                        string:  foo
+                        object:  { key: value }
+                        array:   [ 1, 2, 3 ]

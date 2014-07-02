@@ -59,9 +59,20 @@ doctrine_mongodb:
                 enabled: true
                 pretty:  false
             filters:
-                test-filter:
-                    class:              TestClass
-                    enabled:            true
+                disabled_filter:
+                    class:   Vendor\Filter\DisabledFilter
+                    enabled: false
+                basic_filter:
+                    class:   Vendor\Filter\BasicFilter
+                    enabled: true
+                complex_filter:
+                    class:   Vendor\Filter\ComplexFilter
+                    enabled: true
+                    parameters:
+                        integer: 1
+                        string:  foo
+                        object:  { key: value }
+                        array:   [ 1, 2, 3 ]
         dm2:
             connection:       dm2_connection
             database:         db1

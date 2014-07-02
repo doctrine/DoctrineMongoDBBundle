@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:doctrine="http://symfony.com/schema/dic/doctrine/odm/mongodb"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+                        http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+
+    <doctrine:mongodb>
+        <doctrine:connection id="default" server="mongodb://localhost:27017" />
+
+        <doctrine:document-manager id="default" connection="default">
+            <doctrine:filter name="disabled_filter" enabled="false" class="Vendor\Filter\DisabledFilter" />
+            <doctrine:filter name="basic_filter" enabled="true" class="Vendor\Filter\BasicFilter" />
+            <doctrine:filter name="complex_filter" enabled="true" class="Vendor\Filter\ComplexFilter">
+                <doctrine:parameter name="integer">1</doctrine:parameter>
+                <doctrine:parameter name="string">foo</doctrine:parameter>
+                <doctrine:parameter name="object">{"key":"value"}</doctrine:parameter>
+                <doctrine:parameter name="array">[1,2,3]</doctrine:parameter>
+            </doctrine:filter>
+        </doctrine:document-manager>
+
+    </doctrine:mongodb>
+</container>

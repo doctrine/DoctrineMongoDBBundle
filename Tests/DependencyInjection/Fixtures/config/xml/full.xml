@@ -66,7 +66,14 @@
                 <doctrine:instance-class>instance_val</doctrine:instance-class>
             </doctrine:metadata-cache-driver>
             <doctrine:profiler enabled="true" pretty="false" />
-            <doctrine:filter name="test_filter" enabled="true" class="TestClass" />
+            <doctrine:filter name="disabled_filter" enabled="false" class="Vendor\Filter\DisabledFilter" />
+            <doctrine:filter name="basic_filter" enabled="true" class="Vendor\Filter\BasicFilter" />
+            <doctrine:filter name="complex_filter" enabled="true" class="Vendor\Filter\ComplexFilter">
+                <doctrine:parameter name="integer">1</doctrine:parameter>
+                <doctrine:parameter name="string">foo</doctrine:parameter>
+                <doctrine:parameter name="object">{"key":"value"}</doctrine:parameter>
+                <doctrine:parameter name="array">[1,2,3]</doctrine:parameter>
+            </doctrine:filter>
         </doctrine:document-manager>
 
         <doctrine:document-manager

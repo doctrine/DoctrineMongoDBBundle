@@ -18,7 +18,10 @@ use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\AddValidatorNames
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+use PHPUnit_Framework_AssertionFailedError;
+use PHPUnit_Framework_Constraint;
 
 abstract class AbstractMongoDBExtensionTest extends TestCase
 {
@@ -384,7 +387,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
     public function testResolveTargetDocument()
     {
-        $container = $this->getContainer('YamlBundle');
+        $container = $this->getContainer();
         $loader = new DoctrineMongoDBExtension();
         $container->registerExtension($loader);
 
@@ -395,35 +398,107 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $container->compile();
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.listeners.resolve_target_document');
-        $this->assertDICDefinitionMethodCallOnce($definition, 'addResolveTargetDocument', array('Symfony\Component\Security\Core\User\UserInterface', 'MyUserClass', array()));
+        $this->assertDefinitionMethodCallOnce($definition, 'addResolveTargetDocument', array('Symfony\Component\Security\Core\User\UserInterface', 'MyUserClass', array()));
         $this->assertEquals(array('doctrine_mongodb.odm.event_listener' => array(array('event' => 'loadClassMetadata'))), $definition->getTags());
     }
 
+    public function testFilters()
+    {
+        $container = $this->getContainer();
+        $loader = new DoctrineMongoDBExtension();
+        $container->registerExtension($loader);
+
+        $this->loadFromFile($container, 'odm_filters');
+
+        $container->getCompilerPassConfig()->setOptimizationPasses(array());
+        $container->getCompilerPassConfig()->setRemovingPasses(array());
+        $container->compile();
+
+        $complexParameters = array(
+            'integer' => 1,
+            'string' => 'foo',
+            'object' => array('key' => 'value'),
+            'array' => array(1, 2, 3),
+        );
+
+        $definition = $container->getDefinition('doctrine_mongodb.odm.default_configuration');
+        $this->assertDefinitionMethodCallAny($definition, 'addFilter', array('disabled_filter', 'Vendor\Filter\DisabledFilter', array()));
+        $this->assertDefinitionMethodCallAny($definition, 'addFilter', array('basic_filter', 'Vendor\Filter\BasicFilter', array()));
+        $this->assertDefinitionMethodCallAny($definition, 'addFilter', array('complex_filter', 'Vendor\Filter\ComplexFilter', $complexParameters));
+
+        $enabledFilters = array('basic_filter', 'complex_filter');
+
+        $definition = $container->getDefinition('doctrine_mongodb.odm.default_manager_configurator');
+        $this->assertEquals($enabledFilters, $definition->getArgument(0), 'Only enabled filters are passed to the ManagerConfigurator.');
+    }
+
     /**
-     * Assertion for the DI Container, check if the given definition contains a method call with the given parameters.
+     * Asserts that the given definition contains a call to the method that uses
+     * the specified parameters.
      *
-     * @param \Symfony\Component\DependencyInjection\Definition $definition
-     * @param string                                            $methodName
-     * @param array                                             $params
+     * @param Definition $definition
+     * @param string     $methodName
+     * @param array      $params
      */
-    protected function assertDICDefinitionMethodCallOnce($definition, $methodName, array $params = null)
+    private function assertDefinitionMethodCallAny(Definition $definition, $methodName, array $params)
     {
         $calls = $definition->getMethodCalls();
         $called = false;
+        $lastError = null;
+
         foreach ($calls as $call) {
-            if ($call[0] == $methodName) {
-                if ($called) {
-                    $this->fail("Method '" . $methodName . "' is expected to be called only once, a second call was registered though.");
-                } else {
-                    $called = true;
-                    if ($params !== null) {
-                        $this->assertEquals($params, $call[1], "Expected parameters to methods '" . $methodName . "' do not match the actual parameters.");
-                    }
-                }
+            if ($call[0] !== $methodName) {
+                continue;
+            }
+
+            $called = true;
+
+            try {
+                $this->assertSame($params, $call[1], "Expected parameters to method '" . $methodName . "' did not match the actual parameters.");
+                return;
+            } catch (PHPUnit_Framework_AssertionFailedError $e) {
+                $lastError = $e;
             }
         }
-        if (!$called) {
-            $this->fail("Method '" . $methodName . "' is expected to be called once, definition does not contain a call though.");
+
+        if ( ! $called) {
+            $this->fail("Method '" . $methodName . "' is expected to be called, but it was never called.");
+        }
+
+        if ($lastError) {
+            throw $lastError;
+        }
+    }
+
+    /**
+     * Asserts that the given definition contains exactly one call to the method
+     * and that it uses the specified parameters.
+     *
+     * @param Definition $definition
+     * @param string     $methodName
+     * @param array      $params
+     */
+    private function assertDefinitionMethodCallOnce(Definition $definition, $methodName, array $params)
+    {
+        $calls = $definition->getMethodCalls();
+        $called = false;
+
+        foreach ($calls as $call) {
+            if ($call[0] !== $methodName) {
+                continue;
+            }
+
+            if ($called) {
+                $this->fail("Method '" . $methodName . "' is expected to be called only once, but it was called multiple times.");
+            }
+
+            $called = true;
+
+            $this->assertEquals($params, $call[1], "Expected parameters to method '" . $methodName . "' did not match the actual parameters.");
+        }
+
+        if ( ! $called) {
+            $this->fail("Method '" . $methodName . "' is expected to be called once, but it was never called.");
         }
     }
 

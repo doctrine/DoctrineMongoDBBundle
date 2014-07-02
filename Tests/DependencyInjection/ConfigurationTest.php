@@ -106,9 +106,25 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                     'logging'      => '%kernel.debug%',
                     'auto_mapping' => false,
                     'filters' => array(
-                        'test_filter' => array(
-                            'class' => 'TestClass',
+                        'disabled_filter' => array(
+                            'class' => 'Vendor\Filter\DisabledFilter',
+                            'enabled' => false,
+                            'parameters' => array(),
+                        ),
+                        'basic_filter' => array(
+                            'class' => 'Vendor\Filter\BasicFilter',
                             'enabled' => true,
+                            'parameters' => array(),
+                        ),
+                        'complex_filter' => array(
+                            'class' => 'Vendor\Filter\ComplexFilter',
+                            'enabled' => true,
+                            'parameters' => array(
+                                'integer' => 1,
+                                'string' => 'foo',
+                                'object' => array('key' => 'value'),
+                                'array' => array(1, 2, 3),
+                            ),
                         ),
                     ),
                     'metadata_cache_driver' => array(
