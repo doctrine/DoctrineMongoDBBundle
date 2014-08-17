@@ -375,7 +375,7 @@ Once you have your repository, you have access to all sorts of helpful methods::
     // find *all* products
     $products = $repository->findAll();
 
-    // find a group of products based on an abitrary column value
+    // find a group of products based on an arbitrary column value
     $products = $repository->findByPrice(19.99);
 
 .. note::
