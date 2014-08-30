@@ -337,6 +337,7 @@ you've configured a route to display a specific ``Product`` based on its
     public function showAction($id)
     {
         $product = $this->get('doctrine_mongodb')
+            ->getManager()
             ->getRepository('AcmeStoreBundle:Product')
             ->find($id);
 
