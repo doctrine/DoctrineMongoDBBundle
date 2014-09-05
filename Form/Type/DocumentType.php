@@ -63,6 +63,10 @@ class DocumentType extends DoctrineType
                 return $registry->getManagerForClass($options['class']);
             }
 
+            if ($manager instanceof ObjectManager) {
+                return $manager;
+            }
+
             return $registry->getManager($manager);
         };
 

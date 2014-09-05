@@ -39,6 +39,16 @@ class DocumentTypeTest extends TypeTestCase
         $this->assertSame($this->dm, $field->getConfig()->getOption('em'));
     }
 
+    public function testDocumentManagerInstancePassedAsOption()
+    {
+        $field = $this->factory->createNamed('name', DocumentType::CLASS, null, array(
+            'class' => 'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document',
+            'document_manager' => $this->dm,
+        ));
+
+        $this->assertSame($this->dm, $field->getConfig()->getOption('em'));
+    }
+
     /**
      * @expectedException \InvalidArgumentException
      */
