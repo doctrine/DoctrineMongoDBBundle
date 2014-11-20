@@ -65,6 +65,14 @@ EOT
     {
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager($input->getOption('dm'));
         $dirOrFile = $input->getOption('fixtures');
+
+        if ($input->isInteractive() && !$input->getOption('append')) {
+            $dialog = $this->getHelperSet()->get('dialog');
+            if (!$dialog->askConfirmation($output, '<question>Careful, database will be purged. Do you want to continue Y/N ?</question>', false)) {
+                return;
+            }
+        }
+
         if ($dirOrFile) {
             $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
         } else {
