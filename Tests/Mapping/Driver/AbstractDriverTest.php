@@ -15,7 +15,6 @@
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 
 abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 {
