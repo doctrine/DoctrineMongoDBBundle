@@ -43,6 +43,7 @@ class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
             ->setName('doctrine:mongodb:fixtures:load')
             ->setDescription('Load data fixtures to your database.')
             ->addOption('fixtures', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The directory or file to load data fixtures from.')
+            ->addOption('bundles', 'b', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The bundles to load data fixtures from.')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of flushing the database first.')
             ->addOption('dm', null, InputOption::VALUE_REQUIRED, 'The document manager to use for this command.')
             ->setHelp(<<<EOT
@@ -64,9 +65,21 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager($input->getOption('dm'));
+
         $dirOrFile = $input->getOption('fixtures');
+        $bundles = $input->getOption('bundles');
+        if ($bundles && $dirOrFile) {
+            throw new \InvalidArgumentException('Use only one option: --bundles or --fixtures.');
+        }
+
         if ($dirOrFile) {
             $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
+        } elseif ($bundles) {
+            $bundles  = is_array($bundles) ? $bundles : array($bundles);
+            $kernel = $this->getContainer()->get('kernel');
+            foreach ($bundles as $bundle) {
+                $paths[] = $kernel->getBundle($bundle)->getPath();
+            }
         } else {
             $paths = $this->getContainer()->getParameter('doctrine_mongodb.odm.fixtures_dirs');
             $paths = is_array($paths) ? $paths : array($paths);
