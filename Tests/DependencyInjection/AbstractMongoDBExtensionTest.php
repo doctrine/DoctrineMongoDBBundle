@@ -21,7 +21,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use PHPUnit_Framework_AssertionFailedError;
-use PHPUnit_Framework_Constraint;
 
 abstract class AbstractMongoDBExtensionTest extends TestCase
 {

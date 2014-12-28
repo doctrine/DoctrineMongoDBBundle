@@ -17,7 +17,6 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Configuration;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\Util\XmlUtils;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Yaml\Yaml;
 
 class ConfigurationTest extends \PHPUnit_Framework_TestCase
