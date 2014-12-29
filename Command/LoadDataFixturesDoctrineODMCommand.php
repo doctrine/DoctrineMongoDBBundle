@@ -75,7 +75,6 @@ EOT
         if ($dirOrFile) {
             $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
         } elseif ($bundles) {
-            $bundles  = is_array($bundles) ? $bundles : array($bundles);
             $kernel = $this->getContainer()->get('kernel');
             foreach ($bundles as $bundle) {
                 $paths[] = $kernel->getBundle($bundle)->getPath();
