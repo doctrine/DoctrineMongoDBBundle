@@ -45,6 +45,17 @@ class Playlist
         return $this->videos;
     }
 
+    public function setVideos(ArrayCollection $videos)
+    {
+        foreach ($this->getVideos() as $oldVideo) {
+            $this->removeVideo($oldVideo);
+        }
+
+        foreach ($videos as $newVideo) {
+            $this->addVideo($newVideo);
+        }
+    }
+
     public function addVideo(Video $video)
     {
         $this->videos->add($video);

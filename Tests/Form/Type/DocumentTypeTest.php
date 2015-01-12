@@ -104,6 +104,7 @@ class DocumentTypeTest extends TypeTestCase
         $form->submit([]);
         $this->dm->flush();
 
+        $this->assertCount(0, $form->getData());
         $this->assertCount(0, $playlist->getVideos());
         $this->assertCount(0, $videoOne->getPlaylists());
         $this->assertCount(0, $videoTwo->getPlaylists());
