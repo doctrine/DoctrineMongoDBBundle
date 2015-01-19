@@ -4,7 +4,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\Form\Type;
 
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\Bundle\MongoDBBundle\Form\DoctrineMongoDBExtension;
-use Symfony\Component\Form\Tests\Extension\Core\Type\TypeTestCase;
+use Symfony\Component\Form\Test\TypeTestCase;
 
 class DocumentTypeTest extends TypeTestCase
 {
