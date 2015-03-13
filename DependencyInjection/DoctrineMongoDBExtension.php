@@ -291,7 +291,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      *
      * @example
      *
-     *  doctrine.orm:
+     *  doctrine_mongodb:
      *     mappings:
      *         MyBundle1: ~
      *         MyBundle2: yml
