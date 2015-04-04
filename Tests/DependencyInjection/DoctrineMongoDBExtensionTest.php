@@ -23,8 +23,11 @@ class DoctrineMongoDBExtensionTest extends \PHPUnit_Framework_TestCase
 
     public function testBackwardCompatibilityAliases()
     {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.bundles', array());
+
         $loader = new DoctrineMongoDBExtension();
-        $loader->load(array(), $container = new ContainerBuilder());
+        $loader->load(array(), $container);
 
         $this->assertEquals('doctrine_mongodb.odm.document_manager', (string) $container->getAlias('doctrine.odm.mongodb.document_manager'));
     }
@@ -36,6 +39,7 @@ class DoctrineMongoDBExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $container = new ContainerBuilder();
         $container->setParameter('kernel.debug', false);
+        $container->setParameter('kernel.bundles', array());
         $loader = new DoctrineMongoDBExtension();
         $loader->load(array(array($option => $value)), $container);
 
@@ -123,11 +127,11 @@ class DoctrineMongoDBExtensionTest extends \PHPUnit_Framework_TestCase
     public function testAutomapping(array $documentManagers)
     {
 
-    	$loader = new DoctrineMongoDBExtension();
+        $loader = new DoctrineMongoDBExtension();
 
-    	if (!method_exists($loader, 'fixManagersAutoMappings')) {
-    		$this->markTestSkipped('Automapping feature non available.');
-    	}
+        if (!method_exists($loader, 'fixManagersAutoMappings')) {
+            $this->markTestSkipped('Automapping feature non available.');
+        }
 
         $container = $this->getContainer(array(
             'YamlBundle',
