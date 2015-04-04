@@ -122,12 +122,17 @@ class DoctrineMongoDBExtensionTest extends \PHPUnit_Framework_TestCase
      */
     public function testAutomapping(array $documentManagers)
     {
+
+    	$loader = new DoctrineMongoDBExtension();
+
+    	if (!method_exists($loader, 'fixManagersAutoMappings')) {
+    		$this->markTestSkipped('Automapping feature non available.');
+    	}
+
         $container = $this->getContainer(array(
             'YamlBundle',
             'XmlBundle'
         ));
-
-        $loader = new DoctrineMongoDBExtension();
 
         $loader->load(
             array(
