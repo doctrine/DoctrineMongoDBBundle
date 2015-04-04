@@ -62,7 +62,17 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         // load the connections
         $this->loadConnections($config['connections'], $container);
 
-        $config['document_managers'] = $this->fixManagersAutoMappings($config['document_managers'], $container->getParameter('kernel.bundles'));
+        // BC logic to handle DoctrineBridge < 2.6
+        if (!method_exists($this, 'fixManagersAutoMappings')) {
+            foreach ($config['document_managers'] as $entityManager) {
+                if ($entityManager['auto_mapping'] && count($config['document_managers']) > 1) {
+                    throw new \LogicException('You cannot enable "auto_mapping" when several document managers are defined.');
+                }
+            }
+        } else {
+            $config['document_managers'] = $this->fixManagersAutoMappings($config['document_managers'], $container->getParameter('kernel.bundles'));
+        }
+
 
         // load the document managers
         $this->loadDocumentManagers(
