@@ -42,15 +42,15 @@ class DoctrineMongoDBExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($value, $container->getParameter('doctrine_mongodb.odm.'.$parameter));
     }
 
-    private function getContainer($bundles = 'YamlBundle', $vendor = null)
+    private function getContainer($bundles = 'YamlBundle')
     {
         $bundles = (array) $bundles;
 
         $map = array();
         foreach ($bundles as $bundle) {
-            require_once __DIR__.'/Fixtures/Bundles/'.($vendor ? $vendor.'/' : '').$bundle.'/'.$bundle.'.php';
+            require_once __DIR__.'/Fixtures/Bundles/'.$bundle.'/'.$bundle.'.php';
 
-            $map[$bundle] = 'DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\\'.($vendor ? $vendor.'\\' : '').$bundle.'\\'.$bundle;
+            $map[$bundle] = 'DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\\'.$bundle.'\\'.$bundle;
         }
 
         return new ContainerBuilder(new ParameterBag(array(
