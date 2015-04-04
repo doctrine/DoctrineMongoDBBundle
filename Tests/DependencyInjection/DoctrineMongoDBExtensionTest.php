@@ -141,12 +141,8 @@ class DoctrineMongoDBExtensionTest extends \PHPUnit_Framework_TestCase
                 )
             ), $container);
 
-
-
         $configDm1 = $container->getDefinition('doctrine_mongodb.odm.dm1_configuration');
         $configDm2 = $container->getDefinition('doctrine_mongodb.odm.dm2_configuration');
-
-        print_r($configDm1->getMethodCalls());
 
         $this->assertContains(
             array(
