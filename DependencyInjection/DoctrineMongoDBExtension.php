@@ -232,8 +232,12 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             new Reference(sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $connectionName)),
         );
         $odmDmDef = new Definition('%doctrine_mongodb.odm.document_manager.class%', $odmDmArgs);
-        $odmDmDef->setFactoryClass('%doctrine_mongodb.odm.document_manager.class%');
-        $odmDmDef->setFactoryMethod('create');
+        if (method_exists($odmDmDef, 'setFactory')) {
+            $odmDmDef->setFactory(array('%doctrine_mongodb.odm.document_manager.class%', 'create'));
+        } else {
+            $odmDmDef->setFactoryClass('%doctrine_mongodb.odm.document_manager.class%');
+            $odmDmDef->setFactoryMethod('create');
+        }
         $odmDmDef->addTag('doctrine_mongodb.odm.document_manager');
 
         $container
