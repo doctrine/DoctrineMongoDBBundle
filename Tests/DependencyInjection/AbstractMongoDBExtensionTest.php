@@ -76,8 +76,12 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_document_manager');
         $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getClass());
-        $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getFactoryClass());
-        $this->assertEquals('create', $definition->getFactoryMethod());
+        if (method_exists($definition, 'getFactory')) {
+            $this->assertEquals(array('%doctrine_mongodb.odm.document_manager.class%', 'create'), $definition->getFactory());
+        } else {
+            $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getFactoryClass());
+            $this->assertEquals('create', $definition->getFactoryMethod());
+        }
         $this->assertArrayHasKey('doctrine_mongodb.odm.document_manager', $definition->getTags());
 
         $arguments = $definition->getArguments();
@@ -116,8 +120,12 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_document_manager');
         $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getClass());
-        $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getFactoryClass());
-        $this->assertEquals('create', $definition->getFactoryMethod());
+        if (method_exists($definition, 'getFactory')) {
+            $this->assertEquals(array('%doctrine_mongodb.odm.document_manager.class%', 'create'), $definition->getFactory());
+        } else {
+            $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getFactoryClass());
+            $this->assertEquals('create', $definition->getFactoryMethod());
+        }
         $this->assertArrayHasKey('doctrine_mongodb.odm.document_manager', $definition->getTags());
 
         $arguments = $definition->getArguments();
@@ -158,8 +166,12 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_document_manager');
         $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getClass());
-        $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getFactoryClass());
-        $this->assertEquals('create', $definition->getFactoryMethod());
+        if (method_exists($definition, 'getFactory')) {
+            $this->assertEquals(array('%doctrine_mongodb.odm.document_manager.class%', 'create'), $definition->getFactory());
+        } else {
+            $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getFactoryClass());
+            $this->assertEquals('create', $definition->getFactoryMethod());
+        }
         $this->assertArrayHasKey('doctrine_mongodb.odm.document_manager', $definition->getTags());
 
         $arguments = $definition->getArguments();
@@ -197,8 +209,12 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_document_manager');
         $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getClass());
-        $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getFactoryClass());
-        $this->assertEquals('create', $definition->getFactoryMethod());
+        if (method_exists($definition, 'getFactory')) {
+            $this->assertEquals(array('%doctrine_mongodb.odm.document_manager.class%', 'create'), $definition->getFactory());
+        } else {
+            $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getFactoryClass());
+            $this->assertEquals('create', $definition->getFactoryMethod());
+        }
         $this->assertArrayHasKey('doctrine_mongodb.odm.document_manager', $definition->getTags());
 
         $arguments = $definition->getArguments();
@@ -236,8 +252,12 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.dm1_document_manager');
         $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getClass());
-        $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getFactoryClass());
-        $this->assertEquals('create', $definition->getFactoryMethod());
+        if (method_exists($definition, 'getFactory')) {
+            $this->assertEquals(array('%doctrine_mongodb.odm.document_manager.class%', 'create'), $definition->getFactory());
+        } else {
+            $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getFactoryClass());
+            $this->assertEquals('create', $definition->getFactoryMethod());
+        }
         $this->assertArrayHasKey('doctrine_mongodb.odm.document_manager', $definition->getTags());
 
         $arguments = $definition->getArguments();
@@ -259,8 +279,12 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.dm2_document_manager');
         $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getClass());
-        $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getFactoryClass());
-        $this->assertEquals('create', $definition->getFactoryMethod());
+        if (method_exists($definition, 'getFactory')) {
+            $this->assertEquals(array('%doctrine_mongodb.odm.document_manager.class%', 'create'), $definition->getFactory());
+        } else {
+            $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getFactoryClass());
+            $this->assertEquals('create', $definition->getFactoryMethod());
+        }
         $this->assertArrayHasKey('doctrine_mongodb.odm.document_manager', $definition->getTags());
 
         $arguments = $definition->getArguments();
