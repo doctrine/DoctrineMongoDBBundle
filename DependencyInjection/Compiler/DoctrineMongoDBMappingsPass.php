@@ -128,7 +128,7 @@ class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
      */
     public static function createAnnotationMappingDriver(array $namespaces, array $directories, array $managerParameters, $enabledParameter = false, array $aliasMap = array())
     {
-        $driver = new Definition('Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver', array(new Reference('doctrine_mongodb.odm.metadata.annotation_reader'), $directories));
+        $driver = new Definition('Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver', array(new Reference('annotation_reader'), $directories));
 
         return new DoctrineMongoDBMappingsPass($driver, $namespaces, $managerParameters, $enabledParameter, $aliasMap);
     }
