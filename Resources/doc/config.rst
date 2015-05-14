@@ -343,12 +343,14 @@ Full Default Configuration
 
                 # Prototype
                 id:
-                    connection:           ~
-                    database:             ~
-                    logging:              true
-                    auto_mapping:         false
-                    retry_connect:        0
-                    retry_query:          0
+                    connection:                 ~
+                    database:                   ~
+                    default_repository_class:   Doctrine\ODM\MongoDB\DocumentRepository
+                    repository_factory:         ~
+                    logging:                    true
+                    auto_mapping:               false
+                    retry_connect:              0
+                    retry_query:                0
                     metadata_cache_driver:
                         type:                 ~
                         class:                ~

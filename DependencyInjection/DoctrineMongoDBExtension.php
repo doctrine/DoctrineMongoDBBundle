@@ -172,8 +172,13 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             'setDefaultDB' => $defaultDatabase,
             'setDefaultCommitOptions' => '%doctrine_mongodb.odm.default_commit_options%',
             'setRetryConnect' => $documentManager['retry_connect'],
-            'setRetryQuery' => $documentManager['retry_query']
+            'setRetryQuery' => $documentManager['retry_query'],
+            'setDefaultRepositoryClassName' => $documentManager['default_repository_class'],
         );
+
+        if ($documentManager['repository_factory']) {
+            $methods['setRepositoryFactory'] = new Reference($documentManager['repository_factory']);
+        }
 
         // logging
         $loggers = array();
