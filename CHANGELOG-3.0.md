@@ -15,6 +15,16 @@ To generate a changelog summary since the last version, run
 3.0.x-dev
 ---------
 
+3.0.0 (2015-05-22)
+------------------
+
+* [#264](https://github.com/doctrine/DoctrineMongoDBBundle/pull/264) add support for bundle namespace alias
+* [#260](https://github.com/doctrine/DoctrineMongoDBBundle/pull/260) Support filter parameters in configuration
+* [#259](https://github.com/doctrine/DoctrineMongoDBBundle/pull/259) Configuration - added "authMechanism" option
+* [#258](https://github.com/doctrine/DoctrineMongoDBBundle/pull/258) bundle autoloading moved to PSR4
+* [#249](https://github.com/doctrine/DoctrineMongoDBBundle/pull/249) Unset username and password options when null
+* [#245](https://github.com/doctrine/DoctrineMongoDBBundle/pull/245) Query logging should be done at the debug level not info
+
 3.0.0-BETA6 (2014-05-19)
 ------------------------
 
