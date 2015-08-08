@@ -102,9 +102,10 @@ abstract class DoctrineODMCommand extends ContainerAwareCommand
         $search = str_replace('\\', '/', $bundle->getPath());
         $destination = str_replace('/'.$path, '', $search, $c);
 
-        if ($c != 1) {
-            throw new \RuntimeException(sprintf('Can\'t find base path for bundle (path: "%s", destination: "%s").', $path, $destination));
-        }
+        // TODO: Find a better way to know if we found the base path for the bundle
+        // if ($c != 1) {
+        //     throw new \RuntimeException(sprintf('Can\'t find base path for bundle (path: "%s", destination: "%s").', $path, $destination));
+        // }
 
         return $destination;
     }
