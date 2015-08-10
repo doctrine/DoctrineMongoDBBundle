@@ -67,7 +67,11 @@ EOT
                     }
 
                     $output->writeln(sprintf('  > <info>OK</info> generating <comment>%s</comment>', $metadata->customRepositoryClassName));
-                    $generator->writeDocumentRepositoryClass($metadata->customRepositoryClassName, $this->findBasePathForBundle($foundBundle));
+                    $generator->writeDocumentRepositoryClass(
+                        $metadata->customRepositoryClassName,
+                        $foundBundle->getPath(),
+                        $foundBundle->getNamespace()
+                    );
                 } else {
                     $output->writeln(sprintf('  > <error>SKIP</error> no custom repository for <comment>%s</comment>', $metadata->name));
                 }
