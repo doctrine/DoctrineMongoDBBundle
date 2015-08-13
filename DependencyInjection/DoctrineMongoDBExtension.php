@@ -61,6 +61,9 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         // set some options as parameters and unset them
         $config = $this->overrideParameters($config, $container);
 
+        // set the fixtures loader
+        $container->setParameter('doctrine_mongodb.odm.fixture_loader', $config['fixture_loader']);
+
         // load the connections
         $this->loadConnections($config['connections'], $container);
 

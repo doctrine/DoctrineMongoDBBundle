@@ -28,6 +28,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $options = $processor->processConfiguration($configuration, array());
 
         $defaults = array(
+            'fixture_loader'                 => 'Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader',
             'auto_generate_hydrator_classes' => false,
             'auto_generate_proxy_classes'    => false,
             'default_database'               => 'default',
@@ -54,6 +55,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $options = $processor->processConfiguration($configuration, array($config));
 
         $expected = array(
+            'fixture_loader'                 => 'Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader',
             'auto_generate_hydrator_classes' => true,
             'auto_generate_proxy_classes'    => true,
             'default_connection'             => 'conn1',
@@ -439,5 +441,30 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $processor = new Processor();
         $configuration = new Configuration(false);
         $processor->processConfiguration($configuration, array($config));
+    }
+
+    /**
+     * @dataProvider provideExceptionConfiguration
+     */
+    public function testFixtureLoaderValidation($config)
+    {
+        $processor = new Processor();
+        $configuration = new Configuration(false);
+        $this->setExpectedException('\LogicException');
+        $processor->processConfiguration($configuration, array($config));
+    }
+
+    public function provideExceptionConfiguration()
+    {
+        $yaml = Yaml::parse(file_get_contents(__DIR__.'/Fixtures/config/yml/exception.yml'));
+        $yaml = $yaml['doctrine_mongodb'];
+
+        $xml = XmlUtils::loadFile(__DIR__.'/Fixtures/config/xml/exception.xml');
+        $xml = XmlUtils::convertDomElementToArray($xml->getElementsByTagName('config')->item(0));
+
+        return array(
+            array($yaml),
+            array($xml),
+        );
     }
 }

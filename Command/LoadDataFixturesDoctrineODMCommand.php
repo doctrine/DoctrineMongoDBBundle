@@ -97,7 +97,8 @@ EOT
             }
         }
 
-        $loader = new ContainerAwareLoader($this->getContainer());
+        $loaderClass = $this->getContainer()->getParameter('doctrine_mongodb.odm.fixture_loader');
+        $loader = new $loaderClass($this->getContainer());
         foreach ($paths as $path) {
             if (is_dir($path)) {
                 $loader->loadFromDirectory($path);
