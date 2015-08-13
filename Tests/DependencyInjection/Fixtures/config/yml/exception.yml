@@ -1,0 +1,2 @@
+doctrine_mongodb:
+    fixture_loader: stdClass
