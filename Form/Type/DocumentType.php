@@ -18,6 +18,7 @@ use Doctrine\Bundle\MongoDBBundle\Form\ChoiceList\MongoDBQueryBuilderLoader;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Bridge\Doctrine\Form\Type\DoctrineType;
 use Symfony\Component\OptionsResolver\Options;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
@@ -41,11 +42,16 @@ class DocumentType extends DoctrineType
     }
 
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
+     * @see Symfony\Bridge\Doctrine\Form\Type\DoctrineType::configureOptions()
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
-        parent::setDefaultOptions($resolver);
+        if (method_exists('Symfony\Component\Form\AbstractType', 'configureOptions') && $resolver instanceof OptionsResolver) {
+            parent::configureOptions($resolver);
+        } else {
+            parent::setDefaultOptions($resolver);
+        }
 
         $resolver->setDefaults(array(
             'document_manager' => null,
@@ -66,9 +72,20 @@ class DocumentType extends DoctrineType
             return $registry->getManager($manager);
         };
 
-        $resolver->setNormalizers(array(
-            'em' => $normalizer,
-        ));
+        if (method_exists($resolver, 'setNormalizer')) {
+            $resolver->setNormalizer('em', $normalizer);
+        } else {
+            $resolver->setNormalizers(array('em' => $normalizer));
+        }
+    }
+
+    /**
+     * @param OptionsResolverInterface $resolver
+     * @deprecated This method is deprecated. Use Doctrine\Bundle\MongoDBBundle\Form\Type::configureOptions() instead.
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    {
+        $this->configureOptions($resolver);
     }
 
     /**
