@@ -47,7 +47,11 @@ class DocumentType extends DoctrineType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        parent::configureOptions($resolver);
+        if (method_exists('Symfony\Component\Form\AbstractType', 'configureOptions') && $resolver instanceof OptionsResolver) {
+            parent::configureOptions($resolver);
+        } else {
+            parent::setDefaultOptions($resolver);
+        }
 
         $resolver->setDefaults(array(
             'document_manager' => null,
@@ -68,7 +72,11 @@ class DocumentType extends DoctrineType
             return $registry->getManager($manager);
         };
 
-        $resolver->setNormalizer('em', $normalizer);
+        if (method_exists($resolver, 'setNormalizer')) {
+            $resolver->setNormalizer('em', $normalizer);
+        } else {
+            $resolver->setNormalizers(array('em' => $normalizer));
+        }
     }
 
     /**
