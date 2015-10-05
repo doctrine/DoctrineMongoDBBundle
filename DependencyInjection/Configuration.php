@@ -203,7 +203,7 @@ class Configuration implements ConfigurationInterface
                                 ->performNoDeepMerging()
                                 ->children()
                                     ->enumNode('authMechanism')
-                                        ->values(array('MONGODB-CR', 'X509', 'PLAIN', 'GSSAPI'))
+                                        ->values(array('SCRAM-SHA-1', 'MONGODB-CR', 'X509', 'PLAIN', 'GSSAPI'))
                                     ->end()
                                     ->booleanNode('connect')->end()
                                     ->scalarNode('connectTimeoutMS')->end()
