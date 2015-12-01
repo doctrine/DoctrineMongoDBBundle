@@ -12,13 +12,15 @@
     ],
     "require": {
         "php": ">=5.3.2",
+        "psr/log": "~1.0",
         "doctrine/mongodb-odm": "~1.0.0-beta10@dev",
         "symfony/options-resolver": "~2.1",
         "symfony/doctrine-bridge": "~2.1",
         "symfony/framework-bundle": "~2.1",
         "symfony/dependency-injection": "~2.2",
         "symfony/console": "~2.1",
-        "symfony/config": "~2.2"
+        "symfony/config": "~2.2",
+        "mongofill/mongofill": "dev-master@dev"
     },
     "require-dev": {
         "doctrine/data-fixtures": "@dev",
