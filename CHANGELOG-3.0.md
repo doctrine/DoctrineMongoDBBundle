@@ -15,6 +15,11 @@ To generate a changelog summary since the last version, run
 3.0.x-dev
 ---------
 
+3.0.1 (2015-08-31)
+------------------
+
+* [42565f1](https://github.com/doctrine/DoctrineMongoDBBundle/commit/42565f1511d0cae687319e0479b9628aa963589c) fixed security vulnerability [CVE-2015-5723](http://www.cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-5723)
+
 3.0.0 (2015-05-22)
 ------------------
 
