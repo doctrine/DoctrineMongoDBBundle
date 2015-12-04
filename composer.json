@@ -19,8 +19,7 @@
         "symfony/framework-bundle": "~2.1",
         "symfony/dependency-injection": "~2.2",
         "symfony/console": "~2.1",
-        "symfony/config": "~2.2",
-        "mongofill/mongofill": "dev-master@dev"
+        "symfony/config": "~2.2"
     },
     "require-dev": {
         "doctrine/data-fixtures": "@dev",
