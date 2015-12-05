@@ -15,6 +15,6 @@ Compatibility
 The `composer.json` file in each branch indicates Symfony2 compatibility.
 Additionally, several tags are available:
 
- * `3.0.x` for Symfony 2.1 (this tracks the `master` branch)
+ * `3.0.x` for Symfony 2.1 (this tracks the `3.0` branch)
  * `2.2.x` for Symfony 2.0 (this tracks the `2.0` branch)
  * `2.1.x` and `2.0.x` for Symfony 2.0 and older Doctrine MongoDB ODM versions
