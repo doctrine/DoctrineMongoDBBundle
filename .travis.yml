@@ -5,15 +5,37 @@ php:
   - 5.4
   - 5.5
   - 5.6
+  - 7.0
+  - hhvm
 
 matrix:
+  fast_finish: true
   include:
     - php: 5.3
       env: COMPOSER_FLAGS='--prefer-lowest --prefer-stable'
     - php: 5.6
-      env: MONGO_VERSION=1.2.12
+      env:
+        - MONGO_VERSION=1.2.12
+        - SYMFONY_VERSION=2.3.*
     - php: 5.6
-      env: MONGO_VERSION=1.3.3
+      env: 
+        - MONGO_VERSION=1.3.3
+        - SYMFONY_VERSION=2.3.*
+    - php: 5.6
+      env:
+        - MONGO_VERSION=1.2.12
+        - SYMFONY_VERSION=2.7.*
+    - php: 5.6
+      env:
+        - MONGO_VERSION=1.2.12
+        - SYMFONY_VERSION=2.8.*
+    - php: 5.6
+      env:
+        - MONGO_VERSION=1.2.12
+        - SYMFONY_VERSION=3.0.*
+  allow_failures:
+    - php: 7.0
+    - php: hhvm
 
 sudo: false
 
@@ -25,8 +47,9 @@ services: mongodb
 
 before_install:
   - if [ "$MONGO_VERSION" != "" ]; then pecl -q install -f mongo-${MONGO_VERSION}; fi # Use a specific driver version when needed rather than the one shipped by Travis
+  - if [ "$SYMFONY_VERSION" != "" ]; then composer require "symfony/symfony:${SYMFONY_VERSION}" --no-update; fi;
   - echo "extension=mongo.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
 
 install:
-  - composer update $COMPOSER_FLAGS
+  - composer --prefer-dist update $COMPOSER_FLAGS
 
