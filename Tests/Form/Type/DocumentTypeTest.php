@@ -2,6 +2,7 @@
 
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Form\Type;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\Bundle\MongoDBBundle\Form\DoctrineMongoDBExtension;
 use Symfony\Component\Form\Test\TypeTestCase;
@@ -30,7 +31,7 @@ class DocumentTypeTest extends TypeTestCase
 
     public function testDocumentManagerOptionSetsEmOption()
     {
-        $field = $this->factory->createNamed('name', 'document', null, array(
+        $field = $this->factory->createNamed('name', DocumentType::CLASS, null, array(
             'class' => 'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document',
             'document_manager' => 'default',
         ));
@@ -39,11 +40,11 @@ class DocumentTypeTest extends TypeTestCase
     }
 
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function testSettingDocumentManagerAndEmOptionShouldThrowException()
     {
-        $field = $this->factory->createNamed('name', 'document', null, array(
+        $field = $this->factory->createNamed('name', DocumentType::CLASS, null, array(
             'document_manager' => 'default',
             'em' => 'default',
         ));
