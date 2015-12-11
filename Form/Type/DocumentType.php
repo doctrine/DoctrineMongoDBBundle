@@ -89,9 +89,17 @@ class DocumentType extends DoctrineType
     }
 
     /**
-     * @see Symfony\Component\Form\FormTypeInterface::getName()
+     * {@inheritdoc}
      */
     public function getName()
+    {
+        return $this->getBlockPrefix();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBlockPrefix()
     {
         return 'document';
     }

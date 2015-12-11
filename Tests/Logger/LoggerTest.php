@@ -22,7 +22,11 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->logger = $this->getMock('Symfony\Component\HttpKernel\Log\LoggerInterface');
+        if (interface_exists('Psr\Log\LoggerInterface')) {
+            $this->logger = $this->getMock('Psr\Log\LoggerInterface');
+        } else {
+            $this->logger = $this->getMock('Symfony\Component\HttpKernel\Log\LoggerInterface');
+        }
     }
 
     protected function tearDown()

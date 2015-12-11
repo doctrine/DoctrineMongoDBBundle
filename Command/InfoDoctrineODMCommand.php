@@ -51,7 +51,7 @@ EOT
             $input->getOption('dm') :
             $this->getContainer()->get('doctrine_mongodb')->getDefaultManagerName();
 
-        /* @var $documentManager Doctrine\ODM\MongoDB\DocumentManager */
+        /* @var $documentManager \Doctrine\ODM\MongoDB\DocumentManager */
         $documentManager = $this->getContainer()->get('doctrine_mongodb')->getManager($documentManagerName);
 
         $documentClassNames = $documentManager->getConfiguration()
