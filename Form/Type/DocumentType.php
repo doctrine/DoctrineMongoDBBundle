@@ -18,7 +18,7 @@ use Doctrine\Bundle\MongoDBBundle\Form\ChoiceList\MongoDBQueryBuilderLoader;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Bridge\Doctrine\Form\Type\DoctrineType;
 use Symfony\Component\OptionsResolver\Options;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Form type for a MongoDB document
@@ -41,11 +41,11 @@ class DocumentType extends DoctrineType
     }
 
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
-        parent::setDefaultOptions($resolver);
+        parent::configureOptions($resolver);
 
         $resolver->setDefaults(array(
             'document_manager' => null,
@@ -66,16 +66,6 @@ class DocumentType extends DoctrineType
             return $registry->getManager($manager);
         };
 
-        $resolver->setNormalizers(array(
-            'em' => $normalizer,
-        ));
-    }
-
-    /**
-     * @see Symfony\Component\Form\FormTypeInterface::getName()
-     */
-    public function getName()
-    {
-        return 'document';
+        $resolver->setNormalizer('em', $normalizer);
     }
 }
