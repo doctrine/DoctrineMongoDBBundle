@@ -71,5 +71,7 @@ class DocumentType extends DoctrineType
         };
 
         $resolver->setNormalizer('em', $normalizer);
+
+        $resolver->setAllowedTypes('document_manager', array('null', 'string', 'Doctrine\ODM\MongoDB\DocumentManager'));
     }
 }
