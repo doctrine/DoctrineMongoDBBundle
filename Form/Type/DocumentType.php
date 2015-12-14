@@ -63,9 +63,15 @@ class DocumentType extends DoctrineType
                 return $registry->getManagerForClass($options['class']);
             }
 
+            if ($manager instanceof ObjectManager) {
+                return $manager;
+            }
+
             return $registry->getManager($manager);
         };
 
         $resolver->setNormalizer('em', $normalizer);
+
+        $resolver->setAllowedTypes('document_manager', array('null', 'string', 'Doctrine\ODM\MongoDB\DocumentManager'));
     }
 }
