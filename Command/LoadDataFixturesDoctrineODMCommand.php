@@ -20,6 +20,7 @@ use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 /**
  * Load data fixtures from bundles.
@@ -65,6 +66,16 @@ EOT
     {
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager($input->getOption('dm'));
         $dirOrFile = $input->getOption('fixtures');
+
+        if ($input->isInteractive() && !$input->getOption('append')) {
+            $helper = $this->getHelper('question');
+            $question = new ConfirmationQuestion('Careful, database will be purged. Do you want to continue (y/N) ?', false);
+
+            if (! $helper->ask($input, $output, $question)) {
+                return;
+            }
+        }
+
         if ($dirOrFile) {
             $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
         } else {
