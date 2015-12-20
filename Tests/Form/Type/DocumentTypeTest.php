@@ -7,6 +7,7 @@ use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Category;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\Bundle\MongoDBBundle\Form\DoctrineMongoDBExtension;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Test\TypeTestCase;
 
 class DocumentTypeTest extends TypeTestCase
@@ -90,7 +91,7 @@ class DocumentTypeTest extends TypeTestCase
 
         $this->dm->flush();
 
-        $form = $this->factory->create('form', $document)
+        $form = $this->factory->create(FormType::CLASS, $document)
             ->add(
                 'categories', DocumentType::CLASS, array(
                     'class' => 'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Category',
