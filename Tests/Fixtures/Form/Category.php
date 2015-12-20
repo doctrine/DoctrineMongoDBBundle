@@ -6,9 +6,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /** @ODM\Document */
-class Document
+class Category
 {
-    /** @ODM\Id(strategy="none") */
+    /** @ODM\Id */
     protected $id;
 
     /** @ODM\String */
@@ -16,16 +16,16 @@ class Document
 
     /**
      * @ODM\ReferenceMany(
-     *     targetDocument="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Category",
-     *     inversedBy="documents"
+     *     targetDocument="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document",
+     *     mappedBy="categories"
      * )
      */
-    public $categories;
+    public $documents;
 
-    public function __construct($id, $name) {
-        $this->id = $id;
+    public function __construct($name)
+    {
         $this->name = $name;
-        $this->categories = new ArrayCollection();
+        $this->documents = new ArrayCollection();
     }
 
     /**

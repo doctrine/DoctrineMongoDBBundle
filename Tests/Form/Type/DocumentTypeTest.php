@@ -3,6 +3,8 @@
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Form\Type;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Category;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\Bundle\MongoDBBundle\Form\DoctrineMongoDBExtension;
 use Symfony\Component\Form\Test\TypeTestCase;
@@ -28,6 +30,21 @@ class DocumentTypeTest extends TypeTestCase
 
         parent::setUp();
     }
+
+    protected function tearDown()
+    {
+        $documentClasses = array(
+            'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document',
+            'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Category',
+        );
+
+        foreach ($documentClasses as $class) {
+            $this->dm->getDocumentCollection($class)->drop();
+        }
+
+        parent::tearDown();
+    }
+
 
     public function testDocumentManagerOptionSetsEmOption()
     {
@@ -58,6 +75,38 @@ class DocumentTypeTest extends TypeTestCase
             'document_manager' => 'default',
             'em' => 'default',
         ));
+    }
+
+    public function testManyToManyReferences()
+    {
+        $categoryOne = new Category('one');
+        $this->dm->persist($categoryOne);
+        $categoryTwo = new Category('two');
+        $this->dm->persist($categoryTwo);
+
+        $document = new Document(new \MongoId(), 'document');
+        $document->categories[] = $categoryOne;
+        $this->dm->persist($document);
+
+        $this->dm->flush();
+
+        $form = $this->factory->create('form', $document)
+            ->add(
+                'categories', DocumentType::CLASS, array(
+                    'class' => 'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Category',
+                    'multiple' => true,
+                    'expanded' => true,
+                    'document_manager' => 'default'
+                )
+            );
+
+        $view = $form->createView();
+        $categoryView = $view['categories'];
+        $this->assertInstanceOf('Symfony\Component\Form\FormView', $categoryView);
+
+        $this->assertCount(2, $categoryView->children);
+        $this->assertTrue($categoryView->children[0]->vars['checked']);
+        $this->assertFalse($categoryView->children[1]->vars['checked']);
     }
 
     protected function createRegistryMock($name, $dm)

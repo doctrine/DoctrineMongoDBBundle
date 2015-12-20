@@ -110,7 +110,7 @@ class PrettyDataCollector extends StandardDataCollector
                     $query .= ')';
                 } elseif (isset($log['skip'])) {
                     $query .= '.skip('.$log['skipNum'].')';
-                } elseif (isset($log['limit'])) {
+                } elseif (isset($log['limit']) && isset($log['limitNum'])) {
                     $query .= '.limit('.$log['limitNum'].')';
                 } elseif (isset($log['createCollection'])) {
                     $query .= '.createCollection()';
