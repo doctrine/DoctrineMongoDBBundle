@@ -412,4 +412,26 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('username' => 'foo'), $options['connections']['conn2']['options']);
         $this->assertEquals(array(), $options['connections']['conn3']['options']);
     }
+
+    /**
+     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
+     * @expectedExceptionMessage The replicaSet option must be a string
+     */
+    public function testInvalidReplicaSetValue()
+    {
+        $config = array(
+            'connections' => array(
+                'conn1' => array(
+                    'server'  => 'mongodb://localhost',
+                    'options' => array(
+                        'replicaSet' => true
+                    )
+                )
+            )
+        );
+
+        $processor = new Processor();
+        $configuration = new Configuration(false);
+        $processor->processConfiguration($configuration, array($config));
+    }
 }
