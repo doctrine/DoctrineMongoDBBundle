@@ -15,6 +15,13 @@ To generate a changelog summary since the last version, run
 3.0.x-dev
 ---------
 
+3.0.2 (2015-12-26)
+------------------
+
+* [#286](https://github.com/doctrine/DoctrineMongoDBBundle/pull/286) fixed duplicate calls to "limit" in queries displayed in the profiler
+* [#289](https://github.com/doctrine/DoctrineMongoDBBundle/pull/289) fixed an issue where the annotation mapping driver was not correctly initialized
+* [#330](https://github.com/doctrine/DoctrineMongoDBBundle/pull/330) adds validation to ensure the replicaSet parameter is a string
+
 3.0.1 (2015-08-31)
 ------------------
 
