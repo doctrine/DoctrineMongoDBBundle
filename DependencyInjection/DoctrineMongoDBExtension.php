@@ -62,6 +62,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         // load the connections
         $this->loadConnections($config['connections'], $container);
 
+        $config['document_managers'] = $this->fixManagersAutoMappings($config['document_managers'], $container->getParameter('kernel.bundles'));
+
         // load the document managers
         $this->loadDocumentManagers(
             $config['document_managers'],
