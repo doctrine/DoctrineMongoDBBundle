@@ -20,6 +20,7 @@ use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
+use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
@@ -39,10 +40,11 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     {
         // Load DoctrineMongoDBBundle/Resources/config/mongodb.xml
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('mongodb.xml');
 
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
+
+        $loader->load('mongodb.xml');
 
         if (empty($config['default_connection'])) {
             $keys = array_keys($config['connections']);

@@ -20,14 +20,32 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
 class DoctrineMongoDBExtensionTest extends \PHPUnit_Framework_TestCase
 {
+    public static function buildConfiguration(array $settings = array())
+    {
+        return array(array_merge(
+            array(
+                'connections' => array('dummy' => array()),
+                'document_managers' => array('dummy' => array()),
+            ),
+            $settings
+        ));
+    }
+
+    public function buildMinimalContainer()
+    {
+        $container = new ContainerBuilder(new ParameterBag(array(
+            'kernel.root_dir'    => __DIR__,
+            'kernel.environment' => 'test',
+            'kernel.debug'       => 'true',
+            'kernel.bundles'     => array(),
+        )));
+        return $container;
+    }
 
     public function testBackwardCompatibilityAliases()
     {
-        $container = new ContainerBuilder();
-        $container->setParameter('kernel.bundles', array());
-
         $loader = new DoctrineMongoDBExtension();
-        $loader->load(array(), $container);
+        $loader->load(self::buildConfiguration(), $container = $this->buildMinimalContainer());
 
         $this->assertEquals('doctrine_mongodb.odm.document_manager', (string) $container->getAlias('doctrine.odm.mongodb.document_manager'));
     }
@@ -37,11 +55,11 @@ class DoctrineMongoDBExtensionTest extends \PHPUnit_Framework_TestCase
      */
     public function testParameterOverride($option, $parameter, $value)
     {
-        $container = new ContainerBuilder();
+        $container = $this->buildMinimalContainer();
         $container->setParameter('kernel.debug', false);
         $container->setParameter('kernel.bundles', array());
         $loader = new DoctrineMongoDBExtension();
-        $loader->load(array(array($option => $value)), $container);
+        $loader->load(self::buildConfiguration(array($option => $value)), $container);
 
         $this->assertEquals($value, $container->getParameter('doctrine_mongodb.odm.'.$parameter));
     }
