@@ -11,7 +11,7 @@
         {"name": "Jonathan H. Wage", "email": "jonwage@gmail.com"}
     ],
     "require": {
-        "php": "^5.5",
+        "php": "^5.5 || ^7.0",
         "doctrine/mongodb-odm": "^1.0",
         "psr/log": "^1.0",
         "symfony/options-resolver": "^2.8 || ^3.0",
