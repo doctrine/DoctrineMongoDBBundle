@@ -14,6 +14,8 @@
 
 namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 
+use Doctrine\Common\Proxy\AbstractProxyFactory;
+use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -43,10 +45,34 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('proxy_namespace')->defaultValue('MongoDBODMProxies')->end()
                 ->scalarNode('proxy_dir')->defaultValue('%kernel.cache_dir%/doctrine/odm/mongodb/Proxies')->end()
-                ->scalarNode('auto_generate_proxy_classes')->defaultValue(false)->end()
+                ->scalarNode('auto_generate_proxy_classes')
+                    ->defaultValue(AbstractProxyFactory::AUTOGENERATE_NEVER)
+                    ->beforeNormalization()
+                    ->always(function($v) {
+                        if ($v === false) {
+                            return AbstractProxyFactory::AUTOGENERATE_NEVER;
+                        } elseif ($v === true) {
+                            return AbstractProxyFactory::AUTOGENERATE_ALWAYS;
+                        }
+                        return $v;
+                    })
+                    ->end()
+                ->end()
                 ->scalarNode('hydrator_namespace')->defaultValue('Hydrators')->end()
                 ->scalarNode('hydrator_dir')->defaultValue('%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators')->end()
-                ->scalarNode('auto_generate_hydrator_classes')->defaultValue(false)->end()
+                ->scalarNode('auto_generate_hydrator_classes')
+                    ->defaultValue(ODMConfiguration::AUTOGENERATE_NEVER)
+                    ->beforeNormalization()
+                    ->always(function($v) {
+                        if ($v === false) {
+                            return ODMConfiguration::AUTOGENERATE_NEVER;
+                        } elseif ($v === true) {
+                            return ODMConfiguration::AUTOGENERATE_ALWAYS;
+                        }
+                        return $v;
+                    })
+                    ->end()
+                ->end()
                 ->scalarNode('fixture_loader')
                     ->defaultValue('Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader')
                     ->beforeNormalization()

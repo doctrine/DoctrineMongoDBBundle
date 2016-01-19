@@ -16,6 +16,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\CacheWarmer;
 
 use Doctrine\Bundle\MongoDBBundle\CacheWarmer\ProxyCacheWarmer;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use Doctrine\Common\Proxy\AbstractProxyFactory;
 
 class ProxyCacheWarmerTest extends \Doctrine\Bundle\MongoDBBundle\Tests\TestCase
 {
@@ -45,7 +46,7 @@ class ProxyCacheWarmerTest extends \Doctrine\Bundle\MongoDBBundle\Tests\TestCase
         $container->expects($this->at(1))
                   ->method('getParameter')
                   ->with($this->equalTo('doctrine_mongodb.odm.auto_generate_proxy_classes'))
-                  ->will($this->returnValue(false));
+                  ->will($this->returnValue(AbstractProxyFactory::AUTOGENERATE_NEVER));
         $container->expects($this->at(2))
                   ->method('get')
                   ->with($this->equalTo('doctrine_mongodb'))
@@ -80,7 +81,7 @@ class ProxyCacheWarmerTest extends \Doctrine\Bundle\MongoDBBundle\Tests\TestCase
         $container->expects($this->at(1))
                   ->method('getParameter')
                   ->with($this->equalTo('doctrine_mongodb.odm.auto_generate_proxy_classes'))
-                  ->will($this->returnValue(true));
+                  ->will($this->returnValue(AbstractProxyFactory::AUTOGENERATE_EVAL));
         $container->expects($this->at(2))
                   ->method('getParameter')
                   ->with($this->equalTo('assertion'))

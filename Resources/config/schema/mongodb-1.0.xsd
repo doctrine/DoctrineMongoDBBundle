@@ -14,8 +14,8 @@
       <xsd:element name="document-manager" type="document-manager" minOccurs="0" maxOccurs="unbounded" />
       <xsd:element name="resolve-target-document" type="resolve_target_document" minOccurs="0" maxOccurs="unbounded" />
     </xsd:sequence>
-    <xsd:attribute name="auto-generate-hydrator-classes" type="xsd:boolean" />
-    <xsd:attribute name="auto-generate-proxy-classes" type="xsd:boolean" />
+    <xsd:attribute name="auto-generate-hydrator-classes" type="xsd:integer" />
+    <xsd:attribute name="auto-generate-proxy-classes" type="xsd:integer" />
     <xsd:attribute name="default-connection" type="xsd:string" />
     <xsd:attribute name="default-database" type="xsd:string" />
     <xsd:attribute name="default-document-manager" type="xsd:string" />
