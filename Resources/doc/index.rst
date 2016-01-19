@@ -8,7 +8,7 @@ DoctrineMongoDBBundle
    form
 
 The `MongoDB`_ Object Document Mapper (ODM) is much like the Doctrine2 ORM
-in its philosophy and how it works. In other words, like the :doc:`Doctrine2 ORM</book/doctrine>`,
+in its philosophy and how it works. In other words, like the `Doctrine2 ORM`_,
 with the Doctrine ODM, you deal only with plain PHP objects, which are then
 persisted transparently to and from MongoDB.
 
@@ -21,7 +21,7 @@ making it easy to configure and use.
 
 .. note::
 
-    This chapter will feel a lot like the :doc:`Doctrine2 ORM chapter</book/doctrine>`,
+    This chapter will feel a lot like the `Doctrine2 ORM chapter`_,
     which talks about how the Doctrine ORM can be used to persist data to
     relational databases (e.g. MySQL). This is on purpose - whether you persist
     to a relational database via the ORM or MongoDB via the ODM, the philosophies
@@ -322,7 +322,7 @@ they already exist in MongoDB.
 
     Doctrine provides a library that allows you to programmatically load testing
     data into your project (i.e. "fixture data"). For information, see
-    :doc:`/bundles/DoctrineFixturesBundle/index`.
+    `DoctrineFixturesBundle`_.
 
 Fetching Objects from MongoDB
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -570,7 +570,7 @@ These include thing such as *Sluggable*, *Timestampable*, *Loggable*, *Translata
 and *Tree*.
 
 For more information on how to find and use these extensions, see the cookbook
-article about :doc:`using common Doctrine extensions</cookbook/doctrine/common_extensions>`.
+article about `using common Doctrine extensions`_.
 
 .. _cookbook-mongodb-field-types:
 
@@ -619,7 +619,7 @@ For example, to get details about the ``doctrine:mongodb:query`` task, run:
 
    To be able to load data fixtures into MongoDB, you will need to have the
    ``DoctrineFixturesBundle`` bundle installed. To learn how to do it, read
-   the ":doc:`/bundles/DoctrineFixturesBundle/index`" entry of the
+   the "`DoctrineFixturesBundle`_" entry of the
    documentation.
 
 .. index::
@@ -630,7 +630,7 @@ Configuration
 -------------
 
 For detailed information on configuration options available when using the
-Doctrine ODM, see the :doc:`MongoDB Reference</bundles/DoctrineMongoDBBundle/config>` section.
+Doctrine ODM, see the :doc:`MongoDB Reference</config>` section.
 
 Registering Event Listeners and Subscribers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -661,10 +661,9 @@ and then :ref:`tagging<book-service-container-tags>` it with a specific tag.
 
     The ``priority`` attribute, which defaults to ``0`` if omitted, may be used
     to control the order that listeners are registered. Much like Symfony2's
-    :doc:`event dispatcher</components/event_dispatcher/introduction>`, greater
-    numbers will result in the listener executing first and listeners with the
-    same priority will be executed in the order that they were registered with
-    the event manager.
+    `event dispatcher`_, greater numbers will result in the listener executing
+    first and listeners with the same priority will be executed in the order that
+    they were registered with the event manager.
 
     Lastly, the ``lazy`` attribute, which defaults to ``false`` if omitted, may
     be used to request that the listener be lazily loaded by the event manager
@@ -715,7 +714,7 @@ SecurityBundle integration
 --------------------------
 
 A user provider is available for your MongoDB projects, working exactly the
-same than the `entity` provider described in :doc:`the cookbook</cookbook/security/entity_provider>`
+same than the `entity` provider described in `the cookbook`_
 
 .. configuration-block::
 
@@ -787,17 +786,23 @@ lifecycle.
 Learn more from the Cookbook
 ----------------------------
 
-* :doc:`/bundles/DoctrineMongoDBBundle/form`
+* :doc:`/form`
 
 .. _`MongoDB`:          http://www.mongodb.org/
+.. _`Doctrine2 ORM`: http://symfony.com/doc/current/book/doctrine.html
 .. _`documentation`:    http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/
+.. _`Doctrine2 ORM chapter`: http://symfony.com/doc/current/book/doctrine.html
+.. _`DoctrineFixturesBundle`: http://symfony.com/doc/master/bundles/DoctrineFixturesBundle/index.html
 .. _`schema documentation`: http://getcomposer.org/doc/04-schema.md#minimum-stability
 .. _`Quick Start`:      http://www.mongodb.org/display/DOCS/Quickstart
 .. _`Basic Mapping Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html
 .. _`MongoDB type`: http://us.php.net/manual/en/mongo.types.php
+.. `using common Doctrine extensions`: http://symfony.com/doc/current/cookbook/doctrine/common_extensions.html
 .. _`Mapping Types Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html#doctrine-mapping-types
 .. _`Query Builder`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html
 .. _`Conditional Operators`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html#conditional-operators
 .. _`Event Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/events.html
+.. _`event dispatcher`: http://symfony.com/doc/current/components/event_dispatcher/introduction.html
 .. _`PHP Documentation`: http://www.php.net/manual/en/mongo.tutorial.php
+.. `the cookbook`: http://symfony.com/doc/current/cookbook/security/entity_provider.html
 .. _`UniqueEntity`: http://symfony.com/doc/current/reference/constraints/UniqueEntity.html
