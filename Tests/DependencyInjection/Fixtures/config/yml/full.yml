@@ -1,4 +1,5 @@
 doctrine_mongodb:
+    fixture_loader: Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader
     auto_generate_proxy_classes: true
     auto_generate_hydrator_classes: true
     default_connection: conn1
