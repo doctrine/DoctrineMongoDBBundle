@@ -76,8 +76,7 @@ on the database, so we've added this validation at the top of the class.
 .. note::
 
     If you want to integrate this User within the security system,you need
-    to implement the :ref:`UserInterface<book-security-user-entity>` of the
-    security component .
+    to implement the `UserInterface`_ of the security component.
 
 Create a Form for the Model
 ---------------------------
@@ -123,7 +122,7 @@ password). The ``data_class`` option tells the form the name of data class
 
 .. tip::
 
-    To explore more things about form component, read this documentation :doc:`file</book/forms>`.
+    To explore more things about form component, read this documentation `file`_.
 
 Embedding the User form into a Registration Form
 ------------------------------------------------
@@ -268,3 +267,6 @@ the validation and saves the data into MongoDB::
 
 That's it! Your form now validates, and allows you to save the ``User``
 object to MongoDB.
+
+.. _`UserInterface`: http://symfony.com/doc/current/book/security.html#book-security-user-entity
+.. _`file`: http://symfony.com/doc/current/book/forms.html

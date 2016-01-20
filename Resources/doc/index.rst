@@ -378,7 +378,7 @@ Once you have your repository, you have access to all sorts of helpful methods::
 .. note::
 
     Of course, you can also issue complex queries, which you'll learn more
-    about in the :ref:`book-doctrine-queries` section.
+    about in the `Querying for Objects`_ section.
 
 You can also take advantage of the useful ``findBy`` and ``findOneBy`` methods
 to easily fetch objects based on multiple conditions::
@@ -619,8 +619,7 @@ For example, to get details about the ``doctrine:mongodb:query`` task, run:
 
    To be able to load data fixtures into MongoDB, you will need to have the
    ``DoctrineFixturesBundle`` bundle installed. To learn how to do it, read
-   the "`DoctrineFixturesBundle`_" entry of the
-   documentation.
+   the "`DoctrineFixturesBundle`_" entry of the documentation.
 
 .. index::
    single: Configuration; Doctrine MongoDB ODM
@@ -650,8 +649,8 @@ see Doctrine's `Event Documentation`_.
     document managers tied to that connection. Listeners and subscribers may be
     registered with all event managers or just one (using the connection name).
 
-In Symfony, you can register a listener or subscriber by creating a :term:`service`
-and then :ref:`tagging<book-service-container-tags>` it with a specific tag.
+In Symfony, you can register a listener or subscriber by creating a service
+and then `tagging`_ it with a specific tag.
 
 *   **event listener**: Use the ``doctrine_mongodb.odm.event_listener`` tag to
     register a listener. The ``event`` attribute is required and should denote
@@ -714,7 +713,7 @@ SecurityBundle integration
 --------------------------
 
 A user provider is available for your MongoDB projects, working exactly the
-same than the `entity` provider described in `the cookbook`_
+same as the `entity` provider described in `the cookbook`_:
 
 .. configuration-block::
 
@@ -797,12 +796,14 @@ Learn more from the Cookbook
 .. _`Quick Start`:      http://www.mongodb.org/display/DOCS/Quickstart
 .. _`Basic Mapping Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html
 .. _`MongoDB type`: http://us.php.net/manual/en/mongo.types.php
-.. `using common Doctrine extensions`: http://symfony.com/doc/current/cookbook/doctrine/common_extensions.html
+.. _`using common Doctrine extensions`: http://symfony.com/doc/current/cookbook/doctrine/common_extensions.html
 .. _`Mapping Types Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html#doctrine-mapping-types
+.. _`Querying for Objects`: http://symfony.com/doc/current/book/doctrine.html#book-doctrine-queries
 .. _`Query Builder`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html
 .. _`Conditional Operators`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html#conditional-operators
 .. _`Event Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/events.html
+.. _`tagging`: http://symfony.com/doc/current/book/service_container.html#book-service-container-tags
 .. _`event dispatcher`: http://symfony.com/doc/current/components/event_dispatcher/introduction.html
 .. _`PHP Documentation`: http://www.php.net/manual/en/mongo.tutorial.php
-.. `the cookbook`: http://symfony.com/doc/current/cookbook/security/entity_provider.html
+.. _`the cookbook`: http://symfony.com/doc/current/cookbook/security/entity_provider.html
 .. _`UniqueEntity`: http://symfony.com/doc/current/reference/constraints/UniqueEntity.html
