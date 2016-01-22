@@ -14,8 +14,15 @@
 
 namespace Doctrine\Bundle\MongoDBBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\Common\Persistence\Mapping\MappingException;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormTypeGuesserInterface;
 use Symfony\Component\Form\Guess\Guess;
 use Symfony\Component\Form\Guess\TypeGuess;
@@ -43,7 +50,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
     public function guessType($class, $property)
     {
         if (!$ret = $this->getMetadata($class)) {
-            return new TypeGuess('text', array(), Guess::LOW_CONFIDENCE);
+            return new TypeGuess(TextType::class, array(), Guess::LOW_CONFIDENCE);
         }
 
         list($metadata, $name) = $ret;
@@ -53,7 +60,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
             $mapping = $metadata->getFieldMapping($property);
 
             return new TypeGuess(
-                'document',
+                DocumentType::class,
                 array(
                     'class' => $mapping['targetDocument'],
                     'multiple' => $multiple,
@@ -68,38 +75,38 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
         {
             case 'collection':
                 return new TypeGuess(
-                    'Collection',
+                    CollectionType::class,
                     array(),
                     Guess::MEDIUM_CONFIDENCE
                 );
             case 'boolean':
                 return new TypeGuess(
-                    'checkbox',
+                    CheckboxType::class,
                     array(),
                     Guess::HIGH_CONFIDENCE
                 );
             case 'date':
             case 'timestamp':
                 return new TypeGuess(
-                    'datetime',
+                    DateTimeType::class,
                     array(),
                    Guess::HIGH_CONFIDENCE
                 );
             case 'float':
                 return new TypeGuess(
-                    'number',
+                    NumberType::class,
                     array(),
                     Guess::MEDIUM_CONFIDENCE
                 );
             case 'int':
                 return new TypeGuess(
-                    'integer',
+                    IntegerType::class,
                     array(),
                     Guess::MEDIUM_CONFIDENCE
                 );
             case 'string':
                 return new TypeGuess(
-                    'text',
+                    TextType::class,
                     array(),
                     Guess::MEDIUM_CONFIDENCE
                 );
