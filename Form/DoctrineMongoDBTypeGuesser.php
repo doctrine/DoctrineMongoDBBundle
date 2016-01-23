@@ -90,7 +90,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
                 return new TypeGuess(
                     DateTimeType::class,
                     array(),
-                   Guess::HIGH_CONFIDENCE
+                    Guess::HIGH_CONFIDENCE
                 );
             case 'float':
                 return new TypeGuess(
@@ -191,3 +191,4 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
         }
     }
 }
+
