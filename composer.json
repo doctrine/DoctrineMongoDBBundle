@@ -23,7 +23,8 @@
     "require-dev": {
         "doctrine/data-fixtures": "@dev",
         "symfony/form": "~2.3",
-        "symfony/yaml": "~2.1"
+        "symfony/yaml": "~2.1",
+        "phpunit/phpunit": "^4.8 || ^5.0"
     },
     "suggest": {
         "doctrine/data-fixtures": "Load data fixtures"
