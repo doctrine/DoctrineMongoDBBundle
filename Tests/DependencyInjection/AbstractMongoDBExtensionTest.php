@@ -386,7 +386,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $container->getCompilerPassConfig()->setRemovingPasses(array());
         $container->compile();
 
-        $this->assertTrue($container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes'));
+        $this->assertTrue((bool) $container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes'));
     }
 
     public function testResolveTargetDocument()

@@ -16,6 +16,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\CacheWarmer;
 
 use Doctrine\Bundle\MongoDBBundle\CacheWarmer\HydratorCacheWarmer;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use Doctrine\ODM\MongoDB\Configuration;
 
 class HydratorCacheWarmerTest extends \Doctrine\Bundle\MongoDBBundle\Tests\TestCase
 {
@@ -45,7 +46,7 @@ class HydratorCacheWarmerTest extends \Doctrine\Bundle\MongoDBBundle\Tests\TestC
         $container->expects($this->at(1))
                   ->method('getParameter')
                   ->with($this->equalTo('doctrine_mongodb.odm.auto_generate_hydrator_classes'))
-                  ->will($this->returnValue(false));
+                  ->will($this->returnValue(Configuration::AUTOGENERATE_NEVER));
         $container->expects($this->at(2))
                   ->method('get')
                   ->with($this->equalTo('doctrine_mongodb'))
@@ -80,7 +81,7 @@ class HydratorCacheWarmerTest extends \Doctrine\Bundle\MongoDBBundle\Tests\TestC
         $container->expects($this->at(1))
                   ->method('getParameter')
                   ->with($this->equalTo('doctrine_mongodb.odm.auto_generate_hydrator_classes'))
-                  ->will($this->returnValue(true));
+                  ->will($this->returnValue(Configuration::AUTOGENERATE_FILE_NOT_EXISTS));
         $container->expects($this->at(2))
                   ->method('getParameter')
                   ->with($this->equalTo('assertion'))
