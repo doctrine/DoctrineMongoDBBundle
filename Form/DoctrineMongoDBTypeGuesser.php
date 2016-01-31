@@ -27,6 +27,7 @@ use Symfony\Component\Form\FormTypeGuesserInterface;
 use Symfony\Component\Form\Guess\Guess;
 use Symfony\Component\Form\Guess\TypeGuess;
 use Symfony\Component\Form\Guess\ValueGuess;
+use Symfony\Component\HttpKernel\Kernel;
 
 /**
  * Tries to guess form types according to ODM mappings
@@ -39,9 +40,12 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
 
     private $cache = array();
 
+    private $typeFQCN;
+
     public function __construct(ManagerRegistry $registry)
     {
         $this->registry = $registry;
+        $this->typeFQCN = method_exists('\Symfony\Component\Form\AbstractType', 'getBlockPrefix');
     }
 
     /**
@@ -50,7 +54,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
     public function guessType($class, $property)
     {
         if (!$ret = $this->getMetadata($class)) {
-            return new TypeGuess(TextType::class, array(), Guess::LOW_CONFIDENCE);
+            return new TypeGuess($this->typeFQCN ? TextType::class : 'text', array(), Guess::LOW_CONFIDENCE);
         }
 
         list($metadata, $name) = $ret;
@@ -60,7 +64,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
             $mapping = $metadata->getFieldMapping($property);
 
             return new TypeGuess(
-                DocumentType::class,
+                $this->typeFQCN ? DocumentType::class : 'document',
                 array(
                     'class' => $mapping['targetDocument'],
                     'multiple' => $multiple,
@@ -75,38 +79,38 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
         {
             case 'collection':
                 return new TypeGuess(
-                    CollectionType::class,
+                    $this->typeFQCN ? CollectionType::class : 'collection',
                     array(),
                     Guess::MEDIUM_CONFIDENCE
                 );
             case 'boolean':
                 return new TypeGuess(
-                    CheckboxType::class,
+                    $this->typeFQCN ? CheckboxType::class : 'checkbox',
                     array(),
                     Guess::HIGH_CONFIDENCE
                 );
             case 'date':
             case 'timestamp':
                 return new TypeGuess(
-                    DateTimeType::class,
+                    $this->typeFQCN ? DateTimeType::class : 'datetime',
                     array(),
                     Guess::HIGH_CONFIDENCE
                 );
             case 'float':
                 return new TypeGuess(
-                    NumberType::class,
+                    $this->typeFQCN ? NumberType::class : 'number',
                     array(),
                     Guess::MEDIUM_CONFIDENCE
                 );
             case 'int':
                 return new TypeGuess(
-                    IntegerType::class,
+                    $this->typeFQCN ? IntegerType::class : 'integer',
                     array(),
                     Guess::MEDIUM_CONFIDENCE
                 );
             case 'string':
                 return new TypeGuess(
-                    TextType::class,
+                    $this->typeFQCN ? TextType::class : 'text',
                     array(),
                     Guess::MEDIUM_CONFIDENCE
                 );

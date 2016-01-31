@@ -5,6 +5,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\Form\Type;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\Bundle\MongoDBBundle\Form\DoctrineMongoDBExtension;
 use Symfony\Component\Form\Test\TypeTestCase;
+use Symfony\Component\HttpKernel\Kernel;
 
 /**
  * @author Vladimir Chub <v@chub.com.ua>
@@ -21,8 +22,12 @@ class TypeGuesserTest extends TypeTestCase
      */
     private $dmRegistry;
 
+    private $typeFQCN;
+
     public function setUp()
     {
+        $this->typeFQCN = method_exists('\Symfony\Component\Form\AbstractType', 'getBlockPrefix');
+
         $this->dm = TestCase::createTestDocumentManager(array(
             __DIR__ . '/../../Fixtures/Form/Guesser',
         ));
@@ -49,7 +54,7 @@ class TypeGuesserTest extends TypeTestCase
 
     public function testTypesShouldBeGuessedCorrectly()
     {
-        $form = $this->factory->create(GuesserTestType::class, null, ['dm' => $this->dm]);
+        $form = $this->factory->create($this->typeFQCN ? GuesserTestType::class : new GuesserTestType(), null, ['dm' => $this->dm]);
         $this->assertType('text', $form->get('name'));
         $this->assertType('document', $form->get('categories'));
         $this->assertType('datetime', $form->get('date'));
@@ -62,7 +67,7 @@ class TypeGuesserTest extends TypeTestCase
 
     protected function assertType($type, $form)
     {
-        $this->assertEquals($type, $form->getConfig()->getType()->getBlockPrefix());
+        $this->assertEquals($type, $this->typeFQCN ? $form->getConfig()->getType()->getBlockPrefix() : $form->getConfig()->getType()->getName());
     }
 
     protected function createRegistryMock($name, $dm)

@@ -74,4 +74,16 @@ class DocumentType extends DoctrineType
 
         $resolver->setAllowedTypes('document_manager', array('null', 'string', 'Doctrine\ODM\MongoDB\DocumentManager'));
     }
+
+    /**
+     * @inheritdoc
+     *
+     * @internal Symfony 2.7 compatibility
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return 'document';
+    }
 }

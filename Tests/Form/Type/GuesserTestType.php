@@ -33,4 +33,9 @@ class GuesserTestType extends AbstractType
             'data_class' => Guesser::class
         ])->setRequired('dm');
     }
+
+    public function getName()
+    {
+        return 'guesser_test';
+    }
 }

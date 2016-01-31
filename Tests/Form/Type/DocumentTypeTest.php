@@ -9,6 +9,7 @@ use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\Bundle\MongoDBBundle\Form\DoctrineMongoDBExtension;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Test\TypeTestCase;
+use Symfony\Component\HttpKernel\Kernel;
 
 class DocumentTypeTest extends TypeTestCase
 {
@@ -22,8 +23,12 @@ class DocumentTypeTest extends TypeTestCase
      */
     private $dmRegistry;
 
+    private $typeFQCN;
+
     public function setUp()
     {
+        $this->typeFQCN = method_exists('\Symfony\Component\Form\AbstractType', 'getBlockPrefix');
+
         $this->dm = TestCase::createTestDocumentManager(array(
             __DIR__ . '/../../Fixtures/Form/Document',
         ));
@@ -49,7 +54,7 @@ class DocumentTypeTest extends TypeTestCase
 
     public function testDocumentManagerOptionSetsEmOption()
     {
-        $field = $this->factory->createNamed('name', DocumentType::CLASS, null, array(
+        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, array(
             'class' => 'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document',
             'document_manager' => 'default',
         ));
@@ -59,7 +64,7 @@ class DocumentTypeTest extends TypeTestCase
 
     public function testDocumentManagerInstancePassedAsOption()
     {
-        $field = $this->factory->createNamed('name', DocumentType::CLASS, null, array(
+        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, array(
             'class' => 'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document',
             'document_manager' => $this->dm,
         ));
@@ -72,7 +77,7 @@ class DocumentTypeTest extends TypeTestCase
      */
     public function testSettingDocumentManagerAndEmOptionShouldThrowException()
     {
-        $field = $this->factory->createNamed('name', DocumentType::CLASS, null, array(
+        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, array(
             'document_manager' => 'default',
             'em' => 'default',
         ));
@@ -91,9 +96,9 @@ class DocumentTypeTest extends TypeTestCase
 
         $this->dm->flush();
 
-        $form = $this->factory->create(FormType::CLASS, $document)
+        $form = $this->factory->create($this->typeFQCN ? FormType::CLASS : 'form', $document)
             ->add(
-                'categories', DocumentType::CLASS, array(
+                'categories', $this->typeFQCN ? DocumentType::CLASS : 'document', array(
                     'class' => 'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Category',
                     'multiple' => true,
                     'expanded' => true,
