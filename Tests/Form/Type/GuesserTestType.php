@@ -34,8 +34,13 @@ class GuesserTestType extends AbstractType
         ])->setRequired('dm');
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'guesser_test';
+    }
+
+    public function getName()
+    {
+        return $this->getBlockPrefix();
     }
 }
