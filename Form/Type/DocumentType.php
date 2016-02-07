@@ -78,12 +78,24 @@ class DocumentType extends DoctrineType
     /**
      * @inheritdoc
      *
+     * @internal Symfony 2.8 compatibility
+     *
+     * @return string
+     */
+    public function getBlockPrefix()
+    {
+        return 'document';
+    }
+
+    /**
+     * @inheritdoc
+     *
      * @internal Symfony 2.7 compatibility
      *
      * @return string
      */
     public function getName()
     {
-        return 'document';
+        return $this->getBlockPrefix();
     }
 }
