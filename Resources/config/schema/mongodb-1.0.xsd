@@ -16,11 +16,14 @@
     </xsd:sequence>
     <xsd:attribute name="auto-generate-hydrator-classes" type="xsd:integer" />
     <xsd:attribute name="auto-generate-proxy-classes" type="xsd:integer" />
+    <xsd:attribute name="auto-generate-persistent-collection-classes" type="xsd:integer" />
     <xsd:attribute name="default-connection" type="xsd:string" />
     <xsd:attribute name="default-database" type="xsd:string" />
     <xsd:attribute name="default-document-manager" type="xsd:string" />
     <xsd:attribute name="hydrator-dir" type="xsd:string" />
     <xsd:attribute name="hydrator-namespace" type="xsd:string" />
+    <xsd:attribute name="persistent-collection-dir" type="xsd:string" />
+    <xsd:attribute name="persistent-collection-namespace" type="xsd:string" />
     <xsd:attribute name="proxy-dir" type="xsd:string" />
     <xsd:attribute name="proxy-namespace" type="xsd:string" />
     <xsd:attribute name="fixture-loader" type="xsd:string" />

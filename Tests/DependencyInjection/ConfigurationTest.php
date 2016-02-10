@@ -15,6 +15,7 @@
 namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Configuration;
+use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\Util\XmlUtils;
 use Symfony\Component\Yaml\Yaml;
@@ -31,6 +32,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             'fixture_loader'                 => 'Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader',
             'auto_generate_hydrator_classes' => false,
             'auto_generate_proxy_classes'    => false,
+            'auto_generate_persistent_collection_classes' => ODMConfiguration::AUTOGENERATE_NEVER,
             'default_database'               => 'default',
             'document_managers'              => array(),
             'connections'                    => array(),
@@ -40,6 +42,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             'hydrator_dir'                   => '%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators',
             'hydrator_namespace'             => 'Hydrators',
             'default_commit_options'         => array(),
+            'persistent_collection_dir'      => '%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections',
+            'persistent_collection_namespace'=> 'PersistentCollections',
         );
 
         $this->assertEquals($defaults, $options);
@@ -58,6 +62,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             'fixture_loader'                 => 'Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader',
             'auto_generate_hydrator_classes' => true,
             'auto_generate_proxy_classes'    => true,
+            'auto_generate_persistent_collection_classes' => ODMConfiguration::AUTOGENERATE_EVAL,
             'default_connection'             => 'conn1',
             'default_database'               => 'default_db_name',
             'default_document_manager'       => 'default_dm_name',
@@ -65,6 +70,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             'hydrator_namespace'             => 'Test_Hydrators',
             'proxy_dir'                      => '%kernel.cache_dir%/doctrine/odm/mongodb/Test_Proxies',
             'proxy_namespace'                => 'Test_Proxies',
+            'persistent_collection_dir'      => '%kernel.cache_dir%/doctrine/odm/mongodb/Test_Pcolls',
+            'persistent_collection_namespace'=> 'Test_Pcolls',
             'default_commit_options' => array(
                 'j' => false,
                 'timeout' => 10,

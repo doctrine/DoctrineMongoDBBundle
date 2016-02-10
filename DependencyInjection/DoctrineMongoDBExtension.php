@@ -105,6 +105,9 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             'hydrator_dir',
             'auto_generate_hydrator_classes',
             'default_commit_options',
+            'persistent_collection_dir',
+            'persistent_collection_namespace',
+            'auto_generate_persistent_collection_classes',
         );
 
         foreach ($overrides as $key) {
@@ -181,6 +184,9 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             'setRetryConnect' => $documentManager['retry_connect'],
             'setRetryQuery' => $documentManager['retry_query'],
             'setDefaultRepositoryClassName' => $documentManager['default_repository_class'],
+            'setPersistentCollectionDir' => '%doctrine_mongodb.odm.persistent_collection_dir%',
+            'setPersistentCollectionNamespace' => '%doctrine_mongodb.odm.persistent_collection_namespace%',
+            'setAutoGeneratePersistentCollectionClasses' => '%doctrine_mongodb.odm.auto_generate_persistent_collection_classes%',
         );
 
         if ($documentManager['repository_factory']) {
