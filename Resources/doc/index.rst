@@ -122,7 +122,7 @@ documents to and from MongoDB.
 
     .. code-block:: bash
 
-        php app/console generate:bundle --namespace=Acme/StoreBundle
+        php bin/console generate:bundle --namespace=Acme/StoreBundle
 
 Creating a Document Class
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -243,7 +243,7 @@ PHP class, you need to create getter and setter methods (e.g. ``getName()``,
 
 .. code-block:: bash
 
-    php app/console doctrine:mongodb:generate:documents AcmeStoreBundle
+    php bin/console doctrine:mongodb:generate:documents AcmeStoreBundle
 
 This command makes sure that all of the getters and setters are generated
 for the ``Product`` class. This is a safe command - you can run it over and
@@ -524,7 +524,7 @@ Doctrine can generate the repository class for you by running :
 
 .. code-block:: bash
 
-    php app/console doctrine:mongodb:generate:repositories AcmeStoreBundle
+    php bin/console doctrine:mongodb:generate:repositories AcmeStoreBundle
 
 Next, add a new method - ``findAllOrderedByName()`` - to the newly generated
 repository class. This method will query for all of the ``Product`` documents,
@@ -604,7 +604,7 @@ without any arguments:
 
 .. code-block:: bash
 
-    php app/console
+    php bin/console
 
 A list of available command will print out, many of which start with the
 ``doctrine:mongodb`` prefix. You can find out more information about any
@@ -613,7 +613,7 @@ For example, to get details about the ``doctrine:mongodb:query`` task, run:
 
 .. code-block:: bash
 
-    php app/console help doctrine:mongodb:query
+    php bin/console help doctrine:mongodb:query
 
 .. note::
 
