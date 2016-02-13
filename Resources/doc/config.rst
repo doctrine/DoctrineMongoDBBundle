@@ -39,7 +39,7 @@ Sample Configuration
         doctrine_mongodb:
             connections:
                 default:
-                    server: %mongodb_server%
+                    server: "%mongodb_server%"
 
 If you wish to use memcache to cache your metadata, you need to configure the
 ``Memcache`` instance; for example, you can do the following:
@@ -157,7 +157,7 @@ The following configuration shows a bunch of mapping examples:
                         alias: BundleAlias
                     doctrine_extensions:
                         type: xml
-                        dir: %kernel.root_dir%/../src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents
+                        dir: "%kernel.root_dir%/../src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents"
                         prefix: DoctrineExtensions\Documents\
                         alias: DExt
 
@@ -314,7 +314,7 @@ string as a comma separated list.
             # ...
             connections:
                 default:
-                    server: 'mongodb://mongodb-01:27017,mongodb-02:27017,mongodb-03:27017'
+                    server: "mongodb://mongodb-01:27017,mongodb-02:27017,mongodb-03:27017"
 
 Where mongodb-01, mongodb-02 and mongodb-03 are the machine hostnames. You
 can also use IP addresses if you prefer.
@@ -381,10 +381,10 @@ Full Default Configuration
                         password:             ~
                         db:                   ~
             proxy_namespace:      MongoDBODMProxies
-            proxy_dir:            %kernel.cache_dir%/doctrine/odm/mongodb/Proxies
+            proxy_dir:            "%kernel.cache_dir%/doctrine/odm/mongodb/Proxies"
             auto_generate_proxy_classes:  false
             hydrator_namespace:   Hydrators
-            hydrator_dir:         %kernel.cache_dir%/doctrine/odm/mongodb/Hydrators
+            hydrator_dir:         "%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators"
             auto_generate_hydrator_classes:  false
             default_document_manager:  ~
             default_connection:   ~
