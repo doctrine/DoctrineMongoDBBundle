@@ -37,6 +37,11 @@ class PersistentCollectionCacheWarmerTest extends \Doctrine\Bundle\MongoDBBundle
         $this->warmer = new PersistentCollectionCacheWarmer($this->container);
     }
 
+    public function testWarmerNotOptional()
+    {
+        $this->assertFalse($this->warmer->isOptional());
+    }
+
     public function testWarmerExecuted()
     {
         $this->generatorMock->expects($this->exactly(2))->method('generateClass');
