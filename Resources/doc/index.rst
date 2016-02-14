@@ -769,6 +769,44 @@ be fetched from the Symfony2 service container. A similar example like the tutor
     // find everything in the collection
     $cursor = $collection->find();
 
+Reusing Mongo connection
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you find yourself in need of ``\Mongo`` class instance i.e. to `store sessions`_
+in your Mongo database you may fetch it by defining following services:
+
+.. configuration-block::
+
+    .. code-block:: yaml
+
+        services:
+            mongo.connection:
+                class: Doctrine\MongoDB\Connection
+                factory: ["@doctrine.odm.mongodb.document_manager", getConnection]
+                calls:
+                    - [initialize, []]
+            mongo:
+                class: Mongo
+                factory: ["@mongo.connection", getMongo]
+
+    .. code-block:: xml
+
+        <?xml version="1.0" encoding="UTF-8" ?>
+        <container xmlns="http://symfony.com/schema/dic/services"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+            <services>
+                <service id="mongo.connection" class="Doctrine\MongoDB\Connection">
+                    <factory service="doctrine.odm.mongodb.document_manager" method="getConnection" />
+                    <call method="initialize" />
+                </service>
+                <service id="mongo" class="Doctrine\MongoDB\Connection">
+                    <factory service="mongo.connection" method="getMongo" />
+                </service>
+            </services>
+        </container>
+
 Summary
 -------
 
@@ -807,3 +845,4 @@ Learn more from the Cookbook
 .. _`PHP Documentation`: http://www.php.net/manual/en/mongo.tutorial.php
 .. _`the cookbook`: http://symfony.com/doc/current/cookbook/security/entity_provider.html
 .. _`UniqueEntity`: http://symfony.com/doc/current/reference/constraints/UniqueEntity.html
+.. _`store sessions`: http://symfony.com/doc/current/cookbook/doctrine/mongodb_session_storage.html
