@@ -1,9 +1,16 @@
 {% extends 'WebProfilerBundle:Profiler:layout.html.twig' %}
 
 {% block toolbar %}
+    {% set profiler_markup_version = profiler_markup_version|default(1) %}
+
     {% set icon %}
         <img width="20" height="28" alt="Mongo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAcCAYAAABh2p9gAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAQRJREFUeNpi/P//PwM1ARMDlcGogZQDlpMnT7pxc3NbA9nhQKxOpL5rQLwJiPeBsI6Ozl+YBOOOHTv+AOllQNwtLS39F2owKYZ/gRq8G4i3ggxEToggWzvc3d2Pk+1lNL4fFAs6ODi8JzdS7mMRVyDVoAMHDsANdAPiOCC+jCQvQKqBQB/BDbwBxK5AHA3E/kB8nKJkA8TMQBwLxaBIKQbi70AvTADSBiSadwFXpCikpKQU8PDwkGTaly9fHFigkaKIJid4584dkiMFFI6jkTJII0WVmpHCAixZQEXWYhDeuXMnyLsVlEQKI45qFBQZ8eRECi4DBaAlDqle/8A48ip6gAADANdQY88Uc0oGAAAAAElFTkSuQmCC"/>
-        <span class="sf-toolbar-status">{{ collector.queryCount }}</span>
+
+        {% if profiler_markup_version == 1 %}
+            <span class="sf-toolbar-status">{{ collector.queryCount }}</span>
+        {% else %}
+            <span class="sf-toolbar-value">{{ collector.queryCount }}</span>
+        {% endif %}
     {% endset %}
     {% set text %}
         <div class="sf-toolbar-info-piece">
