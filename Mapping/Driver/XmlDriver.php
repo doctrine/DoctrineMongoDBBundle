@@ -14,14 +14,17 @@
 
 namespace Doctrine\Bundle\MongoDBBundle\Mapping\Driver;
 
-use Doctrine\Common\Persistence\Mapping\Driver\SymfonyFileLocator;
-use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver as BaseXmlDriver;
+@trigger_error('The '.__NAMESPACE__.'\XmlDriver class is deprecated since version 3.1 and will be removed in 4.0. Use the Doctrine\ODM\MongoDB\Mapping\Driver\SimplifiedXmlDriver class instead.', E_USER_DEPRECATED);
+
+use Doctrine\ODM\MongoDB\Mapping\Driver\SimplifiedXmlDriver as BaseXmlDriver;
 
 /**
  * XmlDriver that additionally looks for mapping information in a global file.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Kris Wallsmith <kris@symfony.com>
+ * @deprecated since version 3.1, to be removed in 4.0.
+ *             Use {@link Doctrine\ODM\MongoDB\Mapping\Driver\SimplifiedXmlDriver} instead.
  */
 class XmlDriver extends BaseXmlDriver
 {
@@ -32,7 +35,6 @@ class XmlDriver extends BaseXmlDriver
      */
     public function __construct($prefixes, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
-        $locator = new SymfonyFileLocator((array) $prefixes, $fileExtension);
-        parent::__construct($locator, $fileExtension);
+        parent::__construct($prefixes, $fileExtension);
     }
 }
