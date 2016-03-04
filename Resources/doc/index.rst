@@ -122,7 +122,7 @@ documents to and from MongoDB.
 
     .. code-block:: bash
 
-        php app/console generate:bundle --namespace=Acme/StoreBundle
+        php bin/console generate:bundle --namespace=Acme/StoreBundle
 
 Creating a Document Class
 ~~~~~~~~~~~~~~~~~~~~~~~~~
