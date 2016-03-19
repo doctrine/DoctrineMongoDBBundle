@@ -23,6 +23,7 @@
     <xsd:attribute name="hydrator-namespace" type="xsd:string" />
     <xsd:attribute name="proxy-dir" type="xsd:string" />
     <xsd:attribute name="proxy-namespace" type="xsd:string" />
+    <xsd:attribute name="fixture-loader" type="xsd:string" />
   </xsd:complexType>
 
   <xsd:complexType name="default-commit-options">
