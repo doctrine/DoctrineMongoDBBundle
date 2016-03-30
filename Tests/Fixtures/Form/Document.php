@@ -11,7 +11,7 @@ class Document
     /** @ODM\Id(strategy="none") */
     protected $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     /**

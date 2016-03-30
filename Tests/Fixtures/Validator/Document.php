@@ -10,10 +10,10 @@ class Document
     /** @ODM\Id(strategy="none") */
     protected $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\Hash */
+    /** @ODM\Field(type="hash") */
     public $hash;
 
     /** @ODM\Collection */
@@ -36,6 +36,6 @@ class Document
 /** @ODM\EmbeddedDocument */
 class EmbeddedDocument
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 }
