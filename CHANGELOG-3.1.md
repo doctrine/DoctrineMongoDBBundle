@@ -15,14 +15,17 @@ To generate a changelog summary since the last version, run
 3.1.x-dev
 ---------
 
-3.1.0-RC1 (????-??-??)
+3.1.0 (2016-04-10)
 ----------------------
 
 This release introduces compatibility with Symfony 3.0. The minimum PHP version
-for this release is 5.5. If you need support for older Symfony versions (< 2.8),
+for this release is 5.5. If you need support for older Symfony versions (< 2.7),
 old PHP versions (< 5.5) or old MongoDB driver versions (< 1.5) please use the
 3.0 release. The following Pull Requests were merged for this release:
 
+ * [#352](https://github.com/doctrine/DoctrineMongoDBBundle/pull/352) adds support for Symfony 2.8+ toolbar
+ * [#342](https://github.com/doctrine/DoctrineMongoDBBundle/pull/342) introduces backward compatibility layer for Symfony 2.7
+ * [#331](https://github.com/doctrine/DoctrineMongoDBBundle/pull/331) enforces certain configuration values to be integers
  * [#328](https://github.com/doctrine/DoctrineMongoDBBundle/pull/328) introduces compatibility to Symfony 3.0 and drops support for Symfony < 2.8 as well as old PHP and MongoDB driver versions
  * [#316](https://github.com/doctrine/DoctrineMongoDBBundle/pull/316) adds support for the SCRAM-SHA-1 auth mechanism introduced with MongoDB 3.0
  * [#308](https://github.com/doctrine/DoctrineMongoDBBundle/pull/308) improves PSR-4 compliance
