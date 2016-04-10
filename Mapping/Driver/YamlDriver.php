@@ -14,8 +14,6 @@
 
 namespace Doctrine\Bundle\MongoDBBundle\Mapping\Driver;
 
-@trigger_error('The '.__NAMESPACE__.'\YamlDriver class is deprecated since version 3.1 and will be removed in 4.0. Use the Doctrine\ODM\MongoDB\Mapping\Driver\SimplifiedYamlDriver class instead.', E_USER_DEPRECATED);
-
 use Doctrine\ODM\MongoDB\Mapping\Driver\SimplifiedYamlDriver as BaseYamlDriver;
 
 /**
@@ -23,8 +21,6 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\SimplifiedYamlDriver as BaseYamlDriver;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Kris Wallsmith <kris@symfony.com>
- * @deprecated since version 3.1, to be removed in 4.0.
- *             Use {@link Doctrine\ODM\MongoDB\Mapping\Driver\SimplifiedYamlDriver} instead.
  */
 class YamlDriver extends BaseYamlDriver
 {
