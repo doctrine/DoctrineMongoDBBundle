@@ -50,6 +50,12 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver', $container->getParameter('doctrine_mongodb.odm.metadata.xml.class'));
         $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Mapping\Driver\YamlDriver', $container->getParameter('doctrine_mongodb.odm.metadata.yml.class'));
 
+        // ODM's and bundle default files' extensions differ
+        $xmlArguments = $container->getDefinition('doctrine_mongodb.odm.metadata.xml')->getArguments();
+        $this->assertEquals('.mongodb.xml', $xmlArguments[1]);
+        $ymlArguments = $container->getDefinition('doctrine_mongodb.odm.metadata.yml')->getArguments();
+        $this->assertEquals('.mongodb.yml', $ymlArguments[1]);
+
         $this->assertEquals('Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator', $container->getParameter('doctrine_odm.mongodb.validator.unique.class'));
 
         $config = DoctrineMongoDBExtensionTest::buildConfiguration(array(
