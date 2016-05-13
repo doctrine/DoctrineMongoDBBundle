@@ -92,11 +92,16 @@ the MongoDB ODM across your application:
 
 .. code-block:: yaml
 
+    # app/config/parameters.yml
+    mongodb_server: "mongodb://localhost:27017"
+
+.. code-block:: yaml
+
     # app/config/config.yml
     doctrine_mongodb:
         connections:
             default:
-                server: mongodb://localhost:27017
+                server: "%mongodb_server%"
                 options: {}
         default_database: test_database
         document_managers:
