@@ -95,8 +95,6 @@ the MongoDB ODM across your application:
     # app/config/parameters.yml
     mongodb_server: "mongodb://localhost:27017"
 
-.. note::
-
 .. code-block:: yaml
 
     # app/config/config.yml
