@@ -25,6 +25,7 @@
         <!-- cache -->
         <parameter key="doctrine_mongodb.odm.cache.array.class">Doctrine\Common\Cache\ArrayCache</parameter>
         <parameter key="doctrine_mongodb.odm.cache.apc.class">Doctrine\Common\Cache\ApcCache</parameter>
+        <parameter key="doctrine_mongodb.odm.cache.apcu.class">Doctrine\Common\Cache\ApcuCache</parameter>
         <parameter key="doctrine_mongodb.odm.cache.memcache.class">Doctrine\Common\Cache\MemcacheCache</parameter>
         <parameter key="doctrine_mongodb.odm.cache.memcache_host">localhost</parameter>
         <parameter key="doctrine_mongodb.odm.cache.memcache_port">11211</parameter>
