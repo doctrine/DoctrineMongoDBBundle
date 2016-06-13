@@ -5,9 +5,9 @@ doctrine_mongodb:
     default_connection: conn1
     default_database: default_db_name
     default_document_manager: default_dm_name
-    hydrator_dir: %kernel.cache_dir%/doctrine/odm/mongodb/Test_Hydrators
+    hydrator_dir: "%kernel.cache_dir%/doctrine/odm/mongodb/Test_Hydrators"
     hydrator_namespace: Test_Hydrators
-    proxy_dir: %kernel.cache_dir%/doctrine/odm/mongodb/Test_Proxies
+    proxy_dir: "%kernel.cache_dir%/doctrine/odm/mongodb/Test_Proxies"
     proxy_namespace: Test_Proxies
 
     resolve_target_documents:
@@ -84,7 +84,7 @@ doctrine_mongodb:
             mappings:
                 BarBundle:
                     type:   yml
-                    dir:    %kernel.cache_dir%
+                    dir:    "%kernel.cache_dir%"
                     prefix: prefix_val
                     alias:  alias_val
                     is_bundle: false
