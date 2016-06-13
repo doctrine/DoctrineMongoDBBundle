@@ -187,12 +187,12 @@ in a number of different formats including YAML, XML or directly inside the
             protected $id;
 
             /**
-             * @MongoDB\String
+             * @MongoDB\Field(type="string")
              */
             protected $name;
 
             /**
-             * @MongoDB\Float
+             * @MongoDB\Field(type="float")
              */
             protected $price;
         }
