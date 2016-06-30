@@ -193,6 +193,10 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $methods['setRepositoryFactory'] = new Reference($documentManager['repository_factory']);
         }
 
+        if ($documentManager['persistent_collection_factory']) {
+            $methods['setPersistentCollectionFactory'] = new Reference($documentManager['persistent_collection_factory']);
+        }
+
         // logging
         $loggers = array();
         if ($container->getParameterBag()->resolveValue($documentManager['logging'])) {

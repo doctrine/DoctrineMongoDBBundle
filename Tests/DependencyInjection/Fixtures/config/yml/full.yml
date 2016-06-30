@@ -54,6 +54,7 @@ doctrine_mongodb:
         dm1:
             default_repository_class:   Doctrine\ODM\MongoDB\DocumentRepository
             repository_factory:         ~
+            persistent_collection_factory: ~
             mappings:
                 FooBundle:   annotation
             metadata_cache_driver:
@@ -85,6 +86,7 @@ doctrine_mongodb:
             database:         db1
             default_repository_class:   Foo\Bar\CustomRepository
             repository_factory:         ~
+            persistent_collection_factory: ~
             mappings:
                 BarBundle:
                     type:   yml
