@@ -2,6 +2,7 @@ doctrine_mongodb:
     fixture_loader: Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader
     auto_generate_proxy_classes: true
     auto_generate_hydrator_classes: true
+    auto_generate_persistent_collection_classes: 3
     default_connection: conn1
     default_database: default_db_name
     default_document_manager: default_dm_name
@@ -9,6 +10,9 @@ doctrine_mongodb:
     hydrator_namespace: Test_Hydrators
     proxy_dir: "%kernel.cache_dir%/doctrine/odm/mongodb/Test_Proxies"
     proxy_namespace: Test_Proxies
+    proxy_namespace: Test_Proxies
+    persistent_collection_dir: "%kernel.cache_dir%/doctrine/odm/mongodb/Test_Pcolls"
+    persistent_collection_namespace: Test_Pcolls
 
     resolve_target_documents:
         Foo\BarInterface: Bar\FooClass

@@ -21,6 +21,7 @@
         <parameter key="doctrine_mongodb.odm.security.user.provider.class">Symfony\Bridge\Doctrine\Security\User\EntityUserProvider</parameter>
         <parameter key="doctrine_mongodb.odm.proxy_cache_warmer.class">Doctrine\Bundle\MongoDBBundle\CacheWarmer\ProxyCacheWarmer</parameter>
         <parameter key="doctrine_mongodb.odm.hydrator_cache_warmer.class">Doctrine\Bundle\MongoDBBundle\CacheWarmer\HydratorCacheWarmer</parameter>
+        <parameter key="doctrine_mongodb.odm.persistent_collection_cache_warmer.class">Doctrine\Bundle\MongoDBBundle\CacheWarmer\PersistentCollectionCacheWarmer</parameter>
 
         <!-- cache -->
         <parameter key="doctrine_mongodb.odm.cache.array.class">Doctrine\Common\Cache\ArrayCache</parameter>
@@ -116,6 +117,10 @@
             <argument type="service" id="service_container" />
         </service>
         <service id="doctrine_mongodb.odm.hydrator_cache_warmer" class="%doctrine_mongodb.odm.hydrator_cache_warmer.class%" public="false">
+            <tag name="kernel.cache_warmer" priority="25" />
+            <argument type="service" id="service_container" />
+        </service>
+        <service id="doctrine_mongodb.odm.persistent_collection_cache_warmer" class="%doctrine_mongodb.odm.persistent_collection_cache_warmer.class%" public="false">
             <tag name="kernel.cache_warmer" priority="25" />
             <argument type="service" id="service_container" />
         </service>
