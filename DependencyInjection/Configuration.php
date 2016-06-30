@@ -135,6 +135,7 @@ class Configuration implements ConfigurationInterface
                             ->end()
                             ->scalarNode('default_repository_class')->defaultValue('Doctrine\ODM\MongoDB\DocumentRepository')->end()
                             ->scalarNode('repository_factory')->defaultNull()->end()
+                            ->scalarNode('persistent_collection_factory')->defaultNull()->end()
                             ->booleanNode('auto_mapping')->defaultFalse()->end()
                             ->arrayNode('filters')
                                 ->useAttributeAsKey('name')

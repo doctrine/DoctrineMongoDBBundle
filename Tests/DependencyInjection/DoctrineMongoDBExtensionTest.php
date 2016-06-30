@@ -17,6 +17,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+use Symfony\Component\DependencyInjection\Reference;
 
 class DoctrineMongoDBExtensionTest extends \PHPUnit_Framework_TestCase
 {
@@ -185,5 +186,40 @@ class DoctrineMongoDBExtensionTest extends \PHPUnit_Framework_TestCase
                     )
                 )
             ), $configDm2->getMethodCalls());
+    }
+
+    public function testFactoriesAreRegistered()
+    {
+        $container = $this->getContainer();
+
+        $loader = new DoctrineMongoDBExtension();
+        $loader->load(
+            array(
+                array(
+                    'default_database' => 'test_database',
+                    'connections' => array(
+                        'cn1' => array(),
+                        'cn2' => array()
+                    ),
+                    'document_managers' => array(
+                        'dm1' => array(
+                            'repository_factory' => 'repository_factory_service',
+                            'persistent_collection_factory' => 'persistent_collection_factory_service',
+                        )
+                    )
+                )
+            ), $container);
+
+        $configDm1 = $container->getDefinition('doctrine_mongodb.odm.dm1_configuration');
+        $this->assertContains(
+            array(
+                'setRepositoryFactory',
+                array(new Reference('repository_factory_service'))
+            ), $configDm1->getMethodCalls());
+        $this->assertContains(
+            array(
+                'setPersistentCollectionFactory',
+                array(new Reference('persistent_collection_factory_service'))
+            ), $configDm1->getMethodCalls());
     }
 }
