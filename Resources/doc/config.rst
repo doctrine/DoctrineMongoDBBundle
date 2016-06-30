@@ -411,14 +411,15 @@ Full Default Configuration
 
                 # Prototype
                 id:
-                    connection:                 ~
-                    database:                   ~
-                    default_repository_class:   Doctrine\ODM\MongoDB\DocumentRepository
-                    repository_factory:         ~
-                    logging:                    true
-                    auto_mapping:               false
-                    retry_connect:              0
-                    retry_query:                0
+                    connection:                    ~
+                    database:                      ~
+                    default_repository_class:      Doctrine\ODM\MongoDB\DocumentRepository
+                    repository_factory:            ~
+                    persistent_collection_factory: ~
+                    logging:                       true
+                    auto_mapping:                  false
+                    retry_connect:                 0
+                    retry_query:                   0
                     metadata_cache_driver:
                         type:                 ~
                         class:                ~
@@ -462,8 +463,8 @@ Full Default Configuration
             hydrator_namespace:   Hydrators
             hydrator_dir:         "%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators"
             auto_generate_hydrator_classes:  0
-            persistent_collection_dir: "%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections"
             persistent_collection_namespace: PersistentCollections
+            persistent_collection_dir: "%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections"
             auto_generate_persistent_collection_classes: 0
             default_document_manager:  ~
             default_connection:   ~
