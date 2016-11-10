@@ -34,9 +34,9 @@ class DoctrineMongoDBExtension extends AbstractExtension
 
     protected function loadTypes()
     {
-        return array(
+        return [
             new Type\DocumentType($this->registry),
-        );
+        ];
     }
 
     protected function loadTypeGuesser()

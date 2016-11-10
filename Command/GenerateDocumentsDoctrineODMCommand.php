@@ -81,7 +81,7 @@ EOT
                 }
 
                 $output->writeln(sprintf('  > generating <comment>%s</comment>', $metadata->name));
-                $documentGenerator->generate(array($metadata), $this->findBasePathForBundle($foundBundle));
+                $documentGenerator->generate([$metadata], $this->findBasePathForBundle($foundBundle));
             }
         } else {
             throw new \RuntimeException(

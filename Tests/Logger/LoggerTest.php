@@ -33,7 +33,7 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 
     public function testLogQuery()
     {
-        $query = array('foo' => 'bar');
+        $query = ['foo' => 'bar'];
         $log = json_encode($query);
 
         $this->logger->expects($this->once())
@@ -41,14 +41,14 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
             ->with('MongoDB query: '.$log);
 
         $logger = new Logger($this->logger);
-        $logger->logQuery(array('foo' => 'bar'));
+        $logger->logQuery(['foo' => 'bar']);
     }
 
     public function testMongoBinDataBase64Encoded()
     {
         $binData = new \MongoBinData('data', \MongoBinData::BYTE_ARRAY);
-        $query = array('foo' => array('binData' => $binData));
-        $log = json_encode(array('foo' => array('binData' => base64_encode($binData->bin))));
+        $query = ['foo' => ['binData' => $binData]];
+        $log = json_encode(['foo' => ['binData' => base64_encode($binData->bin)]]);
 
         $this->logger->expects($this->once())
             ->method('debug')
@@ -60,21 +60,21 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 
     public function testInfinityAndNanEncoded()
     {
-        $query = array(
-            'foo' => array(
+        $query = [
+            'foo' => [
                 'posInf' => INF,
                 'negInf' => -INF,
                 'nan' => NAN,
-            ),
-        );
+            ],
+        ];
 
-        $log = json_encode(array(
-            'foo' => array(
+        $log = json_encode([
+            'foo' => [
                 'posInf' => 'Infinity',
                 'negInf' => '-Infinity',
                 'nan' => 'NaN',
-            ),
-        ));
+            ],
+        ]);
 
         $this->logger->expects($this->once())
             ->method('debug')

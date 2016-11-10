@@ -32,9 +32,9 @@ class DocumentTypeTest extends TypeTestCase
     {
         $this->typeFQCN = method_exists(AbstractType::class, 'getBlockPrefix');
 
-        $this->dm = TestCase::createTestDocumentManager(array(
+        $this->dm = TestCase::createTestDocumentManager([
             __DIR__ . '/../../Fixtures/Form/Document',
-        ));
+        ]);
         $this->dmRegistry = $this->createRegistryMock('default', $this->dm);
 
         parent::setUp();
@@ -42,10 +42,10 @@ class DocumentTypeTest extends TypeTestCase
 
     protected function tearDown()
     {
-        $documentClasses = array(
+        $documentClasses = [
             Document::class,
             Category::class,
-        );
+        ];
 
         foreach ($documentClasses as $class) {
             $this->dm->getDocumentCollection($class)->drop();
@@ -57,20 +57,20 @@ class DocumentTypeTest extends TypeTestCase
 
     public function testDocumentManagerOptionSetsEmOption()
     {
-        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, array(
+        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, [
             'class' => Document::class,
             'document_manager' => 'default',
-        ));
+        ]);
 
         $this->assertSame($this->dm, $field->getConfig()->getOption('em'));
     }
 
     public function testDocumentManagerInstancePassedAsOption()
     {
-        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, array(
+        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, [
             'class' => Document::class,
             'document_manager' => $this->dm,
-        ));
+        ]);
 
         $this->assertSame($this->dm, $field->getConfig()->getOption('em'));
     }
@@ -80,10 +80,10 @@ class DocumentTypeTest extends TypeTestCase
      */
     public function testSettingDocumentManagerAndEmOptionShouldThrowException()
     {
-        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, array(
+        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, [
             'document_manager' => 'default',
             'em' => 'default',
-        ));
+        ]);
     }
 
     public function testManyToManyReferences()
@@ -101,12 +101,12 @@ class DocumentTypeTest extends TypeTestCase
 
         $form = $this->factory->create($this->typeFQCN ? FormType::CLASS : 'form', $document)
             ->add(
-                'categories', $this->typeFQCN ? DocumentType::CLASS : 'document', array(
+                'categories', $this->typeFQCN ? DocumentType::CLASS : 'document', [
                     'class' => Category::class,
                     'multiple' => true,
                     'expanded' => true,
                     'document_manager' => 'default'
-                )
+                ]
             );
 
         $view = $form->createView();
@@ -134,8 +134,8 @@ class DocumentTypeTest extends TypeTestCase
      */
     protected function getExtensions()
     {
-        return array_merge(parent::getExtensions(), array(
+        return array_merge(parent::getExtensions(), [
             new DoctrineMongoDBExtension($this->dmRegistry),
-        ));
+        ]);
     }
 }

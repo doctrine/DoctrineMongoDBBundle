@@ -48,9 +48,9 @@ class DocumentType extends DoctrineType
     {
         parent::configureOptions($resolver);
 
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'document_manager' => null,
-        ));
+        ]);
 
         $registry = $this->registry;
         $normalizer = function (Options $options, $manager) use ($registry) {
@@ -73,7 +73,7 @@ class DocumentType extends DoctrineType
 
         $resolver->setNormalizer('em', $normalizer);
 
-        $resolver->setAllowedTypes('document_manager', array('null', 'string', DocumentManager::class));
+        $resolver->setAllowedTypes('document_manager', ['null', 'string', DocumentManager::class]);
     }
 
     /**

@@ -33,9 +33,9 @@ class TypeGuesserTest extends TypeTestCase
     {
         $this->typeFQCN = method_exists(AbstractType::class, 'getBlockPrefix');
 
-        $this->dm = TestCase::createTestDocumentManager(array(
+        $this->dm = TestCase::createTestDocumentManager([
             __DIR__ . '/../../Fixtures/Form/Guesser',
-        ));
+        ]);
         $this->dmRegistry = $this->createRegistryMock('default', $this->dm);
 
         parent::setUp();
@@ -43,11 +43,11 @@ class TypeGuesserTest extends TypeTestCase
 
     protected function tearDown()
     {
-        $documentClasses = array(
+        $documentClasses = [
             Document::class,
             Category::class,
             Guesser::class,
-        );
+        ];
 
         foreach ($documentClasses as $class) {
             $this->dm->getDocumentCollection($class)->drop();
@@ -94,8 +94,8 @@ class TypeGuesserTest extends TypeTestCase
      */
     protected function getExtensions()
     {
-        return array_merge(parent::getExtensions(), array(
+        return array_merge(parent::getExtensions(), [
             new DoctrineMongoDBExtension($this->dmRegistry),
-        ));
+        ]);
     }
 }

@@ -28,7 +28,7 @@ class XmlDriverTest extends AbstractDriverTest
         return __DIR__ . '/Fixtures/xml';
     }
 
-    protected function getDriver(array $prefixes = array())
+    protected function getDriver(array $prefixes = [])
     {
         return new XmlDriver($prefixes, $this->getFileExtension());
     }

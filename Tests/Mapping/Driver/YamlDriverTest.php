@@ -28,7 +28,7 @@ class YamlDriverTest extends AbstractDriverTest
         return __DIR__ . '/Fixtures/yml';
     }
 
-    protected function getDriver(array $prefixes = array())
+    protected function getDriver(array $prefixes = [])
     {
         return new YamlDriver($prefixes, $this->getFileExtension());
     }

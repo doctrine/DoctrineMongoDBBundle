@@ -27,13 +27,13 @@ class ContainerTest extends TestCase
 
     protected function setUp()
     {
-        $this->container = new ContainerBuilder(new ParameterBag(array(
-            'kernel.bundles'   => array(),
+        $this->container = new ContainerBuilder(new ParameterBag([
+            'kernel.bundles'   => [],
             'kernel.cache_dir' => sys_get_temp_dir(),
             'kernel.root_dir'  => sys_get_temp_dir(),
             'kernel.environment'  => 'test',
             'kernel.debug'     => true,
-        )));
+        ]));
 
         $this->container->setDefinition('annotation_reader', new Definition(AnnotationReader::class));
         $this->extension = new DoctrineMongoDBExtension();
@@ -45,7 +45,7 @@ class ContainerTest extends TestCase
     public function testLoggerConfig($config, $logger, $debug)
     {
         $this->container->setParameter('kernel.debug', $debug);
-        $this->extension->load(array($config), $this->container);
+        $this->extension->load([$config], $this->container);
 
         $def = $this->container->getDefinition('doctrine_mongodb.odm.default_configuration');
         if (false === $logger) {
@@ -64,41 +64,41 @@ class ContainerTest extends TestCase
 
     public function provideLoggerConfigs()
     {
-        $config = array('connections' => array('default' => array()));
+        $config = ['connections' => ['default' => []]];
 
-        return array(
-            array(
+        return [
+            [
                 // logging and profiler default to true when in debug mode
-                array('document_managers' => array('default' => array())) + $config,
+                ['document_managers' => ['default' => []]] + $config,
                 'doctrine_mongodb.odm.logger.aggregate',
                 true,
-            ),
-            array(
+            ],
+            [
                 // logging and profiler default to false when not in debug mode
-                array('document_managers' => array('default' => array())) + $config,
+                ['document_managers' => ['default' => []]] + $config,
                 false,
                 false,
-            ),
-            array(
-                array('document_managers' => array('default' => array('logging' => true, 'profiler' => true))) + $config,
+            ],
+            [
+                ['document_managers' => ['default' => ['logging' => true, 'profiler' => true]]] + $config,
                 'doctrine_mongodb.odm.logger.aggregate',
                 true,
-            ),
-            array(
-                array('document_managers' => array('default' => array('logging' => false, 'profiler' => true))) + $config,
+            ],
+            [
+                ['document_managers' => ['default' => ['logging' => false, 'profiler' => true]]] + $config,
                 'doctrine_mongodb.odm.data_collector.pretty',
                 true,
-            ),
-            array(
-                array('document_managers' => array('default' => array('logging' => true, 'profiler' => false))) + $config,
+            ],
+            [
+                ['document_managers' => ['default' => ['logging' => true, 'profiler' => false]]] + $config,
                 'doctrine_mongodb.odm.logger',
                 true,
-            ),
-            array(
-                array('document_managers' => array('default' => array('logging' => false, 'profiler' => false))) + $config,
+            ],
+            [
+                ['document_managers' => ['default' => ['logging' => false, 'profiler' => false]]] + $config,
                 false,
                 true,
-            ),
-        );
+            ],
+        ];
     }
 }

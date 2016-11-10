@@ -20,10 +20,10 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 {
     public function testFindMappingFile()
     {
-        $driver = $this->getDriver(array(
+        $driver = $this->getDriver([
             'foo' => 'MyNamespace\MyBundle\DocumentFoo',
             $this->getFixtureDir() => 'MyNamespace\MyBundle\Document',
-        ));
+        ]);
 
         $locator = $this->getDriverLocator($driver);
 
@@ -35,9 +35,9 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 
     public function testFindMappingFileInSubnamespace()
     {
-        $driver = $this->getDriver(array(
+        $driver = $this->getDriver([
             $this->getFixtureDir() => 'MyNamespace\MyBundle\Document',
-        ));
+        ]);
 
         $locator = $this->getDriverLocator($driver);
 
@@ -52,9 +52,9 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
      */
     public function testFindMappingFileNamespacedFoundFileNotFound()
     {
-        $driver = $this->getDriver(array(
+        $driver = $this->getDriver([
             $this->getFixtureDir() => 'MyNamespace\MyBundle\Document',
-        ));
+        ]);
 
         $locator = $this->getDriverLocator($driver);
         $locator->findMappingFile('MyNamespace\MyBundle\Document\Missing');
@@ -65,9 +65,9 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
      */
     public function testFindMappingNamespaceNotFound()
     {
-        $driver = $this->getDriver(array(
+        $driver = $this->getDriver([
             $this->getFixtureDir() => 'MyNamespace\MyBundle\Document',
-        ));
+        ]);
 
         $locator = $this->getDriverLocator($driver);
         $locator->findMappingFile('MyOtherNamespace\MyBundle\Document\Foo');
@@ -75,7 +75,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 
     abstract protected function getFileExtension();
     abstract protected function getFixtureDir();
-    abstract protected function getDriver(array $paths = array());
+    abstract protected function getDriver(array $paths = []);
 
     private function getDriverLocator(FileDriver $driver)
     {

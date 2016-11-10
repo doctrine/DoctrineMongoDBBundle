@@ -120,7 +120,7 @@ class Configuration implements ConfigurationInterface
                     ->useAttributeAsKey('id')
                     ->requiresAtLeastOneElement()
                     ->prototype('array')
-                        ->treatNullLike(array())
+                        ->treatNullLike([])
                         ->fixXmlConfig('filter')
                         ->children()
                             ->scalarNode('connection')->end()
@@ -128,8 +128,8 @@ class Configuration implements ConfigurationInterface
                             ->booleanNode('logging')->defaultValue('%kernel.debug%')->end()
                             ->arrayNode('profiler')
                                 ->addDefaultsIfNotSet()
-                                ->treatTrueLike(array('enabled' => true))
-                                ->treatFalseLike(array('enabled' => false))
+                                ->treatTrueLike(['enabled' => true])
+                                ->treatFalseLike(['enabled' => false])
                                 ->children()
                                     ->booleanNode('enabled')->defaultValue('%kernel.debug%')->end()
                                     ->booleanNode('pretty')->defaultValue('%kernel.debug%')->end()
@@ -145,7 +145,7 @@ class Configuration implements ConfigurationInterface
                                     ->fixXmlConfig('parameter')
                                     ->beforeNormalization()
                                         ->ifString()
-                                        ->then(function($v) { return array('class' => $v); })
+                                        ->then(function($v) { return ['class' => $v]; })
                                     ->end()
                                     ->beforeNormalization()
                                         // The content of the XML node is returned as the "value" key so we need to rename it
@@ -161,7 +161,7 @@ class Configuration implements ConfigurationInterface
                                         ->scalarNode('class')->isRequired()->end()
                                         ->booleanNode('enabled')->defaultFalse()->end()
                                         ->arrayNode('parameters')
-                                            ->treatNullLike(array())
+                                            ->treatNullLike([])
                                             ->useAttributeAsKey('name')
                                             ->prototype('variable')
                                                 ->beforeNormalization()
@@ -181,7 +181,7 @@ class Configuration implements ConfigurationInterface
                                 ->addDefaultsIfNotSet()
                                 ->beforeNormalization()
                                     ->ifString()
-                                    ->then(function($v) { return array('type' => $v); })
+                                    ->then(function($v) { return ['type' => $v]; })
                                 ->end()
                                 ->children()
                                     ->scalarNode('type')->defaultValue('array')->end()
@@ -201,10 +201,10 @@ class Configuration implements ConfigurationInterface
                                 ->prototype('array')
                                     ->beforeNormalization()
                                         ->ifString()
-                                        ->then(function($v) { return array ('type' => $v); })
+                                        ->then(function($v) { return ['type' => $v]; })
                                     ->end()
-                                    ->treatNullLike(array())
-                                    ->treatFalseLike(array('mapping' => false))
+                                    ->treatNullLike([])
+                                    ->treatFalseLike(['mapping' => false])
                                     ->performNoDeepMerging()
                                     ->children()
                                         ->scalarNode('mapping')->defaultValue(true)->end()
@@ -244,7 +244,7 @@ class Configuration implements ConfigurationInterface
                                 ->performNoDeepMerging()
                                 ->children()
                                     ->enumNode('authMechanism')
-                                        ->values(array('SCRAM-SHA-1', 'MONGODB-CR', 'X509', 'PLAIN', 'GSSAPI'))
+                                        ->values(['SCRAM-SHA-1', 'MONGODB-CR', 'X509', 'PLAIN', 'GSSAPI'])
                                     ->end()
                                     ->booleanNode('connect')->end()
                                     ->integerNode('connectTimeoutMS')->end()
@@ -254,7 +254,7 @@ class Configuration implements ConfigurationInterface
                                         ->validate()->ifNull()->thenUnset()->end()
                                     ->end()
                                     ->enumNode('readPreference')
-                                        ->values(array('primary', 'primaryPreferred', 'secondary', 'secondaryPreferred', 'nearest'))
+                                        ->values(['primary', 'primaryPreferred', 'secondary', 'secondaryPreferred', 'nearest'])
                                     ->end()
                                     ->arrayNode('readPreferenceTags')
                                         ->performNoDeepMerging()
@@ -265,7 +265,7 @@ class Configuration implements ConfigurationInterface
                                                 ->then(function($v) {
                                                     // Equivalent of fixXmlConfig() for inner node
                                                     if (isset($v['readPreferenceTag']['name'])) {
-                                                        $v['readPreferenceTag'] = array($v['readPreferenceTag']);
+                                                        $v['readPreferenceTag'] = [$v['readPreferenceTag']];
                                                     }
 
                                                     return $v['readPreferenceTag'];

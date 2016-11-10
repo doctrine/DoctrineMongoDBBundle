@@ -35,85 +35,85 @@ class PrettyDataCollectorTest extends \PHPUnit_Framework_TestCase
 
     public function getQueries()
     {
-        return array(
-            'batch insert' => array(
-                array('db' => 'foo', 'collection' => 'bar', 'batchInsert' => true, 'num' => 1, 'data' => array('foo' => 'bar'), 'options' => array()),
-                array('use foo;', 'db.bar.insert({ "foo": "bar" });'),
-            ),
-            'find' => array(
-                array('db' => 'foo', 'collection' => 'bar', 'find' => true, 'query' => array('foo' => null), 'fields' => array()),
-                array('use foo;', 'db.bar.find({ "foo": null });'),
-            ),
-            'bin data' => array(
-                array('db' => 'foo', 'collection' => 'bar', 'update' => true, 'query' => array('_id' => 'foo'), 'newObj' => array('foo' => new \MongoBinData('junk data', \MongoBinData::BYTE_ARRAY))),
-                arraY('use foo;', 'db.bar.update({ "_id": "foo" }, { "foo": new BinData(2, "' . base64_encode('junk data') . '") });'),
-            )
-        );
+        return [
+            'batch insert' => [
+                ['db' => 'foo', 'collection' => 'bar', 'batchInsert' => true, 'num' => 1, 'data' => ['foo' => 'bar'], 'options' => []],
+                ['use foo;', 'db.bar.insert({ "foo": "bar" });'],
+            ],
+            'find' => [
+                ['db' => 'foo', 'collection' => 'bar', 'find' => true, 'query' => ['foo' => null], 'fields' => []],
+                ['use foo;', 'db.bar.find({ "foo": null });'],
+            ],
+            'bin data' => [
+                ['db' => 'foo', 'collection' => 'bar', 'update' => true, 'query' => ['_id' => 'foo'], 'newObj' => ['foo' => new \MongoBinData('junk data', \MongoBinData::BYTE_ARRAY)]],
+                ['use foo;', 'db.bar.update({ "_id": "foo" }, { "foo": new BinData(2, "' . base64_encode('junk data') . '") });'],
+            ]
+        ];
     }
 
     public function testCollectLimit()
     {
-        $queries = array(
-            array(
+        $queries = [
+            [
                 'find' => true,
-                'query' => array(
+                'query' => [
                     'path' => '/',
-                ),
-                'fields' => array(),
+                ],
+                'fields' => [],
                 'db' => 'foo',
                 'collection' => 'Route',
-            ),
-            array(
+            ],
+            [
                 'find' => true,
-                'query' => array('_id' => 'foo'),
-                'fields' => array(),
+                'query' => ['_id' => 'foo'],
+                'fields' => [],
                 'db' => 'foo',
                 'collection' => 'User',
-            ),
-            array(
+            ],
+            [
                 'limit' => true,
                 'limitNum' => 1,
-                'query' => array('_id' => 'foo'),
-                'fields' => array(),
-            ),
-            array(
+                'query' => ['_id' => 'foo'],
+                'fields' => [],
+            ],
+            [
                 'limit' => true,
                 'limitNum' => NULL,
-                'query' => array('_id' => 'foo'),
-                'fields' => array(),
-            ),
-            array(
+                'query' => ['_id' => 'foo'],
+                'fields' => [],
+            ],
+            [
                 'find' => true,
-                'query' => array(
+                'query' => [
                     '_id' => '5506fa1580c7e1ee3c8b4c60',
-                ),
-                'fields' => array(),
+                ],
+                'fields' => [],
                 'db' => 'foo',
                 'collection' => 'Group',
-            ),
-            array(
+            ],
+            [
                 'limit' => true,
                 'limitNum' => 1,
-                'query' => array(
+                'query' => [
                     '_id' => '5506fa1580c7e1ee3c8b4c60',
-                ),
-                'fields' => array(),
-            ),
-            array(
+                ],
+                'fields' => [],
+            ],
+            [
                 'limit' => true,
                 'limitNum' => NULL,
-                'query' => array(
+                'query' => [
                     '_id' => '5506fa1580c7e1ee3c8b4c60',
-                ),
-                'fields' => array(),
-            ),
-        );
-        $formatted = array(
+                ],
+                'fields' => [],
+            ],
+        ];
+        $formatted = [
             'use foo;',
             'db.Route.find({ "path": "/" });',
             'db.User.find({ "_id": "foo" }).limit(1);',
             'db.Group.find({ "_id": "5506fa1580c7e1ee3c8b4c60" }).limit(1);'
-        );
+        ];
 
         $collector = new PrettyDataCollector();
         foreach ($queries as $query) {
