@@ -15,6 +15,7 @@
 namespace Doctrine\Bundle\MongoDBBundle\Command;
 
 use Doctrine\Common\DataFixtures\Executor\MongoDBExecutor;
+use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\MongoDBPurger;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Component\Console\Input\InputInterface;
@@ -35,7 +36,7 @@ class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
      */
     public function isEnabled()
     {
-        return parent::isEnabled() && class_exists('Doctrine\Common\DataFixtures\Loader');
+        return parent::isEnabled() && class_exists(Loader::class);
     }
 
     protected function configure()

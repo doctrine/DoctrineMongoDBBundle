@@ -15,6 +15,7 @@
 namespace Doctrine\Bundle\MongoDBBundle\Tests;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
+use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
@@ -34,7 +35,7 @@ class ContainerTest extends TestCase
             'kernel.debug'     => true,
         )));
 
-        $this->container->setDefinition('annotation_reader', new Definition('Doctrine\Common\Annotations\AnnotationReader'));
+        $this->container->setDefinition('annotation_reader', new Definition(AnnotationReader::class));
         $this->extension = new DoctrineMongoDBExtension();
     }
 

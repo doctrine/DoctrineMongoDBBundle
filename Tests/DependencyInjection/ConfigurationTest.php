@@ -16,6 +16,8 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Configuration;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
+use Doctrine\ODM\MongoDB\DocumentRepository;
+use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\Util\XmlUtils;
 use Symfony\Component\Yaml\Yaml;
@@ -29,7 +31,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $options = $processor->processConfiguration($configuration, array());
 
         $defaults = array(
-            'fixture_loader'                 => 'Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader',
+            'fixture_loader'                 => ContainerAwareLoader::class,
             'auto_generate_hydrator_classes' => false,
             'auto_generate_proxy_classes'    => false,
             'auto_generate_persistent_collection_classes' => ODMConfiguration::AUTOGENERATE_NEVER,
@@ -59,7 +61,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $options = $processor->processConfiguration($configuration, array($config));
 
         $expected = array(
-            'fixture_loader'                 => 'Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader',
+            'fixture_loader'                 => ContainerAwareLoader::class,
             'auto_generate_hydrator_classes' => true,
             'auto_generate_proxy_classes'    => true,
             'auto_generate_persistent_collection_classes' => ODMConfiguration::AUTOGENERATE_EVAL,
@@ -111,24 +113,24 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             ),
             'document_managers' => array(
                 'dm1' => array(
-                    'default_repository_class' => 'Doctrine\ODM\MongoDB\DocumentRepository',
+                    'default_repository_class' => DocumentRepository::class,
                     'repository_factory' => null,
                     'persistent_collection_factory' => null,
                     'logging'      => '%kernel.debug%',
                     'auto_mapping' => false,
                     'filters' => array(
                         'disabled_filter' => array(
-                            'class' => 'Vendor\Filter\DisabledFilter',
+                            'class' => \Vendor\Filter\DisabledFilter::class,
                             'enabled' => false,
                             'parameters' => array(),
                         ),
                         'basic_filter' => array(
-                            'class' => 'Vendor\Filter\BasicFilter',
+                            'class' => \Vendor\Filter\BasicFilter::class,
                             'enabled' => true,
                             'parameters' => array(),
                         ),
                         'complex_filter' => array(
-                            'class' => 'Vendor\Filter\ComplexFilter',
+                            'class' => \Vendor\Filter\ComplexFilter::class,
                             'enabled' => true,
                             'parameters' => array(
                                 'integer' => 1,
@@ -162,7 +164,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                     'connection'   => 'dm2_connection',
                     'database'     => 'db1',
                     'logging'      => true,
-                    'default_repository_class' => 'Foo\Bar\CustomRepository',
+                    'default_repository_class' => \Foo\Bar\CustomRepository::class,
                     'repository_factory' => null,
                     'persistent_collection_factory' => null,
                     'auto_mapping' => false,
@@ -377,7 +379,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 'foo' => array(
                     'connection'   => 'conn1',
                     'metadata_cache_driver' => array('type' => 'array'),
-                    'default_repository_class' =>  'Doctrine\ODM\MongoDB\DocumentRepository',
+                    'default_repository_class' =>  DocumentRepository::class,
                     'repository_factory' => null,
                     'persistent_collection_factory' => null,
                     'mappings'     => array('foo-mapping' => array('type' => 'xml', 'mapping' => true)),
@@ -460,7 +462,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
     {
         $processor = new Processor();
         $configuration = new Configuration(false);
-        $this->setExpectedException('\LogicException');
+        $this->setExpectedException(\LogicException::class);
         $processor->processConfiguration($configuration, array($config));
     }
 

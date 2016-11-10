@@ -15,6 +15,7 @@
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Logger;
 
 use Doctrine\Bundle\MongoDBBundle\Logger\Logger;
+use Psr\Log\LoggerInterface;
 
 class LoggerTest extends \PHPUnit_Framework_TestCase
 {
@@ -22,7 +23,7 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->logger = $this->createMock('Psr\Log\LoggerInterface');
+        $this->logger = $this->createMock(LoggerInterface::class);
     }
 
     protected function tearDown()

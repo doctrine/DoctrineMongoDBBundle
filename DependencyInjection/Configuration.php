@@ -16,6 +16,8 @@ namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
+use Doctrine\ODM\MongoDB\DocumentRepository;
+use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -77,9 +79,9 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('persistent_collection_dir')->defaultValue('%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections')->end()
                 ->scalarNode('auto_generate_persistent_collection_classes')->defaultValue(ODMConfiguration::AUTOGENERATE_NEVER)->end()
                 ->scalarNode('fixture_loader')
-                    ->defaultValue('Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader')
+                    ->defaultValue(ContainerAwareLoader::class)
                     ->beforeNormalization()
-                        ->ifTrue(function($v) {return !($v == 'Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader' || in_array('Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader', class_parents($v)));})
+                        ->ifTrue(function($v) {return !($v == ContainerAwareLoader::class || in_array(ContainerAwareLoader::class, class_parents($v)));})
                         ->then(function($v) { throw new \LogicException(sprintf("The %s class is not a subclass of the ContainerAwareLoader", $v));})
                     ->end()
                 ->end()
@@ -133,7 +135,7 @@ class Configuration implements ConfigurationInterface
                                     ->booleanNode('pretty')->defaultValue('%kernel.debug%')->end()
                                 ->end()
                             ->end()
-                            ->scalarNode('default_repository_class')->defaultValue('Doctrine\ODM\MongoDB\DocumentRepository')->end()
+                            ->scalarNode('default_repository_class')->defaultValue(DocumentRepository::class)->end()
                             ->scalarNode('repository_factory')->defaultNull()->end()
                             ->scalarNode('persistent_collection_factory')->defaultNull()->end()
                             ->booleanNode('auto_mapping')->defaultFalse()->end()

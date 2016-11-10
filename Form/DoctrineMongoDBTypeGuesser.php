@@ -17,6 +17,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\Common\Persistence\Mapping\MappingException;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -45,7 +46,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
     public function __construct(ManagerRegistry $registry)
     {
         $this->registry = $registry;
-        $this->typeFQCN = method_exists('\Symfony\Component\Form\AbstractType', 'getBlockPrefix');
+        $this->typeFQCN = method_exists(AbstractType::class, 'getBlockPrefix');
     }
 
     /**
