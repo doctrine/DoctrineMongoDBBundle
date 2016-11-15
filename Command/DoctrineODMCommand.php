@@ -55,7 +55,7 @@ abstract class DoctrineODMCommand extends ContainerAwareCommand
     protected function getBundleMetadatas(Bundle $bundle)
     {
         $namespace = $bundle->getNamespace();
-        $bundleMetadatas = array();
+        $bundleMetadatas = [];
         $documentManagers = $this->getDoctrineDocumentManagers();
         foreach ($documentManagers as $dm) {
             $cmf = new DisconnectedClassMetadataFactory();

@@ -3,6 +3,7 @@
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Command;
 
 use Doctrine\Bundle\MongoDBBundle\Command\LoadDataFixturesDoctrineODMCommand;
+use Doctrine\Common\DataFixtures\Loader;
 
 /**
  * @author Henrik Bjornskov <henrik@bjrnskov.dk>
@@ -16,7 +17,7 @@ class LoadDataFixturesDoctrineODMCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testCommandIsNotEnabledWithMissingDependency()
     {
-        if (class_exists('Doctrine\Common\DataFixtures\Loader')) {
+        if (class_exists(Loader::class)) {
             $this->markTestSkipped();
         }
 
@@ -25,7 +26,7 @@ class LoadDataFixturesDoctrineODMCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testCommandIsEnabledWithDependency()
     {
-        if (!class_exists('Doctrine\Common\DataFixtures\Loader')) {
+        if (!class_exists(Loader::class)) {
             $this->markTestSkipped();
         }
 

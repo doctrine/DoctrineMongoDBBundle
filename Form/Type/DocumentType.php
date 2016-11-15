@@ -16,6 +16,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Form\Type;
 
 use Doctrine\Bundle\MongoDBBundle\Form\ChoiceList\MongoDBQueryBuilderLoader;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bridge\Doctrine\Form\Type\DoctrineType;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -47,9 +48,9 @@ class DocumentType extends DoctrineType
     {
         parent::configureOptions($resolver);
 
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'document_manager' => null,
-        ));
+        ]);
 
         $registry = $this->registry;
         $normalizer = function (Options $options, $manager) use ($registry) {
@@ -72,7 +73,7 @@ class DocumentType extends DoctrineType
 
         $resolver->setNormalizer('em', $normalizer);
 
-        $resolver->setAllowedTypes('document_manager', array('null', 'string', 'Doctrine\ODM\MongoDB\DocumentManager'));
+        $resolver->setAllowedTypes('document_manager', ['null', 'string', DocumentManager::class]);
     }
 
     /**

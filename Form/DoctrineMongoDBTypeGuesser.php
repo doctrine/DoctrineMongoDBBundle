@@ -17,6 +17,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\Common\Persistence\Mapping\MappingException;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -38,14 +39,14 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
 {
     protected $registry;
 
-    private $cache = array();
+    private $cache = [];
 
     private $typeFQCN;
 
     public function __construct(ManagerRegistry $registry)
     {
         $this->registry = $registry;
-        $this->typeFQCN = method_exists('\Symfony\Component\Form\AbstractType', 'getBlockPrefix');
+        $this->typeFQCN = method_exists(AbstractType::class, 'getBlockPrefix');
     }
 
     /**
@@ -54,7 +55,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
     public function guessType($class, $property)
     {
         if (!$ret = $this->getMetadata($class)) {
-            return new TypeGuess($this->typeFQCN ? TextType::class : 'text', array(), Guess::LOW_CONFIDENCE);
+            return new TypeGuess($this->typeFQCN ? TextType::class : 'text', [], Guess::LOW_CONFIDENCE);
         }
 
         list($metadata, $name) = $ret;
@@ -65,11 +66,11 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
 
             return new TypeGuess(
                 $this->typeFQCN ? DocumentType::class : 'document',
-                array(
+                [
                     'class' => $mapping['targetDocument'],
                     'multiple' => $multiple,
                     'expanded' => $multiple
-                ),
+                ],
                 Guess::HIGH_CONFIDENCE
             );
         }
@@ -80,38 +81,38 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
             case 'collection':
                 return new TypeGuess(
                     $this->typeFQCN ? CollectionType::class : 'collection',
-                    array(),
+                    [],
                     Guess::MEDIUM_CONFIDENCE
                 );
             case 'boolean':
                 return new TypeGuess(
                     $this->typeFQCN ? CheckboxType::class : 'checkbox',
-                    array(),
+                    [],
                     Guess::HIGH_CONFIDENCE
                 );
             case 'date':
             case 'timestamp':
                 return new TypeGuess(
                     $this->typeFQCN ? DateTimeType::class : 'datetime',
-                    array(),
+                    [],
                     Guess::HIGH_CONFIDENCE
                 );
             case 'float':
                 return new TypeGuess(
                     $this->typeFQCN ? NumberType::class : 'number',
-                    array(),
+                    [],
                     Guess::MEDIUM_CONFIDENCE
                 );
             case 'int':
                 return new TypeGuess(
                     $this->typeFQCN ? IntegerType::class : 'integer',
-                    array(),
+                    [],
                     Guess::MEDIUM_CONFIDENCE
                 );
             case 'string':
                 return new TypeGuess(
                     $this->typeFQCN ? TextType::class : 'text',
-                    array(),
+                    [],
                     Guess::MEDIUM_CONFIDENCE
                 );
         }
@@ -188,7 +189,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
         $this->cache[$class] = null;
         foreach ($this->registry->getManagers() as $name => $dm) {
             try {
-                return $this->cache[$class] = array($dm->getClassMetadata($class), $name);
+                return $this->cache[$class] = [$dm->getClassMetadata($class), $name];
             } catch (MappingException $e) {
                 // not an entity or mapped super class
             }

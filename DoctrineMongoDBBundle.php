@@ -81,7 +81,7 @@ class DoctrineMongoDBBundle extends Bundle
 
                                 foreach ($classes as $classMetadata) {
                                     if ($classMetadata->name == $originalClassName) {
-                                        $dm->getProxyFactory()->generateProxyClasses(array($classMetadata));
+                                        $dm->getProxyFactory()->generateProxyClasses([$classMetadata]);
                                     }
                                 }
                             }

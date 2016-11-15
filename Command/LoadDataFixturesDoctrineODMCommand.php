@@ -15,6 +15,7 @@
 namespace Doctrine\Bundle\MongoDBBundle\Command;
 
 use Doctrine\Common\DataFixtures\Executor\MongoDBExecutor;
+use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\MongoDBPurger;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Component\Console\Input\InputInterface;
@@ -35,7 +36,7 @@ class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
      */
     public function isEnabled()
     {
-        return parent::isEnabled() && class_exists('Doctrine\Common\DataFixtures\Loader');
+        return parent::isEnabled() && class_exists(Loader::class);
     }
 
     protected function configure()
@@ -83,7 +84,7 @@ EOT
         }
 
         if ($dirOrFile) {
-            $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
+            $paths = is_array($dirOrFile) ? $dirOrFile : [$dirOrFile];
         } elseif ($bundles) {
             $kernel = $this->getContainer()->get('kernel');
             foreach ($bundles as $bundle) {
@@ -91,7 +92,7 @@ EOT
             }
         } else {
             $paths = $this->getContainer()->getParameter('doctrine_mongodb.odm.fixtures_dirs');
-            $paths = is_array($paths) ? $paths : array($paths);
+            $paths = is_array($paths) ? $paths : [$paths];
             foreach ($this->getContainer()->get('kernel')->getBundles() as $bundle) {
                 $paths[] = $bundle->getPath().'/DataFixtures/MongoDB';
             }

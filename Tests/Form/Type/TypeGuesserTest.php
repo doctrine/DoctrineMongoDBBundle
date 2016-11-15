@@ -2,8 +2,13 @@
 
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Form\Type;
 
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Category;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Guesser;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\Bundle\MongoDBBundle\Form\DoctrineMongoDBExtension;
+use Doctrine\Common\Persistence\ManagerRegistry;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Test\TypeTestCase;
 use Symfony\Component\HttpKernel\Kernel;
 
@@ -26,11 +31,11 @@ class TypeGuesserTest extends TypeTestCase
 
     public function setUp()
     {
-        $this->typeFQCN = method_exists('\Symfony\Component\Form\AbstractType', 'getBlockPrefix');
+        $this->typeFQCN = method_exists(AbstractType::class, 'getBlockPrefix');
 
-        $this->dm = TestCase::createTestDocumentManager(array(
+        $this->dm = TestCase::createTestDocumentManager([
             __DIR__ . '/../../Fixtures/Form/Guesser',
-        ));
+        ]);
         $this->dmRegistry = $this->createRegistryMock('default', $this->dm);
 
         parent::setUp();
@@ -38,11 +43,11 @@ class TypeGuesserTest extends TypeTestCase
 
     protected function tearDown()
     {
-        $documentClasses = array(
-            'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document',
-            'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Category',
-            'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Guesser',
-        );
+        $documentClasses = [
+            Document::class,
+            Category::class,
+            Guesser::class,
+        ];
 
         foreach ($documentClasses as $class) {
             $this->dm->getDocumentCollection($class)->drop();
@@ -72,7 +77,7 @@ class TypeGuesserTest extends TypeTestCase
 
     protected function createRegistryMock($name, $dm)
     {
-        $registry = $this->getMock('Doctrine\Common\Persistence\ManagerRegistry');
+        $registry = $this->createMock(ManagerRegistry::class);
         $registry->expects($this->any())
             ->method('getManager')
             ->with($this->equalTo($name))
@@ -89,8 +94,8 @@ class TypeGuesserTest extends TypeTestCase
      */
     protected function getExtensions()
     {
-        return array_merge(parent::getExtensions(), array(
+        return array_merge(parent::getExtensions(), [
             new DoctrineMongoDBExtension($this->dmRegistry),
-        ));
+        ]);
     }
 }

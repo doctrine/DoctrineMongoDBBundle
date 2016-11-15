@@ -16,6 +16,8 @@ namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
+use Doctrine\ODM\MongoDB\DocumentRepository;
+use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -77,9 +79,9 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('persistent_collection_dir')->defaultValue('%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections')->end()
                 ->scalarNode('auto_generate_persistent_collection_classes')->defaultValue(ODMConfiguration::AUTOGENERATE_NEVER)->end()
                 ->scalarNode('fixture_loader')
-                    ->defaultValue('Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader')
+                    ->defaultValue(ContainerAwareLoader::class)
                     ->beforeNormalization()
-                        ->ifTrue(function($v) {return !($v == 'Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader' || in_array('Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader', class_parents($v)));})
+                        ->ifTrue(function($v) {return !($v == ContainerAwareLoader::class || in_array(ContainerAwareLoader::class, class_parents($v)));})
                         ->then(function($v) { throw new \LogicException(sprintf("The %s class is not a subclass of the ContainerAwareLoader", $v));})
                     ->end()
                 ->end()
@@ -118,7 +120,7 @@ class Configuration implements ConfigurationInterface
                     ->useAttributeAsKey('id')
                     ->requiresAtLeastOneElement()
                     ->prototype('array')
-                        ->treatNullLike(array())
+                        ->treatNullLike([])
                         ->fixXmlConfig('filter')
                         ->children()
                             ->scalarNode('connection')->end()
@@ -126,14 +128,14 @@ class Configuration implements ConfigurationInterface
                             ->booleanNode('logging')->defaultValue('%kernel.debug%')->end()
                             ->arrayNode('profiler')
                                 ->addDefaultsIfNotSet()
-                                ->treatTrueLike(array('enabled' => true))
-                                ->treatFalseLike(array('enabled' => false))
+                                ->treatTrueLike(['enabled' => true])
+                                ->treatFalseLike(['enabled' => false])
                                 ->children()
                                     ->booleanNode('enabled')->defaultValue('%kernel.debug%')->end()
                                     ->booleanNode('pretty')->defaultValue('%kernel.debug%')->end()
                                 ->end()
                             ->end()
-                            ->scalarNode('default_repository_class')->defaultValue('Doctrine\ODM\MongoDB\DocumentRepository')->end()
+                            ->scalarNode('default_repository_class')->defaultValue(DocumentRepository::class)->end()
                             ->scalarNode('repository_factory')->defaultNull()->end()
                             ->scalarNode('persistent_collection_factory')->defaultNull()->end()
                             ->booleanNode('auto_mapping')->defaultFalse()->end()
@@ -143,7 +145,7 @@ class Configuration implements ConfigurationInterface
                                     ->fixXmlConfig('parameter')
                                     ->beforeNormalization()
                                         ->ifString()
-                                        ->then(function($v) { return array('class' => $v); })
+                                        ->then(function($v) { return ['class' => $v]; })
                                     ->end()
                                     ->beforeNormalization()
                                         // The content of the XML node is returned as the "value" key so we need to rename it
@@ -159,7 +161,7 @@ class Configuration implements ConfigurationInterface
                                         ->scalarNode('class')->isRequired()->end()
                                         ->booleanNode('enabled')->defaultFalse()->end()
                                         ->arrayNode('parameters')
-                                            ->treatNullLike(array())
+                                            ->treatNullLike([])
                                             ->useAttributeAsKey('name')
                                             ->prototype('variable')
                                                 ->beforeNormalization()
@@ -179,7 +181,7 @@ class Configuration implements ConfigurationInterface
                                 ->addDefaultsIfNotSet()
                                 ->beforeNormalization()
                                     ->ifString()
-                                    ->then(function($v) { return array('type' => $v); })
+                                    ->then(function($v) { return ['type' => $v]; })
                                 ->end()
                                 ->children()
                                     ->scalarNode('type')->defaultValue('array')->end()
@@ -199,10 +201,10 @@ class Configuration implements ConfigurationInterface
                                 ->prototype('array')
                                     ->beforeNormalization()
                                         ->ifString()
-                                        ->then(function($v) { return array ('type' => $v); })
+                                        ->then(function($v) { return ['type' => $v]; })
                                     ->end()
-                                    ->treatNullLike(array())
-                                    ->treatFalseLike(array('mapping' => false))
+                                    ->treatNullLike([])
+                                    ->treatFalseLike(['mapping' => false])
                                     ->performNoDeepMerging()
                                     ->children()
                                         ->scalarNode('mapping')->defaultValue(true)->end()
@@ -242,7 +244,7 @@ class Configuration implements ConfigurationInterface
                                 ->performNoDeepMerging()
                                 ->children()
                                     ->enumNode('authMechanism')
-                                        ->values(array('SCRAM-SHA-1', 'MONGODB-CR', 'X509', 'PLAIN', 'GSSAPI'))
+                                        ->values(['SCRAM-SHA-1', 'MONGODB-CR', 'X509', 'PLAIN', 'GSSAPI'])
                                     ->end()
                                     ->booleanNode('connect')->end()
                                     ->integerNode('connectTimeoutMS')->end()
@@ -252,7 +254,7 @@ class Configuration implements ConfigurationInterface
                                         ->validate()->ifNull()->thenUnset()->end()
                                     ->end()
                                     ->enumNode('readPreference')
-                                        ->values(array('primary', 'primaryPreferred', 'secondary', 'secondaryPreferred', 'nearest'))
+                                        ->values(['primary', 'primaryPreferred', 'secondary', 'secondaryPreferred', 'nearest'])
                                     ->end()
                                     ->arrayNode('readPreferenceTags')
                                         ->performNoDeepMerging()
@@ -263,7 +265,7 @@ class Configuration implements ConfigurationInterface
                                                 ->then(function($v) {
                                                     // Equivalent of fixXmlConfig() for inner node
                                                     if (isset($v['readPreferenceTag']['name'])) {
-                                                        $v['readPreferenceTag'] = array($v['readPreferenceTag']);
+                                                        $v['readPreferenceTag'] = [$v['readPreferenceTag']];
                                                     }
 
                                                     return $v['readPreferenceTag'];
