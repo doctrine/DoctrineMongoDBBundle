@@ -107,6 +107,9 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                         'w'                 => 'majority',
                         'wTimeoutMS'        => 1000,
                     ],
+                    'driverOptions' => [
+                        'context' => 'conn1_context_service',
+                    ],
                 ],
                 'conn2' => [
                     'server'  => 'mongodb://otherhost',
