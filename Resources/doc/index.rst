@@ -41,8 +41,8 @@ To install DoctrineMongoDBBundle with Composer just add the following to your
 
     {
         "require": {
-            "doctrine/mongodb-odm": "~1.0",
-            "doctrine/mongodb-odm-bundle": "~3.0"
+            "doctrine/mongodb-odm": "^1.0",
+            "doctrine/mongodb-odm-bundle": "^3.0"
         },
     }
 
@@ -93,7 +93,8 @@ the MongoDB ODM across your application:
 .. code-block:: yaml
 
     # app/config/parameters.yml
-    mongodb_server: "mongodb://localhost:27017"
+    parameters:
+        mongodb_server: "mongodb://localhost:27017"
 
 .. code-block:: yaml
 
@@ -306,7 +307,7 @@ Let's walk through this example:
   to and from MongoDB;
 
 * **line 13** The ``persist()`` method tells Doctrine to "manage" the ``$product``
-  object. This does not actually cause a query to be made to MongoDB (yet).
+  object. This does not actually cause a query to be made to MongoDB (yet);
 
 * **line 14** When the ``flush()`` method is called, Doctrine looks through
   all of the objects that it's managing to see if they need to be persisted
@@ -385,7 +386,7 @@ Once you have your repository, you have access to all sorts of helpful methods::
     Of course, you can also issue complex queries, which you'll learn more
     about in the `Querying for Objects`_ section.
 
-You can also take advantage of the useful ``findBy`` and ``findOneBy`` methods
+You can also take advantage of the useful ``findBy()`` and ``findOneBy()`` methods
 to easily fetch objects based on multiple conditions::
 
     // query for one product matching be name and price
@@ -394,7 +395,7 @@ to easily fetch objects based on multiple conditions::
     // query for all products matching the name, ordered by price
     $product = $repository->findBy(
         array('name' => 'foo'),
-        array('price' => 'ASC')
+        array('price' => 'ASC'),
     );
 
 Updating an Object
@@ -415,14 +416,14 @@ you have a route that maps a product id to an update action in a controller::
         $product->setName('New product name!');
         $dm->flush();
 
-        return $this->redirect($this->generateUrl('homepage'));
+        return $this->redirectToRoute('homepage');
     }
 
 Updating an object involves just three steps:
 
-1. fetching the object from Doctrine;
-2. modifying the object;
-3. calling ``flush()`` on the document manager
+1. Fetching the object from Doctrine;
+2. Modifying the object;
+3. Calling ``flush()`` on the document manager.
 
 Notice that calling ``$dm->persist($product)`` isn't necessary. Recall that
 this method simply tells Doctrine to manage or "watch" the ``$product`` object.
@@ -462,8 +463,8 @@ From inside a controller::
         ->getManager()
         ->createQueryBuilder('AcmeStoreBundle:Product')
         ->field('name')->equals('foo')
-        ->limit(10)
         ->sort('price', 'ASC')
+        ->limit(10)
         ->getQuery()
         ->execute()
 
@@ -525,7 +526,7 @@ To do this, add the name of the repository class to your mapping definition.
 
         </doctrine-mong-mapping>
 
-Doctrine can generate the repository class for you by running :
+Doctrine can generate the repository class for you by running:
 
 .. code-block:: bash
 
