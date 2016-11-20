@@ -587,13 +587,13 @@ Doctrine comes with a large number of field types available. Each of these
 maps a PHP data type to a specific `MongoDB type`_. The following are just *some*
 of the types supported by Doctrine:
 
-* ``string``
-* ``int``
-* ``float``
-* ``date``
-* ``timestamp``
 * ``boolean``
+* ``date``
 * ``file``
+* ``float``
+* ``int``
+* ``string``
+* ``timestamp``
 
 For more information, see Doctrine's `Mapping Types documentation`_.
 
