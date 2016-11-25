@@ -29,12 +29,12 @@ use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 class ProxyCacheWarmer implements CacheWarmerInterface
 {
     /**
-     * @var Container
+     * @var ContainerInterface
      */
     private $container;
 
     /**
-     * @param Container $container
+     * @param ContainerInterface $container
      */
     public function __construct(ContainerInterface $container)
     {

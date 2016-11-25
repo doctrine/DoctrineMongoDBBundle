@@ -15,6 +15,7 @@
 namespace Doctrine\Bundle\MongoDBBundle\Logger;
 
 use Symfony\Component\HttpKernel\Log\LoggerInterface as SymfonyLogger;
+use Psr\Log\LoggerInterface as PsrLogger;
 
 /**
  * A lightweight query logger.
@@ -25,17 +26,23 @@ class Logger implements LoggerInterface
 {
     private $logger;
     private $prefix;
-    private $batchInsertTreshold;
+    private $batchInsertThreshold;
 
-    public function __construct(SymfonyLogger $logger = null, $prefix = 'MongoDB query: ')
+    public function __construct($logger = null, $prefix = 'MongoDB query: ')
     {
+        if (!$logger instanceof PsrLogger && !$logger instanceof SymfonyLogger) {
+            throw new \InvalidArgumentException(
+                'Argument 1 of '.__METHOD__.' Must be an instance of Psr\Log\LoggerInterface or Symfony\Component\HttpKernel\Log\LoggerInterface.'
+            );
+        }
+
         $this->logger = $logger;
         $this->prefix = $prefix;
     }
 
-    public function setBatchInsertThreshold($batchInsertTreshold)
+    public function setBatchInsertThreshold($batchInsertThreshold)
     {
-        $this->batchInsertTreshold = $batchInsertTreshold;
+        $this->batchInsertThreshold = $batchInsertThreshold;
     }
 
     public function logQuery(array $query)
@@ -44,7 +51,7 @@ class Logger implements LoggerInterface
             return;
         }
 
-        if (isset($query['batchInsert']) && null !== $this->batchInsertTreshold && $this->batchInsertTreshold <= $query['num']) {
+        if (isset($query['batchInsert']) && null !== $this->batchInsertThreshold && $this->batchInsertThreshold <= $query['num']) {
             $query['data'] = '**'.$query['num'].' item(s)**';
         }
 

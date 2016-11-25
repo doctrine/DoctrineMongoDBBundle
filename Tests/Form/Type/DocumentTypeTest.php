@@ -47,7 +47,10 @@ class DocumentTypeTest extends TypeTestCase
 
     public function testDocumentManagerOptionSetsEmOption()
     {
-        $field = $this->factory->createNamed('name', 'document', null, array(
+        $typeClass = method_exists('Symfony\Component\Form\AbstractType', 'getBlockPrefix')
+            ? 'Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType' : 'document';
+
+        $field = $this->factory->createNamed('name', $typeClass, null, array(
             'class' => 'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document',
             'document_manager' => 'default',
         ));
@@ -60,7 +63,10 @@ class DocumentTypeTest extends TypeTestCase
      */
     public function testSettingDocumentManagerAndEmOptionShouldThrowException()
     {
-        $field = $this->factory->createNamed('name', 'document', null, array(
+        $typeClass = method_exists('Symfony\Component\Form\AbstractType', 'getBlockPrefix')
+            ? 'Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType' : 'document';
+
+        $field = $this->factory->createNamed('name', $typeClass, null, array(
             'document_manager' => 'default',
             'em' => 'default',
         ));
