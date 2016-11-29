@@ -163,7 +163,7 @@ class PrettyDataCollector extends StandardDataCollector
                 } elseif (isset($log['save'])) {
                     $query .= '.save('.$this->bsonEncode($log['document']).')';
                 } elseif (isset($log['sort'])) {
-                    $query .= '.sort('.$this->bsonEncode($log['sortFields']).')';
+                    $query .= '.sort('.$this->bsonEncode($log['sortFields'], false).')';
                 } elseif (isset($log['update'])) {
                     // todo: include $log['options']
                     $query .= '.update('.$this->bsonEncode($log['query']).', '.$this->bsonEncode($log['newObj']).')';
