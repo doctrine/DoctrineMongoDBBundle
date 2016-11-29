@@ -162,4 +162,54 @@ class PrettyDataCollectorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(2, $collector->getQueryCount());
         $this->assertEquals($formatted, $collector->getQueries());
     }
+
+    public function testCollectSort()
+    {
+        $queries = [
+            [
+                'find' => true,
+                'query' => ['_id' => 'foo'],
+                'fields' => [],
+                'db' => 'foo',
+                'collection' => 'User',
+            ],
+            [
+                'sort' => true,
+                'sortFields' => ['name' => 1, 'city' => -1],
+                'query' => ['_id' => 'foo'],
+                'fields' => [],
+            ],
+            [
+                'find' => true,
+                'query' => [
+                    '_id' => '5506fa1580c7e1ee3c8b4c60',
+                ],
+                'fields' => [],
+                'db' => 'foo',
+                'collection' => 'Group',
+            ],
+            [
+                'sort' => true,
+                'sortFields' => [],
+                'query' => [
+                    '_id' => '5506fa1580c7e1ee3c8b4c60',
+                ],
+                'fields' => [],
+            ],
+        ];
+        $formatted = [
+            'use foo;',
+            'db.User.find({ "_id": "foo" }).sort({ "name": 1, "city": -1 });',
+            'db.Group.find({ "_id": "5506fa1580c7e1ee3c8b4c60" }).sort({ });'
+        ];
+
+        $collector = new PrettyDataCollector();
+        foreach ($queries as $query) {
+            $collector->logQuery($query);
+        }
+        $collector->collect(new Request(), new Response());
+
+        $this->assertEquals(2, $collector->getQueryCount());
+        $this->assertEquals($formatted, $collector->getQueries());
+    }
 }
