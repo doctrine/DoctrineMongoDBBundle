@@ -18,7 +18,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  */
 class ManagerConfigurator
 {
-    private $enabledFilters = array();
+    private $enabledFilters = [];
 
     /**
      * Construct.

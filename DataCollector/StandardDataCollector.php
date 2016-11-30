@@ -30,7 +30,7 @@ class StandardDataCollector extends DataCollector implements LoggerInterface
 
     public function __construct()
     {
-        $this->queries = array();
+        $this->queries = [];
     }
 
     public function logQuery(array $query)

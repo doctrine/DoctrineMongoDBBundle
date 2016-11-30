@@ -16,9 +16,10 @@ namespace Doctrine\Bundle\MongoDBBundle\Form\Type;
 
 use Doctrine\Bundle\MongoDBBundle\Form\ChoiceList\MongoDBQueryBuilderLoader;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bridge\Doctrine\Form\Type\DoctrineType;
 use Symfony\Component\OptionsResolver\Options;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Form type for a MongoDB document
@@ -41,15 +42,15 @@ class DocumentType extends DoctrineType
     }
 
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
-        parent::setDefaultOptions($resolver);
+        parent::configureOptions($resolver);
 
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'document_manager' => null,
-        ));
+        ]);
 
         $registry = $this->registry;
         $normalizer = function (Options $options, $manager) use ($registry) {
@@ -63,19 +64,39 @@ class DocumentType extends DoctrineType
                 return $registry->getManagerForClass($options['class']);
             }
 
+            if ($manager instanceof ObjectManager) {
+                return $manager;
+            }
+
             return $registry->getManager($manager);
         };
 
-        $resolver->setNormalizers(array(
-            'em' => $normalizer,
-        ));
+        $resolver->setNormalizer('em', $normalizer);
+
+        $resolver->setAllowedTypes('document_manager', ['null', 'string', DocumentManager::class]);
     }
 
     /**
-     * @see Symfony\Component\Form\FormTypeInterface::getName()
+     * @inheritdoc
+     *
+     * @internal Symfony 2.8 compatibility
+     *
+     * @return string
+     */
+    public function getBlockPrefix()
+    {
+        return 'document';
+    }
+
+    /**
+     * @inheritdoc
+     *
+     * @internal Symfony 2.7 compatibility
+     *
+     * @return string
      */
     public function getName()
     {
-        return 'document';
+        return $this->getBlockPrefix();
     }
 }

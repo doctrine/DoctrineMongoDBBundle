@@ -14,6 +14,10 @@
 
 namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 
+use Doctrine\Common\Proxy\AbstractProxyFactory;
+use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
+use Doctrine\ODM\MongoDB\DocumentRepository;
+use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -43,10 +47,44 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('proxy_namespace')->defaultValue('MongoDBODMProxies')->end()
                 ->scalarNode('proxy_dir')->defaultValue('%kernel.cache_dir%/doctrine/odm/mongodb/Proxies')->end()
-                ->scalarNode('auto_generate_proxy_classes')->defaultValue(false)->end()
+                ->scalarNode('auto_generate_proxy_classes')
+                    ->defaultValue(AbstractProxyFactory::AUTOGENERATE_NEVER)
+                    ->beforeNormalization()
+                    ->always(function($v) {
+                        if ($v === false) {
+                            return AbstractProxyFactory::AUTOGENERATE_NEVER;
+                        } elseif ($v === true) {
+                            return AbstractProxyFactory::AUTOGENERATE_ALWAYS;
+                        }
+                        return $v;
+                    })
+                    ->end()
+                ->end()
                 ->scalarNode('hydrator_namespace')->defaultValue('Hydrators')->end()
                 ->scalarNode('hydrator_dir')->defaultValue('%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators')->end()
-                ->scalarNode('auto_generate_hydrator_classes')->defaultValue(false)->end()
+                ->scalarNode('auto_generate_hydrator_classes')
+                    ->defaultValue(ODMConfiguration::AUTOGENERATE_NEVER)
+                    ->beforeNormalization()
+                    ->always(function($v) {
+                        if ($v === false) {
+                            return ODMConfiguration::AUTOGENERATE_NEVER;
+                        } elseif ($v === true) {
+                            return ODMConfiguration::AUTOGENERATE_ALWAYS;
+                        }
+                        return $v;
+                    })
+                    ->end()
+                ->end()
+                ->scalarNode('persistent_collection_namespace')->defaultValue('PersistentCollections')->end()
+                ->scalarNode('persistent_collection_dir')->defaultValue('%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections')->end()
+                ->scalarNode('auto_generate_persistent_collection_classes')->defaultValue(ODMConfiguration::AUTOGENERATE_NEVER)->end()
+                ->scalarNode('fixture_loader')
+                    ->defaultValue(ContainerAwareLoader::class)
+                    ->beforeNormalization()
+                        ->ifTrue(function($v) {return !($v == ContainerAwareLoader::class || in_array(ContainerAwareLoader::class, class_parents($v)));})
+                        ->then(function($v) { throw new \LogicException(sprintf("The %s class is not a subclass of the ContainerAwareLoader", $v));})
+                    ->end()
+                ->end()
                 ->scalarNode('default_document_manager')->end()
                 ->scalarNode('default_connection')->end()
                 ->scalarNode('default_database')->defaultValue('default')->end()
@@ -54,9 +92,9 @@ class Configuration implements ConfigurationInterface
                     ->addDefaultsIfNotSet()
                     ->children()
                         ->booleanNode('j')->end()
-                        ->scalarNode('timeout')->end()
+                        ->integerNode('timeout')->end()
                         ->scalarNode('w')->end()
-                        ->scalarNode('wtimeout')->end()
+                        ->integerNode('wtimeout')->end()
                         // Deprecated options
                         ->booleanNode('fsync')->info('Deprecated. Please use the "j" option instead.')->end()
                         ->scalarNode('safe')->info('Deprecated. Please use the "w" option instead.')->end()
@@ -80,8 +118,9 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->arrayNode('document_managers')
                     ->useAttributeAsKey('id')
+                    ->requiresAtLeastOneElement()
                     ->prototype('array')
-                        ->treatNullLike(array())
+                        ->treatNullLike([])
                         ->fixXmlConfig('filter')
                         ->children()
                             ->scalarNode('connection')->end()
@@ -89,13 +128,16 @@ class Configuration implements ConfigurationInterface
                             ->booleanNode('logging')->defaultValue('%kernel.debug%')->end()
                             ->arrayNode('profiler')
                                 ->addDefaultsIfNotSet()
-                                ->treatTrueLike(array('enabled' => true))
-                                ->treatFalseLike(array('enabled' => false))
+                                ->treatTrueLike(['enabled' => true])
+                                ->treatFalseLike(['enabled' => false])
                                 ->children()
                                     ->booleanNode('enabled')->defaultValue('%kernel.debug%')->end()
                                     ->booleanNode('pretty')->defaultValue('%kernel.debug%')->end()
                                 ->end()
                             ->end()
+                            ->scalarNode('default_repository_class')->defaultValue(DocumentRepository::class)->end()
+                            ->scalarNode('repository_factory')->defaultNull()->end()
+                            ->scalarNode('persistent_collection_factory')->defaultNull()->end()
                             ->booleanNode('auto_mapping')->defaultFalse()->end()
                             ->arrayNode('filters')
                                 ->useAttributeAsKey('name')
@@ -103,7 +145,7 @@ class Configuration implements ConfigurationInterface
                                     ->fixXmlConfig('parameter')
                                     ->beforeNormalization()
                                         ->ifString()
-                                        ->then(function($v) { return array('class' => $v); })
+                                        ->then(function($v) { return ['class' => $v]; })
                                     ->end()
                                     ->beforeNormalization()
                                         // The content of the XML node is returned as the "value" key so we need to rename it
@@ -119,7 +161,7 @@ class Configuration implements ConfigurationInterface
                                         ->scalarNode('class')->isRequired()->end()
                                         ->booleanNode('enabled')->defaultFalse()->end()
                                         ->arrayNode('parameters')
-                                            ->treatNullLike(array())
+                                            ->treatNullLike([])
                                             ->useAttributeAsKey('name')
                                             ->prototype('variable')
                                                 ->beforeNormalization()
@@ -133,19 +175,19 @@ class Configuration implements ConfigurationInterface
                                     ->end()
                                 ->end()
                             ->end()
-                            ->scalarNode('retry_connect')->defaultValue(0)->end()
-                            ->scalarNode('retry_query')->defaultValue(0)->end()
+                            ->integerNode('retry_connect')->defaultValue(0)->end()
+                            ->integerNode('retry_query')->defaultValue(0)->end()
                             ->arrayNode('metadata_cache_driver')
                                 ->addDefaultsIfNotSet()
                                 ->beforeNormalization()
                                     ->ifString()
-                                    ->then(function($v) { return array('type' => $v); })
+                                    ->then(function($v) { return ['type' => $v]; })
                                 ->end()
                                 ->children()
                                     ->scalarNode('type')->defaultValue('array')->end()
                                     ->scalarNode('class')->end()
                                     ->scalarNode('host')->end()
-                                    ->scalarNode('port')->end()
+                                    ->integerNode('port')->end()
                                     ->scalarNode('instance_class')->end()
                                     ->scalarNode('id')->end()
                                     ->scalarNode('namespace')->end()
@@ -159,10 +201,10 @@ class Configuration implements ConfigurationInterface
                                 ->prototype('array')
                                     ->beforeNormalization()
                                         ->ifString()
-                                        ->then(function($v) { return array ('type' => $v); })
+                                        ->then(function($v) { return ['type' => $v]; })
                                     ->end()
-                                    ->treatNullLike(array())
-                                    ->treatFalseLike(array('mapping' => false))
+                                    ->treatNullLike([])
+                                    ->treatFalseLike(['mapping' => false])
                                     ->performNoDeepMerging()
                                     ->children()
                                         ->scalarNode('mapping')->defaultValue(true)->end()
@@ -192,6 +234,7 @@ class Configuration implements ConfigurationInterface
             ->fixXmlConfig('connection')
             ->children()
                 ->arrayNode('connections')
+                    ->requiresAtLeastOneElement()
                     ->useAttributeAsKey('id')
                     ->prototype('array')
                         ->performNoDeepMerging()
@@ -201,17 +244,17 @@ class Configuration implements ConfigurationInterface
                                 ->performNoDeepMerging()
                                 ->children()
                                     ->enumNode('authMechanism')
-                                        ->values(array('MONGODB-CR', 'X509', 'PLAIN', 'GSSAPI'))
+                                        ->values(['SCRAM-SHA-1', 'MONGODB-CR', 'X509', 'PLAIN', 'GSSAPI'])
                                     ->end()
                                     ->booleanNode('connect')->end()
-                                    ->scalarNode('connectTimeoutMS')->end()
+                                    ->integerNode('connectTimeoutMS')->end()
                                     ->scalarNode('db')->end()
                                     ->booleanNode('journal')->end()
                                     ->scalarNode('password')
                                         ->validate()->ifNull()->thenUnset()->end()
                                     ->end()
                                     ->enumNode('readPreference')
-                                        ->values(array('primary', 'primaryPreferred', 'secondary', 'secondaryPreferred', 'nearest'))
+                                        ->values(['primary', 'primaryPreferred', 'secondary', 'secondaryPreferred', 'nearest'])
                                     ->end()
                                     ->arrayNode('readPreferenceTags')
                                         ->performNoDeepMerging()
@@ -222,7 +265,7 @@ class Configuration implements ConfigurationInterface
                                                 ->then(function($v) {
                                                     // Equivalent of fixXmlConfig() for inner node
                                                     if (isset($v['readPreferenceTag']['name'])) {
-                                                        $v['readPreferenceTag'] = array($v['readPreferenceTag']);
+                                                        $v['readPreferenceTag'] = [$v['readPreferenceTag']];
                                                     }
 
                                                     return $v['readPreferenceTag'];
@@ -235,18 +278,18 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('replicaSet')
                                         ->validate()->ifTrue(function ($v) { return !is_string($v); })->thenInvalid('The replicaSet option must be a string')->end()
                                     ->end()
-                                    ->scalarNode('socketTimeoutMS')->end()
+                                    ->integerNode('socketTimeoutMS')->end()
                                     ->booleanNode('ssl')->end()
                                     ->scalarNode('username')
                                         ->validate()->ifNull()->thenUnset()->end()
                                     ->end()
                                     ->scalarNode('w')->end()
-                                    ->scalarNode('wTimeoutMS')->end()
+                                    ->integerNode('wTimeoutMS')->end()
                                     // Deprecated options
                                     ->booleanNode('fsync')->info('Deprecated. Please use the "journal" option instead.')->end()
                                     ->booleanNode('slaveOkay')->info('Deprecated. Please use the "readPreference" option instead.')->end()
-                                    ->scalarNode('timeout')->info('Deprecated. Please use the "connectTimeoutMS" option instead.')->end()
-                                    ->scalarNode('wTimeout')->info('Deprecated. Please use the "wTimeoutMS" option instead.')->end()
+                                    ->integerNode('timeout')->info('Deprecated. Please use the "connectTimeoutMS" option instead.')->end()
+                                    ->integerNode('wTimeout')->info('Deprecated. Please use the "wTimeoutMS" option instead.')->end()
                                 ->end()
                                 ->validate()
                                     ->ifTrue(function($v) { return count($v['readPreferenceTags']) === 0; })

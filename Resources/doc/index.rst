@@ -8,7 +8,7 @@ DoctrineMongoDBBundle
    form
 
 The `MongoDB`_ Object Document Mapper (ODM) is much like the Doctrine2 ORM
-in its philosophy and how it works. In other words, like the :doc:`Doctrine2 ORM</book/doctrine>`,
+in its philosophy and how it works. In other words, like the `Doctrine2 ORM`_,
 with the Doctrine ODM, you deal only with plain PHP objects, which are then
 persisted transparently to and from MongoDB.
 
@@ -21,7 +21,7 @@ making it easy to configure and use.
 
 .. note::
 
-    This chapter will feel a lot like the :doc:`Doctrine2 ORM chapter</book/doctrine>`,
+    This chapter will feel a lot like the `Doctrine2 ORM chapter`_,
     which talks about how the Doctrine ORM can be used to persist data to
     relational databases (e.g. MySQL). This is on purpose - whether you persist
     to a relational database via the ORM or MongoDB via the ODM, the philosophies
@@ -41,8 +41,8 @@ To install DoctrineMongoDBBundle with Composer just add the following to your
 
     {
         "require": {
-            "doctrine/mongodb-odm": "~1.0",
-            "doctrine/mongodb-odm-bundle": "~3.0"
+            "doctrine/mongodb-odm": "^1.0",
+            "doctrine/mongodb-odm-bundle": "^3.0"
         },
     }
 
@@ -92,11 +92,17 @@ the MongoDB ODM across your application:
 
 .. code-block:: yaml
 
+    # app/config/parameters.yml
+    parameters:
+        mongodb_server: "mongodb://localhost:27017"
+
+.. code-block:: yaml
+
     # app/config/config.yml
     doctrine_mongodb:
         connections:
             default:
-                server: mongodb://localhost:27017
+                server: "%mongodb_server%"
                 options: {}
         default_database: test_database
         document_managers:
@@ -122,7 +128,7 @@ documents to and from MongoDB.
 
     .. code-block:: bash
 
-        php app/console generate:bundle --namespace=Acme/StoreBundle
+        php bin/console generate:bundle --namespace=Acme/StoreBundle
 
 Creating a Document Class
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -182,12 +188,12 @@ in a number of different formats including YAML, XML or directly inside the
             protected $id;
 
             /**
-             * @MongoDB\String
+             * @MongoDB\Field(type="string")
              */
             protected $name;
 
             /**
-             * @MongoDB\Float
+             * @MongoDB\Field(type="float")
              */
             protected $price;
         }
@@ -243,7 +249,7 @@ PHP class, you need to create getter and setter methods (e.g. ``getName()``,
 
 .. code-block:: bash
 
-    php app/console doctrine:mongodb:generate:documents AcmeStoreBundle
+    php bin/console doctrine:mongodb:generate:documents AcmeStoreBundle
 
 This command makes sure that all of the getters and setters are generated
 for the ``Product`` class. This is a safe command - you can run it over and
@@ -301,7 +307,7 @@ Let's walk through this example:
   to and from MongoDB;
 
 * **line 13** The ``persist()`` method tells Doctrine to "manage" the ``$product``
-  object. This does not actually cause a query to be made to MongoDB (yet).
+  object. This does not actually cause a query to be made to MongoDB (yet);
 
 * **line 14** When the ``flush()`` method is called, Doctrine looks through
   all of the objects that it's managing to see if they need to be persisted
@@ -322,7 +328,7 @@ they already exist in MongoDB.
 
     Doctrine provides a library that allows you to programmatically load testing
     data into your project (i.e. "fixture data"). For information, see
-    :doc:`/bundles/DoctrineFixturesBundle/index`.
+    `DoctrineFixturesBundle`_.
 
 Fetching Objects from MongoDB
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -378,9 +384,9 @@ Once you have your repository, you have access to all sorts of helpful methods::
 .. note::
 
     Of course, you can also issue complex queries, which you'll learn more
-    about in the :ref:`book-doctrine-queries` section.
+    about in the `Querying for Objects`_ section.
 
-You can also take advantage of the useful ``findBy`` and ``findOneBy`` methods
+You can also take advantage of the useful ``findBy()`` and ``findOneBy()`` methods
 to easily fetch objects based on multiple conditions::
 
     // query for one product matching be name and price
@@ -389,7 +395,7 @@ to easily fetch objects based on multiple conditions::
     // query for all products matching the name, ordered by price
     $product = $repository->findBy(
         array('name' => 'foo'),
-        array('price', 'ASC')
+        array('price' => 'ASC'),
     );
 
 Updating an Object
@@ -410,14 +416,14 @@ you have a route that maps a product id to an update action in a controller::
         $product->setName('New product name!');
         $dm->flush();
 
-        return $this->redirect($this->generateUrl('homepage'));
+        return $this->redirectToRoute('homepage');
     }
 
 Updating an object involves just three steps:
 
-1. fetching the object from Doctrine;
-2. modifying the object;
-3. calling ``flush()`` on the document manager
+1. Fetching the object from Doctrine;
+2. Modifying the object;
+3. Calling ``flush()`` on the document manager.
 
 Notice that calling ``$dm->persist($product)`` isn't necessary. Recall that
 this method simply tells Doctrine to manage or "watch" the ``$product`` object.
@@ -457,8 +463,8 @@ From inside a controller::
         ->getManager()
         ->createQueryBuilder('AcmeStoreBundle:Product')
         ->field('name')->equals('foo')
-        ->limit(10)
         ->sort('price', 'ASC')
+        ->limit(10)
         ->getQuery()
         ->execute()
 
@@ -520,11 +526,11 @@ To do this, add the name of the repository class to your mapping definition.
 
         </doctrine-mong-mapping>
 
-Doctrine can generate the repository class for you by running :
+Doctrine can generate the repository class for you by running:
 
 .. code-block:: bash
 
-    php app/console doctrine:mongodb:generate:repositories AcmeStoreBundle
+    php bin/console doctrine:mongodb:generate:repositories AcmeStoreBundle
 
 Next, add a new method - ``findAllOrderedByName()`` - to the newly generated
 repository class. This method will query for all of the ``Product`` documents,
@@ -570,7 +576,7 @@ These include thing such as *Sluggable*, *Timestampable*, *Loggable*, *Translata
 and *Tree*.
 
 For more information on how to find and use these extensions, see the cookbook
-article about :doc:`using common Doctrine extensions</cookbook/doctrine/common_extensions>`.
+article about `using common Doctrine extensions`_.
 
 .. _cookbook-mongodb-field-types:
 
@@ -581,13 +587,13 @@ Doctrine comes with a large number of field types available. Each of these
 maps a PHP data type to a specific `MongoDB type`_. The following are just *some*
 of the types supported by Doctrine:
 
-* ``string``
-* ``int``
-* ``float``
-* ``date``
-* ``timestamp``
 * ``boolean``
+* ``date``
 * ``file``
+* ``float``
+* ``int``
+* ``string``
+* ``timestamp``
 
 For more information, see Doctrine's `Mapping Types documentation`_.
 
@@ -604,7 +610,7 @@ without any arguments:
 
 .. code-block:: bash
 
-    php app/console
+    php bin/console
 
 A list of available command will print out, many of which start with the
 ``doctrine:mongodb`` prefix. You can find out more information about any
@@ -613,14 +619,13 @@ For example, to get details about the ``doctrine:mongodb:query`` task, run:
 
 .. code-block:: bash
 
-    php app/console help doctrine:mongodb:query
+    php bin/console help doctrine:mongodb:query
 
 .. note::
 
    To be able to load data fixtures into MongoDB, you will need to have the
    ``DoctrineFixturesBundle`` bundle installed. To learn how to do it, read
-   the ":doc:`/bundles/DoctrineFixturesBundle/index`" entry of the
-   documentation.
+   the "`DoctrineFixturesBundle`_" entry of the documentation.
 
 .. index::
    single: Configuration; Doctrine MongoDB ODM
@@ -630,7 +635,7 @@ Configuration
 -------------
 
 For detailed information on configuration options available when using the
-Doctrine ODM, see the :doc:`MongoDB Reference</bundles/DoctrineMongoDBBundle/config>` section.
+Doctrine ODM, see the :doc:`MongoDB Reference</config>` section.
 
 Registering Event Listeners and Subscribers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -650,8 +655,8 @@ see Doctrine's `Event Documentation`_.
     document managers tied to that connection. Listeners and subscribers may be
     registered with all event managers or just one (using the connection name).
 
-In Symfony, you can register a listener or subscriber by creating a :term:`service`
-and then :ref:`tagging<book-service-container-tags>` it with a specific tag.
+In Symfony, you can register a listener or subscriber by creating a service
+and then `tagging`_ it with a specific tag.
 
 *   **event listener**: Use the ``doctrine_mongodb.odm.event_listener`` tag to
     register a listener. The ``event`` attribute is required and should denote
@@ -661,10 +666,9 @@ and then :ref:`tagging<book-service-container-tags>` it with a specific tag.
 
     The ``priority`` attribute, which defaults to ``0`` if omitted, may be used
     to control the order that listeners are registered. Much like Symfony2's
-    :doc:`event dispatcher</components/event_dispatcher/introduction>`, greater
-    numbers will result in the listener executing first and listeners with the
-    same priority will be executed in the order that they were registered with
-    the event manager.
+    `event dispatcher`_, greater numbers will result in the listener executing
+    first and listeners with the same priority will be executed in the order that
+    they were registered with the event manager.
 
     Lastly, the ``lazy`` attribute, which defaults to ``false`` if omitted, may
     be used to request that the listener be lazily loaded by the event manager
@@ -715,7 +719,7 @@ SecurityBundle integration
 --------------------------
 
 A user provider is available for your MongoDB projects, working exactly the
-same than the `entity` provider described in :doc:`the cookbook</cookbook/security/entity_provider>`
+same as the `entity` provider described in `the cookbook`_:
 
 .. configuration-block::
 
@@ -771,6 +775,44 @@ be fetched from the Symfony2 service container. A similar example like the tutor
     // find everything in the collection
     $cursor = $collection->find();
 
+Reusing Mongo connection
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you find yourself in need of ``\Mongo`` class instance i.e. to `store sessions`_
+in your Mongo database you may fetch it by defining following services:
+
+.. configuration-block::
+
+    .. code-block:: yaml
+
+        services:
+            mongo.connection:
+                class: Doctrine\MongoDB\Connection
+                factory: ["@doctrine.odm.mongodb.document_manager", getConnection]
+                calls:
+                    - [initialize, []]
+            mongo:
+                class: Mongo
+                factory: ["@mongo.connection", getMongo]
+
+    .. code-block:: xml
+
+        <?xml version="1.0" encoding="UTF-8" ?>
+        <container xmlns="http://symfony.com/schema/dic/services"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+            <services>
+                <service id="mongo.connection" class="Doctrine\MongoDB\Connection">
+                    <factory service="doctrine.odm.mongodb.document_manager" method="getConnection" />
+                    <call method="initialize" />
+                </service>
+                <service id="mongo" class="Doctrine\MongoDB\Connection">
+                    <factory service="mongo.connection" method="getMongo" />
+                </service>
+            </services>
+        </container>
+
 Summary
 -------
 
@@ -787,17 +829,26 @@ lifecycle.
 Learn more from the Cookbook
 ----------------------------
 
-* :doc:`/bundles/DoctrineMongoDBBundle/form`
+* :doc:`/form`
 
 .. _`MongoDB`:          http://www.mongodb.org/
+.. _`Doctrine2 ORM`: http://symfony.com/doc/current/book/doctrine.html
 .. _`documentation`:    http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/
+.. _`Doctrine2 ORM chapter`: http://symfony.com/doc/current/book/doctrine.html
+.. _`DoctrineFixturesBundle`: http://symfony.com/doc/master/bundles/DoctrineFixturesBundle/index.html
 .. _`schema documentation`: http://getcomposer.org/doc/04-schema.md#minimum-stability
 .. _`Quick Start`:      http://www.mongodb.org/display/DOCS/Quickstart
 .. _`Basic Mapping Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html
 .. _`MongoDB type`: http://us.php.net/manual/en/mongo.types.php
+.. _`using common Doctrine extensions`: http://symfony.com/doc/current/cookbook/doctrine/common_extensions.html
 .. _`Mapping Types Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html#doctrine-mapping-types
+.. _`Querying for Objects`: http://symfony.com/doc/current/book/doctrine.html#book-doctrine-queries
 .. _`Query Builder`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html
 .. _`Conditional Operators`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html#conditional-operators
 .. _`Event Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/events.html
+.. _`tagging`: http://symfony.com/doc/current/book/service_container.html#book-service-container-tags
+.. _`event dispatcher`: http://symfony.com/doc/current/components/event_dispatcher/introduction.html
 .. _`PHP Documentation`: http://www.php.net/manual/en/mongo.tutorial.php
+.. _`the cookbook`: http://symfony.com/doc/current/cookbook/security/entity_provider.html
 .. _`UniqueEntity`: http://symfony.com/doc/current/reference/constraints/UniqueEntity.html
+.. _`store sessions`: http://symfony.com/doc/current/cookbook/doctrine/mongodb_session_storage.html

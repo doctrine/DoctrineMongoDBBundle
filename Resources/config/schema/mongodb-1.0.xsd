@@ -14,15 +14,19 @@
       <xsd:element name="document-manager" type="document-manager" minOccurs="0" maxOccurs="unbounded" />
       <xsd:element name="resolve-target-document" type="resolve_target_document" minOccurs="0" maxOccurs="unbounded" />
     </xsd:sequence>
-    <xsd:attribute name="auto-generate-hydrator-classes" type="xsd:boolean" />
-    <xsd:attribute name="auto-generate-proxy-classes" type="xsd:boolean" />
+    <xsd:attribute name="auto-generate-hydrator-classes" type="xsd:integer" />
+    <xsd:attribute name="auto-generate-proxy-classes" type="xsd:integer" />
+    <xsd:attribute name="auto-generate-persistent-collection-classes" type="xsd:integer" />
     <xsd:attribute name="default-connection" type="xsd:string" />
     <xsd:attribute name="default-database" type="xsd:string" />
     <xsd:attribute name="default-document-manager" type="xsd:string" />
     <xsd:attribute name="hydrator-dir" type="xsd:string" />
     <xsd:attribute name="hydrator-namespace" type="xsd:string" />
+    <xsd:attribute name="persistent-collection-dir" type="xsd:string" />
+    <xsd:attribute name="persistent-collection-namespace" type="xsd:string" />
     <xsd:attribute name="proxy-dir" type="xsd:string" />
     <xsd:attribute name="proxy-namespace" type="xsd:string" />
+    <xsd:attribute name="fixture-loader" type="xsd:string" />
   </xsd:complexType>
 
   <xsd:complexType name="default-commit-options">
@@ -76,6 +80,7 @@
 
   <xsd:simpleType name="auth-mechanism">
     <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="SCRAM-SHA-1" />
       <xsd:enumeration value="MONGODB-CR" />
       <xsd:enumeration value="X509" />
       <xsd:enumeration value="PLAIN" />
@@ -120,6 +125,8 @@
     <xsd:attribute name="profiler" type="xsd:boolean" />
     <xsd:attribute name="retry-connect" type="xsd:integer" />
     <xsd:attribute name="retry-query" type="xsd:integer" />
+    <xsd:attribute name="default-repository-class" type="xsd:string" />
+    <xsd:attribute name="repository-factory" type="xsd:string" />
   </xsd:complexType>
 
   <xsd:complexType name="filter">

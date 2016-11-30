@@ -4,24 +4,49 @@ DoctrineMongoDBBundle Configuration
 Sample Configuration
 --------------------
 
-.. code-block:: yaml
+.. configuration-block::
 
-    # app/config/config.yml
-    doctrine_mongodb:
-        connections:
-            default:
-                server: mongodb://localhost:27017
-                options: {}
-        default_database: hello_%kernel.environment%
-        document_managers:
-            default:
-                mappings:
-                    AcmeDemoBundle: ~
-                filters:
-                    filter-name:
-                        class: Class\Example\Filter\ODM\ExampleFilter
-                        enabled: true
-                metadata_cache_driver: array # array, apc, xcache, memcache
+    .. code-block:: yaml
+
+        # app/config/config.yml
+        doctrine_mongodb:
+            connections:
+                default:
+                    server: mongodb://localhost:27017
+                    options: {}
+            default_database: hello_%kernel.environment%
+            document_managers:
+                default:
+                    mappings:
+                        AcmeDemoBundle: ~
+                    filters:
+                        filter-name:
+                            class: Class\Example\Filter\ODM\ExampleFilter
+                            enabled: true
+                    metadata_cache_driver: array # array, apc, xcache, memcache
+
+    .. code-block:: xml
+
+        <?xml version="1.0" ?>
+
+        <container xmlns="http://symfony.com/schema/dic/services"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:doctrine_mongodb="http://symfony.com/schema/dic/doctrine/odm/mongodb"
+            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+                                http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+
+            <doctrine_mongodb:config default-database="hello_%kernel.environment%">
+                <doctrine_mongodb:connection id="default" server="mongodb://localhost:27017">
+                    <doctrine_mongodb:options>
+                    </doctrine_mongodb:options>
+                </doctrine_mongodb:connection>
+                <doctrine_mongodb:document-manager id="default">
+                    <doctrine_mongodb:mapping name="AcmeDemoBundle" />
+                    <doctrine_mongodb:filter name="filter-name" enabled="true" class="Class\Example\Filter\ODM\ExampleFilter" />
+                    <doctrine_mongodb:metadata-cache-driver type="array" />
+                </doctrine_mongodb:document-manager>
+            </doctrine_mongodb:config>
+        </container>
 
 .. tip::
 
@@ -141,25 +166,53 @@ follow these conventions:
 
 The following configuration shows a bunch of mapping examples:
 
-.. code-block:: yaml
+.. configuration-block::
 
-    doctrine_mongodb:
-        document_managers:
-            default:
-                mappings:
-                    MyBundle1: ~
-                    MyBundle2: yml
-                    MyBundle3: { type: annotation, dir: Documents/ }
-                    MyBundle4: { type: xml, dir: Resources/config/doctrine/mapping }
-                    MyBundle5:
-                        type: yml
-                        dir: my-bundle-mappings-dir
-                        alias: BundleAlias
-                    doctrine_extensions:
-                        type: xml
-                        dir: "%kernel.root_dir%/../src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents"
-                        prefix: DoctrineExtensions\Documents\
-                        alias: DExt
+    .. code-block:: yaml
+
+        doctrine_mongodb:
+            document_managers:
+                default:
+                    mappings:
+                        MyBundle1: ~
+                        MyBundle2: yml
+                        MyBundle3: { type: annotation, dir: Documents/ }
+                        MyBundle4: { type: xml, dir: Resources/config/doctrine/mapping }
+                        MyBundle5:
+                            type: yml
+                            dir: my-bundle-mappings-dir
+                            alias: BundleAlias
+                        doctrine_extensions:
+                            type: xml
+                            dir: "%kernel.root_dir%/../src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents"
+                            prefix: DoctrineExtensions\Documents\
+                            alias: DExt
+
+    .. code-block:: xml
+
+        <?xml version="1.0" ?>
+
+        <container xmlns="http://symfony.com/schema/dic/services"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:doctrine_mongodb="http://symfony.com/schema/dic/doctrine/odm/mongodb"
+                   xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+                                        http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+
+            <doctrine_mongodb:config>
+                <doctrine_mongodb:document-manager id="default">
+                    <doctrine_mongodb:mapping name="MyBundle1" />
+                    <doctrine_mongodb:mapping name="MyBundle2" type="yml" />
+                    <doctrine_mongodb:mapping name="MyBundle3" type="annotation" dir="Documents/" />
+                    <doctrine_mongodb:mapping name="MyNundle4" type="xml" dir="Resources/config/doctrine/mapping" />
+                    <doctrine_mongodb:mapping name="MyBundle5" type="yml" dir="my-bundle-mappings-dir" alias="BundleAlias" />
+                    <doctrine_mongodb:mapping name="doctrine_extensions"
+                                              type="xml"
+                                              dir="%kernel.root_dir%/../src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents"
+                                              prefix="DoctrineExtensions\Documents\"
+                                              alias="DExt" />
+                </doctrine_mongodb:document-manager>
+            </doctrine_mongodb:config>
+        </container>
 
 Filters
 ~~~~~~~
@@ -316,6 +369,21 @@ string as a comma separated list.
                 default:
                     server: "mongodb://mongodb-01:27017,mongodb-02:27017,mongodb-03:27017"
 
+    .. code-block:: xml
+
+        <?xml version="1.0" ?>
+
+        <container xmlns="http://symfony.com/schema/dic/services"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:doctrine="http://symfony.com/schema/dic/doctrine/odm/mongodb"
+                   xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+                                http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+
+            <doctrine:mongodb>
+                <doctrine:connection id="default" server="mongodb://mongodb-01:27017,mongodb-02:27017,mongodb-03:27017" />
+            </doctrine:mongodb>
+        </container>
+
 Where mongodb-01, mongodb-02 and mongodb-03 are the machine hostnames. You
 can also use IP addresses if you prefer.
 
@@ -343,12 +411,15 @@ Full Default Configuration
 
                 # Prototype
                 id:
-                    connection:           ~
-                    database:             ~
-                    logging:              true
-                    auto_mapping:         false
-                    retry_connect:        0
-                    retry_query:          0
+                    connection:                    ~
+                    database:                      ~
+                    default_repository_class:      Doctrine\ODM\MongoDB\DocumentRepository
+                    repository_factory:            ~
+                    persistent_collection_factory: ~
+                    logging:                       true
+                    auto_mapping:                  false
+                    retry_connect:                 0
+                    retry_query:                   0
                     metadata_cache_driver:
                         type:                 ~
                         class:                ~
@@ -371,19 +442,99 @@ Full Default Configuration
                 id:
                     server:               ~
                     options:
+                        authMechanism:        ~
                         connect:              ~
-                        persist:              ~
-                        timeout:              ~
-                        replicaSet:           ~
-                        username:             ~
-                        password:             ~
+                        connectTimeoutMS:     ~
                         db:                   ~
+                        journal:              ~
+                        password:             ~
+                        readPreference:       ~
+                        readPreferenceTags:   ~
+                        replicaSet:           ~ # replica set name
+                        socketTimeoutMS:      ~
+                        ssl:                  ~
+                        username:             ~
+                        w:                    ~
+                        wTimeoutMS:           ~
+
             proxy_namespace:      MongoDBODMProxies
             proxy_dir:            "%kernel.cache_dir%/doctrine/odm/mongodb/Proxies"
-            auto_generate_proxy_classes:  false
+            auto_generate_proxy_classes:  0
             hydrator_namespace:   Hydrators
             hydrator_dir:         "%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators"
-            auto_generate_hydrator_classes:  false
+            auto_generate_hydrator_classes:  0
+            persistent_collection_namespace: PersistentCollections
+            persistent_collection_dir: "%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections"
+            auto_generate_persistent_collection_classes: 0
             default_document_manager:  ~
             default_connection:   ~
             default_database:     default
+            fixture_loader:       Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader
+
+    .. code-block:: xml
+
+        <?xml version="1.0" ?>
+
+        <container xmlns="http://symfony.com/schema/dic/services"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:doctrine="http://symfony.com/schema/dic/doctrine/odm/mongodb"
+                   xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+                                http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+
+            <doctrine:config
+                    auto-generate-hydrator-classes="0"
+                    auto-generate-proxy-classes="0"
+                    default-connection=""
+                    default-database="default"
+                    default-document-manager=""
+                    hydrator-dir="%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators"
+                    hydrator-namespace="Hydrators"
+                    proxy-dir="%kernel.cache_dir%/doctrine/odm/mongodb/Proxies"
+                    proxy-namespace="Proxies"
+                    fixture-loader="Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader"
+            >
+                <doctrine:document-manager id="id"
+                                           connection=""
+                                           database=""
+                                           default-repository-class=""
+                                           repository-factory=""
+                                           logging="true"
+                                           auto-mapping="false"
+                                           retry-connect="0"
+                                           retry-query="0"
+                >
+                    <doctrine:metadata-cache-driver type="">
+                        <doctrine:class></doctrine:class>
+                        <doctrine:host></doctrine:host>
+                        <doctrine:port></doctrine:port>
+                        <doctrine:instance-class></doctrine:instance-class>
+                    </doctrine:metadata-cache-driver>
+                    <doctrine:mapping name="name"
+                                      type=""
+                                      dir=""
+                                      prefix=""
+                                      alias=""
+                                      is-bundle=""
+                    />
+                    <doctrine:profiler enabled="true" pretty="false" />
+                </doctrine:document-manager>
+                <doctrine:connection id="conn1" server="mongodb://localhost">
+                    <doctrine:options
+                            authMechanism=""
+                            connect=""
+                            connectTimeoutMS=""
+                            db=""
+                            journal=""
+                            password=""
+                            readPreference=""
+                            replicaSet=""
+                            socketTimeoutMS=""
+                            ssl=""
+                            username=""
+                            w=""
+                            wTimeoutMS=""
+                    >
+                    </doctrine:options>
+                </doctrine:connection>
+            </doctrine:config>
+        </container>

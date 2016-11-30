@@ -7,8 +7,10 @@
                         http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
 
     <doctrine:config
+        fixture_loader="Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader"
         auto-generate-hydrator-classes="true"
         auto-generate-proxy-classes="true"
+        auto-generate-persistent-collection-classes="3"
         default-connection="conn1"
         default-database="default_db_name"
         default-document-manager="default_dm_name"
@@ -16,6 +18,8 @@
         hydrator-namespace="Test_Hydrators"
         proxy-dir="%kernel.cache_dir%/doctrine/odm/mongodb/Test_Proxies"
         proxy-namespace="Test_Proxies"
+        persistent-collection-dir="%kernel.cache_dir%/doctrine/odm/mongodb/Test_Pcolls"
+        persistent-collection-namespace="Test_Pcolls"
     >
 
         <doctrine:default-commit-options
@@ -82,6 +86,7 @@
             database="db1"
             metadata-cache-driver="apc"
             logging="true"
+            default-repository-class="Foo\Bar\CustomRepository"
         >
             <doctrine:mapping
                 name="BarBundle"

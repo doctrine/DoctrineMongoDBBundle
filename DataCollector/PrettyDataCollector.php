@@ -34,15 +34,15 @@ class PrettyDataCollector extends StandardDataCollector
 
     public function collect(Request $request, Response $response, \Exception $exception = null)
     {
-        $this->data['queries'] = array();
+        $this->data['queries'] = [];
         $this->data['nb_queries'] = 0;
 
-        $grouped = array();
-        $ordered = array();
+        $grouped = [];
+        $ordered = [];
         foreach ($this->queries as $query) {
             if (!isset($query['query']) || !isset($query['fields'])) {
                 // no grouping necessary
-                $ordered[] = array($query);
+                $ordered[] = [$query];
                 continue;
             }
 
@@ -53,7 +53,7 @@ class PrettyDataCollector extends StandardDataCollector
                 unset($query['query'], $query['fields']);
                 $grouped[$cursor][count($grouped[$cursor]) - 1][] = $query;
             } else {
-                $grouped[$cursor][] = array($query);
+                $grouped[$cursor][] = [$query];
                 $ordered[] =& $grouped[$cursor][count($grouped[$cursor]) - 1];
             }
         }
@@ -149,11 +149,11 @@ class PrettyDataCollector extends StandardDataCollector
                 } elseif (isset($log['getDBRef'])) {
                     $query .= '.getDBRef()';
                 } elseif (isset($log['group'])) {
-                    $query .= '.group('.$this->bsonEncode(array(
+                    $query .= '.group('.$this->bsonEncode([
                         'key'    => $log['keys'],
                         'initial' => $log['initial'],
                         'reduce'  => $log['reduce'],
-                    )).')';
+                        ]).')';
                 } elseif (isset($log['insert'])) {
                     $query .= '.insert('.$this->bsonEncode($log['document']).')';
                 } elseif (isset($log['remove'])) {
@@ -186,7 +186,7 @@ class PrettyDataCollector extends StandardDataCollector
      */
     private function bsonEncode($query, $array = true)
     {
-        $parts = array();
+        $parts = [];
 
         foreach ($query as $key => $value) {
             if (!is_numeric($key)) {

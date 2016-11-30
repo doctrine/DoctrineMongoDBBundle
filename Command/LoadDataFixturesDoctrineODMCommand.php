@@ -15,11 +15,13 @@
 namespace Doctrine\Bundle\MongoDBBundle\Command;
 
 use Doctrine\Common\DataFixtures\Executor\MongoDBExecutor;
+use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\MongoDBPurger;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 /**
  * Load data fixtures from bundles.
@@ -34,7 +36,7 @@ class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
      */
     public function isEnabled()
     {
-        return parent::isEnabled() && class_exists('Doctrine\Common\DataFixtures\Loader');
+        return parent::isEnabled() && class_exists(Loader::class);
     }
 
     protected function configure()
@@ -43,6 +45,7 @@ class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
             ->setName('doctrine:mongodb:fixtures:load')
             ->setDescription('Load data fixtures to your database.')
             ->addOption('fixtures', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The directory or file to load data fixtures from.')
+            ->addOption('bundles', 'b', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The bundles to load data fixtures from.')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of flushing the database first.')
             ->addOption('dm', null, InputOption::VALUE_REQUIRED, 'The document manager to use for this command.')
             ->setHelp(<<<EOT
@@ -64,21 +67,44 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager($input->getOption('dm'));
+
         $dirOrFile = $input->getOption('fixtures');
+        $bundles = $input->getOption('bundles');
+        if ($bundles && $dirOrFile) {
+            throw new \InvalidArgumentException('Use only one option: --bundles or --fixtures.');
+        }
+
+        if ($input->isInteractive() && !$input->getOption('append')) {
+            $helper = $this->getHelper('question');
+            $question = new ConfirmationQuestion('Careful, database will be purged. Do you want to continue (y/N) ?', false);
+
+            if (! $helper->ask($input, $output, $question)) {
+                return;
+            }
+        }
+
         if ($dirOrFile) {
-            $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
+            $paths = is_array($dirOrFile) ? $dirOrFile : [$dirOrFile];
+        } elseif ($bundles) {
+            $kernel = $this->getContainer()->get('kernel');
+            foreach ($bundles as $bundle) {
+                $paths[] = $kernel->getBundle($bundle)->getPath();
+            }
         } else {
             $paths = $this->getContainer()->getParameter('doctrine_mongodb.odm.fixtures_dirs');
-            $paths = is_array($paths) ? $paths : array($paths);
+            $paths = is_array($paths) ? $paths : [$paths];
             foreach ($this->getContainer()->get('kernel')->getBundles() as $bundle) {
                 $paths[] = $bundle->getPath().'/DataFixtures/MongoDB';
             }
         }
 
-        $loader = new ContainerAwareLoader($this->getContainer());
+        $loaderClass = $this->getContainer()->getParameter('doctrine_mongodb.odm.fixture_loader');
+        $loader = new $loaderClass($this->getContainer());
         foreach ($paths as $path) {
             if (is_dir($path)) {
                 $loader->loadFromDirectory($path);
+            } else if (is_file($path)) {
+                $loader->loadFromFile($path);
             }
         }
 

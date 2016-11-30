@@ -2,11 +2,17 @@
 
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Form\Type;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Category;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\Bundle\MongoDBBundle\Form\DoctrineMongoDBExtension;
+use Doctrine\Common\Persistence\ManagerRegistry;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\Test\TypeTestCase;
+use Symfony\Component\HttpKernel\Kernel;
 
 class DocumentTypeTest extends TypeTestCase
 {
@@ -20,11 +26,15 @@ class DocumentTypeTest extends TypeTestCase
      */
     private $dmRegistry;
 
+    private $typeFQCN;
+
     public function setUp()
     {
-        $this->dm = TestCase::createTestDocumentManager(array(
+        $this->typeFQCN = method_exists(AbstractType::class, 'getBlockPrefix');
+
+        $this->dm = TestCase::createTestDocumentManager([
             __DIR__ . '/../../Fixtures/Form/Document',
-        ));
+        ]);
         $this->dmRegistry = $this->createRegistryMock('default', $this->dm);
 
         parent::setUp();
@@ -32,10 +42,10 @@ class DocumentTypeTest extends TypeTestCase
 
     protected function tearDown()
     {
-        $documentClasses = array(
-            'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document',
-            'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Category',
-        );
+        $documentClasses = [
+            Document::class,
+            Category::class,
+        ];
 
         foreach ($documentClasses as $class) {
             $this->dm->getDocumentCollection($class)->drop();
@@ -47,23 +57,33 @@ class DocumentTypeTest extends TypeTestCase
 
     public function testDocumentManagerOptionSetsEmOption()
     {
-        $field = $this->factory->createNamed('name', 'document', null, array(
-            'class' => 'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document',
+        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, [
+            'class' => Document::class,
             'document_manager' => 'default',
-        ));
+        ]);
+
+        $this->assertSame($this->dm, $field->getConfig()->getOption('em'));
+    }
+
+    public function testDocumentManagerInstancePassedAsOption()
+    {
+        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, [
+            'class' => Document::class,
+            'document_manager' => $this->dm,
+        ]);
 
         $this->assertSame($this->dm, $field->getConfig()->getOption('em'));
     }
 
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function testSettingDocumentManagerAndEmOptionShouldThrowException()
     {
-        $field = $this->factory->createNamed('name', 'document', null, array(
+        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, [
             'document_manager' => 'default',
             'em' => 'default',
-        ));
+        ]);
     }
 
     public function testManyToManyReferences()
@@ -79,19 +99,19 @@ class DocumentTypeTest extends TypeTestCase
 
         $this->dm->flush();
 
-        $form = $this->factory->create('form', $document)
+        $form = $this->factory->create($this->typeFQCN ? FormType::CLASS : 'form', $document)
             ->add(
-                'categories', 'document', array(
-                    'class' => 'Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Category',
+                'categories', $this->typeFQCN ? DocumentType::CLASS : 'document', [
+                    'class' => Category::class,
                     'multiple' => true,
                     'expanded' => true,
                     'document_manager' => 'default'
-                )
+                ]
             );
 
         $view = $form->createView();
         $categoryView = $view['categories'];
-        $this->assertInstanceOf('Symfony\Component\Form\FormView', $categoryView);
+        $this->assertInstanceOf(FormView::class, $categoryView);
 
         $this->assertCount(2, $categoryView->children);
         $this->assertTrue($categoryView->children[0]->vars['checked']);
@@ -100,7 +120,7 @@ class DocumentTypeTest extends TypeTestCase
 
     protected function createRegistryMock($name, $dm)
     {
-        $registry = $this->getMock('Doctrine\Common\Persistence\ManagerRegistry');
+        $registry = $this->createMock(ManagerRegistry::class);
         $registry->expects($this->any())
                  ->method('getManager')
                  ->with($this->equalTo($name))
@@ -110,12 +130,12 @@ class DocumentTypeTest extends TypeTestCase
     }
 
     /**
-     * @see Symfony\Component\Form\Tests\FormIntegrationTestCase::getExtensions()
+     * @see \Symfony\Component\Form\Tests\FormIntegrationTestCase::getExtensions()
      */
     protected function getExtensions()
     {
-        return array_merge(parent::getExtensions(), array(
+        return array_merge(parent::getExtensions(), [
             new DoctrineMongoDBExtension($this->dmRegistry),
-        ));
+        ]);
     }
 }

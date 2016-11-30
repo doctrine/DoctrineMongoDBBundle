@@ -1,21 +1,21 @@
 language: php
+sudo: false
 
 php:
-  - 5.3
-  - 5.4
-  - 5.5
   - 5.6
+  - 7.0
+  - 7.1
+
+env:
+  global:
+    - DRIVER_VERSION="stable"
+    - ADAPTER_VERSION="^1.0.0"
+    - COMPOSER_FLAGS="--prefer-dist"
 
 matrix:
   include:
-    - php: 5.3
-      env: COMPOSER_FLAGS='--prefer-lowest --prefer-stable'
     - php: 5.6
-      env: MONGO_VERSION=1.2.12
-    - php: 5.6
-      env: MONGO_VERSION=1.3.3
-
-sudo: false
+      env: DRIVER_VERSION="1.5.8" COMPOSER_FLAGS="--prefer-dist --prefer-lowest"
 
 cache:
   directories:
@@ -23,10 +23,16 @@ cache:
 
 services: mongodb
 
-before_install:
-  - if [ "$MONGO_VERSION" != "" ]; then pecl -q install -f mongo-${MONGO_VERSION}; fi # Use a specific driver version when needed rather than the one shipped by Travis
-  - echo "extension=mongo.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
-
 install:
-  - composer update $COMPOSER_FLAGS
+  - composer self-update
+  - if [[ ${TRAVIS_PHP_VERSION:0:2} == "5." ]]; then yes '' | pecl -q install -f mongo-${DRIVER_VERSION}; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:2} == "7." ]]; then pecl install -f mongodb-${DRIVER_VERSION}; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:2} == "7." ]]; then composer require "alcaeus/mongo-php-adapter=${ADAPTER_VERSION}" --ignore-platform-reqs; fi
+  - composer update ${COMPOSER_FLAGS}
 
+script:
+    - ./vendor/bin/phpunit --coverage-clover=coverage.clover
+
+after_script:
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover

@@ -11,7 +11,7 @@ class User implements UserInterface
     /** @ODM\Id(strategy="none") */
     protected $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     public function __construct($id, $name) {

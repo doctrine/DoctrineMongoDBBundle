@@ -55,7 +55,7 @@ abstract class DoctrineODMCommand extends ContainerAwareCommand
     protected function getBundleMetadatas(Bundle $bundle)
     {
         $namespace = $bundle->getNamespace();
-        $bundleMetadatas = array();
+        $bundleMetadatas = [];
         $documentManagers = $this->getDoctrineDocumentManagers();
         foreach ($documentManagers as $dm) {
             $cmf = new DisconnectedClassMetadataFactory();
@@ -98,9 +98,9 @@ abstract class DoctrineODMCommand extends ContainerAwareCommand
      */
     protected function findBasePathForBundle($bundle)
     {
-        $path = str_replace('\\', '/', $bundle->getNamespace());
-        $search = str_replace('\\', '/', $bundle->getPath());
-        $destination = str_replace('/'.$path, '', $search, $c);
+        $path = str_replace('\\', DIRECTORY_SEPARATOR, $bundle->getNamespace());
+        $search = str_replace('\\', DIRECTORY_SEPARATOR, $bundle->getPath());
+        $destination = str_replace(DIRECTORY_SEPARATOR.$path, '', $search, $c);
 
         if ($c != 1) {
             throw new \RuntimeException(sprintf('Can\'t find base path for bundle (path: "%s", destination: "%s").', $path, $destination));

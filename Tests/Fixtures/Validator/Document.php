@@ -10,10 +10,10 @@ class Document
     /** @ODM\Id(strategy="none") */
     protected $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\Hash */
+    /** @ODM\Field(type="hash") */
     public $hash;
 
     /** @ODM\Collection */
@@ -26,7 +26,7 @@ class Document
     public $embedOne;
 
     /** @ODM\EmbedMany(targetDocument="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument") */
-    public $embedMany = array();
+    public $embedMany = [];
 
     public function __construct($id) {
         $this->id = $id;
@@ -36,6 +36,6 @@ class Document
 /** @ODM\EmbeddedDocument */
 class EmbeddedDocument
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 }

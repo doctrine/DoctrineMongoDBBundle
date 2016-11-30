@@ -15,6 +15,9 @@
 namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Configuration;
+use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
+use Doctrine\ODM\MongoDB\DocumentRepository;
+use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\Util\XmlUtils;
 use Symfony\Component\Yaml\Yaml;
@@ -25,21 +28,25 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
     {
         $processor = new Processor();
         $configuration = new Configuration(false);
-        $options = $processor->processConfiguration($configuration, array());
+        $options = $processor->processConfiguration($configuration, []);
 
-        $defaults = array(
+        $defaults = [
+            'fixture_loader'                 => ContainerAwareLoader::class,
             'auto_generate_hydrator_classes' => false,
             'auto_generate_proxy_classes'    => false,
+            'auto_generate_persistent_collection_classes' => ODMConfiguration::AUTOGENERATE_NEVER,
             'default_database'               => 'default',
-            'document_managers'              => array(),
-            'connections'                    => array(),
+            'document_managers'              => [],
+            'connections'                    => [],
             'proxy_dir'                      => '%kernel.cache_dir%/doctrine/odm/mongodb/Proxies',
-            'resolve_target_documents'       => array(),
+            'resolve_target_documents'       => [],
             'proxy_namespace'                => 'MongoDBODMProxies',
             'hydrator_dir'                   => '%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators',
             'hydrator_namespace'             => 'Hydrators',
-            'default_commit_options'         => array(),
-        );
+            'default_commit_options'         => [],
+            'persistent_collection_dir'      => '%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections',
+            'persistent_collection_namespace'=> 'PersistentCollections',
+        ];
 
         $this->assertEquals($defaults, $options);
     }
@@ -51,11 +58,13 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
     {
         $processor = new Processor();
         $configuration = new Configuration(false);
-        $options = $processor->processConfiguration($configuration, array($config));
+        $options = $processor->processConfiguration($configuration, [$config]);
 
-        $expected = array(
+        $expected = [
+            'fixture_loader'                 => ContainerAwareLoader::class,
             'auto_generate_hydrator_classes' => true,
             'auto_generate_proxy_classes'    => true,
+            'auto_generate_persistent_collection_classes' => ODMConfiguration::AUTOGENERATE_EVAL,
             'default_connection'             => 'conn1',
             'default_database'               => 'default_db_name',
             'default_document_manager'       => 'default_dm_name',
@@ -63,29 +72,31 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             'hydrator_namespace'             => 'Test_Hydrators',
             'proxy_dir'                      => '%kernel.cache_dir%/doctrine/odm/mongodb/Test_Proxies',
             'proxy_namespace'                => 'Test_Proxies',
-            'default_commit_options' => array(
+            'persistent_collection_dir'      => '%kernel.cache_dir%/doctrine/odm/mongodb/Test_Pcolls',
+            'persistent_collection_namespace'=> 'Test_Pcolls',
+            'default_commit_options' => [
                 'j' => false,
                 'timeout' => 10,
                 'w' => 'majority',
                 'wtimeout' => 10,
                 'fsync' => false,
                 'safe' => 2,
-            ),
-            'connections' => array(
-                'conn1' => array(
+            ],
+            'connections' => [
+                'conn1' => [
                     'server'  => 'mongodb://localhost',
-                    'options' => array(
+                    'options' => [
                         'connect'           => true,
                         'connectTimeoutMS'  => 500,
                         'db'                => 'database_val',
                         'journal'           => true,
                         'password'          => 'password_val',
                         'readPreference'    => 'secondaryPreferred',
-                        'readPreferenceTags' => array(
-                            array('dc' => 'east', 'use' => 'reporting'),
-                            array('dc' => 'west'),
-                            array(),
-                        ),
+                        'readPreferenceTags' => [
+                            ['dc' => 'east', 'use' => 'reporting'],
+                            ['dc' => 'west'],
+                            [],
+                        ],
                         'replicaSet'        => 'foo',
                         'slaveOkay'         => true,
                         'socketTimeoutMS'   => 1000,
@@ -94,105 +105,111 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                         'username'          => 'username_val',
                         'w'                 => 'majority',
                         'wTimeoutMS'        => 1000,
-                    ),
-                ),
-                'conn2' => array(
+                    ],
+                ],
+                'conn2' => [
                     'server'  => 'mongodb://otherhost',
-                ),
-            ),
-            'document_managers' => array(
-                'dm1' => array(
+                ],
+            ],
+            'document_managers' => [
+                'dm1' => [
+                    'default_repository_class' => DocumentRepository::class,
+                    'repository_factory' => null,
+                    'persistent_collection_factory' => null,
                     'logging'      => '%kernel.debug%',
                     'auto_mapping' => false,
-                    'filters' => array(
-                        'disabled_filter' => array(
-                            'class' => 'Vendor\Filter\DisabledFilter',
+                    'filters' => [
+                        'disabled_filter' => [
+                            'class' => \Vendor\Filter\DisabledFilter::class,
                             'enabled' => false,
-                            'parameters' => array(),
-                        ),
-                        'basic_filter' => array(
-                            'class' => 'Vendor\Filter\BasicFilter',
+                            'parameters' => [],
+                        ],
+                        'basic_filter' => [
+                            'class' => \Vendor\Filter\BasicFilter::class,
                             'enabled' => true,
-                            'parameters' => array(),
-                        ),
-                        'complex_filter' => array(
-                            'class' => 'Vendor\Filter\ComplexFilter',
+                            'parameters' => [],
+                        ],
+                        'complex_filter' => [
+                            'class' => \Vendor\Filter\ComplexFilter::class,
                             'enabled' => true,
-                            'parameters' => array(
+                            'parameters' => [
                                 'integer' => 1,
                                 'string' => 'foo',
-                                'object' => array('key' => 'value'),
-                                'array' => array(1, 2, 3),
-                            ),
-                        ),
-                    ),
-                    'metadata_cache_driver' => array(
+                                'object' => ['key' => 'value'],
+                                'array' => [1, 2, 3],
+                            ],
+                        ],
+                    ],
+                    'metadata_cache_driver' => [
                         'type'           => 'memcache',
                         'class'          => 'fooClass',
                         'host'           => 'host_val',
                         'port'           => 1234,
                         'instance_class' => 'instance_val',
-                    ),
-                    'mappings' => array(
-                        'FooBundle' => array(
+                    ],
+                    'mappings' => [
+                        'FooBundle' => [
                             'type'    => 'annotation',
                             'mapping' => true,
-                        ),
-                    ),
-                    'profiler' => array(
+                        ],
+                    ],
+                    'profiler' => [
                         'enabled' => true,
                         'pretty'  => false,
-                    ),
+                    ],
                     'retry_connect' => 0,
                     'retry_query' => 0,
-                ),
-                'dm2' => array(
+                ],
+                'dm2' => [
                     'connection'   => 'dm2_connection',
                     'database'     => 'db1',
                     'logging'      => true,
+                    'default_repository_class' => \Foo\Bar\CustomRepository::class,
+                    'repository_factory' => null,
+                    'persistent_collection_factory' => null,
                     'auto_mapping' => false,
-                    'filters'      => array(),
-                    'metadata_cache_driver' => array(
+                    'filters'      => [],
+                    'metadata_cache_driver' => [
                         'type' => 'apc',
-                    ),
-                    'mappings' => array(
-                        'BarBundle' => array(
+                    ],
+                    'mappings' => [
+                        'BarBundle' => [
                             'type'      => 'yml',
                             'dir'       => '%kernel.cache_dir%',
                             'prefix'    => 'prefix_val',
                             'alias'     => 'alias_val',
                             'is_bundle' => false,
                             'mapping'   => true,
-                        ),
-                    ),
-                    'profiler' => array(
+                        ],
+                    ],
+                    'profiler' => [
                         'enabled' => '%kernel.debug%',
                         'pretty'  => '%kernel.debug%',
-                    ),
+                    ],
                     'retry_connect' => 0,
                     'retry_query' => 0,
-                ),
-            ),
-            'resolve_target_documents' => array(
+                ],
+            ],
+            'resolve_target_documents' => [
                 'Foo\BarInterface' => 'Bar\FooClass'
-            ),
-        );
+            ],
+        ];
 
         $this->assertEquals($expected, $options);
     }
 
     public function provideFullConfiguration()
     {
-        $yaml = Yaml::parse(__DIR__.'/Fixtures/config/yml/full.yml');
+        $yaml = Yaml::parse(file_get_contents(__DIR__.'/Fixtures/config/yml/full.yml'));
         $yaml = $yaml['doctrine_mongodb'];
 
         $xml = XmlUtils::loadFile(__DIR__.'/Fixtures/config/xml/full.xml');
         $xml = XmlUtils::convertDomElementToArray($xml->getElementsByTagName('config')->item(0));
 
-        return array(
-            array($yaml),
-            array($xml),
-        );
+        return [
+            [$yaml],
+            [$xml],
+        ];
     }
 
     /**
@@ -213,96 +230,96 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
 
     public function provideMergeOptions()
     {
-        $cases = array();
+        $cases = [];
 
         // single config, testing normal option setting
-        $cases[] = array(
-            array(
-                array('default_document_manager' => 'foo'),
-            ),
-            array('default_document_manager' => 'foo')
-        );
+        $cases[] = [
+            [
+                ['default_document_manager' => 'foo'],
+            ],
+            ['default_document_manager' => 'foo']
+        ];
 
         // single config, testing normal option setting with dashes
-        $cases[] = array(
-            array(
-                array('default-document-manager' => 'bar'),
-            ),
-            array('default_document_manager' => 'bar')
-        );
+        $cases[] = [
+            [
+                ['default-document-manager' => 'bar'],
+            ],
+            ['default_document_manager' => 'bar']
+        ];
 
         // testing the normal override merging - the later config array wins
-        $cases[] = array(
-            array(
-                array('default_document_manager' => 'foo'),
-                array('default_document_manager' => 'baz'),
-            ),
-            array('default_document_manager' => 'baz')
-        );
+        $cases[] = [
+            [
+                ['default_document_manager' => 'foo'],
+                ['default_document_manager' => 'baz'],
+            ],
+            ['default_document_manager' => 'baz']
+        ];
 
         // the "options" array is totally replaced
-        $cases[] = array(
-            array(
-                array('connections' => array('default' => array('options' => array('timeout' => 2000)))),
-                array('connections' => array('default' => array('options' => array('username' => 'foo')))),
-            ),
-            array('connections' => array('default' => array('options' => array('username' => 'foo')))),
-        );
+        $cases[] = [
+            [
+                ['connections' => ['default' => ['options' => ['timeout' => 2000]]]],
+                ['connections' => ['default' => ['options' => ['username' => 'foo']]]],
+            ],
+            ['connections' => ['default' => ['options' => ['username' => 'foo']]]],
+        ];
 
         // mappings are merged non-recursively.
-        $cases[] = array(
-            array(
-                array('document_managers' => array('default' => array('mappings' => array('foomap' => array('type' => 'val1'), 'barmap' => array('dir' => 'val2'))))),
-                array('document_managers' => array('default' => array('mappings' => array('barmap' => array('prefix' => 'val3'))))),
-            ),
-            array('document_managers' => array('default' => array('metadata_cache_driver' => array('type' => 'array'), 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'filters' => array(), 'mappings' => array('foomap' => array('type' => 'val1', 'mapping' => true), 'barmap' => array('prefix' => 'val3', 'mapping' => true)), 'retry_connect' => 0, 'retry_query' => 0))),
-        );
+        $cases[] = [
+            [
+                ['document_managers' => ['default' => ['mappings' => ['foomap' => ['type' => 'val1'], 'barmap' => ['dir' => 'val2']]]]],
+                ['document_managers' => ['default' => ['mappings' => ['barmap' => ['prefix' => 'val3']]]]],
+            ],
+            ['document_managers' => ['default' => ['metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_repository_class' =>  'Doctrine\ODM\MongoDB\DocumentRepository', 'repository_factory' => null, 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => ['foomap' => ['type' => 'val1', 'mapping' => true], 'barmap' => ['prefix' => 'val3', 'mapping' => true]], 'retry_connect' => 0, 'retry_query' => 0]]],
+        ];
 
         // connections are merged non-recursively.
-        $cases[] = array(
-            array(
-                array('connections' => array('foocon' => array('server' => 'val1'), 'barcon' => array('options' => array('username' => 'val2')))),
-                array('connections' => array('barcon' => array('server' => 'val3'))),
-            ),
-            array('connections' => array(
-                'foocon' => array('server' => 'val1'),
-                'barcon' => array('server' => 'val3'),
-            )),
-        );
+        $cases[] = [
+            [
+                ['connections' => ['foocon' => ['server' => 'val1'], 'barcon' => ['options' => ['username' => 'val2']]]],
+                ['connections' => ['barcon' => ['server' => 'val3']]],
+            ],
+            ['connections' => [
+                'foocon' => ['server' => 'val1'],
+                'barcon' => ['server' => 'val3'],
+            ]],
+        ];
 
         // connection options are merged non-recursively.
-        $cases[] = array(
-            array(
-                array('connections' => array('foocon' => array('options' => array('db' => 'val1')))),
-                array('connections' => array('foocon' => array('options' => array('replicaSet' => 'val2')))),
-            ),
-            array('connections' => array(
-                'foocon' => array('options' => array('replicaSet' => 'val2')),
-            )),
-        );
+        $cases[] = [
+            [
+                ['connections' => ['foocon' => ['options' => ['db' => 'val1']]]],
+                ['connections' => ['foocon' => ['options' => ['replicaSet' => 'val2']]]],
+            ],
+            ['connections' => [
+                'foocon' => ['options' => ['replicaSet' => 'val2']],
+            ]],
+        ];
 
         // connection option readPreferenceTags are merged non-recursively.
-        $cases[] = array(
-            array(
-                array('connections' => array('foocon' => array('options' => array('readPreferenceTags' => array(array('dc' => 'east', 'use' => 'reporting')))))),
-                array('connections' => array('foocon' => array('options' => array('readPreferenceTags' => array(array('dc' => 'west'), array()))))),
-            ),
-            array('connections' => array(
-                'foocon' => array('options' => array('readPreferenceTags' => array(array('dc' => 'west'), array()))),
-            )),
-        );
+        $cases[] = [
+            [
+                ['connections' => ['foocon' => ['options' => ['readPreferenceTags' => [['dc' => 'east', 'use' => 'reporting']]]]]],
+                ['connections' => ['foocon' => ['options' => ['readPreferenceTags' => [['dc' => 'west'], []]]]]],
+            ],
+            ['connections' => [
+                'foocon' => ['options' => ['readPreferenceTags' => [['dc' => 'west'], []]]],
+            ]],
+        ];
 
         // managers are merged non-recursively.
-        $cases[] = array(
-            array(
-                array('document_managers' => array('foodm' => array('database' => 'val1'), 'bardm' => array('database' => 'val2'))),
-                array('document_managers' => array('bardm' => array('database' => 'val3'))),
-            ),
-            array('document_managers' => array(
-                'foodm' => array('database' => 'val1', 'metadata_cache_driver' => array('type' => 'array'), 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'filters' => array(), 'mappings' => array(), 'retry_connect' => 0, 'retry_query' => 0),
-                'bardm' => array('database' => 'val3', 'metadata_cache_driver' => array('type' => 'array'), 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'filters' => array(), 'mappings' => array(), 'retry_connect' => 0, 'retry_query' => 0),
-            )),
-        );
+        $cases[] = [
+            [
+                ['document_managers' => ['foodm' => ['database' => 'val1'], 'bardm' => ['database' => 'val2']]],
+                ['document_managers' => ['bardm' => ['database' => 'val3']]],
+            ],
+            ['document_managers' => [
+                'foodm' => ['database' => 'val1', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_repository_class' =>  'Doctrine\ODM\MongoDB\DocumentRepository', 'repository_factory' => null, 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => [], 'retry_connect' => 0, 'retry_query' => 0],
+                'bardm' => ['database' => 'val3', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_repository_class' =>  'Doctrine\ODM\MongoDB\DocumentRepository', 'repository_factory' => null, 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => [], 'retry_connect' => 0, 'retry_query' => 0],
+            ]],
+        ];
 
         return $cases;
     }
@@ -316,7 +333,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
     {
         $processor = new Processor();
         $configuration = new Configuration(false);
-        $options = $processor->processConfiguration($configuration, array($config));
+        $options = $processor->processConfiguration($configuration, [$config]);
 
         foreach ($expected as $key => $value) {
             $this->assertEquals($value, $options[$key]);
@@ -325,92 +342,95 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
 
     public function provideNormalizeOptions()
     {
-        $cases = array();
+        $cases = [];
 
         // connection versus connections (id is the identifier)
-        $cases[] = array(
-            array('connection' => array(
-                array('server' => 'mongodb://abc', 'id' => 'foo'),
-                array('server' => 'mongodb://def', 'id' => 'bar'),
-            )),
-            array('connections' => array(
-                'foo' => array('server' => 'mongodb://abc'),
-                'bar' => array('server' => 'mongodb://def'),
-            )),
-        );
+        $cases[] = [
+            ['connection' => [
+                ['server' => 'mongodb://abc', 'id' => 'foo'],
+                ['server' => 'mongodb://def', 'id' => 'bar'],
+            ]],
+            ['connections' => [
+                'foo' => ['server' => 'mongodb://abc'],
+                'bar' => ['server' => 'mongodb://def'],
+            ]],
+        ];
 
         // document_manager versus document_managers (id is the identifier)
-        $cases[] = array(
-            array('document_manager' => array(
-                array('connection' => 'conn1', 'id' => 'foo'),
-                array('connection' => 'conn2', 'id' => 'bar'),
-            )),
-            array('document_managers' => array(
-                'foo' => array('connection' => 'conn1', 'metadata_cache_driver' => array('type' => 'array'), 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'filters' => array(), 'mappings' => array(), 'retry_connect' => 0, 'retry_query' => 0),
-                'bar' => array('connection' => 'conn2', 'metadata_cache_driver' => array('type' => 'array'), 'logging' => '%kernel.debug%', 'profiler' => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'), 'auto_mapping' => false, 'filters' => array(), 'mappings' => array(), 'retry_connect' => 0, 'retry_query' => 0),
-            )),
-        );
+        $cases[] = [
+            ['document_manager' => [
+                ['connection' => 'conn1', 'id' => 'foo'],
+                ['connection' => 'conn2', 'id' => 'bar'],
+            ]],
+            ['document_managers' => [
+                'foo' => ['connection' => 'conn1', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_repository_class' => 'Doctrine\ODM\MongoDB\DocumentRepository', 'repository_factory' => null, 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => [], 'retry_connect' => 0, 'retry_query' => 0],
+                'bar' => ['connection' => 'conn2', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_repository_class' =>  'Doctrine\ODM\MongoDB\DocumentRepository', 'repository_factory' => null, 'persistent_collection_factory' => null,'filters' => [], 'mappings' => [], 'retry_connect' => 0, 'retry_query' => 0],
+            ]],
+        ];
 
         // mapping configuration that's beneath a specific document manager
-        $cases[] = array(
-            array('document_manager' => array(
-                array('id' => 'foo', 'connection' => 'conn1', 'mapping' => array(
+        $cases[] = [
+            ['document_manager' => [
+                ['id' => 'foo', 'connection' => 'conn1', 'mapping' => [
                     'type' => 'xml', 'name' => 'foo-mapping'
-                )),
-            )),
-            array('document_managers' => array(
-                'foo' => array(
+                ]],
+            ]],
+            ['document_managers' => [
+                'foo' => [
                     'connection'   => 'conn1',
-                    'metadata_cache_driver' => array('type' => 'array'),
-                    'mappings'     => array('foo-mapping' => array('type' => 'xml', 'mapping' => true)),
+                    'metadata_cache_driver' => ['type' => 'array'],
+                    'default_repository_class' =>  DocumentRepository::class,
+                    'repository_factory' => null,
+                    'persistent_collection_factory' => null,
+                    'mappings'     => ['foo-mapping' => ['type' => 'xml', 'mapping' => true]],
                     'logging'      => '%kernel.debug%',
-                    'profiler'     => array('enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'),
+                    'profiler'     => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'],
                     'auto_mapping' => false,
-                    'filters'      => array(),
+                    'filters'      => [],
                     'retry_connect' => 0,
                     'retry_query' => 0,
-                ),
-            )),
-        );
+                ],
+            ]],
+        ];
 
         return $cases;
     }
 
     public function testPasswordAndUsernameShouldBeUnsetIfNull()
     {
-        $config = array(
-            'connections' => array(
-                'conn1' => array(
+        $config = [
+            'connections' => [
+                'conn1' => [
                     'server' => 'mongodb://localhost',
-                    'options' => array(
+                    'options' => [
                         'username' => null,
                         'password' => 'bar',
-                    ),
-                ),
-                'conn2' => array(
+                    ],
+                ],
+                'conn2' => [
                     'server' => 'mongodb://localhost',
-                    'options' => array(
+                    'options' => [
                         'username' => 'foo',
                         'password' => null,
-                    ),
-                ),
-                'conn3' => array(
+                    ],
+                ],
+                'conn3' => [
                     'server' => 'mongodb://localhost',
-                    'options' => array(
+                    'options' => [
                         'username' => null,
                         'password' => null,
-                    ),
-                ),
-            ),
-        );
+                    ],
+                ],
+            ],
+        ];
 
         $processor = new Processor();
         $configuration = new Configuration(false);
-        $options = $processor->processConfiguration($configuration, array($config));
+        $options = $processor->processConfiguration($configuration, [$config]);
 
-        $this->assertEquals(array('password' => 'bar'), $options['connections']['conn1']['options']);
-        $this->assertEquals(array('username' => 'foo'), $options['connections']['conn2']['options']);
-        $this->assertEquals(array(), $options['connections']['conn3']['options']);
+        $this->assertEquals(['password' => 'bar'], $options['connections']['conn1']['options']);
+        $this->assertEquals(['username' => 'foo'], $options['connections']['conn2']['options']);
+        $this->assertEquals([], $options['connections']['conn3']['options']);
     }
 
     /**
@@ -419,19 +439,44 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidReplicaSetValue()
     {
-        $config = array(
-            'connections' => array(
-                'conn1' => array(
+        $config = [
+            'connections' => [
+                'conn1' => [
                     'server'  => 'mongodb://localhost',
-                    'options' => array(
+                    'options' => [
                         'replicaSet' => true
-                    )
-                )
-            )
-        );
+                    ]
+                ]
+            ]
+        ];
 
         $processor = new Processor();
         $configuration = new Configuration(false);
-        $processor->processConfiguration($configuration, array($config));
+        $processor->processConfiguration($configuration, [$config]);
+    }
+
+    /**
+     * @dataProvider provideExceptionConfiguration
+     */
+    public function testFixtureLoaderValidation($config)
+    {
+        $processor = new Processor();
+        $configuration = new Configuration(false);
+        $this->setExpectedException(\LogicException::class);
+        $processor->processConfiguration($configuration, [$config]);
+    }
+
+    public function provideExceptionConfiguration()
+    {
+        $yaml = Yaml::parse(file_get_contents(__DIR__.'/Fixtures/config/yml/exception.yml'));
+        $yaml = $yaml['doctrine_mongodb'];
+
+        $xml = XmlUtils::loadFile(__DIR__.'/Fixtures/config/xml/exception.xml');
+        $xml = XmlUtils::convertDomElementToArray($xml->getElementsByTagName('config')->item(0));
+
+        return [
+            [$yaml],
+            [$xml],
+        ];
     }
 }

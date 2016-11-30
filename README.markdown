@@ -12,9 +12,11 @@ Symfony2 [documentation](http://symfony.com/doc/current/bundles/DoctrineMongoDBB
 Compatibility
 =============
 
-The `composer.json` file in each branch indicates Symfony2 compatibility.
-Additionally, several tags are available:
+The current version of this bundle has the following requirements:
+ * PHP 5.5 or 5.6
+ * MongoDB driver version 1.5 or newer (ext-mongodb is not supported)
+ * Symfony 2.7 or newer is required
 
- * `3.0.x` for Symfony 2.1 (this tracks the `master` branch)
- * `2.2.x` for Symfony 2.0 (this tracks the `2.0` branch)
- * `2.1.x` and `2.0.x` for Symfony 2.0 and older Doctrine MongoDB ODM versions
+Support for older Symfony, PHP and MongoDB versions is provided via the `3.0.x`
+releases (tracked in the `3.0` branch). This version sees bug and security fixes
+only.

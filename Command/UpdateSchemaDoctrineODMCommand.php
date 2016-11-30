@@ -45,6 +45,6 @@ EOT
     {
         DoctrineODMCommand::setApplicationDocumentManager($this->getApplication(), $input->getOption('dm'));
 
-        parent::execute($input, $output);
+        return parent::execute($input, $output);
     }
 }

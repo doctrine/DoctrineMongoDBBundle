@@ -24,7 +24,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return DocumentManager
      */
-    public static function createTestDocumentManager($paths = array())
+    public static function createTestDocumentManager($paths = [])
     {
         $config = new \Doctrine\ODM\MongoDB\Configuration();
         $config->setAutoGenerateProxyClasses(true);

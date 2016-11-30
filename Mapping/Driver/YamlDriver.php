@@ -14,8 +14,7 @@
 
 namespace Doctrine\Bundle\MongoDBBundle\Mapping\Driver;
 
-use Doctrine\Common\Persistence\Mapping\Driver\SymfonyFileLocator;
-use Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver as BaseYamlDriver;
+use Doctrine\ODM\MongoDB\Mapping\Driver\SimplifiedYamlDriver as BaseYamlDriver;
 
 /**
  * YamlDriver that additionally looks for mapping information in a global file.
@@ -32,7 +31,6 @@ class YamlDriver extends BaseYamlDriver
      */
     public function __construct($prefixes, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
-        $locator = new SymfonyFileLocator((array) $prefixes, $fileExtension);
-        parent::__construct($locator, $fileExtension);
+        parent::__construct($prefixes, $fileExtension);
     }
 }
