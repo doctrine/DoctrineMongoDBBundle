@@ -124,4 +124,42 @@ class PrettyDataCollectorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(3, $collector->getQueryCount());
         $this->assertEquals($formatted, $collector->getQueries());
     }
+
+    public function testQueryCountVsGridFsStoreFile()
+    {
+        $queries = [
+            [
+                'count' => true,
+                'query' => [
+                    'path' => '/',
+                ],
+                'limit' => ['limit' => true, 'limitNum' => 5],
+                'skip' => ['skip' => true, 'limitSkip' => 0],
+                'options' => [],
+                'db' => 'foo',
+                'collection' => 'Route',
+            ],
+            [
+                'storeFile' => true,
+                'count' => 5,
+                'options' => [],
+                'db' => 'foo',
+                'collection' => 'User.files',
+            ],
+        ];
+        $formatted = [
+            'use foo;',
+            'db.Route.count({ "path": "/" }, { "limit": true, "limitNum": 5 }, { "skip": true, "limitSkip": 0 });',
+            'db.User.files.storeFile(5, [ ]);',
+        ];
+
+        $collector = new PrettyDataCollector();
+        foreach ($queries as $query) {
+            $collector->logQuery($query);
+        }
+        $collector->collect(new Request(), new Response());
+
+        $this->assertEquals(2, $collector->getQueryCount());
+        $this->assertEquals($formatted, $collector->getQueries());
+    }
 }
