@@ -98,11 +98,11 @@ class PrettyDataCollector extends StandardDataCollector
                     $query .= '.runCommand('.$this->bsonEncode($log['data']).')';
                 } elseif (isset($log['count'])) {
                     $query .= '.count(';
-                    if ($log['query'] || $log['limit'] || $log['skip']) {
+                    if (isset($log['query']) || isset($log['limit']) || isset($log['skip'])) {
                         $query .= $this->bsonEncode($log['query']);
-                        if ($log['limit'] || $log['skip']) {
+                        if (isset($log['limit']) || isset($log['skip'])) {
                             $query .= ', '.$this->bsonEncode($log['limit']);
-                            if ($log['skip']) {
+                            if (isset($log['skip'])) {
                                 $query .= ', '.$this->bsonEncode($log['skip']);
                             }
                         }
@@ -130,7 +130,7 @@ class PrettyDataCollector extends StandardDataCollector
                     $query .= '.execute()';
                 } elseif (isset($log['find'])) {
                     $query .= '.find(';
-                    if ($log['query'] || $log['fields']) {
+                    if (isset($log['query']) || isset($log['fields'])) {
                         $query .= $this->bsonEncode($log['query']);
                         if ($log['fields']) {
                             $query .= ', '.$this->bsonEncode($log['fields']);
@@ -139,7 +139,7 @@ class PrettyDataCollector extends StandardDataCollector
                     $query .= ')';
                 } elseif (isset($log['findOne'])) {
                     $query .= '.findOne(';
-                    if ($log['query'] || $log['fields']) {
+                    if (isset($log['query']) || isset($log['fields'])) {
                         $query .= $this->bsonEncode($log['query']);
                         if ($log['fields']) {
                             $query .= ', '.$this->bsonEncode($log['fields']);
