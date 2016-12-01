@@ -10,7 +10,6 @@ doctrine_mongodb:
     hydrator_namespace: Test_Hydrators
     proxy_dir: "%kernel.cache_dir%/doctrine/odm/mongodb/Test_Proxies"
     proxy_namespace: Test_Proxies
-    proxy_namespace: Test_Proxies
     persistent_collection_dir: "%kernel.cache_dir%/doctrine/odm/mongodb/Test_Pcolls"
     persistent_collection_namespace: Test_Pcolls
 
