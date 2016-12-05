@@ -36,6 +36,7 @@ class DoctrineMongoDBExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $container = new ContainerBuilder(new ParameterBag([
             'kernel.root_dir'    => __DIR__,
+            'kernel.name'        => 'kernel',
             'kernel.environment' => 'test',
             'kernel.debug'       => 'true',
             'kernel.bundles'     => [],
@@ -81,6 +82,7 @@ class DoctrineMongoDBExtensionTest extends \PHPUnit_Framework_TestCase
             'kernel.bundles'     => $map,
             'kernel.cache_dir'   => sys_get_temp_dir(),
             'kernel.environment' => 'test',
+            'kernel.name'        => 'kernel',
             'kernel.root_dir'    => __DIR__.'/../../' // src dir
         ]));
     }

@@ -95,7 +95,9 @@ class PrettyDataCollector extends StandardDataCollector
                         $query .= '.batchInsert('.$this->bsonEncode($log['data']).')';
                     }
                 } elseif (isset($log['command'])) {
-                    $query .= '.runCommand('.$this->bsonEncode($log['data']).')';
+                    $query .= '.runCommand(' . $this->bsonEncode($log['data']) . ')';
+                } elseif (isset($log['storeFile'])) {
+                    $query .= '.storeFile('.$log['count'].', '.$this->bsonEncode($log['options']).')';
                 } elseif (isset($log['count'])) {
                     $query .= '.count(';
                     if (isset($log['query']) || isset($log['limit']) || isset($log['skip'])) {
@@ -161,7 +163,7 @@ class PrettyDataCollector extends StandardDataCollector
                 } elseif (isset($log['save'])) {
                     $query .= '.save('.$this->bsonEncode($log['document']).')';
                 } elseif (isset($log['sort'])) {
-                    $query .= '.sort('.$this->bsonEncode($log['sortFields']).')';
+                    $query .= '.sort('.$this->bsonEncode($log['sortFields'], false).')';
                 } elseif (isset($log['update'])) {
                     // todo: include $log['options']
                     $query .= '.update('.$this->bsonEncode($log['query']).', '.$this->bsonEncode($log['newObj']).')';

@@ -124,4 +124,92 @@ class PrettyDataCollectorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(3, $collector->getQueryCount());
         $this->assertEquals($formatted, $collector->getQueries());
     }
+
+    public function testQueryCountVsGridFsStoreFile()
+    {
+        $queries = [
+            [
+                'count' => true,
+                'query' => [
+                    'path' => '/',
+                ],
+                'limit' => ['limit' => true, 'limitNum' => 5],
+                'skip' => ['skip' => true, 'limitSkip' => 0],
+                'options' => [],
+                'db' => 'foo',
+                'collection' => 'Route',
+            ],
+            [
+                'storeFile' => true,
+                'count' => 5,
+                'options' => [],
+                'db' => 'foo',
+                'collection' => 'User.files',
+            ],
+        ];
+        $formatted = [
+            'use foo;',
+            'db.Route.count({ "path": "/" }, { "limit": true, "limitNum": 5 }, { "skip": true, "limitSkip": 0 });',
+            'db.User.files.storeFile(5, [ ]);',
+        ];
+
+        $collector = new PrettyDataCollector();
+        foreach ($queries as $query) {
+            $collector->logQuery($query);
+        }
+        $collector->collect(new Request(), new Response());
+
+        $this->assertEquals(2, $collector->getQueryCount());
+        $this->assertEquals($formatted, $collector->getQueries());
+    }
+
+    public function testCollectSort()
+    {
+        $queries = [
+            [
+                'find' => true,
+                'query' => ['_id' => 'foo'],
+                'fields' => [],
+                'db' => 'foo',
+                'collection' => 'User',
+            ],
+            [
+                'sort' => true,
+                'sortFields' => ['name' => 1, 'city' => -1],
+                'query' => ['_id' => 'foo'],
+                'fields' => [],
+            ],
+            [
+                'find' => true,
+                'query' => [
+                    '_id' => '5506fa1580c7e1ee3c8b4c60',
+                ],
+                'fields' => [],
+                'db' => 'foo',
+                'collection' => 'Group',
+            ],
+            [
+                'sort' => true,
+                'sortFields' => [],
+                'query' => [
+                    '_id' => '5506fa1580c7e1ee3c8b4c60',
+                ],
+                'fields' => [],
+            ],
+        ];
+        $formatted = [
+            'use foo;',
+            'db.User.find({ "_id": "foo" }).sort({ "name": 1, "city": -1 });',
+            'db.Group.find({ "_id": "5506fa1580c7e1ee3c8b4c60" }).sort({ });'
+        ];
+
+        $collector = new PrettyDataCollector();
+        foreach ($queries as $query) {
+            $collector->logQuery($query);
+        }
+        $collector->collect(new Request(), new Response());
+
+        $this->assertEquals(2, $collector->getQueryCount());
+        $this->assertEquals($formatted, $collector->getQueries());
+    }
 }
