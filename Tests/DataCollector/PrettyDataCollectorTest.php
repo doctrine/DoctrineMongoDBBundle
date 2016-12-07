@@ -47,7 +47,31 @@ class PrettyDataCollectorTest extends \PHPUnit_Framework_TestCase
             'bin data' => [
                 ['db' => 'foo', 'collection' => 'bar', 'update' => true, 'query' => ['_id' => 'foo'], 'newObj' => ['foo' => new \MongoBinData('junk data', \MongoBinData::BYTE_ARRAY)]],
                 ['use foo;', 'db.bar.update({ "_id": "foo" }, { "foo": new BinData(2, "' . base64_encode('junk data') . '") });'],
-            ]
+            ],
+            'findWithoutQuery' => [
+                ['db' => 'foo', 'collection' => 'bar', 'find' => true, 'fields' => []],
+                ['use foo;', 'db.bar.find({ });'],
+            ],
+            'findWithoutFields' => [
+                ['db' => 'foo', 'collection' => 'bar', 'find' => true, 'query' => ['foo' => null]],
+                ['use foo;', 'db.bar.find({ "foo": null });'],
+            ],
+            'count' => [
+                ['db' => 'foo', 'collection' => 'bar', 'count' => true],
+                ['use foo;', 'db.bar.count();'],
+            ],
+            'countWithQuery' => [
+                ['db' => 'foo', 'collection' => 'bar', 'count' => true, 'query' => ['foo' => null]],
+                ['use foo;', 'db.bar.count({ "foo": null });'],
+            ],
+            'countWithSkipOnly' => [
+                ['db' => 'foo', 'collection' => 'bar', 'count' => true, 'skip' => ['skip' => true, 'limitSkip' => 5]],
+                ['use foo;', 'db.bar.count({ }, { "skip": 5 });'],
+            ],
+            'countWithLimitOnly' => [
+                ['db' => 'foo', 'collection' => 'bar', 'count' => true, 'limit' => ['limit' => true, 'limitNum' => 3]],
+                ['use foo;', 'db.bar.count({ }, { "limit": 3 });'],
+            ],
         ];
     }
 
@@ -149,7 +173,7 @@ class PrettyDataCollectorTest extends \PHPUnit_Framework_TestCase
         ];
         $formatted = [
             'use foo;',
-            'db.Route.count({ "path": "/" }, { "limit": true, "limitNum": 5 }, { "skip": true, "limitSkip": 0 });',
+            'db.Route.count({ "path": "/" }, { "limit": 5, "skip": 0 });',
             'db.User.files.storeFile(5, [ ]);',
         ];
 

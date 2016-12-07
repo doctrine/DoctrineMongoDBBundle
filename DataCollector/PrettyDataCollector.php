@@ -100,13 +100,19 @@ class PrettyDataCollector extends StandardDataCollector
                     $query .= '.storeFile('.$log['count'].', '.$this->bsonEncode($log['options']).')';
                 } elseif (isset($log['count'])) {
                     $query .= '.count(';
-                    if ($log['query'] || $log['limit'] || $log['skip']) {
-                        $query .= $this->bsonEncode($log['query']);
-                        if ($log['limit'] || $log['skip']) {
-                            $query .= ', '.$this->bsonEncode($log['limit']);
-                            if ($log['skip']) {
-                                $query .= ', '.$this->bsonEncode($log['skip']);
-                            }
+                    if (isset($log['query']) || isset($log['limit']) || isset($log['skip'])) {
+                        $query .= $this->bsonEncode(isset($log['query']) ? $log['query'] : [], false);
+
+                        $options = [];
+                        if (isset($log['limit'])) {
+                            $options['limit'] = $log['limit']['limitNum'];
+                        }
+                        if (isset($log['skip'])) {
+                            $options['skip'] = $log['skip']['limitSkip'];
+                        }
+
+                        if (! empty($options)) {
+                            $query .= ', '.$this->bsonEncode($options, false);
                         }
                     }
                     $query .= ')';
@@ -132,18 +138,18 @@ class PrettyDataCollector extends StandardDataCollector
                     $query .= '.execute()';
                 } elseif (isset($log['find'])) {
                     $query .= '.find(';
-                    if ($log['query'] || $log['fields']) {
-                        $query .= $this->bsonEncode($log['query']);
-                        if ($log['fields']) {
+                    if (isset($log['query']) || isset($log['fields'])) {
+                        $query .= $this->bsonEncode(isset($log['query']) ? $log['query'] : [], false);
+                        if (!empty($log['fields'])) {
                             $query .= ', '.$this->bsonEncode($log['fields']);
                         }
                     }
                     $query .= ')';
                 } elseif (isset($log['findOne'])) {
                     $query .= '.findOne(';
-                    if ($log['query'] || $log['fields']) {
-                        $query .= $this->bsonEncode($log['query']);
-                        if ($log['fields']) {
+                    if (isset($log['query']) || isset($log['fields'])) {
+                        $query .= $this->bsonEncode(isset($log['query']) ? $log['query'] : [], false);
+                        if (!empty($log['fields'])) {
                             $query .= ', '.$this->bsonEncode($log['fields']);
                         }
                     }
