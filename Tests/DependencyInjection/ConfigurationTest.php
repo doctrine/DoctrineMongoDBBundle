@@ -102,6 +102,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                         'socketTimeoutMS'   => 1000,
                         'ssl'               => true,
                         'authMechanism'     => 'X509',
+                        'authSource'        => 'some_db',
                         'username'          => 'username_val',
                         'w'                 => 'majority',
                         'wTimeoutMS'        => 1000,

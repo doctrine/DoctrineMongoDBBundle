@@ -36,6 +36,7 @@
                 connect="true"
                 connectTimeoutMS="500"
                 db="database_val"
+                authSource="some_db"
                 journal="true"
                 password="password_val"
                 readPreference="secondaryPreferred"

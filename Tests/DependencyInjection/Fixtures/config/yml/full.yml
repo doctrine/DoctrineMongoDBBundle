@@ -30,6 +30,7 @@ doctrine_mongodb:
             options:
                 connect:          true
                 connectTimeoutMS: 500
+                authSource:       some_db
                 db:               database_val
                 journal:          true
                 password:         password_val
