@@ -251,6 +251,7 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('db')->end()
                                     ->scalarNode('authSource')
                                         ->validate()->ifNull()->thenUnset()->end()
+                                    ->end()
                                     ->booleanNode('journal')->end()
                                     ->scalarNode('password')
                                         ->validate()->ifNull()->thenUnset()->end()
