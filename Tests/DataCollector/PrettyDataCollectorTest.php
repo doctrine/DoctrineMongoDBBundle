@@ -236,4 +236,80 @@ class PrettyDataCollectorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(2, $collector->getQueryCount());
         $this->assertEquals($formatted, $collector->getQueries());
     }
+
+    public function testCollectSortAndLimit()
+    {
+        $queries = [
+            [
+                'find' => true,
+                'query' => ['_id' => 'foo'],
+                'fields' => [],
+                'db' => 'foo',
+                'collection' => 'User',
+            ],
+            [
+                'sort' => true,
+                'sortFields' => ['name' => 1, 'city' => -1],
+                'query' => ['_id' => 'foo'],
+                'fields' => [],
+            ],
+            [
+                'limit' => true,
+                'limitNum' => 10,
+                'query' => ['_id' => 'foo'],
+                'fields' => [],
+            ],
+        ];
+        $formatted = [
+            'use foo;',
+            'db.User.find({ "_id": "foo" }).sort({ "name": 1, "city": -1 }).limit(10);',
+        ];
+
+        $collector = new PrettyDataCollector();
+        foreach ($queries as $query) {
+            $collector->logQuery($query);
+        }
+        $collector->collect(new Request(), new Response());
+
+        $this->assertEquals(1, $collector->getQueryCount());
+        $this->assertEquals($formatted, $collector->getQueries());
+    }
+
+    public function testCollectLimitAndSort()
+    {
+        $queries = [
+            [
+                'find' => true,
+                'query' => ['_id' => 'foo'],
+                'fields' => [],
+                'db' => 'foo',
+                'collection' => 'User',
+            ],
+            [
+                'limit' => true,
+                'limitNum' => 10,
+                'query' => ['_id' => 'foo'],
+                'fields' => [],
+            ],
+            [
+                'sort' => true,
+                'sortFields' => ['name' => 1, 'city' => -1],
+                'query' => ['_id' => 'foo'],
+                'fields' => [],
+            ],
+        ];
+        $formatted = [
+            'use foo;',
+            'db.User.find({ "_id": "foo" }).limit(10).sort({ "name": 1, "city": -1 });',
+        ];
+
+        $collector = new PrettyDataCollector();
+        foreach ($queries as $query) {
+            $collector->logQuery($query);
+        }
+        $collector->collect(new Request(), new Response());
+
+        $this->assertEquals(1, $collector->getQueryCount());
+        $this->assertEquals($formatted, $collector->getQueries());
+    }
 }
