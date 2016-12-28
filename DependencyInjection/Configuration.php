@@ -249,6 +249,8 @@ class Configuration implements ConfigurationInterface
                                     ->booleanNode('connect')->end()
                                     ->integerNode('connectTimeoutMS')->end()
                                     ->scalarNode('db')->end()
+                                    ->scalarNode('authSource')
+                                        ->validate()->ifNull()->thenUnset()->end()
                                     ->booleanNode('journal')->end()
                                     ->scalarNode('password')
                                         ->validate()->ifNull()->thenUnset()->end()
