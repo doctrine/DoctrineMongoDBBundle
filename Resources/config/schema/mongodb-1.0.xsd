@@ -59,6 +59,7 @@
       <xsd:element name="readPreferenceTags" type="read-preference-tag-set" minOccurs="0" maxOccurs="unbounded" />
     </xsd:sequence>
     <xsd:attribute name="authMechanism" type="auth-mechanism" />
+    <xsd:attribute name="authSource" type="xsd:string" />
     <xsd:attribute name="connect" type="xsd:boolean" />
     <xsd:attribute name="connectTimeoutMS" type="xsd:integer" />
     <xsd:attribute name="db" type="xsd:string" />
