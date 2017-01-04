@@ -387,6 +387,50 @@ string as a comma separated list.
 Where mongodb-01, mongodb-02 and mongodb-03 are the machine hostnames. You
 can also use IP addresses if you prefer.
 
+Using Authentication on a Database Level
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+MongoDB supports authentication and authorisation on a database-level. This is mandatory if you have
+e.g. a publicly accessible MongoDB Server. To make use of this feature you need to configure credentials
+for each of your connections. Also every connection needs a database set to authenticate against. The setting is
+represented by the *authSource* `connection string <https://docs.mongodb.com/manual/reference/connection-string/#urioption.authSource>`_.
+Otherwise you will get a *auth failed* exception.
+
+.. configuration-block::
+
+    .. code-block:: yaml
+
+        doctrine_mongodb:
+            # ...
+            connections:
+                default:
+                    server: "mongodb://localhost:27017"
+                    username: someuser
+                    password: somepass
+                    authSource: db_you_have_access_to
+
+    .. code-block:: xml
+
+        <?xml version="1.0" ?>
+
+        <container xmlns="http://symfony.com/schema/dic/services"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:doctrine="http://symfony.com/schema/dic/doctrine/odm/mongodb"
+                   xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+                                http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+
+            <doctrine:mongodb>
+                <doctrine:connection id="default" server="mongodb://localhost:27017"/>
+                    <doctrine:options
+                            username="someuser"
+                            password="somepass"
+                            authSource="db_you_have_access_to"
+                    >
+                    </doctrine:options>
+                </doctrine:connection>
+            </doctrine:mongodb>
+        </container>
+
 Retrying Connections and Queries
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -446,6 +490,7 @@ Full Default Configuration
                         connect:              ~
                         connectTimeoutMS:     ~
                         db:                   ~
+                        authSource:           ~
                         journal:              ~
                         password:             ~
                         readPreference:       ~
@@ -524,6 +569,7 @@ Full Default Configuration
                             connect=""
                             connectTimeoutMS=""
                             db=""
+                            authSource=""
                             journal=""
                             password=""
                             readPreference=""
