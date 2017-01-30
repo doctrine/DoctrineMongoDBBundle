@@ -95,11 +95,11 @@ Next, create the form for the ``User`` model::
     {
         public function buildForm(FormBuilderInterface $builder, array $options)
         {
-            $builder->add('email', 'email');
-            $builder->add('password', 'repeated', array(
+            $builder->add('email', EmailType::class);
+            $builder->add('password', RepeatedType::class, array(
                'first_name' => 'password',
                'second_name' => 'confirm',
-               'type' => 'password'
+               'type' => PasswordType::class
             ));
         }
 
@@ -108,11 +108,6 @@ Next, create the form for the ``User`` model::
             $resolver->setDefaults(array(
                 'data_class' => 'Acme\AccountBundle\Document\User',
             ));
-        }
-
-        public function getName()
-        {
-            return 'user';
         }
     }
 
