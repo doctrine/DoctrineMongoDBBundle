@@ -431,6 +431,63 @@ Otherwise you will get a *auth failed* exception.
             </doctrine:mongodb>
         </container>
 
+Specifying a context service
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The MongoDB driver supports receiving a stream context to set SSL and logging
+options. This can be used to authenticate using SSL certificates. To do so, create a service that creates your logging context:
+
+.. configuration-block::
+
+    .. code-block:: yaml
+
+        services:
+            # ...
+
+            app.mongodb.context_service:
+                class: 'resource'
+                factory: 'stream_context_create'
+                arguments:
+                    - { ssl: { verify_expiry: true } }
+
+Note: the ``class`` option is not used when creating the service, but has to be
+provided for the service definition to be valid.
+
+You can then use this service in your configuration:
+
+.. configuration-block::
+
+    .. code-block:: yaml
+
+        doctrine_mongodb:
+            # ...
+            connections:
+                default:
+                    server: "mongodb://localhost:27017"
+                    driver_options:
+                        context: "app.mongodb.context_service"
+
+    .. code-block:: xml
+
+        <?xml version="1.0" ?>
+
+        <container xmlns="http://symfony.com/schema/dic/services"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:doctrine="http://symfony.com/schema/dic/doctrine/odm/mongodb"
+                   xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+                                http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+
+            <doctrine:mongodb>
+                <doctrine:connection id="default" server="mongodb://localhost:27017"/>
+                    <doctrine:driverOptions
+                            context="app.mongodb.context_service"
+                    >
+                    </doctrine:options>
+                </doctrine:connection>
+            </doctrine:mongodb>
+        </container>
+
+
 Retrying Connections and Queries
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -501,6 +558,8 @@ Full Default Configuration
                         username:             ~
                         w:                    ~
                         wTimeoutMS:           ~
+                    driver_options:
+                        context:              ~ # stream context to use for connection
 
             proxy_namespace:      MongoDBODMProxies
             proxy_dir:            "%kernel.cache_dir%/doctrine/odm/mongodb/Proxies"
