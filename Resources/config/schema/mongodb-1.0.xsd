@@ -49,6 +49,7 @@
   <xsd:complexType name="connection">
     <xsd:sequence>
       <xsd:element name="options" type="connection-options" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="driverOptions" type="connection-driver-options" minOccurs="0" maxOccurs="1" />
     </xsd:sequence>
     <xsd:attribute name="id" type="xsd:string" use="required" />
     <xsd:attribute name="server" type="xsd:string" />
@@ -77,6 +78,10 @@
     <xsd:attribute name="slaveOkay" type="xsd:boolean" />
     <xsd:attribute name="timeout" type="xsd:integer" />
     <xsd:attribute name="wTimeout" type="xsd:integer" />
+  </xsd:complexType>
+
+  <xsd:complexType name="connection-driver-options">
+    <xsd:attribute name="context" type="xsd:string" />
   </xsd:complexType>
 
   <xsd:simpleType name="auth-mechanism">

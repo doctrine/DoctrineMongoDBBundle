@@ -293,6 +293,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 isset($connection['options']) ? $connection['options'] : [],
                 new Reference(sprintf('doctrine_mongodb.odm.%s_configuration', $name)),
                 new Reference($eventManagerId),
+                $this->normalizeDriverOptions($connection),
             ];
             $odmConnDef = new Definition('%doctrine_mongodb.odm.connection.class%', $odmConnArgs);
             $id = sprintf('doctrine_mongodb.odm.%s_connection', $name);
@@ -300,6 +301,26 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $cons[$name] = $id;
         }
         $container->setParameter('doctrine_mongodb.odm.connections', $cons);
+    }
+
+    /**
+     * Normalizes the driver options array
+     *
+     * @param array $connection
+     *
+     * @return array|null
+     */
+    private function normalizeDriverOptions(array $connection)
+    {
+        if (! isset($connection['driverOptions'])) {
+            return null;
+        }
+
+        if (isset($connection['driverOptions']['context'])) {
+            $connection['driverOptions']['context'] = new Reference($connection['driverOptions']['context']);
+        }
+
+        return $connection['driverOptions'];
     }
 
     /**
