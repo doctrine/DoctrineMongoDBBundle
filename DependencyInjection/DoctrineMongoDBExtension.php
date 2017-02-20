@@ -313,7 +313,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     private function normalizeDriverOptions(array $connection)
     {
         if (! isset($connection['driverOptions'])) {
-            return null;
+            return [];
         }
 
         if (isset($connection['driverOptions']['context'])) {
