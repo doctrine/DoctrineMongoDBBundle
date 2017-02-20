@@ -303,7 +303,7 @@ class Configuration implements ConfigurationInterface
                                     })
                                 ->end()
                             ->end()
-                            ->arrayNode('driverOptions')
+                            ->arrayNode('driver_options')
                                 ->performNoDeepMerging()
                                 ->children()
                                     ->scalarNode('context')->defaultNull()->end()

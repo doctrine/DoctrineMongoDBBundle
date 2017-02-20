@@ -58,7 +58,7 @@
                 </doctrine:readPreferenceTags>
                 <doctrine:readPreferenceTags />
             </doctrine:options>
-            <doctrine:driverOptions
+            <doctrine:driver-options
                 context="conn1_context_service"
             />
         </doctrine:connection>

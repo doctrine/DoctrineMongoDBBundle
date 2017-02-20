@@ -479,8 +479,8 @@ You can then use this service in your configuration:
 
             <doctrine:mongodb>
                 <doctrine:connection id="default" server="mongodb://localhost:27017"/>
-                    <doctrine:driverOptions
-                            context="app.mongodb.context_service"
+                    <doctrine:driver-options
+                        context="app.mongodb.context_service"
                     >
                     </doctrine:options>
                 </doctrine:connection>
