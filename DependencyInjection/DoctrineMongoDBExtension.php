@@ -312,15 +312,15 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      */
     private function normalizeDriverOptions(array $connection)
     {
-        if (! isset($connection['driverOptions'])) {
+        if (! isset($connection['driver_options'])) {
             return [];
         }
 
-        if (isset($connection['driverOptions']['context'])) {
-            $connection['driverOptions']['context'] = new Reference($connection['driverOptions']['context']);
+        if (isset($connection['driver_options']['context'])) {
+            $connection['driver_options']['context'] = new Reference($connection['driver_options']['context']);
         }
 
-        return $connection['driverOptions'];
+        return $connection['driver_options'];
     }
 
     /**
