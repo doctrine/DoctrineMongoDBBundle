@@ -65,8 +65,10 @@ class TypeGuesserTest extends TypeTestCase
         $this->assertType('datetime', $form->get('date'));
         $this->assertType('datetime', $form->get('ts'));
         $this->assertType('checkbox', $form->get('boolField'));
+        $this->assertType('checkbox', $form->get('booleanField'));
         $this->assertType('number', $form->get('floatField'));
         $this->assertType('integer', $form->get('intField'));
+        $this->assertType('integer', $form->get('integerField'));
         $this->assertType('collection', $form->get('collectionField'));
     }
 
