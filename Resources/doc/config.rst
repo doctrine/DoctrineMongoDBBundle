@@ -405,9 +405,10 @@ Otherwise you will get a *auth failed* exception.
             connections:
                 default:
                     server: "mongodb://localhost:27017"
-                    username: someuser
-                    password: somepass
-                    authSource: db_you_have_access_to
+                    options:
+                        username: someuser
+                        password: somepass
+                        authSource: db_you_have_access_to
 
     .. code-block:: xml
 
