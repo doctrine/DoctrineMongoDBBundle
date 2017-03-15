@@ -408,7 +408,7 @@ Otherwise you will get a *auth failed* exception.
                     options:
                         username: someuser
                         password: somepass
-                        db: db_you_have_access_to
+                        authSource: db_you_have_access_to
 
     .. code-block:: xml
 
