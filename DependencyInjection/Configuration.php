@@ -133,6 +133,7 @@ class Configuration implements ConfigurationInterface
                                 ->children()
                                     ->booleanNode('enabled')->defaultValue('%kernel.debug%')->end()
                                     ->booleanNode('pretty')->defaultValue('%kernel.debug%')->end()
+                                    ->booleanNode('explain')->defaultValue('%kernel.debug%')->end()
                                 ->end()
                             ->end()
                             ->scalarNode('default_repository_class')->defaultValue(DocumentRepository::class)->end()

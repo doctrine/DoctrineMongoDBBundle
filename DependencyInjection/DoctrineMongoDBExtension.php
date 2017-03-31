@@ -20,9 +20,8 @@ use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
-use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
-use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Doctrine MongoDB ODM extension.
@@ -211,6 +210,15 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 ->getDefinition($dataCollectorId)
                 ->addTag('data_collector', ['id' => 'mongodb', 'template' => 'DoctrineMongoDBBundle:Collector:mongodb'])
             ;
+
+            //if explain is enabled, DataCollector will listen to preFind/postFind
+            if ($container->getParameterBag()->resolveValue($documentManager['profiler']['explain'])) {
+                $container
+                    ->getDefinition($dataCollectorId)
+                    ->addTag( 'doctrine_mongodb.odm.event_listener', ['event' => 'collectionPreFind', 'method' => 'collectionPreFind'])
+                    ->addTag( 'doctrine_mongodb.odm.event_listener', ['event' => 'collectionPostFind', 'method' => 'collectionPostFind'])
+                ;
+            }
         }
 
         if (1 < count($loggers)) {

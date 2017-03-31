@@ -15,6 +15,7 @@
 namespace Doctrine\Bundle\MongoDBBundle\DataCollector;
 
 use Doctrine\Bundle\MongoDBBundle\Logger\LoggerInterface;
+use Doctrine\Common\EventArgs;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
@@ -57,5 +58,24 @@ class StandardDataCollector extends DataCollector implements LoggerInterface
     public function getName()
     {
         return 'mongodb';
+    }
+
+    //http://jwage.com/post/30490207842/logging-mongodb-explains-in-symfony2
+    public function collectionPreFind(EventArgs $args)
+    {
+    }
+
+    public function collectionPostFind(EventArgs $args)
+    {
+        //get last logged query and add field "explain"
+        $c = count($this->queries);
+        if (0 === $c) {
+            return;
+        }
+
+        $i = $c - 1;
+        $cursor = $args->getData();
+        $explain = $cursor->explain();
+        $this->queries[$i]["explain"]=$explain;
     }
 }
