@@ -55,6 +55,11 @@ class StandardDataCollector extends DataCollector implements LoggerInterface
         return $this->data['queries'];
     }
 
+    public function getExplainedQueries()
+    {
+        return $this->data["explained_queries"];
+    }
+
     public function getName()
     {
         return 'mongodb';

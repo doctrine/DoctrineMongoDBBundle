@@ -73,7 +73,7 @@
                 <doctrine:port>1234</doctrine:port>
                 <doctrine:instance-class>instance_val</doctrine:instance-class>
             </doctrine:metadata-cache-driver>
-            <doctrine:profiler enabled="true" pretty="false" />
+            <doctrine:profiler enabled="true" pretty="false" explain="false" />
             <doctrine:filter name="disabled_filter" enabled="false" class="Vendor\Filter\DisabledFilter" />
             <doctrine:filter name="basic_filter" enabled="true" class="Vendor\Filter\BasicFilter" />
             <doctrine:filter name="complex_filter" enabled="true" class="Vendor\Filter\ComplexFilter">

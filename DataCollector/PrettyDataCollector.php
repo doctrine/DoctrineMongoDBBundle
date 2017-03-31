@@ -35,6 +35,7 @@ class PrettyDataCollector extends StandardDataCollector
     public function collect(Request $request, Response $response, \Exception $exception = null)
     {
         $this->data['queries'] = [];
+        $this->data['explained_queries'] = [];
         $this->data['nb_queries'] = 0;
 
         $grouped = [];
@@ -264,14 +265,22 @@ class PrettyDataCollector extends StandardDataCollector
         if ('.' == $query[0]) {
             $query = 'db'.$query;
         }
+        $query .= ';';
+
+        $this->data["queries"][] = $query;
+
+        if (!$informational) {
+            $this->data['nb_queries']++;
+        }
+
         $data = array(
-            "query" => $query.';',
+            "query" => $query,
             "informational" => $informational,
         );
 
         if ($explain) {
             $data["explain"] = $explain;
-            //pick some fields
+            //pick some fields for display in panel
             if (isset($explain["queryPlanner"]["winningPlan"]["stage"])) {
                 $data["plan"] = $explain["queryPlanner"]["winningPlan"]["stage"];
             }
@@ -280,9 +289,6 @@ class PrettyDataCollector extends StandardDataCollector
             }
         }
 
-        $this->data["queries"][] = $data;
-        if (!$informational) {
-            $this->data['nb_queries']++;
-        }
+        $this->data["explained_queries"][] = $data;
     }
 }

@@ -68,6 +68,7 @@ doctrine_mongodb:
             profiler:
                 enabled: true
                 pretty:  false
+                explain: false
             filters:
                 disabled_filter:
                     class:   Vendor\Filter\DisabledFilter

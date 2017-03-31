@@ -160,6 +160,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                     'profiler' => [
                         'enabled' => true,
                         'pretty'  => false,
+                        'explain' => false,
                     ],
                     'retry_connect' => 0,
                     'retry_query' => 0,
@@ -189,6 +190,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                     'profiler' => [
                         'enabled' => '%kernel.debug%',
                         'pretty'  => '%kernel.debug%',
+                        'explain' => '%kernel.debug%',
                     ],
                     'retry_connect' => 0,
                     'retry_query' => 0,
@@ -276,7 +278,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 ['document_managers' => ['default' => ['mappings' => ['foomap' => ['type' => 'val1'], 'barmap' => ['dir' => 'val2']]]]],
                 ['document_managers' => ['default' => ['mappings' => ['barmap' => ['prefix' => 'val3']]]]],
             ],
-            ['document_managers' => ['default' => ['metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_repository_class' =>  'Doctrine\ODM\MongoDB\DocumentRepository', 'repository_factory' => null, 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => ['foomap' => ['type' => 'val1', 'mapping' => true], 'barmap' => ['prefix' => 'val3', 'mapping' => true]], 'retry_connect' => 0, 'retry_query' => 0]]],
+            ['document_managers' => ['default' => ['metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%', 'explain' => '%kernel.debug%'], 'auto_mapping' => false, 'default_repository_class' =>  'Doctrine\ODM\MongoDB\DocumentRepository', 'repository_factory' => null, 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => ['foomap' => ['type' => 'val1', 'mapping' => true], 'barmap' => ['prefix' => 'val3', 'mapping' => true]], 'retry_connect' => 0, 'retry_query' => 0]]],
         ];
 
         // connections are merged non-recursively.
@@ -320,8 +322,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 ['document_managers' => ['bardm' => ['database' => 'val3']]],
             ],
             ['document_managers' => [
-                'foodm' => ['database' => 'val1', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_repository_class' =>  'Doctrine\ODM\MongoDB\DocumentRepository', 'repository_factory' => null, 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => [], 'retry_connect' => 0, 'retry_query' => 0],
-                'bardm' => ['database' => 'val3', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_repository_class' =>  'Doctrine\ODM\MongoDB\DocumentRepository', 'repository_factory' => null, 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => [], 'retry_connect' => 0, 'retry_query' => 0],
+                'foodm' => ['database' => 'val1', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%', 'explain' => '%kernel.debug%'], 'auto_mapping' => false, 'default_repository_class' =>  'Doctrine\ODM\MongoDB\DocumentRepository', 'repository_factory' => null, 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => [], 'retry_connect' => 0, 'retry_query' => 0],
+                'bardm' => ['database' => 'val3', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%', 'explain' => '%kernel.debug%'], 'auto_mapping' => false, 'default_repository_class' =>  'Doctrine\ODM\MongoDB\DocumentRepository', 'repository_factory' => null, 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => [], 'retry_connect' => 0, 'retry_query' => 0],
             ]],
         ];
 
@@ -367,8 +369,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 ['connection' => 'conn2', 'id' => 'bar'],
             ]],
             ['document_managers' => [
-                'foo' => ['connection' => 'conn1', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_repository_class' => 'Doctrine\ODM\MongoDB\DocumentRepository', 'repository_factory' => null, 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => [], 'retry_connect' => 0, 'retry_query' => 0],
-                'bar' => ['connection' => 'conn2', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_repository_class' =>  'Doctrine\ODM\MongoDB\DocumentRepository', 'repository_factory' => null, 'persistent_collection_factory' => null,'filters' => [], 'mappings' => [], 'retry_connect' => 0, 'retry_query' => 0],
+                'foo' => ['connection' => 'conn1', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%', 'explain' => '%kernel.debug%'], 'auto_mapping' => false, 'default_repository_class' => 'Doctrine\ODM\MongoDB\DocumentRepository', 'repository_factory' => null, 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => [], 'retry_connect' => 0, 'retry_query' => 0],
+                'bar' => ['connection' => 'conn2', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%', 'explain' => '%kernel.debug%'], 'auto_mapping' => false, 'default_repository_class' =>  'Doctrine\ODM\MongoDB\DocumentRepository', 'repository_factory' => null, 'persistent_collection_factory' => null,'filters' => [], 'mappings' => [], 'retry_connect' => 0, 'retry_query' => 0],
             ]],
         ];
 
@@ -388,7 +390,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                     'persistent_collection_factory' => null,
                     'mappings'     => ['foo-mapping' => ['type' => 'xml', 'mapping' => true]],
                     'logging'      => '%kernel.debug%',
-                    'profiler'     => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'],
+                    'profiler'     => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%', 'explain' => '%kernel.debug%'],
                     'auto_mapping' => false,
                     'filters'      => [],
                     'retry_connect' => 0,

@@ -98,7 +98,7 @@
 
     <h2>Queries</h2>
 
-    {% if collector.queries is empty %}
+    {% if collector.explainedqueries is empty %}
         <p>
             <em>No queries.</em>
         </p>
@@ -114,7 +114,7 @@
             </thead>
 
             <tbody>
-            {% for query in collector.queries %}
+            {% for query in collector.explainedqueries %}
                 <tr>
                     <td>{{ loop.index }}</td>
                     <td>

@@ -211,7 +211,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 ->addTag('data_collector', ['id' => 'mongodb', 'template' => 'DoctrineMongoDBBundle:Collector:mongodb'])
             ;
 
-            //if explain is enabled, DataCollector will listen to preFind/postFind
+            //if explain is enabled, DataCollector will listen to postFind
             if ($container->getParameterBag()->resolveValue($documentManager['profiler']['explain'])) {
                 $container
                     ->getDefinition($dataCollectorId)
