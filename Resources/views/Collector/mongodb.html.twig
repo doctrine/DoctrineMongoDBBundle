@@ -77,7 +77,7 @@
             border-width: 1px 0;
         }
 
-        table tbody td {
+        code {
             -ms-word-break: break-all;
             word-break: break-all;
             word-break: break-word;
@@ -107,8 +107,8 @@
             <thead>
 
             <tr>
-                <th>#</th>
-                <th>ms</th>
+                <th style="width: 20px">#</th>
+                <th style="width: 60px">ms</th>
                 <th>Query</th>
             </tr>
             </thead>
@@ -135,7 +135,7 @@
                             {% endif %}
                             {% if query.explain is defined %}
                                 <a href="#" onclick="mongo_toggleExplain('mongo_explain{{ loop.index }}')">
-                                    <small>Show/hide <code>explain</code> details</small>
+                                    <small>Show/hide <code>explain</code></small>
                                 </a>
                                 <div id="mongo_explain{{ loop.index }}" class="explain hidden">
                                     <pre> {{ query.explain|json_encode(constant('JSON_PRETTY_PRINT')) }} </pre>
