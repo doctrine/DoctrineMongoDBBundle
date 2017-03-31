@@ -34,6 +34,68 @@
 {% endblock %}
 
 {% block panel %}
+    <style type="text/css">
+
+        table, tr, th, td {
+            background: #FFF;
+            border-collapse: collapse;
+            line-height: 1.5;
+            vertical-align: top;
+        }
+
+        table {
+            background: #FFF;
+            border: 1px solid #E0E0E0;
+            box-shadow: 0px 0px 1px rgba(128, 128, 128, .2);;
+            margin: 1em 0;
+            width: 100%;
+        }
+
+        table th, table td {
+            padding: 8px 10px;
+        }
+
+        table th {
+            font-weight: bold;
+            text-align: left;
+        }
+
+        table thead th {
+            background-color: #E0E0E0;
+        }
+
+        table thead th.key {
+            width: 19%;
+        }
+
+        table tbody th,
+        table tbody td {
+            font-family: monospace;
+            font-size: 13px;
+            font-size-adjust: 0.5;
+            border: 1px solid #E0E0E0;
+            border-width: 1px 0;
+        }
+
+        table tbody td {
+            -ms-word-break: break-all;
+            word-break: break-all;
+            word-break: break-word;
+            -webkit-hyphens: auto;
+            -moz-hyphens: auto;
+            hyphens: auto;
+        }
+
+        table tbody div {
+            margin: .25em 0;
+        }
+
+        table tbody ul {
+            margin: 0;
+            padding: 0 0 0 1em;
+        }
+    </style>
+
     <h2>Queries</h2>
 
     {% if collector.queries is empty %}
@@ -41,14 +103,69 @@
             <em>No queries.</em>
         </p>
     {% else %}
-        <ul class="alt">
+        <table>
+            <thead>
+
+            <tr>
+                <th>#</th>
+                <th>ms</th>
+                <th>Query</th>
+            </tr>
+            </thead>
+
+            <tbody>
             {% for query in collector.queries %}
-                <li class="{{ cycle(['odd', 'even'], loop.index) }}">
-                    <div>
-                        <code>{{ query }}</code>
-                    </div>
-                </li>
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>
+                        {% if query.ms is defined %}
+                            <small><code>{{ query.ms }} ms</code></small>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div>
+                            <code {{ query.informational ? "informational" :"" }}>
+                                {{ query.query }}
+                            </code>
+                            <br/>
+                            {% if query.plan is defined %}
+                                <small><code>{{ query.plan }}</code></small>
+                            {% endif %}
+                            {% if query.explain is defined %}
+                                <a href="#" onclick="mongo_toggleExplain('mongo_explain{{ loop.index }}')">
+                                    <small>Show/hide <code>explain</code> details</small>
+                                </a>
+                                <div id="mongo_explain{{ loop.index }}" class="explain hidden">
+                                    <pre> {{ query.explain|json_encode(constant('JSON_PRETTY_PRINT')) }} </pre>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                    </td>
+                </tr>
             {% endfor %}
-        </ul>
+            </tbody>
+        </table>
     {% endif %}
+
+    <script type="text/javascript">
+        function mongo_hideExplain(el) {
+            el.className += ' hidden';
+        }
+
+        function mongo_showExplain(el) {
+            el.className = el.className.replace(' hidden', '');
+        }
+
+        function mongo_toggleExplain(id) {
+            var el = document.getElementById(id);
+            if (el.className.indexOf("hidden") >= 0) {
+                mongo_showExplain(el);
+            } else {
+                mongo_hideExplain(el);
+            }
+        }
+    </script>
 {% endblock %}

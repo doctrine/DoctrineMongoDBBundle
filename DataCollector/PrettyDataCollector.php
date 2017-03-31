@@ -61,26 +61,32 @@ class PrettyDataCollector extends StandardDataCollector
         $i = 0;
         $db = '';
         $query = '';
+        $explain = array();
+        /*
+         * turns all "logs" into string representations of queries
+         * multiple logs can result in one query (e.g. db.coll.find().sort() ==> find & sort
+         */
+        //
         foreach ($ordered as $logs) {
             foreach ($logs as $log) {
                 if (isset($log['db']) && $db != $log['db']) {
                     // for readability
-                    $this->data['queries'][$i++] = 'use '.$log['db'].';';
+                    $this->addQueryData('use '.$log['db'], null, true);
                     $db = $log['db'];
                 }
 
                 if (isset($log['collection'])) {
                     // flush the previous and start a new query
                     if (!empty($query)) {
-                        if ('.' == $query[0]) {
-                            $query  = 'db'.$query;
-                        }
-
-                        $this->data['queries'][$i++] = $query.';';
-                        ++$this->data['nb_queries'];
+                        $this->addQueryData($query, $explain);
+                        $explain = array();
                     }
 
                     $query = 'db.'.$log['collection'];
+                }
+
+                if (isset($log["explain"])) {
+                    $explain = $log["explain"];
                 }
 
                 // format the method call
@@ -95,7 +101,7 @@ class PrettyDataCollector extends StandardDataCollector
                         $query .= '.batchInsert('.$this->bsonEncode($log['data']).')';
                     }
                 } elseif (isset($log['command'])) {
-                    $query .= '.runCommand(' . $this->bsonEncode($log['data']) . ')';
+                    $query .= '.runCommand('.$this->bsonEncode($log['data']).')';
                 } elseif (isset($log['storeFile'])) {
                     $query .= '.storeFile('.$log['count'].', '.$this->bsonEncode($log['options']).')';
                 } elseif (isset($log['count'])) {
@@ -111,7 +117,7 @@ class PrettyDataCollector extends StandardDataCollector
                             $options['skip'] = $log['skip']['limitSkip'];
                         }
 
-                        if (! empty($options)) {
+                        if (!empty($options)) {
                             $query .= ', '.$this->bsonEncode($options, false);
                         }
                     }
@@ -179,14 +185,7 @@ class PrettyDataCollector extends StandardDataCollector
             }
         }
 
-        if (!empty($query)) {
-            if ('.' == $query[0]) {
-                $query  = 'db'.$query;
-            }
-
-            $this->data['queries'][$i++] = $query.';';
-            ++$this->data['nb_queries'];
-        }
+        $this->addQueryData($query, $explain);
     }
 
     /**
@@ -243,12 +242,47 @@ class PrettyDataCollector extends StandardDataCollector
         if ($array) {
             return '[ '.implode(', ', $parts).' ]';
         } else {
-            $mapper = function($key, $value)
-            {
+            $mapper = function ($key, $value) {
                 return $key.': '.$value;
             };
 
             return '{ '.implode(', ', array_map($mapper, array_keys($parts), array_values($parts))).' }';
+        }
+    }
+
+    /**
+     * @param string $query query code as recunstructed from logs
+     * @param array "explain data" coming from cursor->explain()
+     * @param bool $informational to indicate "not actual queries" that are added for readability
+     */
+    private function addQueryData($query, $explain = array(), $informational = false)
+    {
+        if (empty($query)) {
+            return;
+        }
+
+        if ('.' == $query[0]) {
+            $query = 'db'.$query;
+        }
+        $data = array(
+            "query" => $query.';',
+            "informational" => $informational,
+        );
+
+        if ($explain) {
+            $data["explain"] = $explain;
+            //pick some fields
+            if (isset($explain["queryPlanner"]["winningPlan"]["stage"])) {
+                $data["plan"] = $explain["queryPlanner"]["winningPlan"]["stage"];
+            }
+            if (isset($explain["executionStats"]["executionTimeMillis"])) {
+                $data["ms"] = $explain["executionStats"]["executionTimeMillis"];
+            }
+        }
+
+        $this->data["queries"][] = $data;
+        if (!$informational) {
+            $this->data['nb_queries']++;
         }
     }
 }

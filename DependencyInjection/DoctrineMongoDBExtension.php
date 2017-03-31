@@ -215,7 +215,6 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             if ($container->getParameterBag()->resolveValue($documentManager['profiler']['explain'])) {
                 $container
                     ->getDefinition($dataCollectorId)
-                    ->addTag( 'doctrine_mongodb.odm.event_listener', ['event' => 'collectionPreFind', 'method' => 'collectionPreFind'])
                     ->addTag( 'doctrine_mongodb.odm.event_listener', ['event' => 'collectionPostFind', 'method' => 'collectionPostFind'])
                 ;
             }

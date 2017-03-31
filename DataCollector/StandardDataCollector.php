@@ -61,10 +61,6 @@ class StandardDataCollector extends DataCollector implements LoggerInterface
     }
 
     //http://jwage.com/post/30490207842/logging-mongodb-explains-in-symfony2
-    public function collectionPreFind(EventArgs $args)
-    {
-    }
-
     public function collectionPostFind(EventArgs $args)
     {
         //get last logged query and add field "explain"
@@ -75,7 +71,11 @@ class StandardDataCollector extends DataCollector implements LoggerInterface
 
         $i = $c - 1;
         $cursor = $args->getData();
-        $explain = $cursor->explain();
-        $this->queries[$i]["explain"]=$explain;
+        try {
+            $explain = $cursor->explain();
+        } catch (\Exception $exception) {
+            return;
+        }
+        $this->queries[$i]["explain"] = $explain;
     }
 }
