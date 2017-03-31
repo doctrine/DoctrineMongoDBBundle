@@ -251,7 +251,7 @@ class PrettyDataCollector extends StandardDataCollector
     }
 
     /**
-     * @param string $query query code as recunstructed from logs
+     * @param string $query query code as reconstructed from logs
      * @param array "explain data" coming from cursor->explain()
      * @param bool $informational to indicate "not actual queries" that are added for readability
      */
