@@ -209,7 +209,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $loggers[] = new Reference($dataCollectorId);
             $container
                 ->getDefinition($dataCollectorId)
-                ->addTag('data_collector', ['id' => 'mongodb', 'template' => 'DoctrineMongoDBBundle:Collector:mongodb'])
+                ->addTag('data_collector', ['id' => 'mongodb', 'template' => '@DoctrineMongoDB/Collector/mongodb.html.twig'])
             ;
         }
 
