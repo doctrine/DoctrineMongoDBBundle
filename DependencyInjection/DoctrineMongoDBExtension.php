@@ -397,6 +397,11 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     {
         return 'mongodb';
     }
+    
+    protected function getMappingResourceExtension()
+    {
+        return 'doctrine_mongodb';
+    }
 
     public function getAlias()
     {
