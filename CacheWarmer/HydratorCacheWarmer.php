@@ -73,7 +73,7 @@ class HydratorCacheWarmer implements CacheWarmerInterface
         foreach ($registry->getManagers() as $dm) {
             /* @var $dm \Doctrine\ODM\MongoDB\DocumentManager */
             $classes = $dm->getMetadataFactory()->getAllMetadata();
-            $dm->getHydratorFactory()->generateHydratorClasses($classes);
+            $dm->getHydratorFactory()->generateHydratorClass($classes);
         }
     }
 }
