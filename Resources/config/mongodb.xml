@@ -154,6 +154,7 @@
                 <argument type="service" id="service_container" />
             </call>
         </service>
+        <service id="doctrine" alias="doctrine_mongodb" />
 
         <!-- listeners -->
         <service id="doctrine_mongodb.odm.listeners.resolve_target_document" class="%doctrine_mongodb.odm.listeners.resolve_target_document.class%" public="false" />
