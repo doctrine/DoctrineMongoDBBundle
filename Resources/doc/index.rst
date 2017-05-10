@@ -813,6 +813,38 @@ in your Mongo database you may fetch it by defining following services:
             </services>
         </container>
 
+Registering Doctrine Parameter Converter for MongoDB 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To register MongoDB Document Manager in Doctrine Parameter Conveter managers declare the service
+in your services.yml bundle:
+
+.. code-block:: yaml
+
+            services:
+                doctrine.mongodb.converter:
+                    class: Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter
+                    arguments: [@doctrine_mongodb]
+                    tags:
+                        - { name: request.param_converter }
+
+.. code-block:: xml
+
+            <service id="doctrine.mongodb.converter" class="Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter">
+                <argument type="service" id="doctrine_mongodb"/>
+                <tag name="request.param_converter" />
+            </service>.
+
+Then you can just typehint the parameters in your controller:
+
+ .. code-block:: php
+
+            public function showAction(Document $instance)
+            {
+                // ...
+            }
+
+
 Summary
 -------
 
