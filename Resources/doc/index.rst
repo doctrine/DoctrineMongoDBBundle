@@ -738,6 +738,15 @@ same as the `entity` provider described in `the cookbook`_:
                 <mongodb class="Acme\DemoBundle\Document\User" property="username" />
             </provider>
         </config>
+        
+Validation 
+----------
+
+DoctrineMongoDBBundle provides a Wrapper for the UniqueEntity Constraint, but renames it 
+to Unique. You can use this validator to validate the uniqueness of an Object property 
+against the database.
+
+http://symfony.com/doc/current/reference/constraints/UniqueEntity.html
 
 Validation
 ----------
