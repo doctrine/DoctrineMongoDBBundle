@@ -57,6 +57,13 @@ command from the directory where your ``composer.json`` file is located:
 Now, Composer will automatically download all required files, and install them
 for you.
 
+.. note::
+
+    There are two drivers of Mongo Database for Php: mongo (older, not maintained,
+    compatible with php 5), and mongodb (current version). If you have problems with
+    lacking ext-mongo ^1.5, then install `alcaeus/mongo-php-adapter` before these 
+    two packages.
+
 Register the annotations and the bundle
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
