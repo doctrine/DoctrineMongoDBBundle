@@ -312,4 +312,54 @@ class PrettyDataCollectorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $collector->getQueryCount());
         $this->assertEquals($formatted, $collector->getQueries());
     }
+
+    public function testCollectAggregate()
+    {
+        $queries = [
+            [
+                'aggregate' => true,
+                'pipeline' => [
+                    [
+                        '$group' => [
+                            '_id' => '$verified',
+                            'count' => ['$sum' => 1],
+                        ],
+                    ],
+                ],
+                'options' => [],
+                'db' => 'foo',
+                'collection' => 'User',
+            ],
+            [
+                'aggregate' => true,
+                'pipeline' => [
+                    [
+                        '$group' => [
+                            '_id' => '$verified',
+                            'count' => ['$sum' => 1],
+                        ],
+                    ],
+                ],
+                'options' => ['group' => true],
+                'db' => 'foo',
+                'collection' => 'User',
+            ],
+        ];
+
+        $formatted = [
+            'use foo;',
+            'db.User.aggregate([ { "$group": { "_id": "$verified", "count": { "$sum": 1 } } } ]);',
+            'db.User.aggregate([ { "$group": { "_id": "$verified", "count": { "$sum": 1 } } } ], { "group": true });',
+        ];
+
+
+        $collector = new PrettyDataCollector();
+        foreach ($queries as $query) {
+            $collector->logQuery($query);
+        }
+        $collector->collect(new Request(), new Response());
+
+        $this->assertEquals(2, $collector->getQueryCount());
+        $this->assertEquals($formatted, $collector->getQueries());
+    }
 }

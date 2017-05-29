@@ -84,6 +84,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
                     [],
                     Guess::MEDIUM_CONFIDENCE
                 );
+            case 'bool':
             case 'boolean':
                 return new TypeGuess(
                     $this->typeFQCN ? CheckboxType::class : 'checkbox',
@@ -104,6 +105,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
                     Guess::MEDIUM_CONFIDENCE
                 );
             case 'int':
+            case 'integer':
                 return new TypeGuess(
                     $this->typeFQCN ? IntegerType::class : 'integer',
                     [],

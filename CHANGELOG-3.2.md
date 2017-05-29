@@ -15,8 +15,18 @@ To generate a changelog summary since the last version, run
 3.2.x-dev
 ---------
 
+3.2.1 (2016-12-08)
+------------------
+
+All issues and pull requests in this release may be found under the [3.2.1 milestone](https://github.com/doctrine/DoctrineMongoDBBundle/issues?q=milestone%3A3.2.1).
+
+ * [385](https://github.com/doctrine/DoctrineMongoDBBundle/pull/385) fixes the display of empty sort options in the data collector
+ * [386](https://github.com/doctrine/DoctrineMongoDBBundle/pull/386) fixes the display of GridFS commands in the data collector
+ * [389](https://github.com/doctrine/DoctrineMongoDBBundle/pull/389) fixes unit tests when running against Symfony 3.2
+ * [391](https://github.com/doctrine/DoctrineMongoDBBundle/pull/391) fixes an error where count queries could not always be displayed in the data collector
+
 3.2.0 (2016-06-30)
-----------------------
+------------------
 
 This release introduces compatibility with Custom Collections introduced in
 ODM 1.1. The minimum PHP version for this release is 5.6, same as for ODM.

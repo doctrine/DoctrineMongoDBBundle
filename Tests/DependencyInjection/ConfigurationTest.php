@@ -461,6 +461,25 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $processor->processConfiguration($configuration, [$config]);
     }
 
+    public function testNullReplicaSetValue()
+    {
+        $config = [
+            'connections' => [
+                'conn1' => [
+                    'server'  => 'mongodb://localhost',
+                    'options' => [
+                        'replicaSet' => null
+                    ]
+                ]
+            ]
+        ];
+
+        $processor = new Processor();
+        $configuration = new Configuration(false);
+        $processedConfig = $processor->processConfiguration($configuration, [$config]);
+        $this->assertFalse(array_key_exists('replicaSet', $processedConfig['connections']['conn1']['options']));
+    }
+
     /**
      * @dataProvider provideExceptionConfiguration
      */

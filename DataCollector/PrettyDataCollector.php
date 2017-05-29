@@ -91,7 +91,15 @@ class PrettyDataCollector extends StandardDataCollector
                 }
 
                 // format the method call
-                if (isset($log['authenticate'])) {
+                if (isset($log['aggregate'])) {
+                    $query .= '.aggregate(' . $this->bsonEncode($log['pipeline']);
+
+                    if ($log['options']) {
+                        $query .= ', ' . $this->bsonEncode($log['options']);
+                    }
+
+                    $query .= ')';
+                } elseif (isset($log['authenticate'])) {
                     $query .= '.authenticate()';
                 } elseif (isset($log['batchInsert'])) {
                     if (1 === $log['num']) {
