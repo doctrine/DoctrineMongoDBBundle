@@ -217,7 +217,7 @@ controller for displaying the registration form::
     {
         public function registerAction()
         {
-            $form = $this->createForm(new RegistrationType(), new Registration());
+            $form = $this->createForm(RegistrationType::class, new Registration());
 
             return $this->render('AcmeAccountBundle:Account:register.html.twig', array('form' => $form->createView()));
         }
