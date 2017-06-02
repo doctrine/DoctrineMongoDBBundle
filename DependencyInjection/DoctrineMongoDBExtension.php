@@ -17,6 +17,7 @@ namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
+use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
@@ -234,11 +235,13 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
         $managerConfiguratorName = sprintf('doctrine_mongodb.odm.%s_manager_configurator', $documentManager['name']);
 
-        $managerConfiguratorDef = $container
-            ->setDefinition($managerConfiguratorName, new DefinitionDecorator('doctrine_mongodb.odm.manager_configurator.abstract'))
+        $container
+            ->setDefinition(
+                $managerConfiguratorName,
+                $this->getChildDefinitionOrDefinitionDecorator('doctrine_mongodb.odm.manager_configurator.abstract')
+            )
             ->replaceArgument(0, $enabledFilters)
         ;
-
 
         foreach ($methods as $method => $arg) {
             if ($odmConfigDef->hasMethodCall($method)) {
@@ -286,7 +289,10 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         foreach ($connections as $name => $connection) {
             // Define an event manager for this connection
             $eventManagerId = sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $name);
-            $container->setDefinition($eventManagerId, new DefinitionDecorator('doctrine_mongodb.odm.connection.event_manager'));
+            $container->setDefinition(
+                $eventManagerId,
+                $this->getChildDefinitionOrDefinitionDecorator('doctrine_mongodb.odm.connection.event_manager')
+            );
 
             $odmConnArgs = [
                 isset($connection['server']) ? $connection['server'] : null,
@@ -419,5 +425,16 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     public function getXsdValidationBasePath()
     {
         return __DIR__.'/../Resources/config/schema';
+    }
+
+    /**
+     * Instantiate new ChildDefinition if available, otherwise fall back to deprecated DefinitionDecorator
+     *
+     * @param string $id service ID passed to ctor
+     * @return ChildDefinition|DefinitionDecorator
+     */
+    private function getChildDefinitionOrDefinitionDecorator($id)
+    {
+        return class_exists(ChildDefinition::class) ? new ChildDefinition($id) : new DefinitionDecorator($id);
     }
 }
