@@ -362,4 +362,78 @@ class PrettyDataCollectorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(2, $collector->getQueryCount());
         $this->assertEquals($formatted, $collector->getQueries());
     }
+
+    public function testCollectLimit()
+    {
+        $queries = array(
+            array(
+                'find' => true,
+                'query' => array(
+                    'path' => '/',
+                ),
+                'fields' => array(),
+                'db' => 'foo',
+                'collection' => 'Route',
+            ),
+            array(
+                'find' => true,
+                'query' => array('_id' => 'foo'),
+                'fields' => array(),
+                'db' => 'foo',
+                'collection' => 'User',
+            ),
+            array(
+                'limit' => true,
+                'limitNum' => 1,
+                'query' => array('_id' => 'foo'),
+                'fields' => array(),
+            ),
+            array(
+                'limit' => true,
+                'limitNum' => NULL,
+                'query' => array('_id' => 'foo'),
+                'fields' => array(),
+            ),
+            array(
+                'find' => true,
+                'query' => array(
+                    '_id' => '5506fa1580c7e1ee3c8b4c60',
+                ),
+                'fields' => array(),
+                'db' => 'foo',
+                'collection' => 'Group',
+            ),
+            array(
+                'limit' => true,
+                'limitNum' => 1,
+                'query' => array(
+                    '_id' => '5506fa1580c7e1ee3c8b4c60',
+                ),
+                'fields' => array(),
+            ),
+            array(
+                'limit' => true,
+                'limitNum' => NULL,
+                'query' => array(
+                    '_id' => '5506fa1580c7e1ee3c8b4c60',
+                ),
+                'fields' => array(),
+            ),
+        );
+        $formatted = array(
+            'use foo;',
+            'db.Route.find({ "path": "/" });',
+            'db.User.find({ "_id": "foo" }).limit(1);',
+            'db.Group.find({ "_id": "5506fa1580c7e1ee3c8b4c60" }).limit(1);'
+        );
+
+        $collector = new PrettyDataCollector();
+        foreach ($queries as $query) {
+            $collector->logQuery($query);
+        }
+        $collector->collect(new Request(), new Response());
+
+        $this->assertEquals(3, $collector->getQueryCount());
+        $this->assertEquals($formatted, $collector->getQueries());
+    }
 }
