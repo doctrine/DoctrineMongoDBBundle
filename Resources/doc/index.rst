@@ -66,12 +66,20 @@ for you.
 Register the annotations and the bundle
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. note::
+
+    This step is required only if you are using Symfony 3.2 or older.
+
 Next, register the annotations library by adding the following to the autoloader
 (below the existing ``AnnotationRegistry::registerLoader`` line)::
 
     // app/autoload.php
     use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
     AnnotationDriver::registerAnnotationClasses();
+
+.. note::
+
+    This step is not required if you installed the bundle using Symfony Flex.
 
 All that is left to do is to update your ``AppKernel.php`` file, and
 register the new bundle::
