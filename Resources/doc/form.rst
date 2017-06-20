@@ -181,20 +181,15 @@ Next, create the form for this ``Registration`` model::
     namespace Acme\AccountBundle\Form\Type;
 
     use Symfony\Component\Form\AbstractType;
-    use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+    use Symfony\Component\Form\Extension\Core\Type\CheckboxType
     use Symfony\Component\Form\FormBuilderInterface;
 
     class RegistrationType extends AbstractType
     {
         public function buildForm(FormBuilderInterface $builder, array $options)
         {
-            $builder->add('user', new UserType());
-            $builder->add('terms', 'checkbox', array('property_path' => 'termsAccepted'));
-        }
-
-        public function getName()
-        {
-            return 'registration';
+            $builder->add('user', UserType::class);
+            $builder->add('terms', CheckboxType::class, array('property_path' => 'termsAccepted'));
         }
     }
 
@@ -222,7 +217,7 @@ controller for displaying the registration form::
     {
         public function registerAction()
         {
-            $form = $this->createForm(new RegistrationType(), new Registration());
+            $form = $this->createForm(RegistrationType::class, new Registration());
 
             return $this->render('AcmeAccountBundle:Account:register.html.twig', array('form' => $form->createView()));
         }
@@ -243,15 +238,15 @@ and its template:
 Finally, create the controller which handles the form submission.  This performs
 the validation and saves the data into MongoDB::
 
-    public function createAction()
+    public function createAction(Request $request)
     {
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $form = $this->createForm(new RegistrationType(), new Registration());
 
-        $form->bindRequest($this->getRequest());
+        $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $registration = $form->getData();
 
             $dm->persist($registration->getUser());

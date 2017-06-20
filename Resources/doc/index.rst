@@ -57,8 +57,18 @@ command from the directory where your ``composer.json`` file is located:
 Now, Composer will automatically download all required files, and install them
 for you.
 
+.. note::
+
+   Currently ODM works with legacy MongoDB driver (i.e. `ext-mongo`) which is 
+   not compatible with PHP 7. If you have PHP 7 and/or are using new driver 
+   (i.e. `ext-mongodb`) please refer to `"Using PHP 7" section`_ in ODM's documentation.
+
 Register the annotations and the bundle
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. note::
+
+    This step is required only if you are using Symfony 3.2 or older.
 
 Next, register the annotations library by adding the following to the autoloader
 (below the existing ``AnnotationRegistry::registerLoader`` line)::
@@ -66,6 +76,10 @@ Next, register the annotations library by adding the following to the autoloader
     // app/autoload.php
     use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
     AnnotationDriver::registerAnnotationClasses();
+
+.. note::
+
+    This step is not required if you installed the bundle using Symfony Flex.
 
 All that is left to do is to update your ``AppKernel.php`` file, and
 register the new bundle::
@@ -852,3 +866,4 @@ Learn more from the Cookbook
 .. _`the cookbook`: http://symfony.com/doc/current/cookbook/security/entity_provider.html
 .. _`UniqueEntity`: http://symfony.com/doc/current/reference/constraints/UniqueEntity.html
 .. _`store sessions`: http://symfony.com/doc/current/cookbook/doctrine/mongodb_session_storage.html
+.. _`"Using PHP 7" section`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/introduction.html#using-php-7
