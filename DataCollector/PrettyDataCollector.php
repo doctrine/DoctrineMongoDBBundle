@@ -37,6 +37,7 @@ class PrettyDataCollector extends StandardDataCollector
         $this->data['queries'] = [];
         $this->data['explained_queries'] = [];
         $this->data['nb_queries'] = 0;
+        $this->data['total_time']=0;
 
         $grouped = [];
         $ordered = [];
@@ -88,6 +89,10 @@ class PrettyDataCollector extends StandardDataCollector
 
                 if (isset($log["explain"])) {
                     $explain = $log["explain"];
+                }
+
+                if (isset($log["commandStats"])) {
+                    $explain = $log["commandStats"];
                 }
 
                 // format the method call
@@ -293,7 +298,16 @@ class PrettyDataCollector extends StandardDataCollector
                 $data["plan"] = $explain["queryPlanner"]["winningPlan"]["stage"];
             }
             if (isset($explain["executionStats"]["executionTimeMillis"])) {
-                $data["ms"] = $explain["executionStats"]["executionTimeMillis"];
+                $ms = $explain["executionStats"]["executionTimeMillis"];
+                $data["ms"] = $ms;
+                $this->data['total_time']+=$ms;
+            }
+            //from command stats
+            if (isset($explain["time"])) {
+                $data["plan"] = 'COMMAND nscanned '.$explain['nscanned'];
+                $ms = $explain["time"];
+                $data["ms"] = $ms;
+                $this->data['total_time']+=$ms;
             }
         }
 

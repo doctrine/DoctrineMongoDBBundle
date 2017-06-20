@@ -212,11 +212,14 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 ->addTag('data_collector', ['id' => 'mongodb', 'template' => '@DoctrineMongoDB/Collector/mongodb.html.twig'])
             ;
 
-            //if explain is enabled, DataCollector will listen to postFind
+            //if explain is enabled, DataCollector will listen to postFind and runCommand post events
             if ($container->getParameterBag()->resolveValue($documentManager['profiler']['explain'])) {
                 $container
                     ->getDefinition($dataCollectorId)
-                    ->addTag( 'doctrine_mongodb.odm.event_listener', ['event' => 'collectionPostFind', 'method' => 'collectionPostFind'])
+                    ->addTag( 'doctrine_mongodb.odm.event_listener', ['event' => 'collectionPostFind'])
+                    ->addTag( 'doctrine_mongodb.odm.event_listener', ['event' => 'collectionPostNear'])
+                    #->addTag( 'doctrine_mongodb.odm.event_listener', ['event' => 'collectionPostAggregate', 'method' => 'collectionPostCommand'])
+                    #->addTag( 'doctrine_mongodb.odm.event_listener', ['event' => 'collectionPostFindAndUpdate', 'method' => 'collectionPostCommand'])
                 ;
             }
         }

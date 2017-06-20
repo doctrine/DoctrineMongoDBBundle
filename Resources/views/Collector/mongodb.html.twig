@@ -10,7 +10,7 @@
                 <span class="sf-toolbar-status">{{ collector.queryCount }}</span>
             {% else %}
                 {{ include('@DoctrineMongoDB/Collector/icon.svg') }}
-                <span class="sf-toolbar-value">{{ collector.queryCount }}</span>
+                <span class="sf-toolbar-value">{{ collector.queryCount }} ({{ collector.totalTime }} ms)</span>
             {% endif %}
         {% endset %}
         {% set text %}

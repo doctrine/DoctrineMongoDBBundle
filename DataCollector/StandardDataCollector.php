@@ -65,6 +65,15 @@ class StandardDataCollector extends DataCollector implements LoggerInterface
         return 'mongodb';
     }
 
+    public function getTotalTime()
+    {
+        if (isset($this->data['total_time'])) {
+            return $this->data['total_time'];
+        }
+
+        return 0;
+    }
+
     //http://jwage.com/post/30490207842/logging-mongodb-explains-in-symfony2
     public function collectionPostFind(EventArgs $args)
     {
@@ -78,9 +87,34 @@ class StandardDataCollector extends DataCollector implements LoggerInterface
         $cursor = $args->getData();
         try {
             $explain = $cursor->explain();
+            dump($explain);
         } catch (\Exception $exception) {
             return;
         }
         $this->queries[$i]["explain"] = $explain;
+    }
+
+    public function collectionPostNear(EventArgs $args)
+    {
+        $this->collectionPostCommand($args);
+    }
+
+    private function collectionPostCommand(EventArgs $args)
+    {
+        //get last logged query and add field "commandStats"
+        $c = count($this->queries);
+        if (0 === $c) {
+            return;
+        }
+
+        $i = $c - 1;
+        try {
+            $cres = $args->getData()->getCommandResult();
+        } catch (\Exception $exception) {
+            return;
+        }
+        if (isset($cres['stats'])) {
+            $this->queries[$i]["commandStats"] = $cres['stats'];
+        }
     }
 }
