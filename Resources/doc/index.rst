@@ -41,7 +41,6 @@ To install DoctrineMongoDBBundle with Composer just add the following to your
 
     {
         "require": {
-            "doctrine/mongodb-odm": "^1.0",
             "doctrine/mongodb-odm-bundle": "^3.0"
         },
     }
@@ -52,7 +51,7 @@ command from the directory where your ``composer.json`` file is located:
 
 .. code-block :: bash
 
-    php composer.phar update doctrine/mongodb-odm doctrine/mongodb-odm-bundle
+    php composer.phar update doctrine/mongodb-odm-bundle
 
 Now, Composer will automatically download all required files, and install them
 for you.
