@@ -12,7 +12,7 @@
  * file that was distributed with this source code.
  */
 
-namespace DoctrineMongoDBBundle\Command;
+namespace Doctrine\Bundle\MongoDBBundle\Command;
 
 use Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\ShardCommand;
 use Symfony\Component\Console\Input\InputInterface;
