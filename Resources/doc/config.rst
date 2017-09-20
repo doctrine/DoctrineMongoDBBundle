@@ -23,7 +23,7 @@ Sample Configuration
                         filter-name:
                             class: Class\Example\Filter\ODM\ExampleFilter
                             enabled: true
-                    metadata_cache_driver: array # array, apc, xcache, memcache
+                    metadata_cache_driver: array # array, apc, apcu, memcache, memcached, redis, wincache, zenddata, xcache
 
     .. code-block:: xml
 
