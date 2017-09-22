@@ -15,6 +15,8 @@
 namespace Doctrine\Bundle\MongoDBBundle\CacheWarmer;
 
 use Doctrine\Common\Proxy\AbstractProxyFactory;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 
@@ -72,8 +74,20 @@ class ProxyCacheWarmer implements CacheWarmerInterface
         $registry = $this->container->get('doctrine_mongodb');
         foreach ($registry->getManagers() as $dm) {
             /* @var $dm \Doctrine\ODM\MongoDB\DocumentManager */
-            $classes = $dm->getMetadataFactory()->getAllMetadata();
+            $classes = $this->getClassesForProxyGeneration($dm);
             $dm->getProxyFactory()->generateProxyClasses($classes);
         }
+    }
+
+    /**
+     * @param DocumentManager $dm
+     *
+     * @return ClassMetadata[]
+     */
+    private function getClassesForProxyGeneration(DocumentManager $dm)
+    {
+        return array_filter($dm->getMetadataFactory()->getAllMetadata(), function (ClassMetadata $metadata) {
+            return !$metadata->isEmbeddedDocument && !$metadata->isMappedSuperclass;
+        });
     }
 }
