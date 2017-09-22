@@ -60,7 +60,11 @@ class ProxyCacheWarmerTest extends \Doctrine\Bundle\MongoDBBundle\Tests\TestCase
 
     public function testWarmerExecuted()
     {
-        $this->proxyMock->expects($this->once())->method('generateProxyClasses');
+        $this->proxyMock
+            ->expects($this->once())
+            ->method('generateProxyClasses')
+            ->with($this->countOf(1))
+        ;
         $this->warmer->warmUp('meh');
     }
 
