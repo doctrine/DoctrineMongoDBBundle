@@ -46,6 +46,7 @@ class StandardDataCollector extends DataCollector implements LoggerInterface
 
     public function reset()
     {
+        $this->queries = [];
         $this->data = [
             'nb_queries' => 0,
             'queries' => [],
