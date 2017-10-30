@@ -44,6 +44,14 @@ class StandardDataCollector extends DataCollector implements LoggerInterface
         $this->data['queries'] = array_map('json_encode', $this->queries);
     }
 
+    public function reset()
+    {
+        $this->data = [
+            'nb_queries' => 0,
+            'queries' => [],
+        ];
+    }
+
     public function getQueryCount()
     {
         return $this->data['nb_queries'];

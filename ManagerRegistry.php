@@ -15,10 +15,18 @@
 namespace Doctrine\Bundle\MongoDBBundle;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Psr\Container\ContainerInterface;
 use Symfony\Bridge\Doctrine\ManagerRegistry as BaseManagerRegistry;
 
 class ManagerRegistry extends BaseManagerRegistry
 {
+    public function __construct(ContainerInterface $container, $name, array $connections, array $managers, $defaultConnection, $defaultManager, $proxyInterfaceName)
+    {
+        parent::__construct($name, $connections, $managers, $defaultConnection, $defaultManager, $proxyInterfaceName);
+
+        $this->container = $container;
+    }
+
     /**
      * Resolves a registered namespace alias to the full namespace.
      *
