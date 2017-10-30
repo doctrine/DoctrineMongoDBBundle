@@ -303,6 +303,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 $this->normalizeDriverOptions($connection),
             ];
             $odmConnDef = new Definition('%doctrine_mongodb.odm.connection.class%', $odmConnArgs);
+            $odmConnDef->setPublic(true);
             $id = sprintf('doctrine_mongodb.odm.%s_connection', $name);
             $container->setDefinition($id, $odmConnDef);
             $cons[$name] = $id;
