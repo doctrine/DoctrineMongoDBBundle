@@ -15,16 +15,24 @@
 namespace Doctrine\Bundle\MongoDBBundle;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Psr\Container\ContainerInterface;
 use Symfony\Bridge\Doctrine\ManagerRegistry as BaseManagerRegistry;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ManagerRegistry extends BaseManagerRegistry
 {
     public function __construct(ContainerInterface $container, $name, array $connections, array $managers, $defaultConnection, $defaultManager, $proxyInterfaceName)
     {
-        parent::__construct($name, $connections, $managers, $defaultConnection, $defaultManager, $proxyInterfaceName);
+        $parentTraits = class_uses(parent::class);
+        if (isset($parentTraits[ContainerAwareTrait::class])) {
+            // this case should be removed when Symfony 3.4 becomes the lowest supported version
+            // and then also, the constructor should type-hint Psr\Container\ContainerInterface
+            $this->setContainer($container);
+        } else {
+            $this->container = $container;
+        }
 
-        $this->container = $container;
+        parent::__construct($name, $connections, $managers, $defaultConnection, $defaultManager, $proxyInterfaceName);
     }
 
     /**
