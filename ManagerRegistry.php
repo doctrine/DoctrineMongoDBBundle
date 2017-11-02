@@ -21,7 +21,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ManagerRegistry extends BaseManagerRegistry
 {
-    public function __construct(ContainerInterface $container, $name, array $connections, array $managers, $defaultConnection, $defaultManager, $proxyInterfaceName)
+    public function __construct($name, array $connections, array $managers, $defaultConnection, $defaultManager, $proxyInterfaceName, ContainerInterface $container = null)
     {
         $parentTraits = class_uses(parent::class);
         if (isset($parentTraits[ContainerAwareTrait::class])) {
