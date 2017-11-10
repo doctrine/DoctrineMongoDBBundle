@@ -16,8 +16,9 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\Logger;
 
 use Doctrine\Bundle\MongoDBBundle\Logger\Logger;
 use Psr\Log\LoggerInterface;
+use PHPUnit\Framework\TestCase;
 
-class LoggerTest extends \PHPUnit_Framework_TestCase
+class LoggerTest extends TestCase
 {
     private $logger;
 

@@ -21,8 +21,9 @@ use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\Util\XmlUtils;
 use Symfony\Component\Yaml\Yaml;
+use PHPUnit\Framework\TestCase;
 
-class ConfigurationTest extends \PHPUnit_Framework_TestCase
+class ConfigurationTest extends TestCase
 {
     public function testDefaults()
     {
