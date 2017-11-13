@@ -4,11 +4,12 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\Command;
 
 use Doctrine\Bundle\MongoDBBundle\Command\LoadDataFixturesDoctrineODMCommand;
 use Doctrine\Common\DataFixtures\Loader;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author Henrik Bjornskov <henrik@bjrnskov.dk>
  */
-class LoadDataFixturesDoctrineODMCommandTest extends \PHPUnit_Framework_TestCase
+class LoadDataFixturesDoctrineODMCommandTest extends TestCase
 {
     public function setUp()
     {

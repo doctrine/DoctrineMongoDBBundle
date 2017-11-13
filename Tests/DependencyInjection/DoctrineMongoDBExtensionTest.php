@@ -18,8 +18,9 @@ use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\Reference;
+use PHPUnit\Framework\TestCase;
 
-class DoctrineMongoDBExtensionTest extends \PHPUnit_Framework_TestCase
+class DoctrineMongoDBExtensionTest extends TestCase
 {
     public static function buildConfiguration(array $settings = [])
     {

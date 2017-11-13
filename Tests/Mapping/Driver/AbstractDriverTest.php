@@ -15,8 +15,9 @@
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use PHPUnit\Framework\TestCase;
 
-abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractDriverTest extends TestCase
 {
     public function testFindMappingFile()
     {
