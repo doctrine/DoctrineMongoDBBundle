@@ -7,6 +7,6 @@ if (!file_exists($file)) {
 
 require_once $file;
 
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 
-AnnotationDriver::registerAnnotationClasses();
+AnnotationRegistry::registerLoader('class_exists');
