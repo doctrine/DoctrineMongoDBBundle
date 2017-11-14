@@ -16,7 +16,7 @@ class Document
     /** @ODM\Field(type="hash") */
     public $hash;
 
-    /** @ODM\Collection */
+    /** @ODM\Field(type="collection") */
     public $collection;
 
     /** @ODM\ReferenceOne(targetDocument="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator\Document") */
