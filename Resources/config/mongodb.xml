@@ -143,16 +143,14 @@
         </service>
 
         <!-- Registry -->
-        <service id="doctrine_mongodb" class="%doctrine_mongodb.odm.class%">
+        <service id="doctrine_mongodb" class="%doctrine_mongodb.odm.class%" public="true">
+            <argument type="service" id="service_container" />
             <argument>MongoDB</argument>
             <argument>%doctrine_mongodb.odm.connections%</argument>
             <argument>%doctrine_mongodb.odm.document_managers%</argument>
             <argument>%doctrine_mongodb.odm.default_connection%</argument>
             <argument>%doctrine_mongodb.odm.default_document_manager%</argument>
             <argument>Doctrine\ODM\MongoDB\Proxy\Proxy</argument>
-            <call method="setContainer">
-                <argument type="service" id="service_container" />
-            </call>
         </service>
 
         <!-- listeners -->

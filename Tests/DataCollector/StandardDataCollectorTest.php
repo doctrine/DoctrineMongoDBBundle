@@ -29,4 +29,16 @@ class StandardDataCollectorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $collector->getQueryCount());
         $this->assertEquals(['{"foo":"bar"}'], $collector->getQueries());
     }
+
+    public function testReset()
+    {
+        $collector = new StandardDataCollector();
+        $collector->logQuery(['foo' => 'bar']);
+        $collector->collect(new Request(), new Response());
+
+        $collector->reset();
+        $collector->collect(new Request(), new Response());
+
+        $this->assertEquals([], $collector->getQueries());
+    }
 }
