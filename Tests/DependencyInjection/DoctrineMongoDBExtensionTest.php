@@ -225,4 +225,14 @@ class DoctrineMongoDBExtensionTest extends TestCase
                 [new Reference('persistent_collection_factory_service')]
             ], $configDm1->getMethodCalls());
     }
+
+    public function testPublicServicesAndAliases()
+    {
+        $loader = new DoctrineMongoDBExtension();
+        $loader->load(self::buildConfiguration(), $container = $this->buildMinimalContainer());
+
+        $this->assertTrue($container->getDefinition('doctrine_mongodb')->isPublic());
+        $this->assertTrue($container->getDefinition('doctrine_mongodb.odm.dummy_document_manager')->isPublic());
+        $this->assertTrue($container->getAlias('doctrine_mongodb.odm.document_manager')->isPublic());
+    }
 }
