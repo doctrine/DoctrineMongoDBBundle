@@ -259,6 +259,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $odmDmDef = new Definition('%doctrine_mongodb.odm.document_manager.class%', $odmDmArgs);
         $odmDmDef->setFactory(['%doctrine_mongodb.odm.document_manager.class%', 'create']);
         $odmDmDef->addTag('doctrine_mongodb.odm.document_manager');
+        $odmDmDef->setPublic(true);
 
         $container
             ->setDefinition(sprintf('doctrine_mongodb.odm.%s_document_manager', $documentManager['name']), $odmDmDef)
@@ -270,6 +271,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 'doctrine_mongodb.odm.document_manager',
                 new Alias(sprintf('doctrine_mongodb.odm.%s_document_manager', $documentManager['name']))
             );
+            $container->getAlias('doctrine_mongodb.odm.document_manager')->setPublic(true);
+
             $container->setAlias(
                 'doctrine_mongodb.odm.event_manager',
                 new Alias(sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $connectionName))
@@ -302,6 +305,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 $this->normalizeDriverOptions($connection),
             ];
             $odmConnDef = new Definition('%doctrine_mongodb.odm.connection.class%', $odmConnArgs);
+            $odmConnDef->setPublic(true);
             $id = sprintf('doctrine_mongodb.odm.%s_connection', $name);
             $container->setDefinition($id, $odmConnDef);
             $cons[$name] = $id;
