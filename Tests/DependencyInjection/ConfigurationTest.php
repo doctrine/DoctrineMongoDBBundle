@@ -486,7 +486,7 @@ class ConfigurationTest extends TestCase
     {
         $processor = new Processor();
         $configuration = new Configuration(false);
-        $this->setExpectedException(\LogicException::class);
+        $this->expectException(\LogicException::class);
         $processor->processConfiguration($configuration, [$config]);
     }
 
