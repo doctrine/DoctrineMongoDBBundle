@@ -56,6 +56,8 @@
     <services>
         <!-- defaults -->
         <service id="doctrine_mongodb.odm.cache" alias="doctrine_mongodb.odm.cache.array" />
+        <service id="%doctrine_mongodb.odm.document_manager.class%" alias="doctrine_mongodb.odm.document_manager" public="false" />
+        <service id="%doctrine_mongodb.odm.class%" alias="doctrine_mongodb" public="false" />
 
         <service id="Doctrine\Bundle\MongoDBBundle\Command\ClearMetadataCacheDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\ClearMetadataCacheDoctrineODMCommand">
             <tag name="console.command"/>
@@ -92,8 +94,8 @@
         </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\UpdateSchemaDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\UpdateSchemaDoctrineODMCommand">
             <tag name="console.command"/>
-        </service>        
-        
+        </service>
+
         <!-- events -->
         <service id="doctrine_mongodb.odm.connection.event_manager" class="%doctrine_mongodb.odm.event_manager.class%" public="false" abstract="true">
             <argument type="service" id="service_container" />
