@@ -46,7 +46,7 @@ To install DoctrineMongoDBBundle with Composer just add the following to your
     }
 
 
-If you are planning to use the autowiring you need to install, at least 3.5 version.
+If you are planning to use the autowiring you need to install, at least 3.5 version::
 
     {
         "require": {
