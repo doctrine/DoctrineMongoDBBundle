@@ -46,6 +46,14 @@ To install DoctrineMongoDBBundle with Composer just add the following to your
     }
 
 
+If you are planning to use the autowiring you need to install, at least 3.5 version.
+
+    {
+        "require": {
+            "doctrine/mongodb-odm-bundle": "^3.5"
+        },
+    }
+
 You can now install the new dependencies by running Composer's ``update``
 command from the directory where your ``composer.json`` file is located:
 
@@ -121,6 +129,47 @@ the MongoDB ODM across your application:
         document_managers:
             default:
                 auto_mapping: true
+
+.. note::
+
+    If you are using Symfony Flex can allow to contrib packages to auto-generate 
+    configuration and register the bundle using Symfony Recipes executing this comand 
+
+.. code-block:: bash
+
+    composer config extra.symfony.allow-contrib true
+
+For example, the bundle recipe for Symfony 4 will generate this config files for you.
+
+.. code-block::
+    
+    # .env
+    ###> doctrine/mongodb-odm-bundle ###
+    MONGODB_URL=mongodb://user:password@ip:port/dbname
+    MONGODB_DB=dbname
+    ###< doctrine/mongodb-odm-bundle ###
+
+.. code-block:: yaml
+
+    # config/doctrine_mongodb.yaml
+    doctrine_mongodb:
+    auto_generate_proxy_classes: '%kernel.debug%'
+    auto_generate_hydrator_classes: '%kernel.debug%'
+    connections:
+        default:
+            server: '%env(MONGODB_URL)%'
+            options: {}
+    default_database: '%env(MONGODB_DB)%'
+    document_managers:
+        default:
+            auto_mapping: true
+            mappings:
+                App:
+                    is_bundle: false
+                    type: annotation
+                    dir: '%kernel.project_dir%/src/Document'
+                    prefix: App\Document\
+                    alias: App
 
 .. note::
 
@@ -326,6 +375,38 @@ Let's walk through this example:
   all of the objects that it's managing to see if they need to be persisted
   to MongoDB. In this example, the ``$product`` object has not been persisted yet,
   so the document manager makes a query to MongoDB, which adds a new entry.
+
+If you are using autowiring with Symfony 4 doesn't need to fetch Doctrine's *document manager*,
+simply type-hint a var.
+
+.. code-block:: php
+
+    // App/Controller/DefaultController.php
+    namespace App\Controller;
+
+    use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+    use Doctrine\ODM\MongoDB\DocumentManager as DocumentManager;
+    use App\Document\Product;
+    use Symfony\Component\HttpFoundation\Response;
+    // ...
+
+    class DefaultController extends AbstractController
+    {
+
+        // ...
+
+       public function createProduct(DocumentManager $dm)
+        {
+            $product = new Product();
+            $product->setName('A Foo Bar');
+            $product->setPrice('19.99');
+
+            $dm->persist($product);
+            $dm->flush();
+
+            return new Response('Created product id '.$product->getId());
+        }
+    }
 
 .. note::
 
