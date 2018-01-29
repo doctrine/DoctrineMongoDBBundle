@@ -46,7 +46,7 @@ To install DoctrineMongoDBBundle with Composer just add the following to your
     }
 
 
-If you are planning to use the autowiring you need to install, at least 3.5 version::
+If you are planning to use autowiring, you must install version 3.5 or later::
 
     {
         "require": {
@@ -132,44 +132,12 @@ the MongoDB ODM across your application:
 
 .. note::
 
-    If you are using Symfony Flex can allow to contrib packages to auto-generate 
-    configuration and register the bundle using Symfony Recipes executing this comand 
+    If you are using Symfony Flex, you can allow recipes in the "contrib" repository to 
+    work with this bundle by executing the following command:
 
 .. code-block:: bash
 
     composer config extra.symfony.allow-contrib true
-
-For example, the bundle recipe for Symfony 4 will generate this config files for you.
-
-.. code-block::
-    
-    # .env
-    ###> doctrine/mongodb-odm-bundle ###
-    MONGODB_URL=mongodb://user:password@ip:port/dbname
-    MONGODB_DB=dbname
-    ###< doctrine/mongodb-odm-bundle ###
-
-.. code-block:: yaml
-
-    # config/doctrine_mongodb.yaml
-    doctrine_mongodb:
-    auto_generate_proxy_classes: '%kernel.debug%'
-    auto_generate_hydrator_classes: '%kernel.debug%'
-    connections:
-        default:
-            server: '%env(MONGODB_URL)%'
-            options: {}
-    default_database: '%env(MONGODB_DB)%'
-    document_managers:
-        default:
-            auto_mapping: true
-            mappings:
-                App:
-                    is_bundle: false
-                    type: annotation
-                    dir: '%kernel.project_dir%/src/Document'
-                    prefix: App\Document\
-                    alias: App
 
 .. note::
 
@@ -376,8 +344,7 @@ Let's walk through this example:
   to MongoDB. In this example, the ``$product`` object has not been persisted yet,
   so the document manager makes a query to MongoDB, which adds a new entry.
 
-If you are using autowiring with Symfony 4 doesn't need to fetch Doctrine's *document manager*,
-simply type-hint a var.
+If you are using autowiring, you can use type hinting to fetch the doctrine_mongodb.odm.document_manager service::
 
 .. code-block:: php
 
@@ -388,14 +355,10 @@ simply type-hint a var.
     use Doctrine\ODM\MongoDB\DocumentManager as DocumentManager;
     use App\Document\Product;
     use Symfony\Component\HttpFoundation\Response;
-    // ...
 
     class DefaultController extends AbstractController
     {
-
-        // ...
-
-       public function createProduct(DocumentManager $dm)
+        public function createProduct(DocumentManager $dm)
         {
             $product = new Product();
             $product->setName('A Foo Bar');
