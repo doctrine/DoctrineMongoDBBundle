@@ -46,7 +46,7 @@ To install DoctrineMongoDBBundle with Composer just add the following to your
     }
 
 
-If you are planning to use autowiring, you must install version 3.5 or later::
+If you are planning to use `autowiring`, you must install version 3.5 or later::
 
     {
         "require": {
@@ -910,3 +910,4 @@ Learn more from the Cookbook
 .. _`UniqueEntity`: http://symfony.com/doc/current/reference/constraints/UniqueEntity.html
 .. _`store sessions`: http://symfony.com/doc/current/cookbook/doctrine/mongodb_session_storage.html
 .. _`"Using PHP 7" section`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/introduction.html#using-php-7
+.. _`autowiring`: https://symfony.com/doc/current/service_container/autowiring.html
