@@ -132,7 +132,7 @@ the MongoDB ODM across your application:
 
 .. note::
 
-    If you are using Symfony Flex, you can allow recipes in the "contrib" repository to 
+    If you are using Symfony Flex, you can allow `recipes` in the "contrib" repository to 
     work with this bundle by executing the following command:
 
 .. code-block:: bash
@@ -911,3 +911,4 @@ Learn more from the Cookbook
 .. _`store sessions`: http://symfony.com/doc/current/cookbook/doctrine/mongodb_session_storage.html
 .. _`"Using PHP 7" section`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/introduction.html#using-php-7
 .. _`autowiring`: https://symfony.com/doc/current/service_container/autowiring.html
+.. _`recipes`: http://fabien.potencier.org/symfony4-contributing-recipes.html
