@@ -135,9 +135,9 @@ the MongoDB ODM across your application:
     If you are using Symfony Flex, you can allow `recipes` in the "contrib" repository to 
     work with this bundle by executing the following command:
 
-.. code-block:: bash
+    .. code-block:: bash
 
-    composer config extra.symfony.allow-contrib true
+        composer config extra.symfony.allow-contrib true
 
 .. note::
 
@@ -344,7 +344,7 @@ Let's walk through this example:
   to MongoDB. In this example, the ``$product`` object has not been persisted yet,
   so the document manager makes a query to MongoDB, which adds a new entry.
 
-If you are using autowiring, you can use type hinting to fetch the doctrine_mongodb.odm.document_manager service::
+If you are using `autowiring`, you can use type hinting to fetch the ``doctrine_mongodb.odm.document_manager`` service::
 
 .. code-block:: php
 
