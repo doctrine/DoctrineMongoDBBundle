@@ -14,10 +14,11 @@
 
 namespace Doctrine\Bundle\MongoDBBundle;
 
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CreateHydratorDirectoryPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CreateProxyDirectoryPass;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
+use Doctrine\Common\Util\ClassUtils;
 use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\DoctrineValidationPass;
 use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\RegisterEventListenersAndSubscribersPass;
 use Symfony\Bridge\Doctrine\DependencyInjection\Security\UserProvider\EntityFactory;
@@ -42,6 +43,7 @@ class DoctrineMongoDBBundle extends Bundle
         $container->addCompilerPass(new CreateProxyDirectoryPass(), PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new CreateHydratorDirectoryPass(), PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new DoctrineValidationPass('mongodb'));
+        $container->addCompilerPass(new ServiceRepositoryCompilerPass());
 
         if ($container->hasExtension('security')) {
             $container->getExtension('security')->addUserProviderFactory(new EntityFactory('mongodb', 'doctrine_mongodb.odm.security.user.provider'));
@@ -64,7 +66,7 @@ class DoctrineMongoDBBundle extends Bundle
             // references
             $container =& $this->container;
 
-            $this->autoloader = function($class) use ($namespace, $dir, &$container) {
+            $this->autoloader = function ($class) use ($namespace, $dir, &$container) {
                 if (0 === strpos($class, $namespace)) {
                     $fileName = str_replace('\\', '', substr($class, strlen($namespace) +1));
                     $file = $dir.DIRECTORY_SEPARATOR.$fileName.'.php';

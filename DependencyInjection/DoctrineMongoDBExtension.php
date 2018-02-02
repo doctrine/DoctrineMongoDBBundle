@@ -14,6 +14,7 @@
 
 namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 
+use DoctrineMongoDBBundle\DoctrineMongoDBBundle\Repository\ServiceDocumentRepositoryInterface;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
@@ -22,8 +23,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
-use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\DependencyInjection\ServiceLocator;
 
 /**
  * Doctrine MongoDB ODM extension.
@@ -145,6 +147,25 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $dms[$name] = sprintf('doctrine_mongodb.odm.%s_document_manager', $name);
         }
         $container->setParameter('doctrine_mongodb.odm.document_managers', $dms);
+
+        // if is for Symfony 3.2 and lower compat
+        if (method_exists($container, 'registerForAutoconfiguration')) {
+            $container->registerForAutoconfiguration(ServiceDocumentRepositoryInterface::class)
+                ->addTag(ServiceRepositoryCompilerPass::REPOSITORY_SERVICE_TAG);
+        }
+
+        /*
+         * Compatibility for Symfony 3.2 and lower: gives the service a default argument.
+         * When DoctrineMongoDBBundle requires 3.3 or higher, this can be moved to an anonymous
+         * service in mongodb.xml.
+         *
+         * This is replaced with a true locator by ServiceRepositoryCompilerPass.
+         * This makes that pass technically optional (good for tests).
+         */
+        if (class_exists(ServiceLocator::class)) {
+            $container->getDefinition('doctrine_mongodb.odm.container_repository_factory')
+                ->replaceArgument(0, (new Definition(ServiceLocator::class))->setArgument(0, []));
+        }
     }
 
     /**

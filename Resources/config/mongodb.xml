@@ -194,5 +194,9 @@
 
         <!-- listeners -->
         <service id="doctrine_mongodb.odm.listeners.resolve_target_document" class="%doctrine_mongodb.odm.listeners.resolve_target_document.class%" public="false" />
+
+        <service id="doctrine_mongodb.odm.container_repository_factory" class="Doctrine\Bundle\MongoDBBundle\Repository\ContainerRepositoryFactory" public="false">
+            <argument>null</argument> <!-- repository locator -->
+        </service>
     </services>
 </container>
