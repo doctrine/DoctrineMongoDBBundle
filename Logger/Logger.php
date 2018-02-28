@@ -38,8 +38,8 @@ class Logger implements LoggerInterface
         }
 
         array_walk_recursive($query, function(&$value, $key) {
-            if ($value instanceof \MongoBinData) {
-                $value = base64_encode($value->bin);
+            if ($value instanceof \MongoDB\BSON\Binary) {
+                $value = $value->getData();
                 return;
             }
             if (is_float($value) && is_infinite($value)) {

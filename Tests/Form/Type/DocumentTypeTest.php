@@ -93,7 +93,7 @@ class DocumentTypeTest extends TypeTestCase
         $categoryTwo = new Category('two');
         $this->dm->persist($categoryTwo);
 
-        $document = new Document(new \MongoId(), 'document');
+        $document = new Document(new \MongoDB\BSON\ObjectId(), 'document');
         $document->categories[] = $categoryOne;
         $this->dm->persist($document);
 

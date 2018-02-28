@@ -208,22 +208,24 @@ class PrettyDataCollector extends StandardDataCollector
                 $formatted = '"'.$value.'"';
             } elseif (is_array($value)) {
                 $formatted = $this->bsonEncode($value);
-            } elseif ($value instanceof \MongoId) {
+            } elseif ($value instanceof \MongoDB\BSON\ObjectId) {
                 $formatted = 'ObjectId("'.$value.'")';
-            } elseif ($value instanceof \MongoDate) {
-                $formatted = 'new ISODate("'.date('c', $value->sec).'")';
-            } elseif ($value instanceof \DateTime) {
-                $formatted = 'new ISODate("'.date('c', $value->getTimestamp()).'")';
-            } elseif ($value instanceof \MongoRegex) {
+            } elseif ($value instanceof \MongoDB\BSON\UTCDateTime) {
+                $formatted = 'new ISODate("'.date('c', $value->sec).'")'; //TODO review
+            } elseif ($value instanceof \MongoDB\BSON\Timestamp) {
+                $formatted = 'new ISODate("'.date('c', $value->getTimestamp()).'")'; //TODO review
+            } elseif ($value instanceof \MongoDB\BSON\Regex) {
                 $formatted = 'new RegExp("'.$value->regex.'", "'.$value->flags.'")';
-            } elseif ($value instanceof \MongoMinKey) {
+            } elseif ($value instanceof \MongoDB\BSON\MinKey) {
                 $formatted = 'new MinKey()';
-            } elseif ($value instanceof \MongoMaxKey) {
+            } elseif ($value instanceof \MongoDB\BSON\MaxKey) {
                 $formatted = 'new MaxKey()';
-            } elseif ($value instanceof \MongoBinData) {
-                $formatted = 'new BinData('.$value->type.', "'.base64_encode($value->bin).'")';
+            } elseif ($value instanceof \MongoDB\BSON\Binary) {
+                $formatted = 'new BinData('.$value->getType().', "'.$value->getData().'")';
+/*
             } elseif ($value instanceof \MongoGridFSFile || $value instanceof GridFSFile) {
                 $formatted = 'new MongoGridFSFile("'.$value->getFilename().'")';
+*/
             } elseif ($value instanceof \stdClass) {
                 $formatted = $this->bsonEncode((array) $value);
             } else {
