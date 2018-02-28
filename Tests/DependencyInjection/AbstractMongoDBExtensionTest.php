@@ -6,7 +6,6 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\AddValidatorNamespaceAliasPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver;
-use Doctrine\Bundle\MongoDBBundle\Mapping\Driver\YamlDriver;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\ArrayCache;
@@ -52,7 +51,6 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertEquals(MappingDriverChain::class, $container->getParameter('doctrine_mongodb.odm.metadata.driver_chain.class'));
         $this->assertEquals(AnnotationDriver::class, $container->getParameter('doctrine_mongodb.odm.metadata.annotation.class'));
         $this->assertEquals(XmlDriver::class, $container->getParameter('doctrine_mongodb.odm.metadata.xml.class'));
-        $this->assertEquals(YamlDriver::class, $container->getParameter('doctrine_mongodb.odm.metadata.yml.class'));
 
         $this->assertEquals(UniqueEntityValidator::class, $container->getParameter('doctrine_odm.mongodb.validator.unique.class'));
 
@@ -285,20 +283,6 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $calls = $definition->getMethodCalls();
         $this->assertTrue(isset($calls[0][1][0]['YamlBundle']));
         $this->assertEquals('DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\YamlBundle\Document', $calls[0][1][0]['YamlBundle']);
-    }
-
-    public function testYamlBundleMappingDetection()
-    {
-        $container = $this->getContainer('YamlBundle');
-        $loader = new DoctrineMongoDBExtension();
-        $config = DoctrineMongoDBExtensionTest::buildConfiguration(
-            ['document_managers' => ['default' => ['mappings' => ['YamlBundle' => []]]]]
-        );
-        $loader->load($config, $container);
-
-        $calls = $container->getDefinition('doctrine_mongodb.odm.default_metadata_driver')->getMethodCalls();
-        $this->assertEquals('doctrine_mongodb.odm.default_yml_metadata_driver', (string) $calls[0][1][0]);
-        $this->assertEquals('DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\YamlBundle\Document', $calls[0][1][1]);
     }
 
     public function testXmlBundleMappingDetection()
