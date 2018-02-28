@@ -4,7 +4,7 @@
 namespace Doctrine\Bundle\MongoDBBundle\Tests;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\MongoDB\Connection;
+use MongoDB\Client;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use PHPUnit\Framework\TestCase as BaseTestCase;
@@ -25,6 +25,6 @@ class TestCase extends BaseTestCase
         $config->setMetadataDriverImpl(new AnnotationDriver(new AnnotationReader(), $paths));
         $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache());
 
-        return DocumentManager::create(new Connection(), $config);
+        return DocumentManager::create(new Client(), $config);
     }
 }

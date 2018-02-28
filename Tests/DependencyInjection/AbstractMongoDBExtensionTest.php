@@ -12,7 +12,7 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\MemcacheCache;
 use Doctrine\Common\Cache\XcacheCache;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain;
-use Doctrine\MongoDB\Connection;
+use MongoDB\Client;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
@@ -36,7 +36,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $loader->load(DoctrineMongoDBExtensionTest::buildConfiguration(), $container);
 
-        $this->assertEquals(Connection::class, $container->getParameter('doctrine_mongodb.odm.connection.class'));
+        $this->assertEquals(Client::class, $container->getParameter('doctrine_mongodb.odm.connection.class'));
         $this->assertEquals(Configuration::class, $container->getParameter('doctrine_mongodb.odm.configuration.class'));
         $this->assertEquals(DocumentManager::class, $container->getParameter('doctrine_mongodb.odm.document_manager.class'));
         $this->assertEquals('MongoDBODMProxies', $container->getParameter('doctrine_mongodb.odm.proxy_namespace'));
