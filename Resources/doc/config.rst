@@ -23,7 +23,7 @@ Sample Configuration
                         filter-name:
                             class: Class\Example\Filter\ODM\ExampleFilter
                             enabled: true
-                    metadata_cache_driver: array # array, apc, apcu, memcache, memcached, redis, wincache, zenddata, xcache
+                    metadata_cache_driver: array # array, apc, apcu, memcached, redis, wincache, zenddata, xcache
 
     .. code-block:: xml
 
@@ -67,7 +67,7 @@ Sample Configuration
                     server: "%mongodb_server%"
 
 If you wish to use memcache to cache your metadata, you need to configure the
-``Memcache`` instance; for example, you can do the following:
+``Memcached`` instance; for example, you can do the following:
 
 .. configuration-block::
 
@@ -85,11 +85,11 @@ If you wish to use memcache to cache your metadata, you need to configure the
                     mappings:
                         AcmeDemoBundle: ~
                     metadata_cache_driver:
-                        type: memcache
-                        class: Doctrine\Common\Cache\MemcacheCache
+                        type: memcached
+                        class: Doctrine\Common\Cache\MemcachedCache
                         host: localhost
                         port: 11211
-                        instance_class: Memcache
+                        instance_class: Memcached
 
     .. code-block:: xml
 
@@ -104,11 +104,11 @@ If you wish to use memcache to cache your metadata, you need to configure the
             <doctrine_mongodb:config default-database="hello_%kernel.environment%">
                 <doctrine_mongodb:document-manager id="default">
                     <doctrine_mongodb:mapping name="AcmeDemoBundle" />
-                    <doctrine_mongodb:metadata-cache-driver type="memcache">
-                        <doctrine_mongodb:class>Doctrine\Common\Cache\MemcacheCache</doctrine_mongodb:class>
+                    <doctrine_mongodb:metadata-cache-driver type="memcached">
+                        <doctrine_mongodb:class>Doctrine\Common\Cache\MemcachedCache</doctrine_mongodb:class>
                         <doctrine_mongodb:host>localhost</doctrine_mongodb:host>
                         <doctrine_mongodb:port>11211</doctrine_mongodb:port>
-                        <doctrine_mongodb:instance-class>Memcache</doctrine_mongodb:instance-class>
+                        <doctrine_mongodb:instance-class>Memcached</doctrine_mongodb:instance-class>
                     </doctrine_mongodb:metadata-cache-driver>
                 </doctrine_mongodb:document-manager>
                 <doctrine_mongodb:connection id="default" server="mongodb://localhost:27017">

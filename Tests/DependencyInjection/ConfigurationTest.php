@@ -135,7 +135,7 @@ class ConfigurationTest extends TestCase
                         ],
                     ],
                     'metadata_cache_driver' => [
-                        'type'           => 'memcache',
+                        'type'           => 'memcached',
                         'class'          => 'fooClass',
                         'host'           => 'host_val',
                         'port'           => 1234,

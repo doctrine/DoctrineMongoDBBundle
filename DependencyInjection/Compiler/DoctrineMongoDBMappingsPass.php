@@ -17,7 +17,6 @@ use Doctrine\Common\Persistence\Mapping\Driver\StaticPHPDriver;
 use Doctrine\Common\Persistence\Mapping\Driver\SymfonyFileLocator;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
-use Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver;
 use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\RegisterMappingsPass;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
@@ -76,26 +75,6 @@ class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
         $arguments = [$mappings, '.mongodb.xml'];
         $locator = new Definition(SymfonyFileLocator::class, $arguments);
         $driver = new Definition(XmlDriver::class, [$locator]);
-
-        return new DoctrineMongoDBMappingsPass($driver, $mappings, $managerParameters, $enabledParameter, $aliasMap);
-    }
-
-    /**
-     * @param array    $mappings          Hashmap of directory path to namespace
-     * @param string[] $managerParameters List of parameters that could which object manager name
-     *                                    your bundle uses. This compiler pass will automatically
-     *                                    append the parameter name for the default entity manager
-     *                                    to this list.
-     * @param string   $enabledParameter  Service container parameter that must be present to
-     *                                    enable the mapping. Set to false to not do any check,
-     *                                    optional.
-     * @param string[] $aliasMap          Map of alias to namespace.
-     */
-    public static function createYamlMappingDriver(array $mappings, array $managerParameters, $enabledParameter = false, array $aliasMap = [])
-    {
-        $arguments = [$mappings, '.mongodb.yml'];
-        $locator = new Definition(SymfonyFileLocator::class, $arguments);
-        $driver = new Definition(YamlDriver::class, [$locator]);
 
         return new DoctrineMongoDBMappingsPass($driver, $mappings, $managerParameters, $enabledParameter, $aliasMap);
     }

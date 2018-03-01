@@ -36,9 +36,9 @@ class LoggerTest extends TestCase
 
     public function testMongoBinDataBase64Encoded()
     {
-        $binData = new \MongoBinData('data', \MongoBinData::BYTE_ARRAY);
+        $binData = new \MongoDB\BSON\Binary('data', \MongoDB\BSON\Binary::TYPE_OLD_BINARY);
         $query = ['foo' => ['binData' => $binData]];
-        $log = json_encode(['foo' => ['binData' => base64_encode($binData->bin)]]);
+        $log = json_encode(['foo' => ['binData' => $binData->getData()]]);
 
         $this->logger->expects($this->once())
             ->method('debug')

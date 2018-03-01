@@ -6,7 +6,7 @@
 
     <parameters>
         <!-- classes -->
-        <parameter key="doctrine_mongodb.odm.connection.class">Doctrine\MongoDB\Connection</parameter>
+        <parameter key="doctrine_mongodb.odm.connection.class">MongoDB\Client</parameter>
         <parameter key="doctrine_mongodb.odm.configuration.class">Doctrine\ODM\MongoDB\Configuration</parameter>
         <parameter key="doctrine_mongodb.odm.document_manager.class">Doctrine\ODM\MongoDB\DocumentManager</parameter>
         <parameter key="doctrine_mongodb.odm.manager_configurator.class">Doctrine\Bundle\MongoDBBundle\ManagerConfigurator</parameter>
@@ -27,22 +27,20 @@
         <parameter key="doctrine_mongodb.odm.cache.array.class">Doctrine\Common\Cache\ArrayCache</parameter>
         <parameter key="doctrine_mongodb.odm.cache.apc.class">Doctrine\Common\Cache\ApcCache</parameter>
         <parameter key="doctrine_mongodb.odm.cache.apcu.class">Doctrine\Common\Cache\ApcuCache</parameter>
-        <parameter key="doctrine_mongodb.odm.cache.memcache.class">Doctrine\Common\Cache\MemcacheCache</parameter>
-        <parameter key="doctrine_mongodb.odm.cache.memcache_host">localhost</parameter>
-        <parameter key="doctrine_mongodb.odm.cache.memcache_port">11211</parameter>
-        <parameter key="doctrine_mongodb.odm.cache.memcache_instance.class">Memcache</parameter>
+        <parameter key="doctrine_mongodb.odm.cache.memcached.class">Doctrine\Common\Cache\MemcachedCache</parameter>
+        <parameter key="doctrine_mongodb.odm.cache.memcached_host">localhost</parameter>
+        <parameter key="doctrine_mongodb.odm.cache.memcached_port">11211</parameter>
+        <parameter key="doctrine_mongodb.odm.cache.memcached_instance.class">Memcached</parameter>
         <parameter key="doctrine_mongodb.odm.cache.xcache.class">Doctrine\Common\Cache\XcacheCache</parameter>
 
         <!-- metadata -->
         <parameter key="doctrine_mongodb.odm.metadata.driver_chain.class">Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain</parameter>
         <parameter key="doctrine_mongodb.odm.metadata.annotation.class">Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver</parameter>
         <parameter key="doctrine_mongodb.odm.metadata.xml.class">Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver</parameter>
-        <parameter key="doctrine_mongodb.odm.metadata.yml.class">Doctrine\Bundle\MongoDBBundle\Mapping\Driver\YamlDriver</parameter>
 
         <!-- directories -->
         <parameter key="doctrine_mongodb.odm.mapping_dirs" type="collection"></parameter>
         <parameter key="doctrine_mongodb.odm.xml_mapping_dirs">%doctrine_mongodb.odm.mapping_dirs%</parameter>
-        <parameter key="doctrine_mongodb.odm.yml_mapping_dirs">%doctrine_mongodb.odm.mapping_dirs%</parameter>
         <parameter key="doctrine_mongodb.odm.document_dirs" type="collection"></parameter>
         <parameter key="doctrine_mongodb.odm.fixtures_dirs" type="collection"></parameter>
 
@@ -120,9 +118,6 @@
         <service id="doctrine_mongodb.odm.metadata.annotation_reader" alias="annotation_reader" />
         <service id="doctrine_mongodb.odm.metadata.xml" class="%doctrine_mongodb.odm.metadata.xml.class%">
             <argument>%doctrine_mongodb.odm.xml_mapping_dirs%</argument>
-        </service>
-        <service id="doctrine_mongodb.odm.metadata.yml" class="%doctrine_mongodb.odm.metadata.yml.class%">
-            <argument>%doctrine_mongodb.odm.yml_mapping_dirs%</argument>
         </service>
 
         <!-- The configurator cannot be a private service -->
