@@ -27,10 +27,10 @@
         <parameter key="doctrine_mongodb.odm.cache.array.class">Doctrine\Common\Cache\ArrayCache</parameter>
         <parameter key="doctrine_mongodb.odm.cache.apc.class">Doctrine\Common\Cache\ApcCache</parameter>
         <parameter key="doctrine_mongodb.odm.cache.apcu.class">Doctrine\Common\Cache\ApcuCache</parameter>
-        <parameter key="doctrine_mongodb.odm.cache.memcache.class">Doctrine\Common\Cache\MemcacheCache</parameter>
-        <parameter key="doctrine_mongodb.odm.cache.memcache_host">localhost</parameter>
-        <parameter key="doctrine_mongodb.odm.cache.memcache_port">11211</parameter>
-        <parameter key="doctrine_mongodb.odm.cache.memcache_instance.class">Memcache</parameter>
+        <parameter key="doctrine_mongodb.odm.cache.memcached.class">Doctrine\Common\Cache\MemcachedCache</parameter>
+        <parameter key="doctrine_mongodb.odm.cache.memcached_host">localhost</parameter>
+        <parameter key="doctrine_mongodb.odm.cache.memcached_port">11211</parameter>
+        <parameter key="doctrine_mongodb.odm.cache.memcached_instance.class">Memcached</parameter>
         <parameter key="doctrine_mongodb.odm.cache.xcache.class">Doctrine\Common\Cache\XcacheCache</parameter>
 
         <!-- metadata -->
