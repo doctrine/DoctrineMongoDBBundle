@@ -12,6 +12,14 @@ where XXX and YYY are the older and newer versions, respectively.
 To generate a changelog summary since the last version, run
 `git log --no-merges --oneline XXX...HEAD`
 
+3.4.2 (2018-03-22)
+------------------
+
+All issues and pull requests in this release may be found under the [3.4.2 milestone](https://github.com/doctrine/DoctrineMongoDBBundle/issues?q=milestone%3A3.4.2).
+
+ * [455](https://github.com/doctrine/DoctrineMongoDBBundle/pull/455) fixes tests by using memcached instead of memcache (Symfony 4 doctrine-bridge compatibility)
+ * [454](https://github.com/doctrine/DoctrineMongoDBBundle/pull/454) fixes wrongly named MONGODB-X509 auth mechanism
+
 3.4.1 (2017-11-18)
 ------------------
 
