@@ -7,8 +7,8 @@ doctrine_mongodb:
   document_managers:
     default:
       metadata_cache_driver:
-        type: memcache
-        class: Doctrine\Common\Cache\MemcacheCache
+        type: memcached
+        class: Doctrine\Common\Cache\MemcachedCache
         host: localhost
         port: 11211
-        instance_class: Memcache
+        instance_class: Memcached

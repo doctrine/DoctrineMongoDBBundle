@@ -12,11 +12,11 @@
         </doctrine:connection>
 
         <doctrine:document-manager id="default" connection="default">
-            <doctrine:metadata-cache-driver type="memcache">
+            <doctrine:metadata-cache-driver type="memcached">
                 <doctrine:class>Doctrine\Common\Cache\MemcacheCache</doctrine:class>
                 <doctrine:host>localhost</doctrine:host>
                 <doctrine:port>11211</doctrine:port>
-                <doctrine:instance-class>Memcache</doctrine:instance-class>
+                <doctrine:instance-class>Memcached</doctrine:instance-class>
             </doctrine:metadata-cache-driver>
         </doctrine:document-manager>
 
