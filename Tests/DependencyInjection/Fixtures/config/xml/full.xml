@@ -67,7 +67,7 @@
 
         <doctrine:document-manager id="dm1">
             <doctrine:mapping name="FooBundle" type="annotation" />
-            <doctrine:metadata-cache-driver type="memcache">
+            <doctrine:metadata-cache-driver type="memcached">
                 <doctrine:class>fooClass</doctrine:class>
                 <doctrine:host>host_val</doctrine:host>
                 <doctrine:port>1234</doctrine:port>
