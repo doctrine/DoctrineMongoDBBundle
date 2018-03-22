@@ -91,7 +91,7 @@ class ConfigurationTest extends TestCase
                         'slaveOkay'         => true,
                         'socketTimeoutMS'   => 1000,
                         'ssl'               => true,
-                        'authMechanism'     => 'X509',
+                        'authMechanism'     => 'MONGODB-X509',
                         'authSource'        => 'some_db',
                         'username'          => 'username_val',
                         'w'                 => 'majority',

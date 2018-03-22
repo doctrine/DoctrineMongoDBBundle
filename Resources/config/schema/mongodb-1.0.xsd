@@ -88,7 +88,7 @@
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="SCRAM-SHA-1" />
       <xsd:enumeration value="MONGODB-CR" />
-      <xsd:enumeration value="X509" />
+      <xsd:enumeration value="MONGODB-X509" />
       <xsd:enumeration value="PLAIN" />
       <xsd:enumeration value="GSSAPI" />
     </xsd:restriction>
