@@ -47,4 +47,6 @@ class Guesser
 
     /** @ODM\Field(type="collection") */
     public $collectionField;
+
+    public $nonMappedField;
 }

@@ -70,6 +70,7 @@ class TypeGuesserTest extends TypeTestCase
         $this->assertType('integer', $form->get('intField'));
         $this->assertType('integer', $form->get('integerField'));
         $this->assertType('collection', $form->get('collectionField'));
+        $this->assertType('text', $form->get('nonMappedField'));
     }
 
     protected function assertType($type, $form)
