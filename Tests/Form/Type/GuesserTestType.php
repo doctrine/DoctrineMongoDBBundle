@@ -26,6 +26,7 @@ class GuesserTestType extends AbstractType
             ->add('intField')
             ->add('integerField')
             ->add('collectionField')
+            ->add('nonMappedField')
         ;
     }
 
