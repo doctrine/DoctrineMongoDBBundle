@@ -41,9 +41,16 @@ abstract class DoctrineODMCommand extends ContainerAwareCommand
         return $this->getContainer()->get('doctrine_mongodb')->getManagers();
     }
 
-    protected function getBundleMetadatas(Bundle $bundle)
+    protected function getBundleMetadatas(Bundle $bundle=null)
     {
-        $namespace = $bundle->getNamespace();
+
+        if (is_null($bundle))
+        {
+            $namespace= "App";
+        }else{
+            $namespace = $bundle->getNamespace();
+        }
+
         $bundleMetadatas = [];
         $documentManagers = $this->getDoctrineDocumentManagers();
         foreach ($documentManagers as $dm) {
@@ -52,9 +59,12 @@ abstract class DoctrineODMCommand extends ContainerAwareCommand
             $cmf->setConfiguration($dm->getConfiguration());
             $metadatas = $cmf->getAllMetadata();
             foreach ($metadatas as $metadata) {
+
                 if (strpos($metadata->name, $namespace) === 0) {
                     $bundleMetadatas[$metadata->name] = $metadata;
+
                 }
+
             }
         }
 
@@ -64,16 +74,21 @@ abstract class DoctrineODMCommand extends ContainerAwareCommand
     protected function findBundle($bundleName)
     {
         $foundBundle = false;
-        foreach ($this->getApplication()->getKernel()->getBundles() as $bundle) {
-            /* @var $bundle Bundle */
-            if (strtolower($bundleName) == strtolower($bundle->getName())) {
-                $foundBundle = $bundle;
-                break;
-            }
-        }
 
-        if (!$foundBundle) {
-            throw new \InvalidArgumentException("No bundle " . $bundleName . " was found.");
+        if (!empty($bundleName))
+        {
+            foreach ($this->getApplication()->getKernel()->getBundles() as $bundle) {
+
+                /* @var $bundle Bundle */
+                if (strtolower($bundleName) == strtolower($bundle->getName())) {
+                    $foundBundle = $bundle;
+                    break;
+                }
+            }
+
+            if (!$foundBundle) {
+                throw new \InvalidArgumentException("No bundle " . $bundleName . " was found.");
+            }
         }
 
         return $foundBundle;
@@ -85,14 +100,19 @@ abstract class DoctrineODMCommand extends ContainerAwareCommand
      * @param Bundle $bundle
      * @return string
      */
-    protected function findBasePathForBundle($bundle)
+    protected function findBasePathForBundle($bundle=null)
     {
-        $path = str_replace('\\', DIRECTORY_SEPARATOR, $bundle->getNamespace());
-        $search = str_replace('\\', DIRECTORY_SEPARATOR, $bundle->getPath());
-        $destination = str_replace(DIRECTORY_SEPARATOR.$path, '', $search, $c);
+        if (is_null($bundle))
+        {
+            $destination = $this->getApplication()->getKernel()->getRootDir();
+        }else{
+            $path = str_replace('\\', DIRECTORY_SEPARATOR, $bundle->getNamespace());
+            $search = str_replace('\\', DIRECTORY_SEPARATOR, $bundle->getPath());
+            $destination = str_replace(DIRECTORY_SEPARATOR.$path, '', $search, $c);
 
-        if ($c != 1) {
-            throw new \RuntimeException(sprintf('Can\'t find base path for bundle (path: "%s", destination: "%s").', $path, $destination));
+            if ($c != 1) {
+                throw new \RuntimeException(sprintf('Can\'t find base path for bundle (path: "%s", destination: "%s").', $path, $destination));
+            }
         }
 
         return $destination;
