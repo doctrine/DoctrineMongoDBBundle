@@ -77,6 +77,9 @@
         <service id="Doctrine\Bundle\MongoDBBundle\Command\GenerateProxiesDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\GenerateProxiesDoctrineODMCommand">
             <tag name="console.command"/>
         </service>
+        <service id="Doctrine\Bundle\MongoDBBundle\Command\GenerateRepositoriesDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\GenerateRepositoriesDoctrineODMCommand">
+            <tag name="console.command"/>
+        </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\InfoDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\InfoDoctrineODMCommand">
             <tag name="console.command"/>
         </service>
