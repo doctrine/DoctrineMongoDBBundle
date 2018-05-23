@@ -12,6 +12,13 @@ where XXX and YYY are the older and newer versions, respectively.
 To generate a changelog summary since the last version, run
 `git log --no-merges --oneline XXX...HEAD`
 
+3.4.4 (2018-05-23)
+------------------
+
+All issues and pull requests in this release may be found under the [3.4.4 milestone](https://github.com/doctrine/DoctrineMongoDBBundle/issues?q=milestone%3A3.4.4).
+
+ * [464](https://github.com/doctrine/DoctrineMongoDBBundle/pull/464) adds a missing service for the `doctrine:mongodb:generate:repositories` command
+
 3.4.3 (2018-04-19)
 ------------------
 
