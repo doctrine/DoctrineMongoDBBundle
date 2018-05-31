@@ -125,7 +125,7 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                             ->scalarNode('default_repository_class')->defaultValue(DocumentRepository::class)->end()
-                            ->scalarNode('repository_factory')->defaultNull()->end()
+                            ->scalarNode('repository_factory')->defaultValue('doctrine_mongodb.odm.container_repository_factory')->end()
                             ->scalarNode('persistent_collection_factory')->defaultNull()->end()
                             ->booleanNode('auto_mapping')->defaultFalse()->end()
                             ->arrayNode('filters')
