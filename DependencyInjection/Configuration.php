@@ -176,7 +176,7 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('type')->defaultValue('array')->end()
                                     ->scalarNode('class')->end()
                                     ->scalarNode('host')->end()
-                                    ->integerNode('port')->end()
+                                    ->scalarNode('port')->end()
                                     ->scalarNode('instance_class')->end()
                                     ->scalarNode('id')->end()
                                     ->scalarNode('namespace')->end()
