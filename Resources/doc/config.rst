@@ -175,11 +175,11 @@ The following configuration shows a bunch of mapping examples:
                 default:
                     mappings:
                         MyBundle1: ~
-                        MyBundle2: yml
+                        MyBundle2: xml
                         MyBundle3: { type: annotation, dir: Documents/ }
                         MyBundle4: { type: xml, dir: Resources/config/doctrine/mapping }
                         MyBundle5:
-                            type: yml
+                            type: xml
                             dir: my-bundle-mappings-dir
                             alias: BundleAlias
                         doctrine_extensions:

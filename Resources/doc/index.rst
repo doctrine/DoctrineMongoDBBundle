@@ -204,7 +204,7 @@ of a MongoDB collection.
 For Doctrine to be able to do this, you just have to create "metadata", or
 configuration that tells Doctrine exactly how the ``Product`` class and its
 properties should be *mapped* to MongoDB. This metadata can be specified
-in a number of different formats including YAML, XML or directly inside the
+in a number of different formats including XML or directly inside the
 ``Product`` class via annotations:
 
 .. configuration-block::
@@ -236,18 +236,6 @@ in a number of different formats including YAML, XML or directly inside the
              */
             protected $price;
         }
-
-    .. code-block:: yaml
-
-        # src/Acme/StoreBundle/Resources/config/doctrine/Product.mongodb.yml
-        Acme\StoreBundle\Document\Product:
-            fields:
-                id:
-                    id:  true
-                name:
-                    type: string
-                price:
-                    type: float
 
     .. code-block:: xml
 
@@ -582,13 +570,6 @@ To do this, add the name of the repository class to your mapping definition.
         {
             //...
         }
-
-    .. code-block:: yaml
-
-        # src/Acme/StoreBundle/Resources/config/doctrine/Product.mongodb.yml
-        Acme\StoreBundle\Document\Product:
-            repositoryClass: Acme\StoreBundle\Repository\ProductRepository
-            # ...
 
     .. code-block:: xml
 
