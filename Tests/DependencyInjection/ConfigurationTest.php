@@ -5,7 +5,8 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Configuration;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\Util\XmlUtils;
@@ -52,8 +53,8 @@ class ConfigurationTest extends TestCase
 
         $expected = [
             'fixture_loader'                 => ContainerAwareLoader::class,
-            'auto_generate_hydrator_classes' => true,
-            'auto_generate_proxy_classes'    => true,
+            'auto_generate_hydrator_classes' => 1,
+            'auto_generate_proxy_classes'    => 1,
             'auto_generate_persistent_collection_classes' => ODMConfiguration::AUTOGENERATE_EVAL,
             'default_connection'             => 'conn1',
             'default_database'               => 'default_db_name',
@@ -76,7 +77,6 @@ class ConfigurationTest extends TestCase
                 'conn1' => [
                     'server'  => 'mongodb://localhost',
                     'options' => [
-                        'connect'           => true,
                         'connectTimeoutMS'  => 500,
                         'db'                => 'database_val',
                         'journal'           => true,
@@ -107,8 +107,8 @@ class ConfigurationTest extends TestCase
             ],
             'document_managers' => [
                 'dm1' => [
-                    'default_repository_class' => DocumentRepository::class,
-                    'default_document_repository_class' => null,
+                    'default_document_repository_class' => DocumentRepository::class,
+                    'default_gridfs_repository_class' => DefaultGridFSRepository::class,
                     'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory',
                     'persistent_collection_factory' => null,
                     'logging'      => '%kernel.debug%',
@@ -152,15 +152,13 @@ class ConfigurationTest extends TestCase
                         'enabled' => true,
                         'pretty'  => false,
                     ],
-                    'retry_connect' => 0,
-                    'retry_query' => 0,
                 ],
                 'dm2' => [
                     'connection'   => 'dm2_connection',
                     'database'     => 'db1',
                     'logging'      => true,
-                    'default_repository_class' => DocumentRepository::class,
                     'default_document_repository_class' => \Foo\Bar\CustomRepository::class,
+                    'default_gridfs_repository_class' => \Foo\Bar\CustomGridFSRepository::class,
                     'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory',
                     'persistent_collection_factory' => null,
                     'auto_mapping' => false,
@@ -182,8 +180,6 @@ class ConfigurationTest extends TestCase
                         'enabled' => '%kernel.debug%',
                         'pretty'  => '%kernel.debug%',
                     ],
-                    'retry_connect' => 0,
-                    'retry_query' => 0,
                 ],
             ],
             'resolve_target_documents' => [
@@ -268,7 +264,7 @@ class ConfigurationTest extends TestCase
                 ['document_managers' => ['default' => ['mappings' => ['foomap' => ['type' => 'val1'], 'barmap' => ['dir' => 'val2']]]]],
                 ['document_managers' => ['default' => ['mappings' => ['barmap' => ['prefix' => 'val3']]]]],
             ],
-            ['document_managers' => ['default' => ['metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_repository_class' => DocumentRepository::class, 'default_document_repository_class' => null, 'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory', 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => ['foomap' => ['type' => 'val1', 'mapping' => true], 'barmap' => ['prefix' => 'val3', 'mapping' => true]], 'retry_connect' => 0, 'retry_query' => 0]]],
+            ['document_managers' => ['default' => ['metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_document_repository_class' => DocumentRepository::class, 'default_gridfs_repository_class' =>  DefaultGridFSRepository::class, 'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory', 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => ['foomap' => ['type' => 'val1', 'mapping' => true], 'barmap' => ['prefix' => 'val3', 'mapping' => true]]]]],
         ];
 
         // connections are merged non-recursively.
@@ -312,8 +308,8 @@ class ConfigurationTest extends TestCase
                 ['document_managers' => ['bardm' => ['database' => 'val3']]],
             ],
             ['document_managers' => [
-                'foodm' => ['database' => 'val1', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_repository_class' => DocumentRepository::class, 'default_document_repository_class' => null, 'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory', 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => [], 'retry_connect' => 0, 'retry_query' => 0],
-                'bardm' => ['database' => 'val3', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_repository_class' => DocumentRepository::class, 'default_document_repository_class' => null, 'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory', 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => [], 'retry_connect' => 0, 'retry_query' => 0],
+                'foodm' => ['database' => 'val1', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_document_repository_class' => DocumentRepository::class, 'default_gridfs_repository_class' =>  DefaultGridFSRepository::class, 'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory', 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => []],
+                'bardm' => ['database' => 'val3', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_document_repository_class' => DocumentRepository::class, 'default_gridfs_repository_class' =>  DefaultGridFSRepository::class, 'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory', 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => []],
             ]],
         ];
 
@@ -359,8 +355,8 @@ class ConfigurationTest extends TestCase
                 ['connection' => 'conn2', 'id' => 'bar'],
             ]],
             ['document_managers' => [
-                'foo' => ['connection' => 'conn1', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_repository_class' => DocumentRepository::class, 'default_document_repository_class' => null, 'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory', 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => [], 'retry_connect' => 0, 'retry_query' => 0],
-                'bar' => ['connection' => 'conn2', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_repository_class' => DocumentRepository::class, 'default_document_repository_class' => null, 'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory', 'persistent_collection_factory' => null,'filters' => [], 'mappings' => [], 'retry_connect' => 0, 'retry_query' => 0],
+                'foo' => ['connection' => 'conn1', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_document_repository_class' => DocumentRepository::class, 'default_gridfs_repository_class' => DefaultGridFSRepository::class, 'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory', 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => []],
+                'bar' => ['connection' => 'conn2', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_document_repository_class' => DocumentRepository::class, 'default_gridfs_repository_class' => DefaultGridFSRepository::class, 'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory', 'persistent_collection_factory' => null,'filters' => [], 'mappings' => []],
             ]],
         ];
 
@@ -375,8 +371,8 @@ class ConfigurationTest extends TestCase
                 'foo' => [
                     'connection'   => 'conn1',
                     'metadata_cache_driver' => ['type' => 'array'],
-                    'default_repository_class' =>  DocumentRepository::class,
-                    'default_document_repository_class' => null,
+                    'default_document_repository_class' =>  DocumentRepository::class,
+                    'default_gridfs_repository_class' => DefaultGridFSRepository::class,
                     'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory',
                     'persistent_collection_factory' => null,
                     'mappings'     => ['foo-mapping' => ['type' => 'xml', 'mapping' => true]],
@@ -384,8 +380,6 @@ class ConfigurationTest extends TestCase
                     'profiler'     => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'],
                     'auto_mapping' => false,
                     'filters'      => [],
-                    'retry_connect' => 0,
-                    'retry_query' => 0,
                 ],
             ]],
         ];

@@ -5,7 +5,8 @@ namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -124,11 +125,8 @@ class Configuration implements ConfigurationInterface
                                     ->booleanNode('pretty')->defaultValue('%kernel.debug%')->end()
                                 ->end()
                             ->end()
-                            ->scalarNode('default_repository_class')
-                                ->defaultValue(DocumentRepository::class)
-                                ->setDeprecated('The child node "%node%" at path "%path%" is deprecated. Please use default_document_repository_class instead.')
-                            ->end()
-                            ->scalarNode('default_document_repository_class')->defaultNull()->end()
+                            ->scalarNode('default_document_repository_class')->defaultValue(DocumentRepository::class)->end()
+                            ->scalarNode('default_gridfs_repository_class')->defaultValue(DefaultGridFSRepository::class)->end()
                             ->scalarNode('repository_factory')->defaultValue('doctrine_mongodb.odm.container_repository_factory')->end()
                             ->scalarNode('persistent_collection_factory')->defaultNull()->end()
                             ->booleanNode('auto_mapping')->defaultFalse()->end()
@@ -168,8 +166,6 @@ class Configuration implements ConfigurationInterface
                                     ->end()
                                 ->end()
                             ->end()
-                            ->integerNode('retry_connect')->defaultValue(0)->end()
-                            ->integerNode('retry_query')->defaultValue(0)->end()
                             ->arrayNode('metadata_cache_driver')
                                 ->addDefaultsIfNotSet()
                                 ->beforeNormalization()
@@ -239,7 +235,6 @@ class Configuration implements ConfigurationInterface
                                     ->enumNode('authMechanism')
                                         ->values(['SCRAM-SHA-1', 'MONGODB-CR', 'MONGODB-X509', 'PLAIN', 'GSSAPI'])
                                     ->end()
-                                    ->booleanNode('connect')->end()
                                     ->integerNode('connectTimeoutMS')->end()
                                     ->scalarNode('db')->end()
                                     ->scalarNode('authSource')

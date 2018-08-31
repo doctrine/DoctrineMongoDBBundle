@@ -7,9 +7,7 @@
                         http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
 
     <doctrine:mongodb>
-        <doctrine:connection id="default" server="mongodb://localhost:27017">
-            <doctrine:options connect="true" />
-        </doctrine:connection>
+        <doctrine:connection id="default" server="mongodb://localhost:27017" />
 
         <doctrine:document-manager id="default" connection="default">
             <doctrine:metadata-cache-driver type="memcached">

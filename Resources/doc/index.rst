@@ -602,7 +602,7 @@ ordered alphabetically.
     // src/Acme/StoreBundle/Repository/ProductRepository.php
     namespace Acme\StoreBundle\Repository;
 
-    use Doctrine\ODM\MongoDB\DocumentRepository;
+    use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 
     class ProductRepository extends DocumentRepository
     {

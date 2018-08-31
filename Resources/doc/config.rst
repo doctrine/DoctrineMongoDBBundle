@@ -495,18 +495,6 @@ You can then use this service in your configuration:
         </container>
 
 
-Retrying Connections and Queries
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Doctrine MongoDB supports automatically retrying connections and queries after
-encountering an exception, which is helpful when dealing with situations such as
-replica set failovers. This alleviates much of the need to catch exceptions from
-the MongoDB PHP driver in your application and manually retry operations.
-
-You may specify the number of times to retry connections and queries via the
-`retry_connect` and `retry_query` options in the document manager configuration.
-These options default to zero, which means that no operations will be retried.
-
 Full Default Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -521,13 +509,12 @@ Full Default Configuration
                 id:
                     connection:                        ~
                     database:                          ~
-                    default_document_repository_class: Doctrine\ODM\MongoDB\DocumentRepository
+                    default_document_repository_class: Doctrine\ODM\MongoDB\Repository\DocumentRepository
+                    default_gridfs_repository_class:   Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository
                     repository_factory:                ~
                     persistent_collection_factory:     ~
                     logging:                           true
                     auto_mapping:                      false
-                    retry_connect:                     0
-                    retry_query:                       0
                     metadata_cache_driver:
                         type:                 ~
                         class:                ~
@@ -607,12 +594,11 @@ Full Default Configuration
                 <doctrine:document-manager id="id"
                                            connection=""
                                            database=""
-                                           default-repository-class=""
+                                           default-document-repository-class=""
+                                           default-gridfs-repository-class=""
                                            repository-factory=""
                                            logging="true"
                                            auto-mapping="false"
-                                           retry-connect="0"
-                                           retry-query="0"
                 >
                     <doctrine:metadata-cache-driver type="">
                         <doctrine:class></doctrine:class>

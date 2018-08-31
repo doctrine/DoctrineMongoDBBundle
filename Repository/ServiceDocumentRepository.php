@@ -4,7 +4,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Repository;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 
 /**
  * Optional DocumentRepository base class with a simplified constructor (for autowiring).

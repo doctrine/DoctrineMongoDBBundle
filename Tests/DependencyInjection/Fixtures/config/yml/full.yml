@@ -28,7 +28,6 @@ doctrine_mongodb:
         conn1:
             server:               mongodb://localhost
             options:
-                connect:          true
                 connectTimeoutMS: 500
                 authSource:       some_db
                 db:               database_val
@@ -86,6 +85,7 @@ doctrine_mongodb:
             connection:       dm2_connection
             database:         db1
             default_document_repository_class: Foo\Bar\CustomRepository
+            default_gridfs_repository_class:   Foo\Bar\CustomGridFSRepository
             repository_factory: doctrine_mongodb.odm.container_repository_factory
             persistent_collection_factory: ~
             mappings:

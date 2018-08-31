@@ -61,7 +61,6 @@
     </xsd:sequence>
     <xsd:attribute name="authMechanism" type="auth-mechanism" />
     <xsd:attribute name="authSource" type="xsd:string" />
-    <xsd:attribute name="connect" type="xsd:boolean" />
     <xsd:attribute name="connectTimeoutMS" type="xsd:integer" />
     <xsd:attribute name="db" type="xsd:string" />
     <xsd:attribute name="journal" type="xsd:boolean" />
@@ -129,10 +128,8 @@
     <xsd:attribute name="logging" type="xsd:boolean" />
     <xsd:attribute name="metadata-cache-driver" type="xsd:string" />
     <xsd:attribute name="profiler" type="xsd:boolean" />
-    <xsd:attribute name="retry-connect" type="xsd:integer" />
-    <xsd:attribute name="retry-query" type="xsd:integer" />
-    <xsd:attribute name="default-repository-class" type="xsd:string" />
     <xsd:attribute name="default-document-repository-class" type="xsd:string" />
+      <xsd:attribute name="default-gridfs-repository-class" type="xsd:string" />
     <xsd:attribute name="repository-factory" type="xsd:string" />
   </xsd:complexType>
 
