@@ -37,14 +37,12 @@
         <parameter key="doctrine_mongodb.odm.metadata.driver_chain.class">Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain</parameter>
         <parameter key="doctrine_mongodb.odm.metadata.annotation.class">Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver</parameter>
         <parameter key="doctrine_mongodb.odm.metadata.xml.class">Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver</parameter>
-        <parameter key="doctrine_mongodb.odm.metadata.yml.class">Doctrine\Bundle\MongoDBBundle\Mapping\Driver\YamlDriver</parameter>
 
         <!-- directories -->
-        <parameter key="doctrine_mongodb.odm.mapping_dirs" type="collection"></parameter>
+        <parameter key="doctrine_mongodb.odm.mapping_dirs" type="collection" />
         <parameter key="doctrine_mongodb.odm.xml_mapping_dirs">%doctrine_mongodb.odm.mapping_dirs%</parameter>
-        <parameter key="doctrine_mongodb.odm.yml_mapping_dirs">%doctrine_mongodb.odm.mapping_dirs%</parameter>
-        <parameter key="doctrine_mongodb.odm.document_dirs" type="collection"></parameter>
-        <parameter key="doctrine_mongodb.odm.fixtures_dirs" type="collection"></parameter>
+        <parameter key="doctrine_mongodb.odm.document_dirs" type="collection" />
+        <parameter key="doctrine_mongodb.odm.fixtures_dirs" type="collection" />
 
         <!-- logger -->
         <parameter key="doctrine_mongodb.odm.logger.batch_insert_threshold">4</parameter>
@@ -123,9 +121,6 @@
         <service id="doctrine_mongodb.odm.metadata.annotation_reader" alias="annotation_reader" />
         <service id="doctrine_mongodb.odm.metadata.xml" class="%doctrine_mongodb.odm.metadata.xml.class%">
             <argument>%doctrine_mongodb.odm.xml_mapping_dirs%</argument>
-        </service>
-        <service id="doctrine_mongodb.odm.metadata.yml" class="%doctrine_mongodb.odm.metadata.yml.class%">
-            <argument>%doctrine_mongodb.odm.yml_mapping_dirs%</argument>
         </service>
 
         <service id="doctrine_mongodb.odm.container_repository_factory" class="Doctrine\Bundle\MongoDBBundle\Repository\ContainerRepositoryFactory" public="false">

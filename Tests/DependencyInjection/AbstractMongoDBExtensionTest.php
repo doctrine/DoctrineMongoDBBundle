@@ -6,7 +6,6 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\AddValidatorNamespaceAliasPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver;
-use Doctrine\Bundle\MongoDBBundle\Mapping\Driver\YamlDriver;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\ArrayCache;
@@ -53,7 +52,6 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertEquals(MappingDriverChain::class, $container->getParameter('doctrine_mongodb.odm.metadata.driver_chain.class'));
         $this->assertEquals(AnnotationDriver::class, $container->getParameter('doctrine_mongodb.odm.metadata.annotation.class'));
         $this->assertEquals(XmlDriver::class, $container->getParameter('doctrine_mongodb.odm.metadata.xml.class'));
-        $this->assertEquals(YamlDriver::class, $container->getParameter('doctrine_mongodb.odm.metadata.yml.class'));
 
         $this->assertEquals(UniqueEntityValidator::class, $container->getParameter('doctrine_odm.mongodb.validator.unique.class'));
 
@@ -513,7 +511,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         }
     }
 
-    protected function getContainer($bundle = 'YamlBundle')
+    protected function getContainer($bundle = 'XmlBundle')
     {
         require_once __DIR__.'/Fixtures/Bundles/'.$bundle.'/'.$bundle.'.php';
 

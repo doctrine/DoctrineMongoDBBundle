@@ -344,11 +344,11 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      *  doctrine_mongodb:
      *     mappings:
      *         MyBundle1: ~
-     *         MyBundle2: yml
+     *         MyBundle2: xml
      *         MyBundle3: { type: annotation, dir: Documents/ }
      *         MyBundle4: { type: xml, dir: Resources/config/doctrine/mapping }
      *         MyBundle5:
-     *             type: yml
+     *             type: xml
      *             dir: [bundle-mappings1/, bundle-mappings2/]
      *             alias: BundleAlias
      *         arbitrary_key:

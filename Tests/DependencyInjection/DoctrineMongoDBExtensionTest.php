@@ -56,7 +56,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $this->assertEquals($value, $container->getParameter('doctrine_mongodb.odm.'.$parameter));
     }
 
-    private function getContainer($bundles = 'YamlBundle')
+    private function getContainer($bundles = 'OtherXmlBundle')
     {
         $bundles = (array) $bundles;
 
@@ -93,7 +93,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                     'dm1' => [
                         'connection' => 'cn1',
                         'mappings' => [
-                            'YamlBundle' => null
+                            'OtherXmlBundle' => null
                         ]
                     ],
                     'dm2' => [
@@ -124,7 +124,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                         'connection' => 'cn1',
                         'auto_mapping' => true,
                         'mappings' => [
-                            'YamlBundle' => null
+                            'OtherXmlBundle' => null
                         ]
                     ],
                     'dm2' => [
@@ -144,7 +144,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
     public function testAutomapping(array $documentManagers)
     {
         $container = $this->getContainer([
-            'YamlBundle',
+            'OtherXmlBundle',
             'XmlBundle'
         ]);
 
@@ -170,7 +170,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                 'setDocumentNamespaces',
                 [
                     [
-                        'YamlBundle' => 'DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\YamlBundle\Document'
+                        'OtherXmlBundle' => 'DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\OtherXmlBundle\Document'
                     ]
                 ]
             ], $configDm1->getMethodCalls());
