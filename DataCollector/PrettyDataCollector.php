@@ -3,7 +3,12 @@
 
 namespace Doctrine\Bundle\MongoDBBundle\DataCollector;
 
-use Doctrine\MongoDB\GridFSFile;
+use MongoDB\BSON\Binary;
+use MongoDB\BSON\MaxKey;
+use MongoDB\BSON\MinKey;
+use MongoDB\BSON\ObjectId;
+use MongoDB\BSON\Regex;
+use MongoDB\BSON\UTCDateTime;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -208,22 +213,20 @@ class PrettyDataCollector extends StandardDataCollector
                 $formatted = '"'.$value.'"';
             } elseif (is_array($value)) {
                 $formatted = $this->bsonEncode($value);
-            } elseif ($value instanceof \MongoId) {
+            } elseif ($value instanceof ObjectId) {
                 $formatted = 'ObjectId("'.$value.'")';
-            } elseif ($value instanceof \MongoDate) {
-                $formatted = 'new ISODate("'.date('c', $value->sec).'")';
+            } elseif ($value instanceof UTCDateTime) {
+                $formatted = 'new ISODate("'.date('c', $value->toDateTime()->getTimestamp()).'")';
             } elseif ($value instanceof \DateTime) {
                 $formatted = 'new ISODate("'.date('c', $value->getTimestamp()).'")';
-            } elseif ($value instanceof \MongoRegex) {
-                $formatted = 'new RegExp("'.$value->regex.'", "'.$value->flags.'")';
-            } elseif ($value instanceof \MongoMinKey) {
+            } elseif ($value instanceof Regex) {
+                $formatted = 'new RegExp("'.$value->getPattern().'", "'.$value->getFlags().'")';
+            } elseif ($value instanceof MinKey) {
                 $formatted = 'new MinKey()';
-            } elseif ($value instanceof \MongoMaxKey) {
+            } elseif ($value instanceof MaxKey) {
                 $formatted = 'new MaxKey()';
-            } elseif ($value instanceof \MongoBinData) {
-                $formatted = 'new BinData('.$value->type.', "'.base64_encode($value->bin).'")';
-            } elseif ($value instanceof \MongoGridFSFile || $value instanceof GridFSFile) {
-                $formatted = 'new MongoGridFSFile("'.$value->getFilename().'")';
+            } elseif ($value instanceof Binary) {
+                $formatted = 'new BinData('.$value->getType().', "'.base64_encode($value->getData()).'")';
             } elseif ($value instanceof \stdClass) {
                 $formatted = $this->bsonEncode((array) $value);
             } else {

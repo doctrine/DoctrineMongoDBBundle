@@ -4,6 +4,7 @@
 namespace Doctrine\Bundle\MongoDBBundle\Tests\DataCollector;
 
 use Doctrine\Bundle\MongoDBBundle\DataCollector\PrettyDataCollector;
+use MongoDB\BSON\Binary;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use PHPUnit\Framework\TestCase;
@@ -35,8 +36,8 @@ class PrettyDataCollectorTest extends TestCase
                 ['use foo;', 'db.bar.find({ "foo": null });'],
             ],
             'bin data' => [
-                ['db' => 'foo', 'collection' => 'bar', 'update' => true, 'query' => ['_id' => 'foo'], 'newObj' => ['foo' => new \MongoBinData('junk data', \MongoBinData::BYTE_ARRAY)]],
-                ['use foo;', 'db.bar.update({ "_id": "foo" }, { "foo": new BinData(2, "' . base64_encode('junk data') . '") });'],
+                ['db' => 'foo', 'collection' => 'bar', 'update' => true, 'query' => ['_id' => 'foo'], 'newObj' => ['foo' => new Binary('junk data', Binary::TYPE_GENERIC)]],
+                ['use foo;', 'db.bar.update({ "_id": "foo" }, { "foo": new BinData(0, "' . base64_encode('junk data') . '") });'],
             ],
             'findWithoutQuery' => [
                 ['db' => 'foo', 'collection' => 'bar', 'find' => true, 'fields' => []],

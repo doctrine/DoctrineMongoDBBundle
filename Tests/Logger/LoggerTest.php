@@ -4,6 +4,7 @@
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Logger;
 
 use Doctrine\Bundle\MongoDBBundle\Logger\Logger;
+use MongoDB\BSON\Binary;
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -36,9 +37,9 @@ class LoggerTest extends TestCase
 
     public function testMongoBinDataBase64Encoded()
     {
-        $binData = new \MongoBinData('data', \MongoBinData::BYTE_ARRAY);
+        $binData = new Binary('data', Binary::TYPE_GENERIC);
         $query = ['foo' => ['binData' => $binData]];
-        $log = json_encode(['foo' => ['binData' => base64_encode($binData->bin)]]);
+        $log = json_encode(['foo' => ['binData' => base64_encode($binData->getData())]]);
 
         $this->logger->expects($this->once())
             ->method('debug')

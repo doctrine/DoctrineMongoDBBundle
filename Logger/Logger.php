@@ -3,6 +3,7 @@
 
 namespace Doctrine\Bundle\MongoDBBundle\Logger;
 
+use MongoDB\BSON\Binary;
 use Psr\Log\LoggerInterface as PsrLogger;
 
 /**
@@ -38,8 +39,8 @@ class Logger implements LoggerInterface
         }
 
         array_walk_recursive($query, function(&$value, $key) {
-            if ($value instanceof \MongoBinData) {
-                $value = base64_encode($value->bin);
+            if ($value instanceof Binary) {
+                $value = base64_encode($value->getData());
                 return;
             }
             if (is_float($value) && is_infinite($value)) {
