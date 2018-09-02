@@ -27,7 +27,7 @@
         "symfony/form": "^3.4 || ^4.0",
         "symfony/yaml": "^3.4 || ^4.0",
         "symfony/phpunit-bridge": "^3.4 || ^4.0",
-        "phpunit/phpunit": "^5.7 || ^6.5"
+        "phpunit/phpunit": "^7.3"
     },
     "suggest": {
         "doctrine/data-fixtures": "Load data fixtures"
