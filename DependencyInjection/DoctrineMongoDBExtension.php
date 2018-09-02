@@ -160,6 +160,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $this->loadDocumentManagerBundlesMappingInformation($documentManager, $odmConfigDef, $container);
         $this->loadObjectManagerCacheDriver($documentManager, $container, 'metadata_cache');
 
+        $defaultDocumentRepositoryClassSetter = method_exists(\Doctrine\ODM\MongoDB\Configuration::class, 'setDefaultDocumentRepositoryClassName') ? 'setDefaultDocumentRepositoryClassName' : 'setDefaultRepositoryClassName';
+
         $methods = [
             'setMetadataCacheImpl' => new Reference(sprintf('doctrine_mongodb.odm.%s_metadata_cache', $documentManager['name'])),
             'setMetadataDriverImpl' => new Reference(sprintf('doctrine_mongodb.odm.%s_metadata_driver', $documentManager['name'])),
@@ -173,7 +175,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             'setDefaultCommitOptions' => '%doctrine_mongodb.odm.default_commit_options%',
             'setRetryConnect' => $documentManager['retry_connect'],
             'setRetryQuery' => $documentManager['retry_query'],
-            'setDefaultRepositoryClassName' => $documentManager['default_repository_class'],
+            $defaultDocumentRepositoryClassSetter => $documentManager['default_document_repository_class'] ?: $documentManager['default_repository_class'],
             'setPersistentCollectionDir' => '%doctrine_mongodb.odm.persistent_collection_dir%',
             'setPersistentCollectionNamespace' => '%doctrine_mongodb.odm.persistent_collection_namespace%',
             'setAutoGeneratePersistentCollectionClasses' => '%doctrine_mongodb.odm.auto_generate_persistent_collection_classes%',

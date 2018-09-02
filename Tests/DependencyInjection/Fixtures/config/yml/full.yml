@@ -54,7 +54,6 @@ doctrine_mongodb:
 
     document_managers:
         dm1:
-            default_repository_class:   Doctrine\ODM\MongoDB\DocumentRepository
             repository_factory:         ~
             persistent_collection_factory: ~
             mappings:
@@ -86,7 +85,7 @@ doctrine_mongodb:
         dm2:
             connection:       dm2_connection
             database:         db1
-            default_repository_class:   Foo\Bar\CustomRepository
+            default_document_repository_class: Foo\Bar\CustomRepository
             repository_factory:         ~
             persistent_collection_factory: ~
             mappings:

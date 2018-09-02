@@ -90,7 +90,7 @@
             database="db1"
             metadata-cache-driver="apc"
             logging="true"
-            default-repository-class="Foo\Bar\CustomRepository"
+            default-document-repository-class="Foo\Bar\CustomRepository"
         >
             <doctrine:mapping
                 name="BarBundle"
