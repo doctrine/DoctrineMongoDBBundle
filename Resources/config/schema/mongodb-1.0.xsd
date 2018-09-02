@@ -132,6 +132,7 @@
     <xsd:attribute name="retry-connect" type="xsd:integer" />
     <xsd:attribute name="retry-query" type="xsd:integer" />
     <xsd:attribute name="default-repository-class" type="xsd:string" />
+    <xsd:attribute name="default-document-repository-class" type="xsd:string" />
     <xsd:attribute name="repository-factory" type="xsd:string" />
   </xsd:complexType>
 
