@@ -300,11 +300,13 @@ following syntax:
             document_managers:
                 dm1:
                     connection: conn1
+                    database: db1
                     metadata_cache_driver: xcache
                     mappings:
                         AcmeDemoBundle: ~
                 dm2:
                     connection: conn2
+                    database: db2
                     mappings:
                         AcmeHelloBundle: ~
 
@@ -332,10 +334,10 @@ following syntax:
                     <doctrine_mongodb:options>
                     </doctrine_mongodb:options>
                 </doctrine_mongodb:connection>
-                <doctrine_mongodb:document-manager id="dm1" metadata-cache-driver="xcache" connection="conn1">
+                <doctrine_mongodb:document-manager id="dm1" metadata-cache-driver="xcache" connection="conn1" database="db1">
                     <doctrine_mongodb:mapping name="AcmeDemoBundle" />
                 </doctrine_mongodb:document-manager>
-                <doctrine_mongodb:document-manager id="dm2" connection="conn2">
+                <doctrine_mongodb:document-manager id="dm2" connection="conn2" database="db2">
                     <doctrine_mongodb:mapping name="AcmeHelloBundle" />
                 </doctrine_mongodb:document-manager>
             </doctrine_mongodb:config>
