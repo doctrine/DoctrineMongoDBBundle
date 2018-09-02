@@ -12,6 +12,8 @@ env:
 matrix:
   include:
     - php: 7.2
+      env: DRIVER_VERSION="stable" COMPOSER_FLAGS="--prefer-dist"
+    - php: 7.2
       env: DRIVER_VERSION="1.5.0" COMPOSER_FLAGS="--prefer-dist --prefer-lowest" PHPUNIT_FLAGS="--coverage-clover=coverage.clover"
 
 cache:
