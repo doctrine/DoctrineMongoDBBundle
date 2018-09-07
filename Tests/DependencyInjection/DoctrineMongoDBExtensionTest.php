@@ -15,8 +15,8 @@ class DoctrineMongoDBExtensionTest extends TestCase
     {
         return [array_merge(
             [
-                'connections' => ['dummy' => []],
-                'document_managers' => ['dummy' => []],
+                'connections' => ['default' => []],
+                'document_managers' => ['default' => []],
             ],
             $settings
         )];
@@ -91,11 +91,13 @@ class DoctrineMongoDBExtensionTest extends TestCase
             [
                 [
                     'dm1' => [
+                        'connection' => 'cn1',
                         'mappings' => [
                             'YamlBundle' => null
                         ]
                     ],
                     'dm2' => [
+                        'connection' => 'cn2',
                         'mappings' => [
                             'XmlBundle' => null
                         ]
@@ -105,9 +107,11 @@ class DoctrineMongoDBExtensionTest extends TestCase
             [
                 [
                     'dm1' => [
+                        'connection' => 'cn1',
                         'auto_mapping' => true
                     ],
                     'dm2' => [
+                        'connection' => 'cn2',
                         'mappings' => [
                             'XmlBundle' => null
                         ]
@@ -117,12 +121,14 @@ class DoctrineMongoDBExtensionTest extends TestCase
             [
                 [
                     'dm1' => [
+                        'connection' => 'cn1',
                         'auto_mapping' => true,
                         'mappings' => [
                             'YamlBundle' => null
                         ]
                     ],
                     'dm2' => [
+                        'connection' => 'cn2',
                         'mappings' => [
                             'XmlBundle' => null
                         ]
@@ -156,8 +162,8 @@ class DoctrineMongoDBExtensionTest extends TestCase
                 ]
             ], $container);
 
-        $configDm1 = $container->getDefinition('doctrine_mongodb.odm.dm1_configuration');
-        $configDm2 = $container->getDefinition('doctrine_mongodb.odm.dm2_configuration');
+        $configDm1 = $container->getDefinition('doctrine_mongodb.odm.cn1_configuration');
+        $configDm2 = $container->getDefinition('doctrine_mongodb.odm.cn2_configuration');
 
         $this->assertContains(
             [
@@ -195,6 +201,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                     ],
                     'document_managers' => [
                         'dm1' => [
+                            'connection' => 'cn1',
                             'repository_factory' => 'repository_factory_service',
                             'persistent_collection_factory' => 'persistent_collection_factory_service',
                         ]
@@ -202,7 +209,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                 ]
             ], $container);
 
-        $configDm1 = $container->getDefinition('doctrine_mongodb.odm.dm1_configuration');
+        $configDm1 = $container->getDefinition('doctrine_mongodb.odm.cn1_configuration');
         $this->assertContains(
             [
                 'setRepositoryFactory',
@@ -221,7 +228,35 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $loader->load(self::buildConfiguration(), $container = $this->buildMinimalContainer());
 
         $this->assertTrue($container->getDefinition('doctrine_mongodb')->isPublic());
-        $this->assertTrue($container->getDefinition('doctrine_mongodb.odm.dummy_document_manager')->isPublic());
+        $this->assertTrue($container->getDefinition('doctrine_mongodb.odm.default_document_manager')->isPublic());
         $this->assertTrue($container->getAlias('doctrine_mongodb.odm.document_manager')->isPublic());
+    }
+
+    public function testDocumentManagerWithDifferentConnectionName()
+    {
+        $config = [
+            [
+                'document_managers' => [
+                    'dm1' => [
+                        'connection' => 'conn1',
+                    ],
+                ],
+                'connections' => [
+                    'conn1' => [],
+                ],
+            ],
+        ];
+
+        $loader = new DoctrineMongoDBExtension();
+        $loader->load($config, $container = $this->buildMinimalContainer());
+
+        $this->assertFalse($container->hasDefinition('doctrine_mongodb.odm.dm1_configuration'));
+        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.conn1_configuration'));
+
+        $definition = $container->getDefinition('doctrine_mongodb.odm.conn1_connection');
+        $this->assertEquals(new Reference('doctrine_mongodb.odm.conn1_configuration'), $definition->getArgument(2));
+
+        $definition = $container->getDefinition('doctrine_mongodb.odm.dm1_document_manager');
+        $this->assertEquals(new Reference('doctrine_mongodb.odm.conn1_configuration'), $definition->getArgument(1));
     }
 }

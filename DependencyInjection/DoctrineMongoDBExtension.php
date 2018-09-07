@@ -146,16 +146,11 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      */
     protected function loadDocumentManager(array $documentManager, $defaultDM, $defaultDB, ContainerBuilder $container)
     {
-        $configServiceName = sprintf('doctrine_mongodb.odm.%s_configuration', $documentManager['name']);
         $connectionName = isset($documentManager['connection']) ? $documentManager['connection'] : $documentManager['name'];
+        $configServiceName = sprintf('doctrine_mongodb.odm.%s_configuration', $connectionName);
         $defaultDatabase = isset($documentManager['database']) ? $documentManager['database'] : $defaultDB;
 
-        if ($container->hasDefinition($configServiceName)) {
-            $odmConfigDef = $container->getDefinition($configServiceName);
-        } else {
-            $odmConfigDef = new Definition('%doctrine_mongodb.odm.configuration.class%');
-            $container->setDefinition($configServiceName, $odmConfigDef);
-        }
+        $odmConfigDef = $container->getDefinition($configServiceName);
 
         $this->loadDocumentManagerBundlesMappingInformation($documentManager, $odmConfigDef, $container);
         $this->loadObjectManagerCacheDriver($documentManager, $container, 'metadata_cache');
@@ -243,7 +238,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
         $odmDmArgs = [
             new Reference(sprintf('doctrine_mongodb.odm.%s_connection', $connectionName)),
-            new Reference(sprintf('doctrine_mongodb.odm.%s_configuration', $documentManager['name'])),
+            new Reference($configServiceName),
             // Document managers will share their connection's event manager
             new Reference(sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $connectionName)),
         ];
@@ -288,10 +283,16 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 $this->getChildDefinitionOrDefinitionDecorator('doctrine_mongodb.odm.connection.event_manager')
             );
 
+            $configurationId = sprintf('doctrine_mongodb.odm.%s_configuration', $name);
+            $container->setDefinition(
+                $configurationId,
+                new Definition('%doctrine_mongodb.odm.configuration.class%')
+            );
+
             $odmConnArgs = [
                 isset($connection['server']) ? $connection['server'] : null,
                 isset($connection['options']) ? $connection['options'] : [],
-                new Reference(sprintf('doctrine_mongodb.odm.%s_configuration', $name)),
+                new Reference($configurationId),
                 new Reference($eventManagerId),
                 $this->normalizeDriverOptions($connection),
             ];

@@ -244,7 +244,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertInstanceOf(Reference::class, $arguments[0]);
         $this->assertEquals('doctrine_mongodb.odm.conn1_connection', (string) $arguments[0]);
         $this->assertInstanceOf(Reference::class, $arguments[1]);
-        $this->assertEquals('doctrine_mongodb.odm.dm1_configuration', (string) $arguments[1]);
+        $this->assertEquals('doctrine_mongodb.odm.conn1_configuration', (string) $arguments[1]);
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.conn2_connection');
         $this->assertEquals('%doctrine_mongodb.odm.connection.class%', $definition->getClass());
@@ -266,7 +266,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertInstanceOf(Reference::class, $arguments[0]);
         $this->assertEquals('doctrine_mongodb.odm.conn2_connection', (string) $arguments[0]);
         $this->assertInstanceOf(Reference::class, $arguments[1]);
-        $this->assertEquals('doctrine_mongodb.odm.dm2_configuration', (string) $arguments[1]);
+        $this->assertEquals('doctrine_mongodb.odm.conn2_configuration', (string) $arguments[1]);
 
         $this->assertEquals('doctrine_mongodb.odm.dm2_document_manager', (string) $container->getAlias('doctrine_mongodb.odm.document_manager'));
         $this->assertEquals('doctrine_mongodb.odm.conn2_connection.event_manager', (string) $container->getAlias('doctrine_mongodb.odm.event_manager'));
