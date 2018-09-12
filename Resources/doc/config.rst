@@ -345,11 +345,15 @@ following syntax:
 
 Now you can retrieve the configured services connection services::
 
+.. code-block:: php
+
     $conn1 = $container->get('doctrine_mongodb.odm.conn1_connection');
     $conn2 = $container->get('doctrine_mongodb.odm.conn2_connection');
 
 And you can also retrieve the configured document manager services which utilize the above
 connection services::
+
+.. code-block:: php
 
     $dm1 = $container->get('doctrine_mongodb.odm.dm1_document_manager');
     $dm2 = $container->get('doctrine_mongodb.odm.dm2_document_manager');

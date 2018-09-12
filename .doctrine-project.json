@@ -1,0 +1,23 @@
+{
+    "name": "Doctrine MongoDB Bundle",
+    "shortName": "DoctrineMongoDBBundle",
+    "slug": "doctrine-mongodb-bundle",
+    "versions": [
+        {
+            "name": "3.5",
+            "branchName": "master",
+            "slug": "latest",
+            "upcoming": true
+        },
+        {
+            "name": "3.4",
+            "branchName": "3.4",
+            "slug": "3.4",
+            "current": true,
+            "aliases": [
+                "current",
+                "stable"
+            ]
+        }
+    ]
+}

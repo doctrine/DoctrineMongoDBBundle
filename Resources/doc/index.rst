@@ -39,6 +39,8 @@ Install the bundle with Composer
 To install DoctrineMongoDBBundle with Composer just add the following to your
 `composer.json` file::
 
+.. code-block:: json
+
     {
         "require": {
             "doctrine/mongodb-odm-bundle": "^3.0"
@@ -58,8 +60,8 @@ for you.
 
 .. note::
 
-   Currently ODM works with legacy MongoDB driver (i.e. `ext-mongo`) which is 
-   not compatible with PHP 7. If you have PHP 7 and/or are using new driver 
+   Currently ODM works with legacy MongoDB driver (i.e. `ext-mongo`) which is
+   not compatible with PHP 7. If you have PHP 7 and/or are using new driver
    (i.e. `ext-mongodb`) please refer to `"Using PHP 7" section`_ in ODM's documentation.
 
 Register the annotations and the bundle
@@ -72,8 +74,11 @@ Register the annotations and the bundle
 Next, register the annotations library by adding the following to the autoloader
 (below the existing ``AnnotationRegistry::registerLoader`` line)::
 
+.. code-block:: php
+
     // app/autoload.php
     use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+
     AnnotationDriver::registerAnnotationClasses();
 
 .. note::
@@ -82,6 +87,8 @@ Next, register the annotations library by adding the following to the autoloader
 
 All that is left to do is to update your ``AppKernel.php`` file, and
 register the new bundle::
+
+.. code-block:: php
 
     // app/AppKernel.php
     public function registerBundles()
@@ -151,6 +158,8 @@ Without even thinking about Doctrine or MongoDB, you already know that you
 need a ``Product`` object to represent those products. Create this class
 inside the ``Document`` directory of your ``AcmeStoreBundle``::
 
+.. code-block:: php
+
     // src/Acme/StoreBundle/Document/Product.php
     namespace Acme\StoreBundle\Document;
 
@@ -183,7 +192,7 @@ in a number of different formats including YAML, XML or directly inside the
 
 .. configuration-block::
 
-    .. code-block:: php-annotations
+    .. code-block:: php
 
         // src/Acme/StoreBundle/Document/Product.php
         namespace Acme\StoreBundle\Document;
@@ -350,6 +359,8 @@ Fetching an object back out of MongoDB is even easier. For example, suppose
 you've configured a route to display a specific ``Product`` based on its
 ``id`` value::
 
+.. code-block:: php
+
     public function showAction($id)
     {
         $product = $this->get('doctrine_mongodb')
@@ -368,6 +379,8 @@ as its "repository". You can think of a repository as a PHP class whose only
 job is to help you fetch objects of a certain class. You can access the
 repository object for a document class via::
 
+.. code-block:: php
+
     $repository = $this->get('doctrine_mongodb')
         ->getManager()
         ->getRepository('AcmeStoreBundle:Product');
@@ -380,6 +393,8 @@ repository object for a document class via::
     this will work.
 
 Once you have your repository, you have access to all sorts of helpful methods::
+
+.. code-block:: php
 
     // query by the primary key (usually "id")
     $product = $repository->find($id);
@@ -402,6 +417,8 @@ Once you have your repository, you have access to all sorts of helpful methods::
 You can also take advantage of the useful ``findBy()`` and ``findOneBy()`` methods
 to easily fetch objects based on multiple conditions::
 
+.. code-block:: php
+
     // query for one product matching be name and price
     $product = $repository->findOneBy(array('name' => 'foo', 'price' => 19.99));
 
@@ -416,6 +433,8 @@ Updating an Object
 
 Once you've fetched an object from Doctrine, updating it is easy. Suppose
 you have a route that maps a product id to an update action in a controller::
+
+.. code-block:: php
 
     public function updateAction($id)
     {
@@ -449,6 +468,8 @@ Deleting an Object
 Deleting an object is very similar, but requires a call to the ``remove()``
 method of the document manager::
 
+.. code-block:: php
+
     $dm->remove($product);
     $dm->flush();
 
@@ -471,6 +492,8 @@ Doctrine's ODM ships with a query "Builder" object, which allows you to construc
 a query for exactly which documents you want to return. If you use an IDE,
 you can also take advantage of auto-completion as you type the method names.
 From inside a controller::
+
+.. code-block:: php
 
     $products = $this->get('doctrine_mongodb')
         ->getManager()
@@ -568,6 +591,8 @@ ordered alphabetically.
     }
 
 You can use this new method just like the default finder methods of the repository::
+
+.. code-block:: php
 
     $products = $this->get('doctrine_mongodb')
         ->getManager()
@@ -687,32 +712,32 @@ and then `tagging`_ it with a specific tag.
     be used to request that the listener be lazily loaded by the event manager
     when its event is dispatched.
 
-    .. configuration-block::
+.. configuration-block::
 
-        .. code-block:: yaml
+    .. code-block:: yaml
 
-            services:
-                my_doctrine_listener:
-                    class:   Acme\HelloBundle\Listener\MyDoctrineListener
-                    # ...
-                    tags:
-                        -  { name: doctrine_mongodb.odm.event_listener, event: postPersist }
+        services:
+            my_doctrine_listener:
+                class:   Acme\HelloBundle\Listener\MyDoctrineListener
+                # ...
+                tags:
+                    -  { name: doctrine_mongodb.odm.event_listener, event: postPersist }
 
-        .. code-block:: xml
+    .. code-block:: xml
 
-            <service id="my_doctrine_listener" class="Acme\HelloBundle\Listener\MyDoctrineListener">
-                <!-- ... -->
-                <tag name="doctrine_mongodb.odm.event_listener" event="postPersist" />
-            </service>
+        <service id="my_doctrine_listener" class="Acme\HelloBundle\Listener\MyDoctrineListener">
+            <!-- ... -->
+            <tag name="doctrine_mongodb.odm.event_listener" event="postPersist" />
+        </service>
 
-        .. code-block:: php
+    .. code-block:: php
 
-            $definition = new Definition('Acme\HelloBundle\Listener\MyDoctrineListener');
-            // ...
-            $definition->addTag('doctrine_mongodb.odm.event_listener', array(
-                'event' => 'postPersist',
-            ));
-            $container->setDefinition('my_doctrine_listener', $definition);
+        $definition = new Definition('Acme\HelloBundle\Listener\MyDoctrineListener');
+        // ...
+        $definition->addTag('doctrine_mongodb.odm.event_listener', array(
+            'event' => 'postPersist',
+        ));
+        $container->setDefinition('my_doctrine_listener', $definition);
 
 *   **event subscriber**: Use the ``doctrine_mongodb.odm.event_subscriber`` tag
     to register a subscriber. Subscribers are responsible for implementing
