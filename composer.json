@@ -37,6 +37,9 @@
             "Doctrine\\Bundle\\MongoDBBundle\\": ""
         }
     },
+    "autoload-dev": {
+        "psr-4": { "": "Tests/DependencyInjection" }
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "3.5-dev"

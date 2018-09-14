@@ -65,7 +65,10 @@
 
         <doctrine:connection id="conn2" server="mongodb://otherhost" />
 
-        <doctrine:document-manager id="dm1">
+        <doctrine:document-manager
+            id="dm1"
+            repository-factory="doctrine_mongodb.odm.container_repository_factory"
+        >
             <doctrine:mapping name="FooBundle" type="annotation" />
             <doctrine:metadata-cache-driver type="memcached">
                 <doctrine:class>fooClass</doctrine:class>
@@ -90,6 +93,7 @@
             database="db1"
             metadata-cache-driver="apc"
             logging="true"
+            repository-factory="doctrine_mongodb.odm.container_repository_factory"
             default-document-repository-class="Foo\Bar\CustomRepository"
         >
             <doctrine:mapping
