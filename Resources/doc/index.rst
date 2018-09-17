@@ -48,6 +48,14 @@ To install DoctrineMongoDBBundle with Composer just add the following to your
     }
 
 
+If you are planning to use `autowiring`, you must install version 3.5 or later::
+
+    {
+        "require": {
+            "doctrine/mongodb-odm-bundle": "^3.5"
+        },
+    }
+
 You can now install the new dependencies by running Composer's ``update``
 command from the directory where your ``composer.json`` file is located:
 
@@ -128,6 +136,15 @@ the MongoDB ODM across your application:
         document_managers:
             default:
                 auto_mapping: true
+
+.. note::
+
+    If you are using Symfony Flex, you can allow `recipes` in the "contrib" repository to 
+    work with this bundle by executing the following command:
+
+    .. code-block:: bash
+
+        composer config extra.symfony.allow-contrib true
 
 .. note::
 
@@ -335,6 +352,33 @@ Let's walk through this example:
   all of the objects that it's managing to see if they need to be persisted
   to MongoDB. In this example, the ``$product`` object has not been persisted yet,
   so the document manager makes a query to MongoDB, which adds a new entry.
+
+If you are using `autowiring`, you can use type hinting to fetch the ``doctrine_mongodb.odm.document_manager`` service::
+
+.. code-block:: php
+
+    // App/Controller/DefaultController.php
+    namespace App\Controller;
+
+    use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+    use Doctrine\ODM\MongoDB\DocumentManager as DocumentManager;
+    use App\Document\Product;
+    use Symfony\Component\HttpFoundation\Response;
+
+    class DefaultController extends AbstractController
+    {
+        public function createProduct(DocumentManager $dm)
+        {
+            $product = new Product();
+            $product->setName('A Foo Bar');
+            $product->setPrice('19.99');
+
+            $dm->persist($product);
+            $dm->flush();
+
+            return new Response('Created product id '.$product->getId());
+        }
+    }
 
 .. note::
 
@@ -891,3 +935,5 @@ Learn more from the Cookbook
 .. _`UniqueEntity`: http://symfony.com/doc/current/reference/constraints/UniqueEntity.html
 .. _`store sessions`: http://symfony.com/doc/current/cookbook/doctrine/mongodb_session_storage.html
 .. _`"Using PHP 7" section`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/introduction.html#using-php-7
+.. _`autowiring`: https://symfony.com/doc/current/service_container/autowiring.html
+.. _`recipes`: http://fabien.potencier.org/symfony4-contributing-recipes.html
