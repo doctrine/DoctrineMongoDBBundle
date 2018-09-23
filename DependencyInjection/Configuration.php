@@ -129,7 +129,7 @@ class Configuration implements ConfigurationInterface
                                 ->setDeprecated('The child node "%node%" at path "%path%" is deprecated. Please use default_document_repository_class instead.')
                             ->end()
                             ->scalarNode('default_document_repository_class')->defaultNull()->end()
-                            ->scalarNode('repository_factory')->defaultNull()->end()
+                            ->scalarNode('repository_factory')->defaultValue('doctrine_mongodb.odm.container_repository_factory')->end()
                             ->scalarNode('persistent_collection_factory')->defaultNull()->end()
                             ->booleanNode('auto_mapping')->defaultFalse()->end()
                             ->arrayNode('filters')

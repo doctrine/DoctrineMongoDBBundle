@@ -128,6 +128,10 @@
             <argument>%doctrine_mongodb.odm.yml_mapping_dirs%</argument>
         </service>
 
+        <service id="doctrine_mongodb.odm.container_repository_factory" class="Doctrine\Bundle\MongoDBBundle\Repository\ContainerRepositoryFactory" public="false">
+            <argument /> <!-- repository locator -->
+        </service>
+
         <!-- The configurator cannot be a private service -->
         <service id="doctrine_mongodb.odm.manager_configurator.abstract" class="%doctrine_mongodb.odm.manager_configurator.class%" abstract="true">
             <argument type="collection" />

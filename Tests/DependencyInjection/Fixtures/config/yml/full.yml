@@ -54,7 +54,7 @@ doctrine_mongodb:
 
     document_managers:
         dm1:
-            repository_factory:         ~
+            repository_factory: doctrine_mongodb.odm.container_repository_factory
             persistent_collection_factory: ~
             mappings:
                 FooBundle:   annotation
@@ -86,7 +86,7 @@ doctrine_mongodb:
             connection:       dm2_connection
             database:         db1
             default_document_repository_class: Foo\Bar\CustomRepository
-            repository_factory:         ~
+            repository_factory: doctrine_mongodb.odm.container_repository_factory
             persistent_collection_factory: ~
             mappings:
                 BarBundle:
