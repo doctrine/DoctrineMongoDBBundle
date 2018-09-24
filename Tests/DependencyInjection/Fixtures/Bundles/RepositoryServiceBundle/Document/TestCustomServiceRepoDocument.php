@@ -3,10 +3,10 @@
 namespace Fixtures\Bundles\RepositoryServiceBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Fixtures\Bundles\RepositoryServiceBundle\Repository\TestCustomServiceRepoRepository;
+use Fixtures\Bundles\RepositoryServiceBundle\Repository\TestCustomServiceRepoDocumentRepository;
 
 /**
- * @ODM\Document(repositoryClass=TestCustomServiceRepoRepository::class)
+ * @ODM\Document(repositoryClass=TestCustomServiceRepoDocumentRepository::class)
  */
 class TestCustomServiceRepoDocument
 {
