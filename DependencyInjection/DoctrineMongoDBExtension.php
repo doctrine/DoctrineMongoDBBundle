@@ -192,29 +192,20 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         }
 
         // logging
-        $loggers = [];
         if ($container->getParameterBag()->resolveValue($documentManager['logging'])) {
-            $loggers[] = new Reference('doctrine_mongodb.odm.logger');
+            $logger = $container->getDefinition('doctrine_mongodb.odm.command_logger');
+            $logger->addMethodCall('register');
         }
 
         // profiler
         if ($container->getParameterBag()->resolveValue($documentManager['profiler']['enabled'])) {
-            $dataCollectorId = sprintf('doctrine_mongodb.odm.data_collector.%s', $container->getParameterBag()->resolveValue($documentManager['profiler']['pretty']) ? 'pretty' : 'standard');
-            $loggers[] = new Reference($dataCollectorId);
+            $logger = $container->getDefinition('doctrine_mongodb.odm.data_collector.command_logger');
+            $logger->addMethodCall('register');
+
             $container
-                ->getDefinition($dataCollectorId)
+                ->getDefinition('doctrine_mongodb.odm.data_collector')
                 ->addTag('data_collector', ['id' => 'mongodb', 'template' => '@DoctrineMongoDB/Collector/mongodb.html.twig'])
             ;
-        }
-
-        if (1 < count($loggers)) {
-            $methods['setLoggerCallable'] = [new Reference('doctrine_mongodb.odm.logger.aggregate'), 'logQuery'];
-            $container
-                ->getDefinition('doctrine_mongodb.odm.logger.aggregate')
-                ->addArgument($loggers)
-            ;
-        } elseif ($loggers) {
-            $methods['setLoggerCallable'] = [$loggers[0], 'logQuery'];
         }
 
         $enabledFilters = [];

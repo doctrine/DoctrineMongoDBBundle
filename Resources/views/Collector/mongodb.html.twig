@@ -1,22 +1,22 @@
 {% extends '@WebProfiler/Profiler/layout.html.twig' %}
 
 {% block toolbar %}
-    {% if collector.queryCount > 0 %}
+    {% if collector.commandCount > 0 %}
         {% set profiler_markup_version = profiler_markup_version|default(1) %}
 
         {% set icon %}
             {% if profiler_markup_version == 1 %}
                 <img width="20" height="28" alt="Mongo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAcCAYAAABh2p9gAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAQRJREFUeNpi/P//PwM1ARMDlcGogZQDlpMnT7pxc3NbA9nhQKxOpL5rQLwJiPeBsI6Ozl+YBOOOHTv+AOllQNwtLS39F2owKYZ/gRq8G4i3ggxEToggWzvc3d2Pk+1lNL4fFAs6ODi8JzdS7mMRVyDVoAMHDsANdAPiOCC+jCQvQKqBQB/BDbwBxK5AHA3E/kB8nKJkA8TMQBwLxaBIKQbi70AvTADSBiSadwFXpCikpKQU8PDwkGTaly9fHFigkaKIJid4584dkiMFFI6jkTJII0WVmpHCAixZQEXWYhDeuXMnyLsVlEQKI45qFBQZ8eRECi4DBaAlDqle/8A48ip6gAADANdQY88Uc0oGAAAAAElFTkSuQmCC"/>
-                <span class="sf-toolbar-status">{{ collector.queryCount }}</span>
+                <span class="sf-toolbar-status">{{ collector.commandCount }}</span>
             {% else %}
                 {{ include('@DoctrineMongoDB/Collector/icon.svg') }}
-                <span class="sf-toolbar-value">{{ collector.queryCount }}</span>
+                <span class="sf-toolbar-value">{{ collector.commandCount }}</span>
             {% endif %}
         {% endset %}
         {% set text %}
             <div class="sf-toolbar-info-piece">
-                <b>Database Queries</b>
-                <span class="sf-toolbar-status">{{ collector.queryCount }}</span>
+                <b>Database Commands</b>
+                <span class="sf-toolbar-status">{{ collector.commandCount }}</span>
             </div>
         {% endset %}
         {% include '@WebProfiler/Profiler/toolbar_item.html.twig' with { 'link': profiler_url } %}
@@ -28,24 +28,24 @@
     <span class="icon"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAcCAYAAAB/E6/TAAABLUlEQVR42u3TP0vDQBiA8UK/gDiLzi0IhU4OEunk5OQUAhGSOBUCzqWfIKSzX8DRySF0URCcMjWLIJjFD9Cpk/D6HITecEPUuzhIAz8CIdyTP/f2iqI4qaqqDx8l5Ic2uIeP/bquezCokOAFF+oCN3t4gPzSEjc4NEPaCldQbzjELTYW0RJzHDchwwem+ons6ZBpLSJ7nueJC22h0V+FzmwWV0ee59vQNV67CGVZJmEYbkNjfpY6X6I0Qo4/3RMmTdDDspuQVsJvgkP3IdMbIkIjLPBoadG2646iKJI0Ta2wxm6OdnP0/Tk6DYJgHcfxpw21RtscDTDDnaVZ26474GkkSRIrrPEv5sgMTfHe+cA2O6wPH6vOBpYQNALneHb96XTEDI6dzpEZ0VzO0Rf3pP5LMLI4tAAAAABJRU5ErkJggg==" alt="Mongo" /></span>
     <strong>Doctrine MongoDB</strong>
     <span class="count">
-        <span>{{ collector.queryCount }}</span>
+        <span>{{ collector.commandCount }}</span>
     </span>
 </span>
 {% endblock %}
 
 {% block panel %}
-    <h2>Queries</h2>
+    <h2>Commands</h2>
 
-    {% if collector.queries is empty %}
+    {% if collector.commands is empty %}
         <p>
-            <em>No queries.</em>
+            <em>No commands.</em>
         </p>
     {% else %}
         <ul class="alt">
-            {% for query in collector.queries %}
+            {% for command in collector.commands %}
                 <li class="{{ cycle(['odd', 'even'], loop.index) }}">
                     <div>
-                        <code>{{ query }}</code>
+                        <code>{{ command }}</code>
                     </div>
                 </li>
             {% endfor %}

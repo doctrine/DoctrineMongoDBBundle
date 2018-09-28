@@ -10,10 +10,6 @@
         <parameter key="doctrine_mongodb.odm.configuration.class">Doctrine\ODM\MongoDB\Configuration</parameter>
         <parameter key="doctrine_mongodb.odm.document_manager.class">Doctrine\ODM\MongoDB\DocumentManager</parameter>
         <parameter key="doctrine_mongodb.odm.manager_configurator.class">Doctrine\Bundle\MongoDBBundle\ManagerConfigurator</parameter>
-        <parameter key="doctrine_mongodb.odm.logger.class">Doctrine\Bundle\MongoDBBundle\Logger\Logger</parameter>
-        <parameter key="doctrine_mongodb.odm.logger.aggregate.class">Doctrine\Bundle\MongoDBBundle\Logger\AggregateLogger</parameter>
-        <parameter key="doctrine_mongodb.odm.data_collector.standard.class">Doctrine\Bundle\MongoDBBundle\DataCollector\StandardDataCollector</parameter>
-        <parameter key="doctrine_mongodb.odm.data_collector.pretty.class">Doctrine\Bundle\MongoDBBundle\DataCollector\PrettyDataCollector</parameter>
         <parameter key="doctrine_mongodb.odm.event_manager.class">Symfony\Bridge\Doctrine\ContainerAwareEventManager</parameter>
         <parameter key="doctrine_odm.mongodb.validator_initializer.class">Symfony\Bridge\Doctrine\Validator\DoctrineInitializer</parameter>
         <parameter key="doctrine_odm.mongodb.validator.unique.class">Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator</parameter>
@@ -136,21 +132,16 @@
         <service id="doctrine_mongodb.odm.cache.array" class="%doctrine_mongodb.odm.cache.array.class%" />
 
         <!-- logger -->
-        <service id="doctrine_mongodb.odm.logger" class="%doctrine_mongodb.odm.logger.class%" public="false">
-            <tag name="monolog.logger" channel="doctrine" />
+        <service id="doctrine_mongodb.odm.command_logger" class="Doctrine\Bundle\MongoDBBundle\APM\PSRCommandLogger" public="false">
             <argument type="service" id="logger" on-invalid="null" />
-            <call method="setBatchInsertThreshold">
-                <argument>%doctrine_mongodb.odm.logger.batch_insert_threshold%</argument>
-            </call>
+
+            <tag name="monolog.logger" channel="doctrine" />
         </service>
-        <service id="doctrine_mongodb.odm.logger.aggregate" class="%doctrine_mongodb.odm.logger.aggregate.class%" public="false" />
 
         <!-- profiler -->
-        <service id="doctrine_mongodb.odm.data_collector.standard" class="%doctrine_mongodb.odm.data_collector.standard.class%" public="false" />
-        <service id="doctrine_mongodb.odm.data_collector.pretty" class="%doctrine_mongodb.odm.data_collector.pretty.class%" public="false">
-            <call method="setBatchInsertThreshold">
-                <argument>%doctrine_mongodb.odm.logger.batch_insert_threshold%</argument>
-            </call>
+        <service id="doctrine_mongodb.odm.data_collector.command_logger" class="Doctrine\ODM\MongoDB\APM\CommandLogger" public="false" />
+        <service id="doctrine_mongodb.odm.data_collector" class="Doctrine\Bundle\MongoDBBundle\DataCollector\CommandDataCollector" public="false">
+            <argument type="service" id="doctrine_mongodb.odm.data_collector.command_logger" />
         </service>
 
         <!-- Cache Warmers -->
