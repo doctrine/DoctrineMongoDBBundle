@@ -56,7 +56,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $this->assertEquals($value, $container->getParameter('doctrine_mongodb.odm.'.$parameter));
     }
 
-    private function getContainer($bundles = 'YamlBundle')
+    private function getContainer($bundles = 'OtherXmlBundle')
     {
         $bundles = (array) $bundles;
 
@@ -93,7 +93,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                     'dm1' => [
                         'connection' => 'cn1',
                         'mappings' => [
-                            'YamlBundle' => null
+                            'OtherXmlBundle' => null
                         ]
                     ],
                     'dm2' => [
@@ -124,7 +124,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                         'connection' => 'cn1',
                         'auto_mapping' => true,
                         'mappings' => [
-                            'YamlBundle' => null
+                            'OtherXmlBundle' => null
                         ]
                     ],
                     'dm2' => [
@@ -144,7 +144,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
     public function testAutomapping(array $documentManagers)
     {
         $container = $this->getContainer([
-            'YamlBundle',
+            'OtherXmlBundle',
             'XmlBundle'
         ]);
 
@@ -162,15 +162,15 @@ class DoctrineMongoDBExtensionTest extends TestCase
                 ]
             ], $container);
 
-        $configDm1 = $container->getDefinition('doctrine_mongodb.odm.cn1_configuration');
-        $configDm2 = $container->getDefinition('doctrine_mongodb.odm.cn2_configuration');
+        $configDm1 = $container->getDefinition('doctrine_mongodb.odm.dm1_configuration');
+        $configDm2 = $container->getDefinition('doctrine_mongodb.odm.dm2_configuration');
 
         $this->assertContains(
             [
                 'setDocumentNamespaces',
                 [
                     [
-                        'YamlBundle' => 'DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\YamlBundle\Document'
+                        'OtherXmlBundle' => 'DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\OtherXmlBundle\Document'
                     ]
                 ]
             ], $configDm1->getMethodCalls());
@@ -209,7 +209,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                 ]
             ], $container);
 
-        $configDm1 = $container->getDefinition('doctrine_mongodb.odm.cn1_configuration');
+        $configDm1 = $container->getDefinition('doctrine_mongodb.odm.dm1_configuration');
         $this->assertContains(
             [
                 'setRepositoryFactory',
@@ -230,33 +230,5 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $this->assertTrue($container->getDefinition('doctrine_mongodb')->isPublic());
         $this->assertTrue($container->getDefinition('doctrine_mongodb.odm.default_document_manager')->isPublic());
         $this->assertTrue($container->getAlias('doctrine_mongodb.odm.document_manager')->isPublic());
-    }
-
-    public function testDocumentManagerWithDifferentConnectionName()
-    {
-        $config = [
-            [
-                'document_managers' => [
-                    'dm1' => [
-                        'connection' => 'conn1',
-                    ],
-                ],
-                'connections' => [
-                    'conn1' => [],
-                ],
-            ],
-        ];
-
-        $loader = new DoctrineMongoDBExtension();
-        $loader->load($config, $container = $this->buildMinimalContainer());
-
-        $this->assertFalse($container->hasDefinition('doctrine_mongodb.odm.dm1_configuration'));
-        $this->assertTrue($container->hasDefinition('doctrine_mongodb.odm.conn1_configuration'));
-
-        $definition = $container->getDefinition('doctrine_mongodb.odm.conn1_connection');
-        $this->assertEquals(new Reference('doctrine_mongodb.odm.conn1_configuration'), $definition->getArgument(2));
-
-        $definition = $container->getDefinition('doctrine_mongodb.odm.dm1_document_manager');
-        $this->assertEquals(new Reference('doctrine_mongodb.odm.conn1_configuration'), $definition->getArgument(1));
     }
 }

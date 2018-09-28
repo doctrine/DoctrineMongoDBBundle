@@ -8,6 +8,7 @@ use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\Bundle\MongoDBBundle\Form\DoctrineMongoDBExtension;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use MongoDB\BSON\ObjectId;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormView;
@@ -93,7 +94,7 @@ class DocumentTypeTest extends TypeTestCase
         $categoryTwo = new Category('two');
         $this->dm->persist($categoryTwo);
 
-        $document = new Document(new \MongoId(), 'document');
+        $document = new Document(new ObjectId(), 'document');
         $document->categories[] = $categoryOne;
         $this->dm->persist($document);
 

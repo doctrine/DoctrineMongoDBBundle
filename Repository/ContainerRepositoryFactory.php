@@ -6,7 +6,7 @@ use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepository
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Psr\Container\ContainerInterface;
 
@@ -32,7 +32,7 @@ final class ContainerRepositoryFactory implements RepositoryFactory
     /**
      * {@inheritdoc}
      */
-    public function getRepository(DocumentManager $documentManager, $documentName)
+    public function getRepository(DocumentManager $documentManager, string $documentName): ObjectRepository
     {
         $metadata             = $documentManager->getClassMetadata($documentName);
         $customRepositoryName = $metadata->customRepositoryClassName;
@@ -71,7 +71,13 @@ final class ContainerRepositoryFactory implements RepositoryFactory
             return $this->managedRepositories[$repositoryHash];
         }
 
-        $repositoryClassName = $metadata->customRepositoryClassName ?: $documentManager->getConfiguration()->getDefaultRepositoryClassName();
+        if ($metadata->customRepositoryClassName) {
+            $repositoryClassName = $metadata->customRepositoryClassName;
+        } elseif ($metadata->isFile) {
+            $repositoryClassName = $documentManager->getConfiguration()->getDefaultGridFSRepositoryClassName();
+        } else {
+            $repositoryClassName = $documentManager->getConfiguration()->getDefaultDocumentRepositoryClassName();
+        }
 
         return $this->managedRepositories[$repositoryHash] = new $repositoryClassName($documentManager, $documentManager->getUnitOfWork(), $metadata);
     }

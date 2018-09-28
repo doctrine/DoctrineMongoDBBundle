@@ -11,13 +11,13 @@ class Collections
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedMany(collectionClass="SomeCollection") */
+    /** @ODM\EmbedMany(collectionClass=SomeCollection::class) */
     public $coll;
 
-    /** @ODM\ReferenceMany(collectionClass="SomeCollection") */
+    /** @ODM\ReferenceMany(collectionClass=SomeCollection::class) */
     public $refs;
 
-    /** @ODM\EmbedMany(collectionClass="AnotherCollection") */
+    /** @ODM\EmbedMany(collectionClass=AnotherCollection::class) */
     public $another;
 }
 

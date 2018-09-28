@@ -11,7 +11,10 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
 class ContainerTest extends TestCase
 {
+    /** @var ContainerBuilder */
     private $container;
+
+    /** @var DoctrineMongoDBExtension */
     private $extension;
 
     protected function setUp()
@@ -32,24 +35,13 @@ class ContainerTest extends TestCase
     /**
      * @dataProvider provideLoggerConfigs
      */
-    public function testLoggerConfig($config, $logger, $debug)
+    public function testLoggerConfig(bool $expected, array $config, bool $debug)
     {
         $this->container->setParameter('kernel.debug', $debug);
         $this->extension->load([$config], $this->container);
 
-        $def = $this->container->getDefinition('doctrine_mongodb.odm.default_configuration');
-        if (false === $logger) {
-            $this->assertFalse($def->hasMethodCall('setLoggerCallable'));
-        } else {
-            $match = null;
-            foreach ($def->getMethodCalls() as $call) {
-                if ('setLoggerCallable' == $call[0]) {
-                    $match = (string) $call[1][0][0];
-                    break;
-                }
-            }
-            $this->assertEquals($logger, $match, 'Service "'.$logger.'" is set as the logger');
-        }
+        $definition = $this->container->getDefinition('doctrine_mongodb.odm.command_logger');
+        $this->assertSame($expected, $definition->hasMethodCall('register'));
     }
 
     public function provideLoggerConfigs()
@@ -58,36 +50,63 @@ class ContainerTest extends TestCase
 
         return [
             [
-                // logging and profiler default to true when in debug mode
+                // Logging is always enabled in debug mode
+                true,
                 ['document_managers' => ['default' => []]] + $config,
-                'doctrine_mongodb.odm.logger.aggregate',
                 true,
             ],
             [
-                // logging and profiler default to false when not in debug mode
+                // Logging is disabled by default when not in debug mode
+                false,
                 ['document_managers' => ['default' => []]] + $config,
                 false,
+            ],
+            [
+                // Logging can be enabled by config
+                true,
+                ['document_managers' => ['default' => ['logging' => true]]] + $config,
+                false,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider provideDataCollectorConfigs
+     */
+    public function testDataCollectorConfig(bool $expected, array $config, bool $debug)
+    {
+        $this->container->setParameter('kernel.debug', $debug);
+        $this->extension->load([$config], $this->container);
+
+        $loggerDefinition = $this->container->getDefinition('doctrine_mongodb.odm.data_collector.command_logger');
+        $this->assertSame($expected, $loggerDefinition->hasMethodCall('register'));
+
+        $dataCollectorDefinition = $this->container->getDefinition('doctrine_mongodb.odm.data_collector');
+        $this->assertSame($expected, $dataCollectorDefinition->hasTag('data_collector'));
+    }
+
+    public function provideDataCollectorConfigs()
+    {
+        $config = ['connections' => ['default' => []]];
+
+        return [
+            [
+                // Profiling is always enabled in debug mode
+                true,
+                ['document_managers' => ['default' => []]] + $config,
+                true,
+            ],
+            [
+                // Profiling is disabled by default when not in debug mode
+                false,
+                ['document_managers' => ['default' => []]] + $config,
                 false,
             ],
             [
-                ['document_managers' => ['default' => ['logging' => true, 'profiler' => true]]] + $config,
-                'doctrine_mongodb.odm.logger.aggregate',
+                // Profiling can be enabled by config
                 true,
-            ],
-            [
-                ['document_managers' => ['default' => ['logging' => false, 'profiler' => true]]] + $config,
-                'doctrine_mongodb.odm.data_collector.pretty',
-                true,
-            ],
-            [
-                ['document_managers' => ['default' => ['logging' => true, 'profiler' => false]]] + $config,
-                'doctrine_mongodb.odm.logger',
-                true,
-            ],
-            [
-                ['document_managers' => ['default' => ['logging' => false, 'profiler' => false]]] + $config,
+                ['document_managers' => ['default' => ['profiler' => true]]] + $config,
                 false,
-                true,
             ],
         ];
     }

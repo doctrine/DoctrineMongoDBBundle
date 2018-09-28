@@ -33,7 +33,6 @@
 
         <doctrine:connection id="conn1" server="mongodb://localhost">
             <doctrine:options
-                connect="true"
                 connectTimeoutMS="500"
                 db="database_val"
                 authSource="some_db"
@@ -95,6 +94,7 @@
             logging="true"
             repository-factory="doctrine_mongodb.odm.container_repository_factory"
             default-document-repository-class="Foo\Bar\CustomRepository"
+            default-gridfs-repository-class="Foo\Bar\CustomGridFSRepository"
         >
             <doctrine:mapping
                 name="BarBundle"

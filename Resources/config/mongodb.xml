@@ -6,14 +6,10 @@
 
     <parameters>
         <!-- classes -->
-        <parameter key="doctrine_mongodb.odm.connection.class">Doctrine\MongoDB\Connection</parameter>
+        <parameter key="doctrine_mongodb.odm.connection.class">MongoDB\Client</parameter>
         <parameter key="doctrine_mongodb.odm.configuration.class">Doctrine\ODM\MongoDB\Configuration</parameter>
         <parameter key="doctrine_mongodb.odm.document_manager.class">Doctrine\ODM\MongoDB\DocumentManager</parameter>
         <parameter key="doctrine_mongodb.odm.manager_configurator.class">Doctrine\Bundle\MongoDBBundle\ManagerConfigurator</parameter>
-        <parameter key="doctrine_mongodb.odm.logger.class">Doctrine\Bundle\MongoDBBundle\Logger\Logger</parameter>
-        <parameter key="doctrine_mongodb.odm.logger.aggregate.class">Doctrine\Bundle\MongoDBBundle\Logger\AggregateLogger</parameter>
-        <parameter key="doctrine_mongodb.odm.data_collector.standard.class">Doctrine\Bundle\MongoDBBundle\DataCollector\StandardDataCollector</parameter>
-        <parameter key="doctrine_mongodb.odm.data_collector.pretty.class">Doctrine\Bundle\MongoDBBundle\DataCollector\PrettyDataCollector</parameter>
         <parameter key="doctrine_mongodb.odm.event_manager.class">Symfony\Bridge\Doctrine\ContainerAwareEventManager</parameter>
         <parameter key="doctrine_odm.mongodb.validator_initializer.class">Symfony\Bridge\Doctrine\Validator\DoctrineInitializer</parameter>
         <parameter key="doctrine_odm.mongodb.validator.unique.class">Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator</parameter>
@@ -37,14 +33,12 @@
         <parameter key="doctrine_mongodb.odm.metadata.driver_chain.class">Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain</parameter>
         <parameter key="doctrine_mongodb.odm.metadata.annotation.class">Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver</parameter>
         <parameter key="doctrine_mongodb.odm.metadata.xml.class">Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver</parameter>
-        <parameter key="doctrine_mongodb.odm.metadata.yml.class">Doctrine\Bundle\MongoDBBundle\Mapping\Driver\YamlDriver</parameter>
 
         <!-- directories -->
-        <parameter key="doctrine_mongodb.odm.mapping_dirs" type="collection"></parameter>
+        <parameter key="doctrine_mongodb.odm.mapping_dirs" type="collection" />
         <parameter key="doctrine_mongodb.odm.xml_mapping_dirs">%doctrine_mongodb.odm.mapping_dirs%</parameter>
-        <parameter key="doctrine_mongodb.odm.yml_mapping_dirs">%doctrine_mongodb.odm.mapping_dirs%</parameter>
-        <parameter key="doctrine_mongodb.odm.document_dirs" type="collection"></parameter>
-        <parameter key="doctrine_mongodb.odm.fixtures_dirs" type="collection"></parameter>
+        <parameter key="doctrine_mongodb.odm.document_dirs" type="collection" />
+        <parameter key="doctrine_mongodb.odm.fixtures_dirs" type="collection" />
 
         <!-- logger -->
         <parameter key="doctrine_mongodb.odm.logger.batch_insert_threshold">4</parameter>
@@ -124,9 +118,6 @@
         <service id="doctrine_mongodb.odm.metadata.xml" class="%doctrine_mongodb.odm.metadata.xml.class%">
             <argument>%doctrine_mongodb.odm.xml_mapping_dirs%</argument>
         </service>
-        <service id="doctrine_mongodb.odm.metadata.yml" class="%doctrine_mongodb.odm.metadata.yml.class%">
-            <argument>%doctrine_mongodb.odm.yml_mapping_dirs%</argument>
-        </service>
 
         <service id="doctrine_mongodb.odm.container_repository_factory" class="Doctrine\Bundle\MongoDBBundle\Repository\ContainerRepositoryFactory" public="false">
             <argument /> <!-- repository locator -->
@@ -141,21 +132,16 @@
         <service id="doctrine_mongodb.odm.cache.array" class="%doctrine_mongodb.odm.cache.array.class%" />
 
         <!-- logger -->
-        <service id="doctrine_mongodb.odm.logger" class="%doctrine_mongodb.odm.logger.class%" public="false">
-            <tag name="monolog.logger" channel="doctrine" />
+        <service id="doctrine_mongodb.odm.command_logger" class="Doctrine\Bundle\MongoDBBundle\APM\PSRCommandLogger" public="false">
             <argument type="service" id="logger" on-invalid="null" />
-            <call method="setBatchInsertThreshold">
-                <argument>%doctrine_mongodb.odm.logger.batch_insert_threshold%</argument>
-            </call>
+
+            <tag name="monolog.logger" channel="doctrine" />
         </service>
-        <service id="doctrine_mongodb.odm.logger.aggregate" class="%doctrine_mongodb.odm.logger.aggregate.class%" public="false" />
 
         <!-- profiler -->
-        <service id="doctrine_mongodb.odm.data_collector.standard" class="%doctrine_mongodb.odm.data_collector.standard.class%" public="false" />
-        <service id="doctrine_mongodb.odm.data_collector.pretty" class="%doctrine_mongodb.odm.data_collector.pretty.class%" public="false">
-            <call method="setBatchInsertThreshold">
-                <argument>%doctrine_mongodb.odm.logger.batch_insert_threshold%</argument>
-            </call>
+        <service id="doctrine_mongodb.odm.data_collector.command_logger" class="Doctrine\ODM\MongoDB\APM\CommandLogger" public="false" />
+        <service id="doctrine_mongodb.odm.data_collector" class="Doctrine\Bundle\MongoDBBundle\DataCollector\CommandDataCollector" public="false">
+            <argument type="service" id="doctrine_mongodb.odm.data_collector.command_logger" />
         </service>
 
         <!-- Cache Warmers -->
