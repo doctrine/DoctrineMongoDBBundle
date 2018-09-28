@@ -12,7 +12,7 @@
     ],
     "require": {
         "php": "^7.2",
-        "doctrine/mongodb-odm": "dev-master",
+        "doctrine/mongodb-odm": "^2.0@alpha",
         "doctrine/annotations": "^1.2",
         "psr/log": "^1.0",
         "symfony/options-resolver": "^3.4 || ^4.0",
