@@ -12,22 +12,22 @@
     ],
     "require": {
         "php": "^7.2",
-        "doctrine/mongodb-odm": "^2.0@alpha",
         "doctrine/annotations": "^1.2",
+        "doctrine/mongodb-odm": "^2.0@alpha",
         "psr/log": "^1.0",
-        "symfony/options-resolver": "^3.4 || ^4.0",
-        "symfony/doctrine-bridge": "^3.4 || ^4.0",
-        "symfony/framework-bundle": "^3.4 || ^4.0",
-        "symfony/dependency-injection": "^3.4 || ^4.0",
         "symfony/console": "^3.4 || ^4.0",
-        "symfony/config": "^3.4 || ^4.0"
+        "symfony/dependency-injection": "^3.4 || ^4.0",
+        "symfony/doctrine-bridge": "^3.4 || ^4.0",
+        "symfony/config": "^3.4 || ^4.0",
+        "symfony/framework-bundle": "^3.4 || ^4.0",
+        "symfony/options-resolver": "^3.4 || ^4.0"
     },
     "require-dev": {
         "doctrine/data-fixtures": "@dev",
+        "phpunit/phpunit": "^7.3",
         "symfony/form": "^3.4 || ^4.0",
         "symfony/yaml": "^3.4 || ^4.0",
-        "symfony/phpunit-bridge": "^3.4 || ^4.0",
-        "phpunit/phpunit": "^7.3"
+        "symfony/phpunit-bridge": "^3.4 || ^4.0"
     },
     "suggest": {
         "doctrine/data-fixtures": "Load data fixtures"
@@ -39,6 +39,9 @@
     },
     "autoload-dev": {
         "psr-4": { "": "Tests/DependencyInjection" }
+    },
+    "config": {
+        "sort-packages": true
     },
     "extra": {
         "branch-alias": {
