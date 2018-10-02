@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Command;
 
 use Doctrine\ODM\MongoDB\Tools\Console\Helper\DocumentManagerHelper;
-use Doctrine\ODM\MongoDB\Tools\DisconnectedClassMetadataFactory;
-use Doctrine\ODM\MongoDB\Tools\DocumentGenerator;
 use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -15,7 +13,6 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 use const DIRECTORY_SEPARATOR;
 use function sprintf;
 use function str_replace;
-use function strpos;
 use function strtolower;
 
 /**
@@ -30,43 +27,9 @@ abstract class DoctrineODMCommand extends ContainerAwareCommand
         $helperSet->set(new DocumentManagerHelper($dm), 'dm');
     }
 
-    protected function getDocumentGenerator()
-    {
-        $documentGenerator = new DocumentGenerator();
-        $documentGenerator->setGenerateAnnotations(false);
-        $documentGenerator->setGenerateStubMethods(true);
-        $documentGenerator->setRegenerateDocumentIfExists(false);
-        $documentGenerator->setUpdateDocumentIfExists(true);
-        $documentGenerator->setNumSpaces(4);
-
-        return $documentGenerator;
-    }
-
     protected function getDoctrineDocumentManagers()
     {
         return $this->getContainer()->get('doctrine_mongodb')->getManagers();
-    }
-
-    protected function getBundleMetadatas(Bundle $bundle)
-    {
-        $namespace        = $bundle->getNamespace();
-        $bundleMetadatas  = [];
-        $documentManagers = $this->getDoctrineDocumentManagers();
-        foreach ($documentManagers as $dm) {
-            $cmf = new DisconnectedClassMetadataFactory();
-            $cmf->setDocumentManager($dm);
-            $cmf->setConfiguration($dm->getConfiguration());
-            $metadatas = $cmf->getAllMetadata();
-            foreach ($metadatas as $metadata) {
-                if (strpos($metadata->name, $namespace) !== 0) {
-                    continue;
-                }
-
-                $bundleMetadatas[$metadata->name] = $metadata;
-            }
-        }
-
-        return $bundleMetadatas;
     }
 
     protected function findBundle($bundleName)
