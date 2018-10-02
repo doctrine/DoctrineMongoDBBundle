@@ -8,3 +8,6 @@ UPGRADE FROM 3.x to 4.0
 * The `retry_connect` and `retry_query` configuration options were dropped
   without replacement.
 * The YAML metadata driver was dropped without replacement. 
+* The `doctrine:mongodb:generate:documents` and
+  `doctrine:mongodb:generate:repositories` commands have been dropped without
+  replacement.
