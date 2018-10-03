@@ -29,18 +29,6 @@
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming" />
     </rule>
 
-    <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
-        <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Mapping/Documents/GlobalNamespaceDocument.php</exclude-pattern>
-    </rule>
-
-    <rule ref="Squiz.Classes.ValidClassName.NotCamelCaps">
-        <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Mapping/Documents/GlobalNamespaceDocument.php</exclude-pattern>
-    </rule>
-
-    <rule ref="Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase">
-        <exclude-pattern>lib/Doctrine/ODM/MongoDB/Events.php</exclude-pattern>
-    </rule>
-
     <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements">
         <properties>
             <property name="alwaysUsedPropertiesAnnotations" type="array" value="
@@ -52,9 +40,6 @@
                 @ODM\ReferenceMany
             "/>
         </properties>
-        <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataFactoryTest.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataLoadEventTest.php</exclude-pattern>
     </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
