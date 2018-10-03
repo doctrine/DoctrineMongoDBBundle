@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Bundle\MongoDBBundle\Repository;
 
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;

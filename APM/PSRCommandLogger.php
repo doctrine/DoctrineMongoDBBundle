@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\APM;
 
@@ -30,7 +30,7 @@ final class PSRCommandLogger implements CommandSubscriber
         $this->prefix = $prefix;
     }
 
-    public function register(): void
+    public function register() : void
     {
         if ($this->logger === null || $this->registered) {
             return;
@@ -40,7 +40,7 @@ final class PSRCommandLogger implements CommandSubscriber
         addSubscriber($this);
     }
 
-    public function unregister(): void
+    public function unregister() : void
     {
         if (! $this->registered) {
             return;
@@ -52,7 +52,7 @@ final class PSRCommandLogger implements CommandSubscriber
 
     public function commandStarted(CommandStartedEvent $event)
     {
-        if (!$this->logger) {
+        if (! $this->logger) {
             return;
         }
 

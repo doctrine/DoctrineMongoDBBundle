@@ -1,30 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Form\Type;
 
+use Doctrine\Bundle\MongoDBBundle\Form\DoctrineMongoDBExtension;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Category;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
-use Doctrine\Bundle\MongoDBBundle\Form\DoctrineMongoDBExtension;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use MongoDB\BSON\ObjectId;
+use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\Test\TypeTestCase;
-use Symfony\Component\HttpKernel\Kernel;
+use function array_merge;
+use function method_exists;
 
 class DocumentTypeTest extends TypeTestCase
 {
-    /**
-     * @var \Doctrine\ODM\MongoDB\DocumentManager
-     */
+    /** @var DocumentManager */
     private $dm;
 
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
-     */
+    /** @var PHPUnit_Framework_MockObject_MockObject */
     private $dmRegistry;
 
     private $typeFQCN;
@@ -33,7 +34,7 @@ class DocumentTypeTest extends TypeTestCase
     {
         $this->typeFQCN = method_exists(AbstractType::class, 'getBlockPrefix');
 
-        $this->dm = TestCase::createTestDocumentManager([
+        $this->dm         = TestCase::createTestDocumentManager([
             __DIR__ . '/../../Fixtures/Form/Document',
         ]);
         $this->dmRegistry = $this->createRegistryMock('default', $this->dm);
@@ -94,7 +95,7 @@ class DocumentTypeTest extends TypeTestCase
         $categoryTwo = new Category('two');
         $this->dm->persist($categoryTwo);
 
-        $document = new Document(new ObjectId(), 'document');
+        $document               = new Document(new ObjectId(), 'document');
         $document->categories[] = $categoryOne;
         $this->dm->persist($document);
 
@@ -102,15 +103,17 @@ class DocumentTypeTest extends TypeTestCase
 
         $form = $this->factory->create($this->typeFQCN ? FormType::CLASS : 'form', $document)
             ->add(
-                'categories', $this->typeFQCN ? DocumentType::CLASS : 'document', [
+                'categories',
+                $this->typeFQCN ? DocumentType::CLASS : 'document',
+                [
                     'class' => Category::class,
                     'multiple' => true,
                     'expanded' => true,
-                    'document_manager' => 'default'
+                    'document_manager' => 'default',
                 ]
             );
 
-        $view = $form->createView();
+        $view         = $form->createView();
         $categoryView = $view['categories'];
         $this->assertInstanceOf(FormView::class, $categoryView);
 

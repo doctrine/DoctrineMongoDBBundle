@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Bundle\DoctrineBundle\Tests;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
@@ -23,6 +25,8 @@ use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+use function class_exists;
+use function sys_get_temp_dir;
 
 class ServiceRepositoryTest extends TestCase
 {
@@ -53,16 +57,19 @@ class ServiceRepositoryTest extends TestCase
 
         $extension->load([[
             'connections' => ['default' => []],
-            'document_managers' => ['default' => [
-                'mappings' => [
-                    'RepositoryServiceBundle' => [
-                        'type' => 'annotation',
-                        'dir' => __DIR__ . '/DependencyInjection/Fixtures/Bundles/RepositoryServiceBundle/Document',
-                        'prefix' => 'Fixtures\Bundles\RepositoryServiceBundle\Document',
+            'document_managers' => [
+                'default' => [
+                    'mappings' => [
+                        'RepositoryServiceBundle' => [
+                            'type' => 'annotation',
+                            'dir' => __DIR__ . '/DependencyInjection/Fixtures/Bundles/RepositoryServiceBundle/Document',
+                            'prefix' => 'Fixtures\Bundles\RepositoryServiceBundle\Document',
+                        ],
                     ],
                 ],
-            ]],
-        ]], $container);
+            ],
+        ],
+        ], $container);
 
         $def = $container->register(TestCustomServiceRepoDocumentRepository::class, TestCustomServiceRepoDocumentRepository::class)
             ->setPublic(false);

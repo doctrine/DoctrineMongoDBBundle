@@ -1,14 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Command;
 
 use Doctrine\Bundle\MongoDBBundle\Command\LoadDataFixturesDoctrineODMCommand;
 use Doctrine\Common\DataFixtures\Loader;
 use PHPUnit\Framework\TestCase;
+use function class_exists;
 
-/**
- * @author Henrik Bjornskov <henrik@bjrnskov.dk>
- */
 class LoadDataFixturesDoctrineODMCommandTest extends TestCase
 {
     public function setUp()
@@ -27,7 +27,7 @@ class LoadDataFixturesDoctrineODMCommandTest extends TestCase
 
     public function testCommandIsEnabledWithDependency()
     {
-        if (!class_exists(Loader::class)) {
+        if (! class_exists(Loader::class)) {
             $this->markTestSkipped();
         }
 

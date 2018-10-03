@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Tests;
 
@@ -8,6 +9,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+use function sys_get_temp_dir;
 
 class ContainerTest extends TestCase
 {
@@ -52,19 +54,25 @@ class ContainerTest extends TestCase
             [
                 // Logging is always enabled in debug mode
                 true,
-                ['document_managers' => ['default' => []]] + $config,
+                [
+                    'document_managers' => ['default' => []],
+                ] + $config,
                 true,
             ],
             [
                 // Logging is disabled by default when not in debug mode
                 false,
-                ['document_managers' => ['default' => []]] + $config,
+                [
+                    'document_managers' => ['default' => []],
+                ] + $config,
                 false,
             ],
             [
                 // Logging can be enabled by config
                 true,
-                ['document_managers' => ['default' => ['logging' => true]]] + $config,
+                [
+                    'document_managers' => ['default' => ['logging' => true]],
+                ] + $config,
                 false,
             ],
         ];
@@ -93,19 +101,25 @@ class ContainerTest extends TestCase
             [
                 // Profiling is always enabled in debug mode
                 true,
-                ['document_managers' => ['default' => []]] + $config,
+                [
+                    'document_managers' => ['default' => []],
+                ] + $config,
                 true,
             ],
             [
                 // Profiling is disabled by default when not in debug mode
                 false,
-                ['document_managers' => ['default' => []]] + $config,
+                [
+                    'document_managers' => ['default' => []],
+                ] + $config,
                 false,
             ],
             [
                 // Profiling can be enabled by config
                 true,
-                ['document_managers' => ['default' => ['profiler' => true]]] + $config,
+                [
+                    'document_managers' => ['default' => ['profiler' => true]],
+                ] + $config,
                 false,
             ],
         ];

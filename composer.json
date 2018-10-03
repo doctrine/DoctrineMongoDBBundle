@@ -23,11 +23,12 @@
         "symfony/options-resolver": "^3.4 || ^4.0"
     },
     "require-dev": {
+        "doctrine/coding-standard": "^5.0",
         "doctrine/data-fixtures": "@dev",
         "phpunit/phpunit": "^7.3",
         "symfony/form": "^3.4 || ^4.0",
-        "symfony/yaml": "^3.4 || ^4.0",
-        "symfony/phpunit-bridge": "^3.4 || ^4.0"
+        "symfony/phpunit-bridge": "^3.4 || ^4.0",
+        "symfony/yaml": "^3.4 || ^4.0"
     },
     "suggest": {
         "doctrine/data-fixtures": "Load data fixtures"

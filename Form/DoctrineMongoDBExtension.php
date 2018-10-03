@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Form;
 
@@ -8,13 +9,11 @@ use Symfony\Component\Form\AbstractExtension;
 
 /**
  * Form extension.
- *
- * @author Kris Wallsmith <kris@symfony.com>
- * @author Thibault Duplessis <thibault.duplessis@gmail.com>
  */
 class DoctrineMongoDBExtension extends AbstractExtension
 {
-    protected $registry = null;
+    /** @var ManagerRegistry */
+    protected $registry;
 
     public function __construct(ManagerRegistry $registry)
     {

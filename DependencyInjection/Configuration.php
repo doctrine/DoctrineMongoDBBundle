@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 
@@ -7,15 +8,22 @@ use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use LogicException;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use function class_parents;
+use function count;
+use function in_array;
+use function is_array;
+use function is_string;
+use function json_decode;
+use function preg_match;
+use function sprintf;
 
 /**
  * FrameworkExtension configuration structure.
- *
- * @author Ryan Weaver <ryan@thatsquality.com>
  */
 class Configuration implements ConfigurationInterface
 {
@@ -27,7 +35,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('doctrine_mongodb');
+        $rootNode    = $treeBuilder->root('doctrine_mongodb');
 
         $this->addDocumentManagersSection($rootNode);
         $this->addConnectionsSection($rootNode);
@@ -40,7 +48,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('auto_generate_proxy_classes')
                     ->defaultValue(AbstractProxyFactory::AUTOGENERATE_NEVER)
                     ->beforeNormalization()
-                    ->always(function($v) {
+                    ->always(static function ($v) {
                         if ($v === false) {
                             return AbstractProxyFactory::AUTOGENERATE_NEVER;
                         } elseif ($v === true) {
@@ -55,7 +63,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('auto_generate_hydrator_classes')
                     ->defaultValue(ODMConfiguration::AUTOGENERATE_NEVER)
                     ->beforeNormalization()
-                    ->always(function($v) {
+                    ->always(static function ($v) {
                         if ($v === false) {
                             return ODMConfiguration::AUTOGENERATE_NEVER;
                         } elseif ($v === true) {
@@ -71,8 +79,12 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('fixture_loader')
                     ->defaultValue(ContainerAwareLoader::class)
                     ->beforeNormalization()
-                        ->ifTrue(function($v) {return !($v == ContainerAwareLoader::class || in_array(ContainerAwareLoader::class, class_parents($v)));})
-                        ->then(function($v) { throw new \LogicException(sprintf("The %s class is not a subclass of the ContainerAwareLoader", $v));})
+                        ->ifTrue(static function ($v) {
+                            return ! ($v === ContainerAwareLoader::class || in_array(ContainerAwareLoader::class, class_parents($v)));
+                        })
+                        ->then(static function ($v) {
+                            throw new LogicException(sprintf('The %s class is not a subclass of the ContainerAwareLoader', $v));
+                        })
                     ->end()
                 ->end()
                 ->scalarNode('default_document_manager')->end()
@@ -90,16 +102,13 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('safe')->info('Deprecated. Please use the "w" option instead.')->end()
                     ->end()
                 ->end()
-            ->end()
-        ;
+            ->end();
 
         return $treeBuilder;
     }
 
     /**
      * Adds the "document_managers" config section.
-     *
-     * @param ArrayNodeDefinition $rootNode
      */
     private function addDocumentManagersSection(ArrayNodeDefinition $rootNode)
     {
@@ -136,12 +145,16 @@ class Configuration implements ConfigurationInterface
                                     ->fixXmlConfig('parameter')
                                     ->beforeNormalization()
                                         ->ifString()
-                                        ->then(function($v) { return ['class' => $v]; })
+                                        ->then(static function ($v) {
+                                            return ['class' => $v];
+                                        })
                                     ->end()
                                     ->beforeNormalization()
                                         // The content of the XML node is returned as the "value" key so we need to rename it
-                                        ->ifTrue(function($v) {return is_array($v) && isset($v['value']); })
-                                        ->then(function($v) {
+                                        ->ifTrue(static function ($v) {
+                                            return is_array($v) && isset($v['value']);
+                                        })
+                                        ->then(static function ($v) {
                                             $v['class'] = $v['value'];
                                             unset($v['value']);
 
@@ -157,9 +170,13 @@ class Configuration implements ConfigurationInterface
                                             ->prototype('variable')
                                                 ->beforeNormalization()
                                                     // Detect JSON object and array syntax (for XML)
-                                                    ->ifTrue(function($v) { return is_string($v) && (preg_match('/\[.*\]/', $v) || preg_match('/\{.*\}/', $v)); })
+                                                    ->ifTrue(static function ($v) {
+                                                        return is_string($v) && (preg_match('/\[.*\]/', $v) || preg_match('/\{.*\}/', $v));
+                                                    })
                                                     // Decode objects to associative arrays for consistency with YAML
-                                                    ->then(function($v) { return json_decode($v, true); })
+                                                    ->then(static function ($v) {
+                                                        return json_decode($v, true);
+                                                    })
                                                 ->end()
                                             ->end()
                                         ->end()
@@ -170,7 +187,9 @@ class Configuration implements ConfigurationInterface
                                 ->addDefaultsIfNotSet()
                                 ->beforeNormalization()
                                     ->ifString()
-                                    ->then(function($v) { return ['type' => $v]; })
+                                    ->then(static function ($v) {
+                                        return ['type' => $v];
+                                    })
                                 ->end()
                                 ->children()
                                     ->scalarNode('type')->defaultValue('array')->end()
@@ -190,7 +209,9 @@ class Configuration implements ConfigurationInterface
                                 ->prototype('array')
                                     ->beforeNormalization()
                                         ->ifString()
-                                        ->then(function($v) { return ['type' => $v]; })
+                                        ->then(static function ($v) {
+                                            return ['type' => $v];
+                                        })
                                     ->end()
                                     ->treatNullLike([])
                                     ->treatFalseLike(['mapping' => false])
@@ -208,14 +229,11 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
-            ->end()
-        ;
+            ->end();
     }
 
     /**
      * Adds the "connections" config section.
-     *
-     * @param ArrayNodeDefinition $rootNode
      */
     private function addConnectionsSection(ArrayNodeDefinition $rootNode)
     {
@@ -252,8 +270,10 @@ class Configuration implements ConfigurationInterface
                                         ->prototype('array')
                                             ->beforeNormalization()
                                                 // Handle readPreferenceTag XML nodes
-                                                ->ifTrue(function($v) { return isset($v['readPreferenceTag']); })
-                                                ->then(function($v) {
+                                                ->ifTrue(static function ($v) {
+                                                    return isset($v['readPreferenceTag']);
+                                                })
+                                                ->then(static function ($v) {
                                                     // Equivalent of fixXmlConfig() for inner node
                                                     if (isset($v['readPreferenceTag']['name'])) {
                                                         $v['readPreferenceTag'] = [$v['readPreferenceTag']];
@@ -271,7 +291,9 @@ class Configuration implements ConfigurationInterface
                                             ->ifNull()->thenUnset()
                                         ->end()
                                         ->validate()
-                                            ->ifTrue(function ($v) { return !is_string($v) && !is_null($v); })->thenInvalid('The replicaSet option must be a string or null.')
+                                            ->ifTrue(static function ($v) {
+                                                return ! is_string($v) && $v !== null;
+                                            })->thenInvalid('The replicaSet option must be a string or null.')
                                         ->end()
                                     ->end()
                                     ->integerNode('socketTimeoutMS')->end()
@@ -288,8 +310,10 @@ class Configuration implements ConfigurationInterface
                                     ->integerNode('wTimeout')->info('Deprecated. Please use the "wTimeoutMS" option instead.')->end()
                                 ->end()
                                 ->validate()
-                                    ->ifTrue(function($v) { return count($v['readPreferenceTags']) === 0; })
-                                    ->then(function($v) {
+                                    ->ifTrue(static function ($v) {
+                                        return count($v['readPreferenceTags']) === 0;
+                                    })
+                                    ->then(static function ($v) {
                                         unset($v['readPreferenceTags']);
 
                                         return $v;
@@ -305,14 +329,11 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
-            ->end()
-        ;
+            ->end();
     }
 
     /**
      * Adds the "resolve_target_documents" config section.
-     *
-     * @param ArrayNodeDefinition $rootNode
      */
     private function addResolveTargetDocumentsSection(ArrayNodeDefinition $rootNode)
     {
@@ -325,7 +346,6 @@ class Configuration implements ConfigurationInterface
                         ->cannotBeEmpty()
                     ->end()
                 ->end()
-            ->end()
-        ;
+            ->end();
     }
 }

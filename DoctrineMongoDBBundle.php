@@ -1,29 +1,36 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle;
 
-use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CreateHydratorDirectoryPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CreateProxyDirectoryPass;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
+use Doctrine\Common\Util\ClassUtils;
 use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\DoctrineValidationPass;
 use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\RegisterEventListenersAndSubscribersPass;
 use Symfony\Bridge\Doctrine\DependencyInjection\Security\UserProvider\EntityFactory;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use const DIRECTORY_SEPARATOR;
+use function clearstatcache;
+use function is_file;
+use function spl_autoload_register;
+use function spl_autoload_unregister;
+use function str_replace;
+use function strlen;
+use function strpos;
+use function substr;
 
 /**
  * Doctrine MongoDB ODM bundle.
- *
- * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
- * @author Kris Wallsmith <kris@symfony.com>
- * @author Jonathan H. Wage <jonwage@gmail.com>
  */
 class DoctrineMongoDBBundle extends Bundle
 {
+    /** @var callable|null */
     private $autoloader;
 
     public function build(ContainerBuilder $container)
@@ -34,9 +41,11 @@ class DoctrineMongoDBBundle extends Bundle
         $container->addCompilerPass(new DoctrineValidationPass('mongodb'));
         $container->addCompilerPass(new ServiceRepositoryCompilerPass());
 
-        if ($container->hasExtension('security')) {
-            $container->getExtension('security')->addUserProviderFactory(new EntityFactory('mongodb', 'doctrine_mongodb.odm.security.user.provider'));
+        if (! $container->hasExtension('security')) {
+            return;
         }
+
+        $container->getExtension('security')->addUserProviderFactory(new EntityFactory('mongodb', 'doctrine_mongodb.odm.security.user.provider'));
     }
 
     public function getContainerExtension()
@@ -48,53 +57,64 @@ class DoctrineMongoDBBundle extends Bundle
     {
         // Register an autoloader for proxies to avoid issues when unserializing them
         // when the ODM is used.
-        if ($this->container->hasParameter('doctrine_mongodb.odm.proxy_namespace')) {
-            $namespace = $this->container->getParameter('doctrine_mongodb.odm.proxy_namespace');
-            $dir = $this->container->getParameter('doctrine_mongodb.odm.proxy_dir');
-            // See https://github.com/symfony/symfony/pull/3419 for usage of
-            // references
-            $container =& $this->container;
+        if (! $this->container->hasParameter('doctrine_mongodb.odm.proxy_namespace')) {
+            return;
+        }
 
-            $this->autoloader = function($class) use ($namespace, $dir, &$container) {
-                if (0 === strpos($class, $namespace)) {
-                    $fileName = str_replace('\\', '', substr($class, strlen($namespace) +1));
-                    $file = $dir.DIRECTORY_SEPARATOR.$fileName.'.php';
+        $namespace = $this->container->getParameter('doctrine_mongodb.odm.proxy_namespace');
+        $dir       = $this->container->getParameter('doctrine_mongodb.odm.proxy_dir');
+        // See https://github.com/symfony/symfony/pull/3419 for usage of
+        // references
+        $container =& $this->container;
 
-                    if (!is_file($file) && $container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes')) {
-                        $originalClassName = ClassUtils::getRealClass($class);
-                        $registry = $container->get('doctrine_mongodb');
+        $this->autoloader = static function ($class) use ($namespace, $dir, &$container) {
+            if (strpos($class, $namespace) !== 0) {
+                return;
+            }
 
-                        // Tries to auto-generate the proxy file
-                        foreach ($registry->getManagers() as $dm) {
+            $fileName = str_replace('\\', '', substr($class, strlen($namespace) +1));
+            $file     = $dir . DIRECTORY_SEPARATOR . $fileName . '.php';
 
-                            if ($dm->getConfiguration()->getAutoGenerateProxyClasses()) {
-                                $classes = $dm->getMetadataFactory()->getAllMetadata();
+            if (! is_file($file) && $container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes')) {
+                $originalClassName = ClassUtils::getRealClass($class);
+                $registry          = $container->get('doctrine_mongodb');
 
-                                foreach ($classes as $classMetadata) {
-                                    if ($classMetadata->name == $originalClassName) {
-                                        $dm->getProxyFactory()->generateProxyClasses([$classMetadata]);
-                                    }
-                                }
-                            }
+                // Tries to auto-generate the proxy file
+                foreach ($registry->getManagers() as $dm) {
+                    if (! $dm->getConfiguration()->getAutoGenerateProxyClasses()) {
+                        continue;
+                    }
+
+                    $classes = $dm->getMetadataFactory()->getAllMetadata();
+
+                    foreach ($classes as $classMetadata) {
+                        if ($classMetadata->name !== $originalClassName) {
+                            continue;
                         }
 
-                        clearstatcache($file);
-                    }
-
-                    if (is_file($file)) {
-                        require $file;
+                        $dm->getProxyFactory()->generateProxyClasses([$classMetadata]);
                     }
                 }
-            };
-            spl_autoload_register($this->autoloader);
-        }
+
+                clearstatcache($file);
+            }
+
+            if (! is_file($file)) {
+                return;
+            }
+
+            require $file;
+        };
+        spl_autoload_register($this->autoloader);
     }
 
     public function shutdown()
     {
-        if (null !== $this->autoloader) {
-            spl_autoload_unregister($this->autoloader);
-            $this->autoloader = null;
+        if ($this->autoloader === null) {
+            return;
         }
+
+        spl_autoload_unregister($this->autoloader);
+        $this->autoloader = null;
     }
 }

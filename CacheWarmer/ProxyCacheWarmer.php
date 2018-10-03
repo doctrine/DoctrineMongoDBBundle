@@ -1,33 +1,34 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\CacheWarmer;
 
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use RuntimeException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
+use function array_filter;
+use function dirname;
+use function file_exists;
+use function is_writable;
+use function mkdir;
+use function sprintf;
 
 /**
  * The proxy generator cache warmer generates all document proxies.
  *
  * In the process of generating proxies the cache for all the metadata is primed also,
  * since this information is necessary to build the proxies in the first place.
- *
- * @author Benjamin Eberlei <kontakt@beberlei.de>
- * @author Jonathan H. Wage <jonwage@gmail.com>
  */
 class ProxyCacheWarmer implements CacheWarmerInterface
 {
-    /**
-     * @var ContainerInterface
-     */
+    /** @var ContainerInterface */
     private $container;
 
-    /**
-     * @param ContainerInterface $container
-     */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
@@ -47,36 +48,34 @@ class ProxyCacheWarmer implements CacheWarmerInterface
     {
         // we need the directory no matter the proxy cache generation strategy.
         $proxyCacheDir = $this->container->getParameter('doctrine_mongodb.odm.proxy_dir');
-        if (!file_exists($proxyCacheDir)) {
-            if (false === @mkdir($proxyCacheDir, 0775, true)) {
-                throw new \RuntimeException(sprintf('Unable to create the Doctrine Proxy directory (%s)', dirname($proxyCacheDir)));
+        if (! file_exists($proxyCacheDir)) {
+            if (@mkdir($proxyCacheDir, 0775, true) === false) {
+                throw new RuntimeException(sprintf('Unable to create the Doctrine Proxy directory (%s)', dirname($proxyCacheDir)));
             }
-        } else if (!is_writable($proxyCacheDir)) {
-            throw new \RuntimeException(sprintf('Doctrine Proxy directory (%s) is not writable for the current system user.', $proxyCacheDir));
+        } elseif (! is_writable($proxyCacheDir)) {
+            throw new RuntimeException(sprintf('Doctrine Proxy directory (%s) is not writable for the current system user.', $proxyCacheDir));
         }
 
-        if (AbstractProxyFactory::AUTOGENERATE_NEVER !== $this->container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes')) {
+        if ($this->container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes') !== AbstractProxyFactory::AUTOGENERATE_NEVER) {
             return;
         }
 
-        /* @var $registry \Doctrine\Common\Persistence\ManagerRegistry */
+        /** @var ManagerRegistry $registry */
         $registry = $this->container->get('doctrine_mongodb');
         foreach ($registry->getManagers() as $dm) {
-            /* @var $dm \Doctrine\ODM\MongoDB\DocumentManager */
+            /** @var DocumentManager $dm */
             $classes = $this->getClassesForProxyGeneration($dm);
             $dm->getProxyFactory()->generateProxyClasses($classes);
         }
     }
 
     /**
-     * @param DocumentManager $dm
-     *
      * @return ClassMetadata[]
      */
     private function getClassesForProxyGeneration(DocumentManager $dm)
     {
-        return array_filter($dm->getMetadataFactory()->getAllMetadata(), function (ClassMetadata $metadata) {
-            return !$metadata->isEmbeddedDocument && !$metadata->isMappedSuperclass;
+        return array_filter($dm->getMetadataFactory()->getAllMetadata(), static function (ClassMetadata $metadata) {
+            return ! $metadata->isEmbeddedDocument && ! $metadata->isMappedSuperclass;
         });
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Security;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -14,8 +16,9 @@ class User implements UserInterface
     /** @ODM\Field(type="string") */
     public $name;
 
-    public function __construct($id, $name) {
-        $this->id = $id;
+    public function __construct($id, $name)
+    {
+        $this->id   = $id;
         $this->name = $name;
     }
 

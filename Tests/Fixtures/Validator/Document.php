@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -28,7 +30,8 @@ class Document
     /** @ODM\EmbedMany(targetDocument="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument") */
     public $embedMany = [];
 
-    public function __construct($id) {
+    public function __construct($id)
+    {
         $this->id = $id;
     }
 }

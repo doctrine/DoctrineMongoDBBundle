@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Bundle\MongoDBBundle\DataCollector;
 
 use Doctrine\ODM\MongoDB\APM\Command;
@@ -7,9 +9,14 @@ use Doctrine\ODM\MongoDB\APM\CommandLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
+use Throwable;
+use function array_map;
+use function count;
+use function json_encode;
 
 class CommandDataCollector extends DataCollector
 {
+    /** @var CommandLogger */
     private $commandLogger;
 
     public function __construct(CommandLogger $commandLogger)
@@ -17,12 +24,12 @@ class CommandDataCollector extends DataCollector
         $this->commandLogger = $commandLogger;
     }
 
-    public function collect(Request $request, Response $response, \Exception $exception = null)
+    public function collect(Request $request, Response $response, ?Throwable $exception = null)
     {
         $this->data = [
             'num_commands' => count($this->commandLogger),
             'commands' => array_map(
-                function (Command $command): string {
+                static function (Command $command) : string {
                     return json_encode($command->getCommand());
                 },
                 $this->commandLogger->getAll()
@@ -39,7 +46,7 @@ class CommandDataCollector extends DataCollector
         ];
     }
 
-    public function getCommandCount(): int
+    public function getCommandCount() : int
     {
         return $this->data['num_commands'];
     }
@@ -47,7 +54,7 @@ class CommandDataCollector extends DataCollector
     /**
      * @return string[]
      */
-    public function getCommands(): array
+    public function getCommands() : array
     {
         return $this->data['commands'];
     }

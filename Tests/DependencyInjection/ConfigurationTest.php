@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
@@ -7,19 +8,27 @@ use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Configuration;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Foo\Bar\CustomGridFSRepository;
+use Foo\Bar\CustomRepository;
+use LogicException;
+use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\Util\XmlUtils;
 use Symfony\Component\Yaml\Yaml;
-use PHPUnit\Framework\TestCase;
+use Vendor\Filter\BasicFilter;
+use Vendor\Filter\ComplexFilter;
+use Vendor\Filter\DisabledFilter;
+use function array_key_exists;
+use function file_get_contents;
 
 class ConfigurationTest extends TestCase
 {
     public function testDefaults()
     {
-        $processor = new Processor();
+        $processor     = new Processor();
         $configuration = new Configuration(false);
-        $options = $processor->processConfiguration($configuration, []);
+        $options       = $processor->processConfiguration($configuration, []);
 
         $defaults = [
             'fixture_loader'                 => ContainerAwareLoader::class,
@@ -47,9 +56,9 @@ class ConfigurationTest extends TestCase
      */
     public function testFullConfiguration($config)
     {
-        $processor = new Processor();
+        $processor     = new Processor();
         $configuration = new Configuration(false);
-        $options = $processor->processConfiguration($configuration, [$config]);
+        $options       = $processor->processConfiguration($configuration, [$config]);
 
         $expected = [
             'fixture_loader'                 => ContainerAwareLoader::class,
@@ -97,13 +106,9 @@ class ConfigurationTest extends TestCase
                         'w'                 => 'majority',
                         'wTimeoutMS'        => 1000,
                     ],
-                    'driver_options' => [
-                        'context' => 'conn1_context_service',
-                    ],
+                    'driver_options' => ['context' => 'conn1_context_service'],
                 ],
-                'conn2' => [
-                    'server'  => 'mongodb://otherhost',
-                ],
+                'conn2' => ['server' => 'mongodb://otherhost'],
             ],
             'document_managers' => [
                 'dm1' => [
@@ -115,17 +120,17 @@ class ConfigurationTest extends TestCase
                     'auto_mapping' => false,
                     'filters' => [
                         'disabled_filter' => [
-                            'class' => \Vendor\Filter\DisabledFilter::class,
+                            'class' => DisabledFilter::class,
                             'enabled' => false,
                             'parameters' => [],
                         ],
                         'basic_filter' => [
-                            'class' => \Vendor\Filter\BasicFilter::class,
+                            'class' => BasicFilter::class,
                             'enabled' => true,
                             'parameters' => [],
                         ],
                         'complex_filter' => [
-                            'class' => \Vendor\Filter\ComplexFilter::class,
+                            'class' => ComplexFilter::class,
                             'enabled' => true,
                             'parameters' => [
                                 'integer' => 1,
@@ -157,15 +162,13 @@ class ConfigurationTest extends TestCase
                     'connection'   => 'dm2_connection',
                     'database'     => 'db1',
                     'logging'      => true,
-                    'default_document_repository_class' => \Foo\Bar\CustomRepository::class,
-                    'default_gridfs_repository_class' => \Foo\Bar\CustomGridFSRepository::class,
+                    'default_document_repository_class' => CustomRepository::class,
+                    'default_gridfs_repository_class' => CustomGridFSRepository::class,
                     'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory',
                     'persistent_collection_factory' => null,
                     'auto_mapping' => false,
                     'filters'      => [],
-                    'metadata_cache_driver' => [
-                        'type' => 'apc',
-                    ],
+                    'metadata_cache_driver' => ['type' => 'apc'],
                     'mappings' => [
                         'BarBundle' => [
                             'type'      => 'yml',
@@ -182,9 +185,7 @@ class ConfigurationTest extends TestCase
                     ],
                 ],
             ],
-            'resolve_target_documents' => [
-                'Foo\BarInterface' => 'Bar\FooClass'
-            ],
+            'resolve_target_documents' => ['Foo\BarInterface' => 'Bar\FooClass'],
         ];
 
         $this->assertEquals($expected, $options);
@@ -192,10 +193,10 @@ class ConfigurationTest extends TestCase
 
     public function provideFullConfiguration()
     {
-        $yaml = Yaml::parse(file_get_contents(__DIR__.'/Fixtures/config/yml/full.yml'));
+        $yaml = Yaml::parse(file_get_contents(__DIR__ . '/Fixtures/config/yml/full.yml'));
         $yaml = $yaml['doctrine_mongodb'];
 
-        $xml = XmlUtils::loadFile(__DIR__.'/Fixtures/config/xml/full.xml');
+        $xml = XmlUtils::loadFile(__DIR__ . '/Fixtures/config/xml/full.xml');
         $xml = XmlUtils::convertDomElementToArray($xml->getElementsByTagName('config')->item(0));
 
         return [
@@ -205,15 +206,16 @@ class ConfigurationTest extends TestCase
     }
 
     /**
-     * @dataProvider provideMergeOptions
      * @param array $configs  An array of configuration arrays to process
      * @param array $expected Array of key/value options expected in the processed configuration
+     *
+     * @dataProvider provideMergeOptions
      */
     public function testMergeOptions(array $configs, array $expected)
     {
-        $processor = new Processor();
+        $processor     = new Processor();
         $configuration = new Configuration(false);
-        $options = $processor->processConfiguration($configuration, $configs);
+        $options       = $processor->processConfiguration($configuration, $configs);
 
         foreach ($expected as $key => $value) {
             $this->assertEquals($value, $options[$key]);
@@ -229,7 +231,7 @@ class ConfigurationTest extends TestCase
             [
                 ['default_document_manager' => 'foo'],
             ],
-            ['default_document_manager' => 'foo']
+            ['default_document_manager' => 'foo'],
         ];
 
         // single config, testing normal option setting with dashes
@@ -237,7 +239,7 @@ class ConfigurationTest extends TestCase
             [
                 ['default-document-manager' => 'bar'],
             ],
-            ['default_document_manager' => 'bar']
+            ['default_document_manager' => 'bar'],
         ];
 
         // testing the normal override merging - the later config array wins
@@ -246,7 +248,7 @@ class ConfigurationTest extends TestCase
                 ['default_document_manager' => 'foo'],
                 ['default_document_manager' => 'baz'],
             ],
-            ['default_document_manager' => 'baz']
+            ['default_document_manager' => 'baz'],
         ];
 
         // the "options" array is totally replaced
@@ -264,7 +266,7 @@ class ConfigurationTest extends TestCase
                 ['document_managers' => ['default' => ['mappings' => ['foomap' => ['type' => 'val1'], 'barmap' => ['dir' => 'val2']]]]],
                 ['document_managers' => ['default' => ['mappings' => ['barmap' => ['prefix' => 'val3']]]]],
             ],
-            ['document_managers' => ['default' => ['metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_document_repository_class' => DocumentRepository::class, 'default_gridfs_repository_class' =>  DefaultGridFSRepository::class, 'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory', 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => ['foomap' => ['type' => 'val1', 'mapping' => true], 'barmap' => ['prefix' => 'val3', 'mapping' => true]]]]],
+            ['document_managers' => ['default' => ['metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_document_repository_class' => DocumentRepository::class, 'default_gridfs_repository_class' => DefaultGridFSRepository::class, 'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory', 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => ['foomap' => ['type' => 'val1', 'mapping' => true], 'barmap' => ['prefix' => 'val3', 'mapping' => true]]]]],
         ];
 
         // connections are merged non-recursively.
@@ -273,10 +275,12 @@ class ConfigurationTest extends TestCase
                 ['connections' => ['foocon' => ['server' => 'val1'], 'barcon' => ['options' => ['username' => 'val2']]]],
                 ['connections' => ['barcon' => ['server' => 'val3']]],
             ],
-            ['connections' => [
-                'foocon' => ['server' => 'val1'],
-                'barcon' => ['server' => 'val3'],
-            ]],
+            [
+                'connections' => [
+                    'foocon' => ['server' => 'val1'],
+                    'barcon' => ['server' => 'val3'],
+                ],
+            ],
         ];
 
         // connection options are merged non-recursively.
@@ -285,9 +289,11 @@ class ConfigurationTest extends TestCase
                 ['connections' => ['foocon' => ['options' => ['db' => 'val1']]]],
                 ['connections' => ['foocon' => ['options' => ['replicaSet' => 'val2']]]],
             ],
-            ['connections' => [
-                'foocon' => ['options' => ['replicaSet' => 'val2']],
-            ]],
+            [
+                'connections' => [
+                    'foocon' => ['options' => ['replicaSet' => 'val2']],
+                ],
+            ],
         ];
 
         // connection option readPreferenceTags are merged non-recursively.
@@ -296,9 +302,11 @@ class ConfigurationTest extends TestCase
                 ['connections' => ['foocon' => ['options' => ['readPreferenceTags' => [['dc' => 'east', 'use' => 'reporting']]]]]],
                 ['connections' => ['foocon' => ['options' => ['readPreferenceTags' => [['dc' => 'west'], []]]]]],
             ],
-            ['connections' => [
-                'foocon' => ['options' => ['readPreferenceTags' => [['dc' => 'west'], []]]],
-            ]],
+            [
+                'connections' => [
+                    'foocon' => ['options' => ['readPreferenceTags' => [['dc' => 'west'], []]]],
+                ],
+            ],
         ];
 
         // managers are merged non-recursively.
@@ -307,25 +315,28 @@ class ConfigurationTest extends TestCase
                 ['document_managers' => ['foodm' => ['database' => 'val1'], 'bardm' => ['database' => 'val2']]],
                 ['document_managers' => ['bardm' => ['database' => 'val3']]],
             ],
-            ['document_managers' => [
-                'foodm' => ['database' => 'val1', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_document_repository_class' => DocumentRepository::class, 'default_gridfs_repository_class' =>  DefaultGridFSRepository::class, 'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory', 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => []],
-                'bardm' => ['database' => 'val3', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_document_repository_class' => DocumentRepository::class, 'default_gridfs_repository_class' =>  DefaultGridFSRepository::class, 'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory', 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => []],
-            ]],
+            [
+                'document_managers' => [
+                    'foodm' => ['database' => 'val1', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_document_repository_class' => DocumentRepository::class, 'default_gridfs_repository_class' => DefaultGridFSRepository::class, 'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory', 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => []],
+                    'bardm' => ['database' => 'val3', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_document_repository_class' => DocumentRepository::class, 'default_gridfs_repository_class' => DefaultGridFSRepository::class, 'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory', 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => []],
+                ],
+            ],
         ];
 
         return $cases;
     }
 
     /**
-     * @dataProvider provideNormalizeOptions
      * @param array $configs  A configuration array to process
      * @param array $expected Array of key/value options expected in the processed configuration
+     *
+     * @dataProvider provideNormalizeOptions
      */
     public function testNormalizeOptions(array $config, array $expected)
     {
-        $processor = new Processor();
+        $processor     = new Processor();
         $configuration = new Configuration(false);
-        $options = $processor->processConfiguration($configuration, [$config]);
+        $options       = $processor->processConfiguration($configuration, [$config]);
 
         foreach ($expected as $key => $value) {
             $this->assertEquals($value, $options[$key]);
@@ -338,50 +349,67 @@ class ConfigurationTest extends TestCase
 
         // connection versus connections (id is the identifier)
         $cases[] = [
-            ['connection' => [
-                ['server' => 'mongodb://abc', 'id' => 'foo'],
-                ['server' => 'mongodb://def', 'id' => 'bar'],
-            ]],
-            ['connections' => [
-                'foo' => ['server' => 'mongodb://abc'],
-                'bar' => ['server' => 'mongodb://def'],
-            ]],
+            [
+                'connection' => [
+                    ['server' => 'mongodb://abc', 'id' => 'foo'],
+                    ['server' => 'mongodb://def', 'id' => 'bar'],
+                ],
+            ],
+            [
+                'connections' => [
+                    'foo' => ['server' => 'mongodb://abc'],
+                    'bar' => ['server' => 'mongodb://def'],
+                ],
+            ],
         ];
 
         // document_manager versus document_managers (id is the identifier)
         $cases[] = [
-            ['document_manager' => [
-                ['connection' => 'conn1', 'id' => 'foo'],
-                ['connection' => 'conn2', 'id' => 'bar'],
-            ]],
-            ['document_managers' => [
-                'foo' => ['connection' => 'conn1', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_document_repository_class' => DocumentRepository::class, 'default_gridfs_repository_class' => DefaultGridFSRepository::class, 'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory', 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => []],
-                'bar' => ['connection' => 'conn2', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_document_repository_class' => DocumentRepository::class, 'default_gridfs_repository_class' => DefaultGridFSRepository::class, 'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory', 'persistent_collection_factory' => null,'filters' => [], 'mappings' => []],
-            ]],
+            [
+                'document_manager' => [
+                    ['connection' => 'conn1', 'id' => 'foo'],
+                    ['connection' => 'conn2', 'id' => 'bar'],
+                ],
+            ],
+            [
+                'document_managers' => [
+                    'foo' => ['connection' => 'conn1', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_document_repository_class' => DocumentRepository::class, 'default_gridfs_repository_class' => DefaultGridFSRepository::class, 'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory', 'persistent_collection_factory' => null, 'filters' => [], 'mappings' => []],
+                    'bar' => ['connection' => 'conn2', 'metadata_cache_driver' => ['type' => 'array'], 'logging' => '%kernel.debug%', 'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'], 'auto_mapping' => false, 'default_document_repository_class' => DocumentRepository::class, 'default_gridfs_repository_class' => DefaultGridFSRepository::class, 'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory', 'persistent_collection_factory' => null,'filters' => [], 'mappings' => []],
+                ],
+            ],
         ];
 
         // mapping configuration that's beneath a specific document manager
         $cases[] = [
-            ['document_manager' => [
-                ['id' => 'foo', 'connection' => 'conn1', 'mapping' => [
-                    'type' => 'xml', 'name' => 'foo-mapping'
-                ]],
-            ]],
-            ['document_managers' => [
-                'foo' => [
-                    'connection'   => 'conn1',
-                    'metadata_cache_driver' => ['type' => 'array'],
-                    'default_document_repository_class' =>  DocumentRepository::class,
-                    'default_gridfs_repository_class' => DefaultGridFSRepository::class,
-                    'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory',
-                    'persistent_collection_factory' => null,
-                    'mappings'     => ['foo-mapping' => ['type' => 'xml', 'mapping' => true]],
-                    'logging'      => '%kernel.debug%',
-                    'profiler'     => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'],
-                    'auto_mapping' => false,
-                    'filters'      => [],
+            [
+                'document_manager' => [
+                    [
+                        'id' => 'foo',
+                        'connection' => 'conn1',
+                        'mapping' => [
+                            'type' => 'xml',
+                            'name' => 'foo-mapping',
+                        ],
+                    ],
                 ],
-            ]],
+            ],
+            [
+                'document_managers' => [
+                    'foo' => [
+                        'connection'   => 'conn1',
+                        'metadata_cache_driver' => ['type' => 'array'],
+                        'default_document_repository_class' =>  DocumentRepository::class,
+                        'default_gridfs_repository_class' => DefaultGridFSRepository::class,
+                        'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory',
+                        'persistent_collection_factory' => null,
+                        'mappings'     => ['foo-mapping' => ['type' => 'xml', 'mapping' => true]],
+                        'logging'      => '%kernel.debug%',
+                        'profiler'     => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'],
+                        'auto_mapping' => false,
+                        'filters'      => [],
+                    ],
+                ],
+            ],
         ];
 
         return $cases;
@@ -415,9 +443,9 @@ class ConfigurationTest extends TestCase
             ],
         ];
 
-        $processor = new Processor();
+        $processor     = new Processor();
         $configuration = new Configuration(false);
-        $options = $processor->processConfiguration($configuration, [$config]);
+        $options       = $processor->processConfiguration($configuration, [$config]);
 
         $this->assertEquals(['password' => 'bar'], $options['connections']['conn1']['options']);
         $this->assertEquals(['username' => 'foo'], $options['connections']['conn2']['options']);
@@ -434,14 +462,12 @@ class ConfigurationTest extends TestCase
             'connections' => [
                 'conn1' => [
                     'server'  => 'mongodb://localhost',
-                    'options' => [
-                        'replicaSet' => true
-                    ]
-                ]
-            ]
+                    'options' => ['replicaSet' => true],
+                ],
+            ],
         ];
 
-        $processor = new Processor();
+        $processor     = new Processor();
         $configuration = new Configuration(false);
         $processor->processConfiguration($configuration, [$config]);
     }
@@ -452,15 +478,13 @@ class ConfigurationTest extends TestCase
             'connections' => [
                 'conn1' => [
                     'server'  => 'mongodb://localhost',
-                    'options' => [
-                        'replicaSet' => null
-                    ]
-                ]
-            ]
+                    'options' => ['replicaSet' => null],
+                ],
+            ],
         ];
 
-        $processor = new Processor();
-        $configuration = new Configuration(false);
+        $processor       = new Processor();
+        $configuration   = new Configuration(false);
         $processedConfig = $processor->processConfiguration($configuration, [$config]);
         $this->assertFalse(array_key_exists('replicaSet', $processedConfig['connections']['conn1']['options']));
     }
@@ -470,18 +494,18 @@ class ConfigurationTest extends TestCase
      */
     public function testFixtureLoaderValidation($config)
     {
-        $processor = new Processor();
+        $processor     = new Processor();
         $configuration = new Configuration(false);
-        $this->expectException(\LogicException::class);
+        $this->expectException(LogicException::class);
         $processor->processConfiguration($configuration, [$config]);
     }
 
     public function provideExceptionConfiguration()
     {
-        $yaml = Yaml::parse(file_get_contents(__DIR__.'/Fixtures/config/yml/exception.yml'));
+        $yaml = Yaml::parse(file_get_contents(__DIR__ . '/Fixtures/config/yml/exception.yml'));
         $yaml = $yaml['doctrine_mongodb'];
 
-        $xml = XmlUtils::loadFile(__DIR__.'/Fixtures/config/xml/exception.xml');
+        $xml = XmlUtils::loadFile(__DIR__ . '/Fixtures/config/xml/exception.xml');
         $xml = XmlUtils::convertDomElementToArray($xml->getElementsByTagName('config')->item(0));
 
         return [

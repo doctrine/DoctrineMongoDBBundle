@@ -1,17 +1,20 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Tests\CacheWarmer;
 
 use Doctrine\Bundle\MongoDBBundle\CacheWarmer\ProxyCacheWarmer;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
-use Doctrine\Common\Proxy\AbstractProxyFactory;
+use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Proxy\ProxyFactory;
+use ReflectionObject;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use function sys_get_temp_dir;
 
-class ProxyCacheWarmerTest extends \Doctrine\Bundle\MongoDBBundle\Tests\TestCase
+class ProxyCacheWarmerTest extends TestCase
 {
     /** @var ContainerInterface */
     private $container;
@@ -30,8 +33,8 @@ class ProxyCacheWarmerTest extends \Doctrine\Bundle\MongoDBBundle\Tests\TestCase
         $this->proxyMock = $this->getMockBuilder(ProxyFactory::class)->disableOriginalConstructor()->getMock();
 
         $dm = $this->createTestDocumentManager([__DIR__ . '/../Fixtures/Validator']);
-        $r = new \ReflectionObject($dm);
-        $p = $r->getProperty('proxyFactory');
+        $r  = new ReflectionObject($dm);
+        $p  = $r->getProperty('proxyFactory');
         $p->setAccessible(true);
         $p->setValue($dm, $this->proxyMock);
 
@@ -52,8 +55,7 @@ class ProxyCacheWarmerTest extends \Doctrine\Bundle\MongoDBBundle\Tests\TestCase
         $this->proxyMock
             ->expects($this->once())
             ->method('generateProxyClasses')
-            ->with($this->countOf(1))
-        ;
+            ->with($this->countOf(1));
         $this->warmer->warmUp('meh');
     }
 
