@@ -9,7 +9,7 @@ actually stores the account information. We'll use MongoDB for storing the data.
 The simple User model
 ---------------------
 
-So, in this tutorial we begin with the model for a ``User`` document::
+So, in this tutorial we begin with the model for a ``User`` document:
 
 .. code-block:: php
 
@@ -83,7 +83,7 @@ on the database, so we've added this validation at the top of the class.
 Create a Form for the Model
 ---------------------------
 
-Next, create the form for the ``User`` model::
+Next, create the form for the ``User`` model:
 
 .. code-block:: php
 
@@ -136,7 +136,7 @@ won't be stored into database.
 
 In other words, create a second form for registration, which embeds the ``User``
 form and adds the extra field needed. Start by creating a simple class which
-represents the "registration"::
+represents the "registration":
 
 .. code-block:: php
 
@@ -181,7 +181,7 @@ represents the "registration"::
         }
     }
 
-Next, create the form for this ``Registration`` model::
+Next, create the form for this ``Registration`` model:
 
 .. code-block:: php
 
@@ -210,7 +210,7 @@ Handling the Form Submission
 ----------------------------
 
 Next, you need a controller to handle the form. Start by creating a simple
-controller for displaying the registration form::
+controller for displaying the registration form:
 
 .. code-block:: php
 
@@ -246,7 +246,7 @@ and its template:
     </form>
 
 Finally, create the controller which handles the form submission.  This performs
-the validation and saves the data into MongoDB::
+the validation and saves the data into MongoDB:
 
 .. code-block:: php
 
