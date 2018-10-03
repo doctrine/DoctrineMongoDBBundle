@@ -36,58 +36,17 @@ one bundle that integrates them into Symfony.
 Install the bundle with Composer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To install DoctrineMongoDBBundle with Composer just add the following to your
-`composer.json` file:
+To install DoctrineMongoDBBundle with Composer just run the following command:
 
-.. code-block:: json
+.. code-block:: bash
 
-    {
-        "require": {
-            "doctrine/mongodb-odm-bundle": "^3.0"
-        },
-    }
-
-
-If you are planning to use `autowiring`, you must install version 3.5 or later::
-
-    {
-        "require": {
-            "doctrine/mongodb-odm-bundle": "^3.5"
-        },
-    }
-
-You can now install the new dependencies by running Composer's ``update``
-command from the directory where your ``composer.json`` file is located:
-
-.. code-block :: bash
-
-    php composer.phar update doctrine/mongodb-odm-bundle
-
-Now, Composer will automatically download all required files, and install them
-for you.
+    composer require doctrine/mongodb-odm-bundle
 
 .. note::
 
    Currently ODM works with legacy MongoDB driver (i.e. `ext-mongo`) which is
    not compatible with PHP 7. If you have PHP 7 and/or are using new driver
    (i.e. `ext-mongodb`) please refer to `"Using PHP 7" section`_ in ODM's documentation.
-
-Register the annotations and the bundle
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. note::
-
-    This step is required only if you are using Symfony 3.2 or older.
-
-Next, register the annotations library by adding the following to the autoloader
-(below the existing ``AnnotationRegistry::registerLoader`` line):
-
-.. code-block:: php
-
-    // app/autoload.php
-    use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
-
-    AnnotationDriver::registerAnnotationClasses();
 
 .. note::
 
