@@ -343,7 +343,7 @@ following syntax:
             </doctrine_mongodb:config>
         </container>
 
-Now you can retrieve the configured services connection services::
+Now you can retrieve the configured services connection services:
 
 .. code-block:: php
 
@@ -351,7 +351,7 @@ Now you can retrieve the configured services connection services::
     $conn2 = $container->get('doctrine_mongodb.odm.conn2_connection');
 
 And you can also retrieve the configured document manager services which utilize the above
-connection services::
+connection services:
 
 .. code-block:: php
 

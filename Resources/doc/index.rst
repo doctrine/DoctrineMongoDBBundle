@@ -36,65 +36,22 @@ one bundle that integrates them into Symfony.
 Install the bundle with Composer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To install DoctrineMongoDBBundle with Composer just add the following to your
-`composer.json` file::
+To install DoctrineMongoDBBundle with Composer just run the following command:
 
-.. code-block:: json
+.. code-block:: bash
 
-    {
-        "require": {
-            "doctrine/mongodb-odm-bundle": "^3.0"
-        },
-    }
-
-
-If you are planning to use `autowiring`, you must install version 3.5 or later::
-
-    {
-        "require": {
-            "doctrine/mongodb-odm-bundle": "^3.5"
-        },
-    }
-
-You can now install the new dependencies by running Composer's ``update``
-command from the directory where your ``composer.json`` file is located:
-
-.. code-block :: bash
-
-    php composer.phar update doctrine/mongodb-odm-bundle
-
-Now, Composer will automatically download all required files, and install them
-for you.
+    composer require doctrine/mongodb-odm-bundle
 
 .. note::
 
-   Currently ODM works with legacy MongoDB driver (i.e. `ext-mongo`) which is
-   not compatible with PHP 7. If you have PHP 7 and/or are using new driver
-   (i.e. `ext-mongodb`) please refer to `"Using PHP 7" section`_ in ODM's documentation.
-
-Register the annotations and the bundle
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. note::
-
-    This step is required only if you are using Symfony 3.2 or older.
-
-Next, register the annotations library by adding the following to the autoloader
-(below the existing ``AnnotationRegistry::registerLoader`` line)::
-
-.. code-block:: php
-
-    // app/autoload.php
-    use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
-
-    AnnotationDriver::registerAnnotationClasses();
+   The ODM requires the PHP 7 MongoDB driver (`mongo`).
 
 .. note::
 
     This step is not required if you installed the bundle using Symfony Flex.
 
 All that is left to do is to update your ``AppKernel.php`` file, and
-register the new bundle::
+register the new bundle:
 
 .. code-block:: php
 
@@ -139,7 +96,7 @@ the MongoDB ODM across your application:
 
 .. note::
 
-    If you are using Symfony Flex, you can allow `recipes` in the "contrib" repository to 
+    If you are using Symfony Flex, you can allow `recipes` in the "contrib" repository to
     work with this bundle by executing the following command:
 
     .. code-block:: bash
@@ -173,7 +130,7 @@ Creating a Document Class
 Suppose you're building an application where products need to be displayed.
 Without even thinking about Doctrine or MongoDB, you already know that you
 need a ``Product`` object to represent those products. Create this class
-inside the ``Document`` directory of your ``AcmeStoreBundle``::
+inside the ``Document`` directory of your ``AcmeStoreBundle``:
 
 .. code-block:: php
 
@@ -341,7 +298,7 @@ Let's walk through this example:
   to MongoDB. In this example, the ``$product`` object has not been persisted yet,
   so the document manager makes a query to MongoDB, which adds a new entry.
 
-If you are using `autowiring`, you can use type hinting to fetch the ``doctrine_mongodb.odm.document_manager`` service::
+If you are using `autowiring`, you can use type hinting to fetch the ``doctrine_mongodb.odm.document_manager`` service:
 
 .. code-block:: php
 
@@ -389,7 +346,7 @@ Fetching Objects from MongoDB
 
 Fetching an object back out of MongoDB is even easier. For example, suppose
 you've configured a route to display a specific ``Product`` based on its
-``id`` value::
+``id`` value:
 
 .. code-block:: php
 
@@ -409,7 +366,7 @@ you've configured a route to display a specific ``Product`` based on its
 When you query for a particular type of object, you always use what's known
 as its "repository". You can think of a repository as a PHP class whose only
 job is to help you fetch objects of a certain class. You can access the
-repository object for a document class via::
+repository object for a document class via:
 
 .. code-block:: php
 
@@ -424,7 +381,7 @@ repository object for a document class via::
     As long as your document lives under the ``Document`` namespace of your bundle,
     this will work.
 
-Once you have your repository, you have access to all sorts of helpful methods::
+Once you have your repository, you have access to all sorts of helpful methods:
 
 .. code-block:: php
 
@@ -447,7 +404,7 @@ Once you have your repository, you have access to all sorts of helpful methods::
     about in the `Querying for Objects`_ section.
 
 You can also take advantage of the useful ``findBy()`` and ``findOneBy()`` methods
-to easily fetch objects based on multiple conditions::
+to easily fetch objects based on multiple conditions:
 
 .. code-block:: php
 
@@ -464,7 +421,7 @@ Updating an Object
 ~~~~~~~~~~~~~~~~~~
 
 Once you've fetched an object from Doctrine, updating it is easy. Suppose
-you have a route that maps a product id to an update action in a controller::
+you have a route that maps a product id to an update action in a controller:
 
 .. code-block:: php
 
@@ -498,7 +455,7 @@ Deleting an Object
 ~~~~~~~~~~~~~~~~~~
 
 Deleting an object is very similar, but requires a call to the ``remove()``
-method of the document manager::
+method of the document manager:
 
 .. code-block:: php
 
@@ -523,7 +480,7 @@ Using the Query Builder
 Doctrine's ODM ships with a query "Builder" object, which allows you to construct
 a query for exactly which documents you want to return. If you use an IDE,
 you can also take advantage of auto-completion as you type the method names.
-From inside a controller::
+From inside a controller:
 
 .. code-block:: php
 
@@ -615,7 +572,7 @@ ordered alphabetically.
         }
     }
 
-You can use this new method just like the default finder methods of the repository::
+You can use this new method just like the default finder methods of the repository:
 
 .. code-block:: php
 
@@ -915,6 +872,5 @@ Learn more from the Cookbook
 .. _`the cookbook`: http://symfony.com/doc/current/cookbook/security/entity_provider.html
 .. _`UniqueEntity`: http://symfony.com/doc/current/reference/constraints/UniqueEntity.html
 .. _`store sessions`: http://symfony.com/doc/current/cookbook/doctrine/mongodb_session_storage.html
-.. _`"Using PHP 7" section`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/introduction.html#using-php-7
 .. _`autowiring`: https://symfony.com/doc/current/service_container/autowiring.html
 .. _`recipes`: http://fabien.potencier.org/symfony4-contributing-recipes.html
