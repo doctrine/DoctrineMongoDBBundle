@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<ruleset>
+    <arg name="basepath" value="."/>
+    <arg name="extensions" value="php"/>
+    <arg name="parallel" value="80"/>
+    <arg name="cache" value=".phpcs-cache"/>
+    <arg name="colors" />
+
+    <!-- Ignore warnings and show progress of the run -->
+    <arg value="np"/>
+
+    <file>.</file>
+
+    <exclude-pattern>vendor/*</exclude-pattern>
+
+    <rule ref="Doctrine">
+        <!-- Traversable type hints often end up as mixed[], so we skip them for now -->
+        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversablePropertyTypeHintSpecification" />
+        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableParameterTypeHintSpecification" />
+        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableReturnTypeHintSpecification" />
+
+        <!-- Will cause BC breaks to method signatures - disabled for now -->
+        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint" />
+        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint" />
+
+        <!-- Disabled to avoid class renaming - to be handled in a separate PR -->
+        <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming" />
+        <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming" />
+        <exclude name="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming" />
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements">
+        <properties>
+            <property name="alwaysUsedPropertiesAnnotations" type="array" value="
+                @ODM\Id,
+                @ODM\Field,
+                @ODM\EmbedOne,
+                @ODM\EmbedMany,
+                @ODM\ReferenceOne,
+                @ODM\ReferenceMany
+            "/>
+        </properties>
+    </rule>
+
+    <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
+        <exclude-pattern>Tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="Squiz.Classes.ClassFileName.NoMatch">
+        <exclude-pattern>Tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingPropertyTypeHint">
+        <exclude-pattern>Tests/*</exclude-pattern>
+    </rule>
+</ruleset>

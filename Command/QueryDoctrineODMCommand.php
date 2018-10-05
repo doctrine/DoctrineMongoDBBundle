@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Command;
 
@@ -10,9 +11,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Execute a Doctrine MongoDB ODM query and output the results.
- *
- * @author Fabien Potencier <fabien@symfony.com>
- * @author Jonathan H. Wage <jonwage@gmail.com>
  */
 class QueryDoctrineODMCommand extends QueryCommand
 {

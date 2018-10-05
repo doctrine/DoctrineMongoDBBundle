@@ -1,17 +1,20 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Command;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
+use function count;
+use function sprintf;
 
 /**
  * Show information about mapped documents
- *
- * @author Benjamin Eberlei <kontakt@beberlei.de>
- * @author Jonathan H. Wage <jonwage@gmail.com>
  */
 class InfoDoctrineODMCommand extends DoctrineODMCommand
 {
@@ -40,33 +43,36 @@ EOT
             $input->getOption('dm') :
             $this->getContainer()->get('doctrine_mongodb')->getDefaultManagerName();
 
-        /* @var $documentManager \Doctrine\ODM\MongoDB\DocumentManager */
+        /** @var DocumentManager $documentManager */
         $documentManager = $this->getContainer()->get('doctrine_mongodb')->getManager($documentManagerName);
 
         $documentClassNames = $documentManager->getConfiguration()
                                           ->getMetadataDriverImpl()
                                           ->getAllClassNames();
 
-        if (!$documentClassNames) {
-            throw new \Exception(
-                'You do not have any mapped Doctrine MongoDB ODM documents for any of your bundles. '.
-                'Create a class inside the Document namespace of any of your bundles and provide '.
-                'mapping information for it with Annotations directly in the classes doc blocks '.
+        if (! $documentClassNames) {
+            throw new Exception(
+                'You do not have any mapped Doctrine MongoDB ODM documents for any of your bundles. ' .
+                'Create a class inside the Document namespace of any of your bundles and provide ' .
+                'mapping information for it with Annotations directly in the classes doc blocks ' .
                 'or with XML in your bundles Resources/config/doctrine/metadata/mongodb directory.'
             );
         }
 
-        $output->write(sprintf("Found <info>%d</info> documents mapped in document manager <info>%s</info>:\n",
-            count($documentClassNames), $documentManagerName), true);
+        $output->write(sprintf(
+            "Found <info>%d</info> documents mapped in document manager <info>%s</info>:\n",
+            count($documentClassNames),
+            $documentManagerName
+        ), true);
 
-        foreach ($documentClassNames AS $documentClassName) {
+        foreach ($documentClassNames as $documentClassName) {
             try {
                 $cm = $documentManager->getClassMetadata($documentClassName);
-                $output->write("<info>[OK]</info>   " . $documentClassName, true);
-            } catch(\Exception $e) {
-                $output->write("<error>[FAIL]</error> " . $documentClassName, true);
-                $output->write("<comment>" . $e->getMessage()."</comment>", true);
-                $output->write("", true);
+                $output->write('<info>[OK]</info>   ' . $documentClassName, true);
+            } catch (Throwable $e) {
+                $output->write('<error>[FAIL]</error> ' . $documentClassName, true);
+                $output->write('<comment>' . $e->getMessage() . '</comment>', true);
+                $output->write('', true);
             }
         }
     }

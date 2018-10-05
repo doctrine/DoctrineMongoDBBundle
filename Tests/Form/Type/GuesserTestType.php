@@ -1,16 +1,14 @@
 <?php
 
-namespace Doctrine\Bundle\MongoDBBundle\Tests\Form\Type;
+declare(strict_types=1);
 
+namespace Doctrine\Bundle\MongoDBBundle\Tests\Form\Type;
 
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Guesser;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * @author Vladimir Chub <v@chub.com.ua>
- */
 class GuesserTestType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -26,14 +24,13 @@ class GuesserTestType extends AbstractType
             ->add('intField')
             ->add('integerField')
             ->add('collectionField')
-            ->add('nonMappedField')
-        ;
+            ->add('nonMappedField');
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Guesser::class
+            'data_class' => Guesser::class,
         ])->setRequired('dm');
     }
 

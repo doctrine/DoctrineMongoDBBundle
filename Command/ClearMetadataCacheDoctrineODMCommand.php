@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Command;
 
@@ -10,10 +11,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Command to clear the metadata cache of the various cache drivers.
- *
- * @author Fabien Potencier <fabien@symfony.com>
- * @author Jonathan H. Wage <jonwage@gmail.com>
- * @author  Henrik Westphal <henrik.westphal@gmail.com>
  */
 class ClearMetadataCacheDoctrineODMCommand extends MetadataCommand
 {

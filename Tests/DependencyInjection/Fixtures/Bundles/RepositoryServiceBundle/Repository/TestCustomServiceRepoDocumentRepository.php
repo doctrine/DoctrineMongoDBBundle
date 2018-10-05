@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Fixtures\Bundles\RepositoryServiceBundle\Repository;
 
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;

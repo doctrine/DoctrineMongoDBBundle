@@ -1,16 +1,20 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Tests\CacheWarmer;
 
 use Doctrine\Bundle\MongoDBBundle\CacheWarmer\HydratorCacheWarmer;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
+use ReflectionObject;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use function sys_get_temp_dir;
 
-class HydratorCacheWarmerTest extends \Doctrine\Bundle\MongoDBBundle\Tests\TestCase
+class HydratorCacheWarmerTest extends TestCase
 {
     /** @var ContainerInterface */
     private $container;
@@ -29,8 +33,8 @@ class HydratorCacheWarmerTest extends \Doctrine\Bundle\MongoDBBundle\Tests\TestC
         $this->hydratorMock = $this->getMockBuilder(HydratorFactory::class)->disableOriginalConstructor()->getMock();
 
         $dm = $this->createTestDocumentManager([__DIR__ . '/../Fixtures/Validator']);
-        $r = new \ReflectionObject($dm);
-        $p = $r->getProperty('hydratorFactory');
+        $r  = new ReflectionObject($dm);
+        $p  = $r->getProperty('hydratorFactory');
         $p->setAccessible(true);
         $p->setValue($dm, $this->hydratorMock);
 

@@ -1,15 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Compiler\ServiceLocatorTagPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
+use function array_combine;
+use function array_keys;
+use function array_map;
 
 final class ServiceRepositoryCompilerPass implements CompilerPassInterface
 {
-    const REPOSITORY_SERVICE_TAG = 'doctrine_mongodb.odm.repository_service';
+    public const REPOSITORY_SERVICE_TAG = 'doctrine_mongodb.odm.repository_service';
 
     public function process(ContainerBuilder $container)
     {
@@ -22,7 +27,7 @@ final class ServiceRepositoryCompilerPass implements CompilerPassInterface
 
         $repoServiceIds = array_keys($container->findTaggedServiceIds(self::REPOSITORY_SERVICE_TAG));
 
-        $repoReferences = array_map(function ($id) {
+        $repoReferences = array_map(static function ($id) {
             return new Reference($id);
         }, $repoServiceIds);
 

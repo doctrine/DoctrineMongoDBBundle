@@ -1,27 +1,31 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Command;
 
 use Doctrine\Common\DataFixtures\Executor\MongoDBExecutor;
 use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\MongoDBPurger;
-use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
+use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use function class_exists;
+use function implode;
+use function is_array;
+use function is_dir;
+use function is_file;
+use function sprintf;
 
 /**
  * Load data fixtures from bundles.
- *
- * @author Fabien Potencier <fabien@symfony.com>
- * @author Jonathan H. Wage <jonwage@gmail.com>
  */
 class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
 {
     /**
-     * @return boolean
+     * @return bool
      */
     public function isEnabled()
     {
@@ -58,13 +62,13 @@ EOT
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager($input->getOption('dm'));
 
         $dirOrFile = $input->getOption('fixtures');
-        $bundles = $input->getOption('bundles');
+        $bundles   = $input->getOption('bundles');
         if ($bundles && $dirOrFile) {
-            throw new \InvalidArgumentException('Use only one option: --bundles or --fixtures.');
+            throw new InvalidArgumentException('Use only one option: --bundles or --fixtures.');
         }
 
-        if ($input->isInteractive() && !$input->getOption('append')) {
-            $helper = $this->getHelper('question');
+        if ($input->isInteractive() && ! $input->getOption('append')) {
+            $helper   = $this->getHelper('question');
             $question = new ConfirmationQuestion('Careful, database will be purged. Do you want to continue (y/N) ?', false);
 
             if (! $helper->ask($input, $output, $question)) {
@@ -76,40 +80,40 @@ EOT
             $paths = is_array($dirOrFile) ? $dirOrFile : [$dirOrFile];
         } elseif ($bundles) {
             $kernel = $this->getContainer()->get('kernel');
-            $paths = [$kernel->getRootDir().'/DataFixtures/MongoDB'];
+            $paths  = [$kernel->getRootDir() . '/DataFixtures/MongoDB'];
             foreach ($bundles as $bundle) {
                 $paths[] = $kernel->getBundle($bundle)->getPath();
             }
         } else {
-            $kernel = $this->getContainer()->get('kernel');
-            $paths = $this->getContainer()->getParameter('doctrine_mongodb.odm.fixtures_dirs');
-            $paths = is_array($paths) ? $paths : [$paths];
-            $paths[] = $kernel->getRootDir().'/DataFixtures/MongoDB';
+            $kernel  = $this->getContainer()->get('kernel');
+            $paths   = $this->getContainer()->getParameter('doctrine_mongodb.odm.fixtures_dirs');
+            $paths   = is_array($paths) ? $paths : [$paths];
+            $paths[] = $kernel->getRootDir() . '/DataFixtures/MongoDB';
             foreach ($kernel->getBundles() as $bundle) {
-                $paths[] = $bundle->getPath().'/DataFixtures/MongoDB';
+                $paths[] = $bundle->getPath() . '/DataFixtures/MongoDB';
             }
         }
 
         $loaderClass = $this->getContainer()->getParameter('doctrine_mongodb.odm.fixture_loader');
-        $loader = new $loaderClass($this->getContainer());
+        $loader      = new $loaderClass($this->getContainer());
         foreach ($paths as $path) {
             if (is_dir($path)) {
                 $loader->loadFromDirectory($path);
-            } else if (is_file($path)) {
+            } elseif (is_file($path)) {
                 $loader->loadFromFile($path);
             }
         }
 
         $fixtures = $loader->getFixtures();
-        if (!$fixtures) {
-            throw new \InvalidArgumentException(
-                sprintf('Could not find any fixtures to load in: %s', "\n\n- ".implode("\n- ", $paths))
+        if (! $fixtures) {
+            throw new InvalidArgumentException(
+                sprintf('Could not find any fixtures to load in: %s', "\n\n- " . implode("\n- ", $paths))
             );
         }
 
-        $purger = new MongoDBPurger($dm);
+        $purger   = new MongoDBPurger($dm);
         $executor = new MongoDBExecutor($dm, $purger);
-        $executor->setLogger(function($message) use ($output) {
+        $executor->setLogger(static function ($message) use ($output) {
             $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
         });
         $executor->execute($fixtures, $input->getOption('append'));

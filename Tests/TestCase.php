@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Tests;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
-use MongoDB\Client;
 use PHPUnit\Framework\TestCase as BaseTestCase;
+use function sys_get_temp_dir;
 
 class TestCase extends BaseTestCase
 {
@@ -16,14 +19,14 @@ class TestCase extends BaseTestCase
      */
     public static function createTestDocumentManager($paths = [])
     {
-        $config = new \Doctrine\ODM\MongoDB\Configuration();
-        $config->setAutoGenerateProxyClasses(true);
-        $config->setProxyDir(\sys_get_temp_dir());
-        $config->setHydratorDir(\sys_get_temp_dir());
+        $config = new Configuration();
+        $config->setAutoGenerateProxyClasses(1);
+        $config->setProxyDir(sys_get_temp_dir());
+        $config->setHydratorDir(sys_get_temp_dir());
         $config->setProxyNamespace('SymfonyTests\Doctrine');
         $config->setHydratorNamespace('SymfonyTests\Doctrine');
         $config->setMetadataDriverImpl(new AnnotationDriver(new AnnotationReader(), $paths));
-        $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache());
+        $config->setMetadataCacheImpl(new ArrayCache());
 
         return DocumentManager::create(null, $config);
     }

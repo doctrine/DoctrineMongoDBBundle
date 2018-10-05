@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Form\ChoiceList;
 
+use Closure;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Symfony\Bridge\Doctrine\Form\ChoiceList\EntityLoaderInterface;
-use Symfony\Component\Form\Exception\FormException;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
+use function array_values;
 
 /**
  * Getting Entities through the MongoDB QueryBuilder
@@ -27,22 +29,21 @@ class MongoDBQueryBuilderLoader implements EntityLoaderInterface
     /**
      * Construct an ORM Query Builder Loader
      *
-     * @param Builder|\Closure $queryBuilder
-     * @param ObjectManager $manager
-     * @param string $class
+     * @param Builder|Closure $queryBuilder
+     * @param string          $class
      */
-    public function __construct($queryBuilder, ObjectManager $manager = null, $class = null)
+    public function __construct($queryBuilder, ?ObjectManager $manager = null, $class = null)
     {
         // If a query builder was passed, it must be a closure or QueryBuilder
         // instance
-        if (!($queryBuilder instanceof Builder || $queryBuilder instanceof \Closure)) {
-            throw new UnexpectedTypeException($queryBuilder, Builder::class .'  or ' . \Closure::class);
+        if (! ($queryBuilder instanceof Builder || $queryBuilder instanceof Closure)) {
+            throw new UnexpectedTypeException($queryBuilder, Builder::class . '  or ' . Closure::class);
         }
 
-        if ($queryBuilder instanceof \Closure) {
+        if ($queryBuilder instanceof Closure) {
             $queryBuilder = $queryBuilder($manager->getRepository($class));
 
-            if (!$queryBuilder instanceof Builder) {
+            if (! $queryBuilder instanceof Builder) {
                 throw new UnexpectedTypeException($queryBuilder, Builder::class);
             }
         }
@@ -63,13 +64,12 @@ class MongoDBQueryBuilderLoader implements EntityLoaderInterface
      */
     public function getEntitiesByIds($identifier, array $values)
     {
-        $qb = clone ($this->queryBuilder);
+        $qb = clone $this->queryBuilder;
 
         return array_values($qb
             ->field($identifier)->in($values)
             ->getQuery()
             ->execute()
-            ->toArray()
-        );
+            ->toArray());
     }
 }

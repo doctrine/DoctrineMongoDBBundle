@@ -1,14 +1,6 @@
 <?php
 
-/*
- * This file is part of the Doctrine MongoDBBundle
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- * (c) Doctrine Project, Benjamin Eberlei <kontakt@beberlei.de>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
+declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler;
 
@@ -26,8 +18,6 @@ use Symfony\Component\DependencyInjection\Reference;
  * automapped folder.
  *
  * NOTE: alias is only supported by Symfony 2.6+ and will be ignored with older versions.
- *
- * @author David Buchmann <mail@davidbu.ch>
  */
 class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
 {
@@ -54,9 +44,7 @@ class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
             'doctrine_mongodb.odm.%s_configuration',
             'addDocumentNamespace',
             $aliasMap
-
         );
-
     }
 
     /**
@@ -73,8 +61,8 @@ class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
     public static function createXmlMappingDriver(array $mappings, array $managerParameters, $enabledParameter = false, array $aliasMap = [])
     {
         $arguments = [$mappings, '.mongodb.xml'];
-        $locator = new Definition(SymfonyFileLocator::class, $arguments);
-        $driver = new Definition(XmlDriver::class, [$locator]);
+        $locator   = new Definition(SymfonyFileLocator::class, $arguments);
+        $driver    = new Definition(XmlDriver::class, [$locator]);
 
         return new DoctrineMongoDBMappingsPass($driver, $mappings, $managerParameters, $enabledParameter, $aliasMap);
     }
@@ -93,8 +81,8 @@ class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
     public static function createPhpMappingDriver(array $mappings, array $managerParameters = [], $enabledParameter = false, array $aliasMap = [])
     {
         $arguments = [$mappings, '.php'];
-        $locator = new Definition(SymfonyFileLocator::class, $arguments);
-        $driver = new Definition(PHPDriver::class, [$locator]);
+        $locator   = new Definition(SymfonyFileLocator::class, $arguments);
+        $driver    = new Definition(PHPDriver::class, [$locator]);
 
         return new DoctrineMongoDBMappingsPass($driver, $mappings, $managerParameters, $enabledParameter, $aliasMap);
     }

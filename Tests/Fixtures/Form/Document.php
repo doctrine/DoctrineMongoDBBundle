@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -22,9 +24,10 @@ class Document
      */
     public $categories;
 
-    public function __construct($id, $name) {
-        $this->id = $id;
-        $this->name = $name;
+    public function __construct($id, $name)
+    {
+        $this->id         = $id;
+        $this->name       = $name;
         $this->categories = new ArrayCollection();
     }
 

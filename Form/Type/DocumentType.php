@@ -1,20 +1,19 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Form\Type;
 
 use Doctrine\Bundle\MongoDBBundle\Form\ChoiceList\MongoDBQueryBuilderLoader;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use InvalidArgumentException;
 use Symfony\Bridge\Doctrine\Form\Type\DoctrineType;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Form type for a MongoDB document
- *
- * @author Thibault Duplessis <thibault.duplessis@gmail.com>
- * @author Christophe Coevoet <stof@notk.org>
  */
 class DocumentType extends DoctrineType
 {
@@ -30,26 +29,21 @@ class DocumentType extends DoctrineType
         );
     }
 
-    /**
-     * @param OptionsResolver $resolver
-     */
     public function configureOptions(OptionsResolver $resolver)
     {
         parent::configureOptions($resolver);
 
-        $resolver->setDefaults([
-            'document_manager' => null,
-        ]);
+        $resolver->setDefaults(['document_manager' => null]);
 
-        $registry = $this->registry;
-        $normalizer = function (Options $options, $manager) use ($registry) {
+        $registry   = $this->registry;
+        $normalizer = static function (Options $options, $manager) use ($registry) {
             if (isset($options['document_manager']) && $manager) {
-                throw new \InvalidArgumentException('You cannot set both an "em" and "document_manager" option.');
+                throw new InvalidArgumentException('You cannot set both an "em" and "document_manager" option.');
             }
 
             $manager = $options['document_manager'] ?: $manager;
 
-            if (null === $manager) {
+            if ($manager === null) {
                 return $registry->getManagerForClass($options['class']);
             }
 
@@ -66,11 +60,11 @@ class DocumentType extends DoctrineType
     }
 
     /**
-     * @inheritdoc
-     *
      * @internal Symfony 2.8 compatibility
      *
      * @return string
+     *
+     * @inheritdoc
      */
     public function getBlockPrefix()
     {
@@ -78,11 +72,11 @@ class DocumentType extends DoctrineType
     }
 
     /**
-     * @inheritdoc
-     *
      * @internal Symfony 2.7 compatibility
      *
      * @return string
+     *
+     * @inheritdoc
      */
     public function getName()
     {

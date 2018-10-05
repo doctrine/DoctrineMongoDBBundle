@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Repository;
 
 use Doctrine\Bundle\MongoDBBundle\Repository\ContainerRepositoryFactory;
@@ -14,6 +16,7 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
+use stdClass;
 
 class ContainerRepositoryFactoryTest extends TestCase
 {
@@ -59,7 +62,7 @@ class ContainerRepositoryFactoryTest extends TestCase
      */
     public function testServiceRepositoriesMustExtendDocumentRepository()
     {
-        $repo = new \stdClass();
+        $repo = new stdClass();
 
         $container = $this->createContainer(['my_repo' => $repo]);
 
@@ -107,12 +110,12 @@ class ContainerRepositoryFactoryTest extends TestCase
         $container = $this->getMockBuilder(ContainerInterface::class)->getMock();
         $container->expects($this->any())
             ->method('has')
-            ->willReturnCallback(function ($id) use ($services) {
+            ->willReturnCallback(static function ($id) use ($services) {
                 return isset($services[$id]);
             });
         $container->expects($this->any())
             ->method('get')
-            ->willReturnCallback(function ($id) use ($services) {
+            ->willReturnCallback(static function ($id) use ($services) {
                 return $services[$id];
             });
 
@@ -135,7 +138,7 @@ class ContainerRepositoryFactoryTest extends TestCase
         $dm = $this->getMockBuilder(DocumentManager::class)->disableOriginalConstructor()->getMock();
         $dm->expects($this->any())
             ->method('getClassMetadata')
-            ->willReturnCallback(function ($class) use ($classMetadatas) {
+            ->willReturnCallback(static function ($class) use ($classMetadatas) {
                 return $classMetadatas[$class];
             });
 
@@ -143,7 +146,6 @@ class ContainerRepositoryFactoryTest extends TestCase
         $dm->expects($this->any())
             ->method('getUnitOfWork')
             ->willReturn($uow);
-
 
         $dm->expects($this->any())
             ->method('getConfiguration')

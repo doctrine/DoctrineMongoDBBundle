@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Bundle\MongoDBBundle\Tests\CacheWarmer;
 
 use Doctrine\Bundle\MongoDBBundle\CacheWarmer\PersistentCollectionCacheWarmer;
+use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionGenerator;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use function sys_get_temp_dir;
 
-class PersistentCollectionCacheWarmerTest extends \Doctrine\Bundle\MongoDBBundle\Tests\TestCase
+class PersistentCollectionCacheWarmerTest extends TestCase
 {
     /** @var ContainerInterface */
     private $container;
