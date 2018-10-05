@@ -30,7 +30,7 @@ The <info>doctrine:mongodb:generate:documents</info> command generates document 
 
 For SF = 4, you can generate all the documents with the command:
 
-  <info>php app/console doctrine:mongodb:generate:documents</info>
+  <info>php bin/console doctrine:mongodb:generate:documents</info>
 
 For SF < 4 you have to specify individual bundle:
 
