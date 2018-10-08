@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\APM\CommandLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
-use Throwable;
 use function array_map;
 use function count;
 use function json_encode;
@@ -24,7 +23,7 @@ class CommandDataCollector extends DataCollector
         $this->commandLogger = $commandLogger;
     }
 
-    public function collect(Request $request, Response $response, ?Throwable $exception = null)
+    public function collect(Request $request, Response $response, ?\Exception $exception = null)
     {
         $this->data = [
             'num_commands' => count($this->commandLogger),
