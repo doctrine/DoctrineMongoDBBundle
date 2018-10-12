@@ -130,9 +130,9 @@ Embedding the User form into a Registration Form
 ------------------------------------------------
 
 The form that you'll use for the registration page is not the same as the
-form for used to simply modify the ``User`` (i.e. ``UserType``). The registration
-form will contain further fields like "accept the terms", whose value is
-won't be stored into database.
+form used to simply modify the ``User`` (i.e. ``UserType``). The registration
+form will contain further fields like "accept the terms", whose value won't be
+stored in the database.
 
 In other words, create a second form for registration, which embeds the ``User``
 form and adds the extra field needed. Start by creating a simple class which
