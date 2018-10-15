@@ -240,12 +240,12 @@ and its template:
 .. code-block:: html+jinja
 
     {# src/Acme/AccountBundle/Resources/views/Account/register.html.twig #}
-
-    <form action="{{ path('create')}}" method="post" {{ form_enctype(form) }}>
+    
+    {{ form_start(form, {'action': path('create'), 'method': 'POST'}) }}
         {{ form_widget(form) }}
 
         <input type="submit" />
-    </form>
+    {{ form_end(form) }}
 
 Finally, create the controller which handles the form submission.  This performs
 the validation and saves the data into MongoDB:
@@ -256,7 +256,7 @@ the validation and saves the data into MongoDB:
     {
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $form = $this->createForm(new RegistrationType(), new Registration());
+        $form = $this->createForm(RegistrationType::class, new Registration());
 
         $form->handleRequest($request);
 
