@@ -229,7 +229,9 @@ controller for displaying the registration form:
         {
             $form = $this->createForm(RegistrationType::class, new Registration());
 
-            return $this->render('AcmeAccountBundle:Account:register.html.twig', array('form' => $form->createView()));
+            return $this->render('AcmeAccountBundle:Account:register.html.twig', [
+                'form' => $form->createView()
+            ]);
         }
     }
 
@@ -267,7 +269,9 @@ the validation and saves the data into MongoDB:
             return $this->redirect(...);
         }
 
-        return $this->render('AcmeAccountBundle:Account:register.html.twig', array('form' => $form->createView()));
+        return $this->render('AcmeAccountBundle:Account:register.html.twig', [
+            'form' => $form->createView()
+        ]);
     }
 
 That's it! Your form now validates, and allows you to save the ``User``
