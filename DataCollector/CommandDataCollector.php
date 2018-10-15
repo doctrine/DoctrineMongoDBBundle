@@ -6,10 +6,10 @@ namespace Doctrine\Bundle\MongoDBBundle\DataCollector;
 
 use Doctrine\ODM\MongoDB\APM\Command;
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
+use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
-use Throwable;
 use function array_map;
 use function count;
 use function json_encode;
@@ -24,7 +24,8 @@ class CommandDataCollector extends DataCollector
         $this->commandLogger = $commandLogger;
     }
 
-    public function collect(Request $request, Response $response, ?Throwable $exception = null)
+    // phpcs:ignore SlevomatCodingStandard.Exceptions.ReferenceThrowableOnly
+    public function collect(Request $request, Response $response, ?Exception $exception = null) : void
     {
         $this->data = [
             'num_commands' => count($this->commandLogger),
@@ -37,7 +38,7 @@ class CommandDataCollector extends DataCollector
         ];
     }
 
-    public function reset()
+    public function reset() : void
     {
         $this->commandLogger->clear();
         $this->data = [
@@ -59,7 +60,7 @@ class CommandDataCollector extends DataCollector
         return $this->data['commands'];
     }
 
-    public function getName()
+    public function getName() : string
     {
         return 'mongodb';
     }
