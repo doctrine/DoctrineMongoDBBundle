@@ -316,7 +316,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     private function normalizeDriverOptions(array $connection)
     {
         $driverOptions            = $connection['driverOptions'] ?? [];
-        $driverOptions['typemap'] = ['root' => 'array', 'document' => 'array'];
+        $driverOptions['typeMap'] = ['root' => 'array', 'document' => 'array'];
 
         if (isset($driverOptions['context'])) {
             $driverOptions['context'] = new Reference($driverOptions['context']);
