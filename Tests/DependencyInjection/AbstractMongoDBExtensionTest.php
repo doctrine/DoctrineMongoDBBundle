@@ -78,8 +78,8 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $arguments = $definition->getArguments();
         $this->assertEquals(null, $arguments[0]);
         $this->assertEquals([], $arguments[1]);
-        $this->assertArrayHasKey('typemap', $arguments[2]);
-        $this->assertSame(['root' => 'array', 'document' => 'array'], $arguments[2]['typemap']);
+        $this->assertArrayHasKey('typeMap', $arguments[2]);
+        $this->assertSame(['root' => 'array', 'document' => 'array'], $arguments[2]['typeMap']);
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_document_manager');
         $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getClass());
@@ -115,8 +115,8 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $arguments = $definition->getArguments();
         $this->assertEquals('mongodb://localhost:27017', $arguments[0]);
         $this->assertEquals([], $arguments[1]);
-        $this->assertArrayHasKey('typemap', $arguments[2]);
-        $this->assertSame(['root' => 'array', 'document' => 'array'], $arguments[2]['typemap']);
+        $this->assertArrayHasKey('typeMap', $arguments[2]);
+        $this->assertSame(['root' => 'array', 'document' => 'array'], $arguments[2]['typeMap']);
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_document_manager');
         $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getClass());
@@ -148,8 +148,8 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $arguments = $definition->getArguments();
         $this->assertEquals('mongodb://localhost:27017', $arguments[0]);
         $this->assertEquals([], $arguments[1]);
-        $this->assertArrayHasKey('typemap', $arguments[2]);
-        $this->assertSame(['root' => 'array', 'document' => 'array'], $arguments[2]['typemap']);
+        $this->assertArrayHasKey('typeMap', $arguments[2]);
+        $this->assertSame(['root' => 'array', 'document' => 'array'], $arguments[2]['typeMap']);
 
         $definition                               = $container->getDefinition('doctrine_mongodb.odm.default_configuration');
         $methodCalls                              = $definition->getMethodCalls();
@@ -192,8 +192,8 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $arguments = $definition->getArguments();
         $this->assertEquals('mongodb://localhost:27017', $arguments[0]);
         $this->assertEquals([], $arguments[1]);
-        $this->assertArrayHasKey('typemap', $arguments[2]);
-        $this->assertSame(['root' => 'array', 'document' => 'array'], $arguments[2]['typemap']);
+        $this->assertArrayHasKey('typeMap', $arguments[2]);
+        $this->assertSame(['root' => 'array', 'document' => 'array'], $arguments[2]['typeMap']);
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_document_manager');
         $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getClass());
@@ -228,8 +228,8 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $arguments = $definition->getArguments();
         $this->assertEquals('mongodb://localhost:27017', $arguments[0]);
         $this->assertEquals([], $arguments[1]);
-        $this->assertArrayHasKey('typemap', $arguments[2]);
-        $this->assertSame(['root' => 'array', 'document' => 'array'], $arguments[2]['typemap']);
+        $this->assertArrayHasKey('typeMap', $arguments[2]);
+        $this->assertSame(['root' => 'array', 'document' => 'array'], $arguments[2]['typeMap']);
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.dm1_document_manager');
         $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getClass());
@@ -248,8 +248,8 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $arguments = $definition->getArguments();
         $this->assertEquals('mongodb://localhost:27017', $arguments[0]);
         $this->assertEquals([], $arguments[1]);
-        $this->assertArrayHasKey('typemap', $arguments[2]);
-        $this->assertSame(['root' => 'array', 'document' => 'array'], $arguments[2]['typemap']);
+        $this->assertArrayHasKey('typeMap', $arguments[2]);
+        $this->assertSame(['root' => 'array', 'document' => 'array'], $arguments[2]['typeMap']);
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.dm2_document_manager');
         $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getClass());
