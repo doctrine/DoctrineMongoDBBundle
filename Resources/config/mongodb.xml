@@ -62,16 +62,10 @@
         <service id="Doctrine\Bundle\MongoDBBundle\Command\DropSchemaDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\DropSchemaDoctrineODMCommand">
             <tag name="console.command"/>
         </service>
-        <service id="Doctrine\Bundle\MongoDBBundle\Command\GenerateDocumentsDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\GenerateDocumentsDoctrineODMCommand">
-            <tag name="console.command"/>
-        </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\GenerateHydratorsDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\GenerateHydratorsDoctrineODMCommand">
             <tag name="console.command"/>
         </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\GenerateProxiesDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\GenerateProxiesDoctrineODMCommand">
-            <tag name="console.command"/>
-        </service>
-        <service id="Doctrine\Bundle\MongoDBBundle\Command\GenerateRepositoriesDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\GenerateRepositoriesDoctrineODMCommand">
             <tag name="console.command"/>
         </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\InfoDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\InfoDoctrineODMCommand">

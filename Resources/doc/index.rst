@@ -222,31 +222,6 @@ see the :ref:`cookbook-mongodb-field-types` section.
     the ``use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;`` statement,
     which *imports* the ``MongoDB`` annotations prefix.
 
-Generating Getters and Setters
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Even though Doctrine now knows how to persist a ``Product`` object to MongoDB
-the class itself isn't really useful yet. Since ``Product`` is just a regular
-PHP class, you need to create getter and setter methods (e.g. ``getName()``,
-``setName()``) in order to access its properties (since the properties are
-``protected``). Fortunately, Doctrine can do this for you by running:
-
-.. code-block:: bash
-
-    php bin/console doctrine:mongodb:generate:documents AcmeStoreBundle
-
-This command makes sure that all of the getters and setters are generated
-for the ``Product`` class. This is a safe command - you can run it over and
-over again: it only generates getters and setters that don't exist (i.e. it
-doesn't replace your existing methods).
-
-.. note::
-
-    Doctrine doesn't care whether your properties are ``protected`` or ``private``,
-    or whether or not you have a getter or setter function for a property.
-    The getters and setters are generated here only because you'll need them
-    to interact with your PHP object.
-
 Persisting Objects to MongoDB
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -544,15 +519,10 @@ To do this, add the name of the repository class to your mapping definition.
 
         </doctrine-mong-mapping>
 
-Doctrine can generate the repository class for you by running:
-
-.. code-block:: bash
-
-    php bin/console doctrine:mongodb:generate:repositories AcmeStoreBundle
-
-Next, add a new method - ``findAllOrderedByName()`` - to the newly generated
-repository class. This method will query for all of the ``Product`` documents,
-ordered alphabetically.
+You have to create the repository in the namespace indicated above. Make sure it
+extends the default ``DocumentRepository``. Next, add a new method -
+``findAllOrderedByName()`` - to the new repository class. This method will query
+for all of the ``Product`` documents, ordered alphabetically.
 
 .. code-block:: php
 
