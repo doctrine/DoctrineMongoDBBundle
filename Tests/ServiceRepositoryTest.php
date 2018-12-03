@@ -14,7 +14,9 @@ use Fixtures\Bundles\RepositoryServiceBundle\Document\TestCustomServiceRepoDocum
 use Fixtures\Bundles\RepositoryServiceBundle\Document\TestDefaultRepoDocument;
 use Fixtures\Bundles\RepositoryServiceBundle\Repository\TestCustomClassRepoRepository;
 use Fixtures\Bundles\RepositoryServiceBundle\Repository\TestCustomServiceRepoRepository;
+use Fixtures\Bundles\RepositoryServiceBundle\Repository\TestUnmappedDocumentRepository;
 use Fixtures\Bundles\RepositoryServiceBundle\RepositoryServiceBundle;
+use LogicException;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -22,20 +24,14 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
 class ServiceRepositoryTest extends TestCase
 {
+    /** @var ContainerBuilder */
+    private $container;
+
     protected function setUp()
     {
         parent::setUp();
 
-        if (class_exists(DocumentManager::class)) {
-            return;
-        }
-
-        $this->markTestSkipped('Doctrine MongoDB ODM is not available.');
-    }
-
-    public function testRepositoryServiceWiring()
-    {
-        $container = new ContainerBuilder(new ParameterBag([
+        $this->container = new ContainerBuilder(new ParameterBag([
             'kernel.name' => 'app',
             'kernel.debug' => false,
             'kernel.bundles' => ['RepositoryServiceBundle' => RepositoryServiceBundle::class],
@@ -43,9 +39,9 @@ class ServiceRepositoryTest extends TestCase
             'kernel.environment' => 'test',
             'kernel.root_dir' => __DIR__ . '/../../../../', // src dir
         ]));
-        $container->setDefinition('annotation_reader', new Definition(AnnotationReader::class));
+        $this->container->setDefinition('annotation_reader', new Definition(AnnotationReader::class));
         $extension = new DoctrineMongoDBExtension();
-        $container->registerExtension($extension);
+        $this->container->registerExtension($extension);
 
         $extension->load([[
             'connections' => ['default' => []],
@@ -58,40 +54,52 @@ class ServiceRepositoryTest extends TestCase
                     ],
                 ],
             ]],
-        ]], $container);
+        ]], $this->container);
 
-        $def = $container->register(TestCustomServiceRepoRepository::class, TestCustomServiceRepoRepository::class)
+        $def = $this->container->register(TestCustomServiceRepoRepository::class, TestCustomServiceRepoRepository::class)
             ->setPublic(false);
         // create a public alias so we can use it below for testing
-        $container->setAlias('test_alias__' . TestCustomServiceRepoRepository::class, new Alias(TestCustomServiceRepoRepository::class, true));
+        $this->container->setAlias('test_alias__' . TestCustomServiceRepoRepository::class, new Alias(TestCustomServiceRepoRepository::class, true));
 
         $def->setAutowired(true);
         $def->setAutoconfigured(true);
 
-        $container->addCompilerPass(new ServiceRepositoryCompilerPass());
-        $container->compile();
+        $this->container->addCompilerPass(new ServiceRepositoryCompilerPass());
+        $this->container->compile();
+    }
 
-        $em = $container->get('doctrine_mongodb.odm.document_manager');
+    public function testRepositoryServiceWiring()
+    {
+        $dm = $this->container->get('doctrine_mongodb.odm.document_manager');
 
         // traditional custom class repository
-        $customClassRepo = $em->getRepository(TestCustomClassRepoDocument::class);
+        $customClassRepo = $dm->getRepository(TestCustomClassRepoDocument::class);
         $this->assertInstanceOf(TestCustomClassRepoRepository::class, $customClassRepo);
         // a smoke test, trying some methods
         $this->assertSame(TestCustomClassRepoDocument::class, $customClassRepo->getClassName());
         $this->assertInstanceOf(Builder::class, $customClassRepo->createQueryBuilder());
 
         // generic DocumentRepository
-        $genericRepository = $em->getRepository(TestDefaultRepoDocument::class);
+        $genericRepository = $dm->getRepository(TestDefaultRepoDocument::class);
         $this->assertInstanceOf(DocumentRepository::class, $genericRepository);
-        $this->assertSame($genericRepository, $genericRepository = $em->getRepository(TestDefaultRepoDocument::class));
+        $this->assertSame($genericRepository, $genericRepository = $dm->getRepository(TestDefaultRepoDocument::class));
         // a smoke test, trying one of the methods
         $this->assertSame(TestDefaultRepoDocument::class, $genericRepository->getClassName());
 
         // custom service repository
-        $customServiceRepo = $em->getRepository(TestCustomServiceRepoDocument::class);
-        $this->assertSame($customServiceRepo, $container->get('test_alias__' . TestCustomServiceRepoRepository::class));
+        $customServiceRepo = $dm->getRepository(TestCustomServiceRepoDocument::class);
+        $this->assertSame($customServiceRepo, $this->container->get('test_alias__' . TestCustomServiceRepoRepository::class));
         // a smoke test, trying some methods
         $this->assertSame(TestCustomServiceRepoDocument::class, $customServiceRepo->getClassName());
         $this->assertInstanceOf(Builder::class, $customServiceRepo->createQueryBuilder());
+    }
+
+    /**
+     * @expectedException LogicException
+     * @expectedExceptionMessage Could not find the document manager for class "Fixtures\Bundles\RepositoryServiceBundle\Document\TestUnmappedDocument". Check your Doctrine configuration to make sure it is configured to load this document’s metadata.
+     */
+    public function testInstantiatingServiceRepositoryForUnmappedClass()
+    {
+        new TestUnmappedDocumentRepository($this->container->get('doctrine_mongodb'));
     }
 }
