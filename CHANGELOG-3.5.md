@@ -12,6 +12,14 @@ where XXX and YYY are the older and newer versions, respectively.
 To generate a changelog summary since the last version, run
 `git log --no-merges --oneline XXX...HEAD`
 
+3.5.1 (2018-12-03)
+------------------
+
+All issues and pull requests in this release may be found under the [3.5.1 milestone](https://github.com/doctrine/DoctrineMongoDBBundle/issues?q=milestone%3A3.5.1).
+
+ * [501](https://github.com/doctrine/DoctrineMongoDBBundle/pull/501) fixes deprecation notices when using Symfony 4.2.
+ * [505](https://github.com/doctrine/DoctrineMongoDBBundle/pull/505) adds a better error message when trying to instantiate a service repository for an unmapped class.
+
 3.5.0 (2018-09-24)
 ------------------
 
