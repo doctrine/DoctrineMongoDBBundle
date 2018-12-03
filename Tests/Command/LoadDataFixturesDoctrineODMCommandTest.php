@@ -3,8 +3,10 @@
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Command;
 
 use Doctrine\Bundle\MongoDBBundle\Command\LoadDataFixturesDoctrineODMCommand;
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\Common\DataFixtures\Loader;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * @author Henrik Bjornskov <henrik@bjrnskov.dk>
@@ -13,7 +15,10 @@ class LoadDataFixturesDoctrineODMCommandTest extends TestCase
 {
     public function setUp()
     {
-        $this->command = new LoadDataFixturesDoctrineODMCommand();
+        $registry = $this->createMock(ManagerRegistry::class);
+        $kernel = $this->createMock(KernelInterface::class);
+
+        $this->command = new LoadDataFixturesDoctrineODMCommand($registry, $kernel);
     }
 
     public function testCommandIsNotEnabledWithMissingDependency()
