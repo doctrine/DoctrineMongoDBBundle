@@ -4,6 +4,7 @@
 namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\Reference;
@@ -25,11 +26,13 @@ class DoctrineMongoDBExtensionTest extends TestCase
     public function buildMinimalContainer()
     {
         $container = new ContainerBuilder(new ParameterBag([
-            'kernel.root_dir'    => __DIR__,
-            'kernel.name'        => 'kernel',
-            'kernel.environment' => 'test',
-            'kernel.debug'       => 'true',
-            'kernel.bundles'     => [],
+            'kernel.root_dir'        => __DIR__,
+            'kernel.project_dir'     => __DIR__,
+            'kernel.name'            => 'kernel',
+            'kernel.environment'     => 'test',
+            'kernel.debug'           => 'true',
+            'kernel.bundles'         => [],
+            'kernel.container_class' => Container::class,
         ]));
         return $container;
     }
@@ -68,12 +71,14 @@ class DoctrineMongoDBExtensionTest extends TestCase
         }
 
         return new ContainerBuilder(new ParameterBag([
-            'kernel.debug'       => false,
-            'kernel.bundles'     => $map,
-            'kernel.cache_dir'   => sys_get_temp_dir(),
-            'kernel.environment' => 'test',
-            'kernel.name'        => 'kernel',
-            'kernel.root_dir'    => __DIR__.'/../../' // src dir
+            'kernel.debug'           => false,
+            'kernel.bundles'         => $map,
+            'kernel.cache_dir'       => sys_get_temp_dir(),
+            'kernel.environment'     => 'test',
+            'kernel.name'            => 'kernel',
+            'kernel.root_dir'        => __DIR__.'/../../',
+            'kernel.project_dir'     => __DIR__.'/../../',
+            'kernel.container_class' => Container::class,
         ]));
     }
 

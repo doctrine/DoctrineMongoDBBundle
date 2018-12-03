@@ -18,6 +18,7 @@ use Fixtures\Bundles\RepositoryServiceBundle\Repository\TestUnmappedDocumentRepo
 use Fixtures\Bundles\RepositoryServiceBundle\RepositoryServiceBundle;
 use LogicException;
 use Symfony\Component\DependencyInjection\Alias;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
@@ -37,7 +38,9 @@ class ServiceRepositoryTest extends TestCase
             'kernel.bundles' => ['RepositoryServiceBundle' => RepositoryServiceBundle::class],
             'kernel.cache_dir' => sys_get_temp_dir(),
             'kernel.environment' => 'test',
-            'kernel.root_dir' => __DIR__ . '/../../../../', // src dir
+            'kernel.root_dir' => __DIR__ . '/../../../../',
+            'kernel.project_dir' => __DIR__ . '/../../../../',
+            'kernel.container_class' => Container::class,
         ]));
         $this->container->setDefinition('annotation_reader', new Definition(AnnotationReader::class));
         $extension = new DoctrineMongoDBExtension();
