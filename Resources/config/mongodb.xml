@@ -69,6 +69,8 @@
             <tag name="console.command"/>
         </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\GenerateDocumentsDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\GenerateDocumentsDoctrineODMCommand">
+            <argument type="service" id="doctrine_mongodb"/>
+
             <tag name="console.command"/>
         </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\GenerateHydratorsDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\GenerateHydratorsDoctrineODMCommand">
@@ -78,12 +80,19 @@
             <tag name="console.command"/>
         </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\GenerateRepositoriesDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\GenerateRepositoriesDoctrineODMCommand">
+            <argument type="service" id="doctrine_mongodb"/>
+
             <tag name="console.command"/>
         </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\InfoDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\InfoDoctrineODMCommand">
+            <argument type="service" id="doctrine_mongodb"/>
+
             <tag name="console.command"/>
         </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\LoadDataFixturesDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\LoadDataFixturesDoctrineODMCommand">
+            <argument type="service" id="doctrine_mongodb"/>
+            <argument type="service" id="kernel" on-invalid="null"/>
+
             <tag name="console.command"/>
         </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\QueryDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\QueryDoctrineODMCommand">

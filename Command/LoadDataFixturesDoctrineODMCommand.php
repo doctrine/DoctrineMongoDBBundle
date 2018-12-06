@@ -3,14 +3,15 @@
 
 namespace Doctrine\Bundle\MongoDBBundle\Command;
 
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\Common\DataFixtures\Executor\MongoDBExecutor;
 use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\MongoDBPurger;
-use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Load data fixtures from bundles.
@@ -20,6 +21,15 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
  */
 class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
 {
+    private $kernel;
+
+    public function __construct(ManagerRegistry $registry = null, KernelInterface $kernel = null)
+    {
+        parent::__construct($registry);
+
+        $this->kernel = $kernel;
+    }
+
     /**
      * @return boolean
      */
@@ -55,7 +65,7 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager($input->getOption('dm'));
+        $dm = $this->getManagerRegistry()->getManager($input->getOption('dm'));
 
         $dirOrFile = $input->getOption('fixtures');
         $bundles = $input->getOption('bundles');
@@ -75,23 +85,21 @@ EOT
         if ($dirOrFile) {
             $paths = is_array($dirOrFile) ? $dirOrFile : [$dirOrFile];
         } elseif ($bundles) {
-            $kernel = $this->getContainer()->get('kernel');
-            $paths = [$kernel->getRootDir().'/DataFixtures/MongoDB'];
+            $paths = [$this->getKernel()->getRootDir().'/DataFixtures/MongoDB'];
             foreach ($bundles as $bundle) {
-                $paths[] = $kernel->getBundle($bundle)->getPath();
+                $paths[] = $this->getKernel()->getBundle($bundle)->getPath();
             }
         } else {
-            $kernel = $this->getContainer()->get('kernel');
-            $paths = $this->getContainer()->getParameter('doctrine_mongodb.odm.fixtures_dirs');
+            $paths = $this->container->getParameter('doctrine_mongodb.odm.fixtures_dirs');
             $paths = is_array($paths) ? $paths : [$paths];
-            $paths[] = $kernel->getRootDir().'/DataFixtures/MongoDB';
-            foreach ($kernel->getBundles() as $bundle) {
+            $paths[] = $this->getKernel()->getRootDir().'/DataFixtures/MongoDB';
+            foreach ($this->getKernel()->getBundles() as $bundle) {
                 $paths[] = $bundle->getPath().'/DataFixtures/MongoDB';
             }
         }
 
-        $loaderClass = $this->getContainer()->getParameter('doctrine_mongodb.odm.fixture_loader');
-        $loader = new $loaderClass($this->getContainer());
+        $loaderClass = $this->container->getParameter('doctrine_mongodb.odm.fixture_loader');
+        $loader = new $loaderClass($this->container);
         foreach ($paths as $path) {
             if (is_dir($path)) {
                 $loader->loadFromDirectory($path);
@@ -113,5 +121,14 @@ EOT
             $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
         });
         $executor->execute($fixtures, $input->getOption('append'));
+    }
+
+    private function getKernel()
+    {
+        if ($this->kernel === null) {
+            $this->kernel = $this->container->get('kernel');
+        }
+
+        return $this->kernel;
     }
 }
