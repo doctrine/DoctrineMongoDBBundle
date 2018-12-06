@@ -96,7 +96,7 @@ class DoctrineMongoDBBundle extends Bundle
                     }
                 }
 
-                clearstatcache($file);
+                clearstatcache(true, $file);
             }
 
             if (! is_file($file)) {
