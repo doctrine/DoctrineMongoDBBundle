@@ -12,6 +12,13 @@ where XXX and YYY are the older and newer versions, respectively.
 To generate a changelog summary since the last version, run
 `git log --no-merges --oneline XXX...HEAD`
 
+3.5.2 (2018-12-07)
+------------------
+
+All issues and pull requests in this release may be found under the [3.5.2 milestone](https://github.com/doctrine/DoctrineMongoDBBundle/issues?q=milestone%3A3.5.2).
+
+ * [506](https://github.com/doctrine/DoctrineMongoDBBundle/pull/506) fixes command deprecation notices when using Symfony 4.2
+
 3.5.1 (2018-12-03)
 ------------------
 
