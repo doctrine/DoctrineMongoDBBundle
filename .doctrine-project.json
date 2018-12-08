@@ -4,20 +4,22 @@
     "slug": "doctrine-mongodb-bundle",
     "versions": [
         {
-            "name": "3.5",
+            "name": "4.0",
             "branchName": "master",
             "slug": "latest",
             "upcoming": true
         },
         {
+            "name": "3.5",
+            "branchName": "3.5",
+            "slug": "3.5",
+            "current": true
+        },
+        {
             "name": "3.4",
             "branchName": "3.4",
             "slug": "3.4",
-            "current": true,
-            "aliases": [
-                "current",
-                "stable"
-            ]
+            "maintained": false
         }
     ]
 }
