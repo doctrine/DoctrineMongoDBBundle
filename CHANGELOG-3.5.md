@@ -12,6 +12,14 @@ where XXX and YYY are the older and newer versions, respectively.
 To generate a changelog summary since the last version, run
 `git log --no-merges --oneline XXX...HEAD`
 
+3.5.3 (2018-12-22)
+------------------
+
+All issues and pull requests in this release may be found under the [3.5.3 milestone](https://github.com/doctrine/DoctrineMongoDBBundle/issues?q=milestone%3A3.5.3).
+
+ * [514](https://github.com/doctrine/DoctrineMongoDBBundle/pull/514) fixes a wrong call to `clearstatcache`
+ * [513](https://github.com/doctrine/DoctrineMongoDBBundle/pull/513) fixes command deprecation notices when using Symfony 4.2
+
 3.5.2 (2018-12-07)
 ------------------
 
