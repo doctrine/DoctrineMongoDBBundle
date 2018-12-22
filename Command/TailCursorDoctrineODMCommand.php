@@ -4,11 +4,14 @@
 namespace Doctrine\Bundle\MongoDBBundle\Command;
 
 use Doctrine\Bundle\MongoDBBundle\Cursor\TailableCursorProcessorInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Psr\Container\ContainerInterface;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Command helping to configure a daemon listening to a tailable cursor. Works only with capped collections.
@@ -16,8 +19,10 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @author Jonathan H. Wage <jonwage@gmail.com>
  * @author Bilal Amarni <bilal.amarni@gmail.com>
  */
-class TailCursorDoctrineODMCommand extends ContainerAwareCommand
+class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     protected function configure()
     {
         $this
@@ -82,5 +87,13 @@ class TailCursorDoctrineODMCommand extends ContainerAwareCommand
 
             $dm->clear();
         }
+    }
+
+    /**
+     * @return ContainerInterface
+     */
+    protected function getContainer()
+    {
+        return $this->container;
     }
 }
