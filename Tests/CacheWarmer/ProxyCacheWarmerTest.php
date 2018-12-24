@@ -8,7 +8,8 @@ use Doctrine\Bundle\MongoDBBundle\CacheWarmer\ProxyCacheWarmer;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\ODM\MongoDB\Proxy\ProxyFactory;
+use Doctrine\ODM\MongoDB\Proxy\Factory\ProxyFactory;
+use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionObject;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -19,16 +20,17 @@ class ProxyCacheWarmerTest extends TestCase
     /** @var ContainerInterface */
     private $container;
 
+    /** @var ProxyFactory|MockObject */
     private $proxyMock;
 
-    /** @var ProxyFactory */
+    /** @var ProxyCacheWarmer */
     private $warmer;
 
     public function setUp()
     {
         $this->container = new Container();
         $this->container->setParameter('doctrine_mongodb.odm.proxy_dir', sys_get_temp_dir());
-        $this->container->setParameter('doctrine_mongodb.odm.auto_generate_proxy_classes', Configuration::AUTOGENERATE_NEVER);
+        $this->container->setParameter('doctrine_mongodb.odm.auto_generate_proxy_classes', Configuration::AUTOGENERATE_EVAL);
 
         $this->proxyMock = $this->getMockBuilder(ProxyFactory::class)->disableOriginalConstructor()->getMock();
 
@@ -52,6 +54,8 @@ class ProxyCacheWarmerTest extends TestCase
 
     public function testWarmerExecuted()
     {
+        $this->container->setParameter('doctrine_mongodb.odm.auto_generate_proxy_classes', Configuration::AUTOGENERATE_FILE_NOT_EXISTS);
+
         $this->proxyMock
             ->expects($this->once())
             ->method('generateProxyClasses')
@@ -59,22 +63,10 @@ class ProxyCacheWarmerTest extends TestCase
         $this->warmer->warmUp('meh');
     }
 
-    /**
-     * @dataProvider provideWarmerNotExecuted
-     */
-    public function testWarmerNotExecuted($autoGenerate)
+    public function testWarmerNotExecuted()
     {
-        $this->container->setParameter('doctrine_mongodb.odm.auto_generate_proxy_classes', $autoGenerate);
+        $this->container->setParameter('doctrine_mongodb.odm.auto_generate_proxy_classes', Configuration::AUTOGENERATE_EVAL);
         $this->proxyMock->expects($this->exactly(0))->method('generateProxyClasses');
         $this->warmer->warmUp('meh');
-    }
-
-    public function provideWarmerNotExecuted()
-    {
-        return [
-            [ Configuration::AUTOGENERATE_ALWAYS ],
-            [ Configuration::AUTOGENERATE_EVAL ],
-            [ Configuration::AUTOGENERATE_FILE_NOT_EXISTS ],
-        ];
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 
-use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
@@ -47,13 +46,13 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('proxy_namespace')->defaultValue('MongoDBODMProxies')->end()
                 ->scalarNode('proxy_dir')->defaultValue('%kernel.cache_dir%/doctrine/odm/mongodb/Proxies')->end()
                 ->scalarNode('auto_generate_proxy_classes')
-                    ->defaultValue(AbstractProxyFactory::AUTOGENERATE_NEVER)
+                    ->defaultValue(ODMConfiguration::AUTOGENERATE_EVAL)
                     ->beforeNormalization()
                     ->always(static function ($v) {
                         if ($v === false) {
-                            return AbstractProxyFactory::AUTOGENERATE_NEVER;
+                            return ODMConfiguration::AUTOGENERATE_EVAL;
                         } elseif ($v === true) {
-                            return AbstractProxyFactory::AUTOGENERATE_ALWAYS;
+                            return ODMConfiguration::AUTOGENERATE_FILE_NOT_EXISTS;
                         }
                         return $v;
                     })

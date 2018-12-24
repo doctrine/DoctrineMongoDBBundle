@@ -20,7 +20,7 @@ class TestCase extends BaseTestCase
     public static function createTestDocumentManager($paths = [])
     {
         $config = new Configuration();
-        $config->setAutoGenerateProxyClasses(1);
+        $config->setAutoGenerateProxyClasses(Configuration::AUTOGENERATE_FILE_NOT_EXISTS);
         $config->setProxyDir(sys_get_temp_dir());
         $config->setHydratorDir(sys_get_temp_dir());
         $config->setProxyNamespace('SymfonyTests\Doctrine');
