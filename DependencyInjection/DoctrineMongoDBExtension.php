@@ -6,6 +6,7 @@ namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepositoryInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
@@ -316,7 +317,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     private function normalizeDriverOptions(array $connection)
     {
         $driverOptions            = $connection['driverOptions'] ?? [];
-        $driverOptions['typeMap'] = ['root' => 'array', 'document' => 'array'];
+        $driverOptions['typeMap'] = DocumentManager::CLIENT_TYPEMAP;
 
         if (isset($driverOptions['context'])) {
             $driverOptions['context'] = new Reference($driverOptions['context']);
