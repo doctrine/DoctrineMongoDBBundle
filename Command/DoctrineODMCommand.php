@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Command;
 
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\ODM\MongoDB\Tools\Console\Helper\DocumentManagerHelper;
 use InvalidArgumentException;
 use RuntimeException;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use const DIRECTORY_SEPARATOR;
 use function sprintf;
@@ -18,8 +22,28 @@ use function strtolower;
 /**
  * Base class for Doctrine ODM console commands to extend.
  */
-abstract class DoctrineODMCommand extends ContainerAwareCommand
+abstract class DoctrineODMCommand extends Command implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
+    /** @var ManagerRegistry|null */
+    private $managerRegistry;
+
+    public function __construct(?ManagerRegistry $registry = null)
+    {
+        parent::__construct(null);
+
+        $this->managerRegistry = $registry;
+    }
+
+    /**
+     * @return ContainerInterface
+     */
+    protected function getContainer()
+    {
+        return $this->container;
+    }
+
     public static function setApplicationDocumentManager(Application $application, $dmName)
     {
         $dm        = $application->getKernel()->getContainer()->get('doctrine_mongodb')->getManager($dmName);
@@ -29,7 +53,19 @@ abstract class DoctrineODMCommand extends ContainerAwareCommand
 
     protected function getDoctrineDocumentManagers()
     {
-        return $this->getContainer()->get('doctrine_mongodb')->getManagers();
+        return $this->getManagerRegistry()->getManagers();
+    }
+
+    /**
+     * @internal
+     */
+    protected function getManagerRegistry()
+    {
+        if ($this->managerRegistry === null) {
+            $this->managerRegistry = $this->container->get('doctrine_mongodb');
+        }
+
+        return $this->managerRegistry;
     }
 
     protected function findBundle($bundleName)

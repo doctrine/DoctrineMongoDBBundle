@@ -44,7 +44,7 @@ To install DoctrineMongoDBBundle with Composer just run the following command:
 
 .. note::
 
-   The ODM requires the PHP 7 MongoDB driver (`mongo`).
+   The ODM requires the PHP 7 MongoDB driver (`mongodb`).
 
 .. note::
 

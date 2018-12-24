@@ -6,6 +6,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
@@ -22,12 +23,14 @@ class ContainerTest extends TestCase
     protected function setUp()
     {
         $this->container = new ContainerBuilder(new ParameterBag([
-            'kernel.bundles'      => [],
-            'kernel.cache_dir'    => sys_get_temp_dir(),
-            'kernel.root_dir'     => sys_get_temp_dir(),
-            'kernel.environment'  => 'test',
-            'kernel.name'         => 'kernel',
-            'kernel.debug'        => true,
+            'kernel.bundles'         => [],
+            'kernel.cache_dir'       => sys_get_temp_dir(),
+            'kernel.root_dir'        => sys_get_temp_dir(),
+            'kernel.project_dir'     => sys_get_temp_dir(),
+            'kernel.environment'     => 'test',
+            'kernel.name'            => 'kernel',
+            'kernel.debug'           => true,
+            'kernel.container_class' => Container::class,
         ]));
 
         $this->container->setDefinition('annotation_reader', new Definition(AnnotationReader::class));

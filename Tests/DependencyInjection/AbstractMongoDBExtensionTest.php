@@ -20,6 +20,7 @@ use MongoDB\Client;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit_Framework_AssertionFailedError;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
@@ -505,6 +506,8 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
             'kernel.environment'      => 'test',
             'kernel.name'             => 'kernel',
             'kernel.root_dir'         => __DIR__,
+            'kernel.project_dir'      => __DIR__,
+            'kernel.container_class'  => Container::class,
         ]));
     }
 }
