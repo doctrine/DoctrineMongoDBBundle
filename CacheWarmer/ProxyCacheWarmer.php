@@ -56,7 +56,7 @@ class ProxyCacheWarmer implements CacheWarmerInterface
             throw new RuntimeException(sprintf('Doctrine Proxy directory (%s) is not writable for the current system user.', $proxyCacheDir));
         }
 
-        if ($this->container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes') !== AbstractProxyFactory::AUTOGENERATE_NEVER) {
+        if ($this->container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes') === AbstractProxyFactory::AUTOGENERATE_EVAL) {
             return;
         }
 

@@ -33,7 +33,7 @@ class ConfigurationTest extends TestCase
         $defaults = [
             'fixture_loader'                 => ContainerAwareLoader::class,
             'auto_generate_hydrator_classes' => false,
-            'auto_generate_proxy_classes'    => false,
+            'auto_generate_proxy_classes'    => ODMConfiguration::AUTOGENERATE_EVAL,
             'auto_generate_persistent_collection_classes' => ODMConfiguration::AUTOGENERATE_NEVER,
             'default_database'               => 'default',
             'document_managers'              => [],
@@ -63,7 +63,7 @@ class ConfigurationTest extends TestCase
         $expected = [
             'fixture_loader'                 => ContainerAwareLoader::class,
             'auto_generate_hydrator_classes' => 1,
-            'auto_generate_proxy_classes'    => 1,
+            'auto_generate_proxy_classes'    => ODMConfiguration::AUTOGENERATE_FILE_NOT_EXISTS,
             'auto_generate_persistent_collection_classes' => ODMConfiguration::AUTOGENERATE_EVAL,
             'default_connection'             => 'conn1',
             'default_database'               => 'default_db_name',
