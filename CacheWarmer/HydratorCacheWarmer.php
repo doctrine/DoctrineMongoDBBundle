@@ -7,6 +7,7 @@ namespace Doctrine\Bundle\MongoDBBundle\CacheWarmer;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Types\Type;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
@@ -44,6 +45,9 @@ class HydratorCacheWarmer implements CacheWarmerInterface
 
     public function warmUp($cacheDir)
     {
+        // register custom types during cache warm up to avoid errors while generating hydrator classes
+        $this->registerTypes();
+
         // we need the directory no matter the hydrator cache generation strategy.
         $hydratorCacheDir = $this->container->getParameter('doctrine_mongodb.odm.hydrator_dir');
         if (! file_exists($hydratorCacheDir)) {
@@ -64,6 +68,23 @@ class HydratorCacheWarmer implements CacheWarmerInterface
             /** @var DocumentManager $dm */
             $classes = $dm->getMetadataFactory()->getAllMetadata();
             $dm->getHydratorFactory()->generateHydratorClasses($classes);
+        }
+    }
+
+    private function registerTypes() : void
+    {
+        if (! $this->container->hasParameter('doctrine_mongodb.odm.types')) {
+            // no types defined
+            exit;
+        }
+
+        $types = $this->container->getParameter('doctrine_mongodb.odm.types');
+        foreach ($types as $key => $fqcn) {
+            if (Type::hasType($key)) {
+                Type::overrideType($key, $fqcn);
+            } else {
+                Type::addType($key, $fqcn);
+            }
         }
     }
 }

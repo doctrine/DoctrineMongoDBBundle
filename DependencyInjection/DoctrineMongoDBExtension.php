@@ -105,6 +105,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             'persistent_collection_dir',
             'persistent_collection_namespace',
             'auto_generate_persistent_collection_classes',
+            'types',
         ];
 
         foreach ($overrides as $key) {
