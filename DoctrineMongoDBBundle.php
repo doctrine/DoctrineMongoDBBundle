@@ -8,7 +8,6 @@ use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CreateHydratorDir
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CreateProxyDirectoryPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
-use Doctrine\Common\Util\ClassUtils;
 use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\DoctrineValidationPass;
 use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\RegisterEventListenersAndSubscribersPass;
 use Symfony\Bridge\Doctrine\DependencyInjection\Security\UserProvider\EntityFactory;
@@ -76,8 +75,7 @@ class DoctrineMongoDBBundle extends Bundle
             $file     = $dir . DIRECTORY_SEPARATOR . $fileName . '.php';
 
             if (! is_file($file) && $container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes')) {
-                $originalClassName = ClassUtils::getRealClass($class);
-                $registry          = $container->get('doctrine_mongodb');
+                $registry = $container->get('doctrine_mongodb');
 
                 // Tries to auto-generate the proxy file
                 foreach ($registry->getManagers() as $dm) {
@@ -85,7 +83,8 @@ class DoctrineMongoDBBundle extends Bundle
                         continue;
                     }
 
-                    $classes = $dm->getMetadataFactory()->getAllMetadata();
+                    $originalClassName = $dm->getClassNameResolver()->getRealClass($class);
+                    $classes           = $dm->getMetadataFactory()->getAllMetadata();
 
                     foreach ($classes as $classMetadata) {
                         if ($classMetadata->name !== $originalClassName) {
