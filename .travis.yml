@@ -5,6 +5,7 @@ sudo: false
 php:
   - 7.2
   - 7.3
+  - 7.4snapshot
 
 env:
   global:
@@ -42,3 +43,6 @@ script:
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
   - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+
+allow_failures:
+  - php: 7.4snapshot
