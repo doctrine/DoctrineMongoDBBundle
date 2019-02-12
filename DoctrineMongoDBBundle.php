@@ -8,21 +8,16 @@ use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CreateHydratorDir
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CreateProxyDirectoryPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
+use Doctrine\ODM\MongoDB\Configuration;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\DoctrineValidationPass;
 use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\RegisterEventListenersAndSubscribersPass;
 use Symfony\Bridge\Doctrine\DependencyInjection\Security\UserProvider\EntityFactory;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use const DIRECTORY_SEPARATOR;
-use function clearstatcache;
-use function is_file;
 use function spl_autoload_register;
 use function spl_autoload_unregister;
-use function str_replace;
-use function strlen;
-use function strpos;
-use function substr;
 
 /**
  * Doctrine MongoDB ODM bundle.
@@ -54,56 +49,21 @@ class DoctrineMongoDBBundle extends Bundle
 
     public function boot()
     {
-        // Register an autoloader for proxies to avoid issues when unserializing them
-        // when the ODM is used.
-        if (! $this->container->hasParameter('doctrine_mongodb.odm.proxy_namespace')) {
+        /** @var ManagerRegistry $registry */
+        $registry = $this->container->get('doctrine_mongodb');
+
+        $this->registerAutoloader($registry->getManager());
+    }
+
+    private function registerAutoloader(DocumentManager $documentManager) : void
+    {
+        $configuration = $documentManager->getConfiguration();
+        if ($configuration->getAutoGenerateProxyClasses() !== Configuration::AUTOGENERATE_FILE_NOT_EXISTS) {
             return;
         }
 
-        $namespace = $this->container->getParameter('doctrine_mongodb.odm.proxy_namespace');
-        $dir       = $this->container->getParameter('doctrine_mongodb.odm.proxy_dir');
-        // See https://github.com/symfony/symfony/pull/3419 for usage of
-        // references
-        $container =& $this->container;
+        $this->autoloader = $configuration->getProxyManagerConfiguration()->getProxyAutoloader();
 
-        $this->autoloader = static function ($class) use ($namespace, $dir, &$container) {
-            if (strpos($class, $namespace) !== 0) {
-                return;
-            }
-
-            $fileName = str_replace('\\', '', substr($class, strlen($namespace) +1));
-            $file     = $dir . DIRECTORY_SEPARATOR . $fileName . '.php';
-
-            if (! is_file($file) && $container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes')) {
-                $registry = $container->get('doctrine_mongodb');
-
-                // Tries to auto-generate the proxy file
-                foreach ($registry->getManagers() as $dm) {
-                    if (! $dm->getConfiguration()->getAutoGenerateProxyClasses()) {
-                        continue;
-                    }
-
-                    $originalClassName = $dm->getClassNameResolver()->getRealClass($class);
-                    $classes           = $dm->getMetadataFactory()->getAllMetadata();
-
-                    foreach ($classes as $classMetadata) {
-                        if ($classMetadata->name !== $originalClassName) {
-                            continue;
-                        }
-
-                        $dm->getProxyFactory()->generateProxyClasses([$classMetadata]);
-                    }
-                }
-
-                clearstatcache(true, $file);
-            }
-
-            if (! is_file($file)) {
-                return;
-            }
-
-            require $file;
-        };
         spl_autoload_register($this->autoloader);
     }
 
