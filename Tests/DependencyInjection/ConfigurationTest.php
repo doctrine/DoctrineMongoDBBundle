@@ -489,6 +489,27 @@ class ConfigurationTest extends TestCase
         $this->assertFalse(array_key_exists('replicaSet', $processedConfig['connections']['conn1']['options']));
     }
 
+    public function testPortFromEnvVariable()
+    {
+        $config = [
+            'document_managers' => [
+                'dm1' => [
+                    'metadata_cache_driver' => [
+                        'type'           => 'memcached',
+                        'class'          => 'fooClass',
+                        'host'           => 'host_val',
+                        'port'           => '%env(int:MEMCACHE_PORT)%',
+                        'instance_class' => 'instance_val',
+                    ],
+                ],
+            ],
+        ];
+
+        $processor       = new Processor();
+        $configuration   = new Configuration(false);
+        $processedConfig = $processor->processConfiguration($configuration, [$config]);
+    }
+
     /**
      * @dataProvider provideExceptionConfiguration
      */

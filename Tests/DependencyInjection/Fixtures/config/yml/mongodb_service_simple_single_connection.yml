@@ -9,5 +9,4 @@ doctrine_mongodb:
         type: memcached
         class: Doctrine\Common\Cache\MemcachedCache
         host: localhost
-        port: 11211
-        instance_class: Memcached
+        port: '%env(int:MEMCACHE_PORT)%'

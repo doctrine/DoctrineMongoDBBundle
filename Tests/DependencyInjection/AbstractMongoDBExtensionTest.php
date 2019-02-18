@@ -23,7 +23,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+use Symfony\Component\DependencyInjection\ParameterBag\EnvPlaceholderParameterBag;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Vendor\Filter\BasicFilter;
@@ -31,7 +31,9 @@ use Vendor\Filter\ComplexFilter;
 use Vendor\Filter\DisabledFilter;
 use function array_map;
 use function array_search;
+use function extension_loaded;
 use function reset;
+use function sprintf;
 
 abstract class AbstractMongoDBExtensionTest extends TestCase
 {
@@ -173,6 +175,31 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $this->assertEquals('doctrine_mongodb.odm.default_document_manager', (string) $container->getAlias('doctrine_mongodb.odm.document_manager'));
         $this->assertEquals('doctrine_mongodb.odm.default_connection.event_manager', (string) $container->getAlias('doctrine_mongodb.odm.event_manager'));
+    }
+
+    public function testLoadCacheService()
+    {
+        if (! extension_loaded('memcached')) {
+            $this->markTestSkipped(sprintf('The "%s" test requires the memcached extension', __METHOD__));
+        }
+
+        $container = $this->getContainer();
+        $loader    = new DoctrineMongoDBExtension();
+        $container->registerExtension($loader);
+
+        $this->loadFromFile($container, 'mongodb_service_simple_single_connection');
+
+        $container->compile();
+
+        // Test retrieving the document manager
+        /** @var DocumentManager $documentManager */
+        $documentManager = $container->get('doctrine_mongodb.odm.default_document_manager');
+
+        /** @var MemcachedCache $cacheImplementation */
+        $cacheImplementation = $documentManager->getConfiguration()->getMetadataCacheImpl();
+        self::assertInstanceOf(MemcachedCache::class, $cacheImplementation);
+
+        $cacheImplementation->getMemcached()->getServerList();
     }
 
     public function testLoadSingleConnection()
@@ -498,7 +525,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
     {
         require_once __DIR__ . '/Fixtures/Bundles/' . $bundle . '/' . $bundle . '.php';
 
-        return new ContainerBuilder(new ParameterBag([
+        return new ContainerBuilder(new EnvPlaceholderParameterBag([
             'kernel.bundles'          => [$bundle => 'DoctrineMongoDBBundle\\Tests\\DependencyInjection\\Fixtures\\Bundles\\' . $bundle . '\\' . $bundle],
             'kernel.cache_dir'        => __DIR__,
             'kernel.compiled_classes' => [],
