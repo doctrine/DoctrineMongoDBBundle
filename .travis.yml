@@ -33,6 +33,7 @@ services: mongodb
 
 install:
   - composer self-update
+  - pecl install memcached
   - pecl install -f mongodb-${DRIVER_VERSION}
   - composer update ${COMPOSER_FLAGS}
 
