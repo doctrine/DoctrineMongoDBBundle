@@ -1,5 +1,5 @@
-How to implement a simple Registration Form with MongoDB
-========================================================
+Creating a Registration Form
+============================
 
 Some forms have extra fields whose values don't need to be stored in the
 database. In this example, we'll create a registration form with some extra

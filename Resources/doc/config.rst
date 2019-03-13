@@ -1,5 +1,5 @@
-DoctrineMongoDBBundle Configuration
-===================================
+Configuration
+=============
 
 Sample Configuration
 --------------------
@@ -120,7 +120,7 @@ If you wish to use memcache to cache your metadata, you need to configure the
 
 
 Mapping Configuration
-~~~~~~~~~~~~~~~~~~~~~
+---------------------
 
 Explicit definition of all the mapped documents is the only necessary
 configuration for the ODM and there are several configuration options that you
@@ -215,7 +215,7 @@ The following configuration shows a bunch of mapping examples:
         </container>
 
 Filters
-~~~~~~~
+-------
 
 Filter classes may be used in order to add criteria to ODM queries, regardless
 of where those queries are created within your application. Typically, filters
@@ -278,7 +278,7 @@ Filters may be registered with a document manager by using the following syntax:
     respectively.
 
 Multiple Connections
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 
 If you need multiple connections and document managers you can use the
 following syntax:
@@ -359,7 +359,7 @@ connection services:
     $dm2 = $container->get('doctrine_mongodb.odm.dm2_document_manager');
 
 Connecting to a pool of mongodb servers on 1 connection
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------------------------------------
 
 It is possible to connect to several mongodb servers on one connection if
 you are using a replica set by listing all of the servers within the connection
@@ -394,7 +394,7 @@ Where mongodb-01, mongodb-02 and mongodb-03 are the machine hostnames. You
 can also use IP addresses if you prefer.
 
 Using Authentication on a Database Level
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+----------------------------------------
 
 MongoDB supports authentication and authorisation on a database-level. This is mandatory if you have
 e.g. a publicly accessible MongoDB Server. To make use of this feature you need to configure credentials
@@ -496,7 +496,7 @@ You can then use this service in your configuration:
 
 
 Full Default Configuration
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------
 
 .. configuration-block::
 
