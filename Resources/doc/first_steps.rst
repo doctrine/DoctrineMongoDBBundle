@@ -128,16 +128,16 @@ of the bundle:
 
     // src/Acme/StoreBundle/Controller/DefaultController.php
     use Acme\StoreBundle\Document\Product;
+    use Doctrine\ODM\MongoDB\DocumentManager;
     use Symfony\Component\HttpFoundation\Response;
     // ...
 
-    public function createAction()
+    public function createAction(DocumentManager $dm)
     {
         $product = new Product();
         $product->setName('A Foo Bar');
         $product->setPrice('19.99');
 
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $dm->persist($product);
         $dm->flush();
 
@@ -218,11 +218,9 @@ you've configured a route to display a specific ``Product`` based on its
 
 .. code-block:: php
 
-    public function showAction($id)
+    public function showAction(DocumentManager $dm, $id)
     {
-        $product = $this->get('doctrine_mongodb')
-            ->getRepository('AcmeStoreBundle:Product')
-            ->find($id);
+        $product = $dm->getRepository(Product::class)->find($id);
 
         if (!$product) {
             throw $this->createNotFoundException('No product found for id '.$id);
@@ -238,9 +236,7 @@ repository object for a document class via:
 
 .. code-block:: php
 
-    $repository = $this->get('doctrine_mongodb')
-        ->getManager()
-        ->getRepository('AcmeStoreBundle:Product');
+    $repository = $dm->getRepository(Product::class);
 
 .. note::
 
@@ -293,10 +289,9 @@ you have a route that maps a product id to an update action in a controller:
 
 .. code-block:: php
 
-    public function updateAction($id)
+    public function updateAction(DocumentManager $dm, $id)
     {
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $product = $dm->getRepository('AcmeStoreBundle:Product')->find($id);
+        $product = $dm->getRepository(Product::class)->find($id);
 
         if (!$product) {
             throw $this->createNotFoundException('No product found for id '.$id);
@@ -352,9 +347,7 @@ From inside a controller:
 
 .. code-block:: php
 
-    $products = $this->get('doctrine_mongodb')
-        ->getManager()
-        ->createQueryBuilder('AcmeStoreBundle:Product')
+    $products = $dm->createQueryBuilder(Product::class)
         ->field('name')->equals('foo')
         ->sort('price', 'ASC')
         ->limit(10)
@@ -386,10 +379,11 @@ To do this, add the name of the repository class to your mapping definition.
         // src/Acme/StoreBundle/Document/Product.php
         namespace Acme\StoreBundle\Document;
 
+        use Acme\StoreBundle\Repository\ProductRepository;
         use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
         /**
-         * @MongoDB\Document(repositoryClass="Acme\StoreBundle\Repository\ProductRepository")
+         * @MongoDB\Document(repositoryClass=ProductRepository::class)
          */
         class Product
         {
@@ -410,7 +404,7 @@ To do this, add the name of the repository class to your mapping definition.
                 <!-- ... -->
             </document>
 
-        </doctrine-mong-mapping>
+        </doctrine-mongo-mapping>
 
 You have to create the repository in the namespace indicated above. Make sure it
 extends the default ``DocumentRepository``. Next, add a new method -
@@ -439,9 +433,7 @@ You can use this new method just like the default finder methods of the reposito
 
 .. code-block:: php
 
-    $products = $this->get('doctrine_mongodb')
-        ->getManager()
-        ->getRepository('AcmeStoreBundle:Product')
+    $products = $dm->getRepository(Product::class)
         ->findAllOrderedByName();
 
 
