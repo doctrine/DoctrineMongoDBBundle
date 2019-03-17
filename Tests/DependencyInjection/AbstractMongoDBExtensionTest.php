@@ -444,6 +444,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
             try {
                 $this->assertSame($params, $call[1], "Expected parameters to method '" . $methodName . "' did not match the actual parameters.");
+
                 return;
             } catch (PHPUnit_Framework_AssertionFailedError $e) {
                 $lastError = $e;

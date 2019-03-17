@@ -23,7 +23,7 @@
         "symfony/options-resolver": "^3.4 || ^4.0"
     },
     "require-dev": {
-        "doctrine/coding-standard": "^5.0",
+        "doctrine/coding-standard": "^6.0",
         "doctrine/data-fixtures": "@dev",
         "phpunit/phpunit": "^7.3",
         "symfony/form": "^3.4 || ^4.0",
