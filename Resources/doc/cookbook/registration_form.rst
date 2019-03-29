@@ -217,6 +217,8 @@ controller for displaying the registration form:
     // src/Acme/AccountBundle/Controller/AccountController.php
     namespace Acme\AccountBundle\Controller;
 
+    use Doctrine\ODM\MongoDB\DocumentManager;
+
     use Symfony\Bundle\FrameworkBundle\Controller\Controller;
     use Symfony\Component\HttpFoundation\Response;
 
@@ -252,10 +254,8 @@ the validation and saves the data into MongoDB:
 
 .. code-block:: php
 
-    public function createAction(Request $request)
+    public function createAction(DocumentManager $dm, Request $request)
     {
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
         $form = $this->createForm(RegistrationType::class, new Registration());
 
         $form->handleRequest($request);
