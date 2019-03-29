@@ -56,7 +56,6 @@ class DocumentTypeTest extends TypeTestCase
         parent::tearDown();
     }
 
-
     public function testDocumentManagerOptionSetsEmOption()
     {
         $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, [

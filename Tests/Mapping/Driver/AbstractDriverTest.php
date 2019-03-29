@@ -60,7 +60,9 @@ abstract class AbstractDriverTest extends TestCase
     }
 
     abstract protected function getFileExtension();
+
     abstract protected function getFixtureDir();
+
     abstract protected function getDriver(array $paths = []);
 
     private function getDriverLocator(FileDriver $driver)

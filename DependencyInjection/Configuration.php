@@ -51,9 +51,12 @@ class Configuration implements ConfigurationInterface
                     ->always(static function ($v) {
                         if ($v === false) {
                             return ODMConfiguration::AUTOGENERATE_EVAL;
-                        } elseif ($v === true) {
+                        }
+
+                        if ($v === true) {
                             return ODMConfiguration::AUTOGENERATE_FILE_NOT_EXISTS;
                         }
+
                         return $v;
                     })
                     ->end()
@@ -66,9 +69,12 @@ class Configuration implements ConfigurationInterface
                     ->always(static function ($v) {
                         if ($v === false) {
                             return ODMConfiguration::AUTOGENERATE_NEVER;
-                        } elseif ($v === true) {
+                        }
+
+                        if ($v === true) {
                             return ODMConfiguration::AUTOGENERATE_ALWAYS;
                         }
+
                         return $v;
                     })
                     ->end()
