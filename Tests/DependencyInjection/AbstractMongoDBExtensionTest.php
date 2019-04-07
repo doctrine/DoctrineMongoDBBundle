@@ -13,6 +13,7 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\MemcacheCache;
 use Doctrine\Common\Cache\MemcachedCache;
 use Doctrine\Common\Cache\XcacheCache;
+use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain;
 use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\Configuration;
@@ -409,7 +410,12 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.listeners.resolve_target_document');
         $this->assertDefinitionMethodCallOnce($definition, 'addResolveTargetDocument', [UserInterface::class, 'MyUserClass', []]);
-        $this->assertEquals(['doctrine_mongodb.odm.event_listener' => [['event' => 'loadClassMetadata']]], $definition->getTags());
+
+        if (in_array(EventSubscriber::class, class_implements($container->getParameterBag()->resolveValue($definition->getClass())))) {
+            $this->assertEquals(['doctrine_mongodb.odm.event_subscriber' => [[]]], $definition->getTags());
+        } else {
+            $this->assertEquals(['doctrine_mongodb.odm.event_listener' => [['event' => 'loadClassMetadata']]], $definition->getTags());
+        }
     }
 
     public function testFilters()
