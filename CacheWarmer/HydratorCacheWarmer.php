@@ -75,7 +75,7 @@ class HydratorCacheWarmer implements CacheWarmerInterface
     {
         if (! $this->container->hasParameter('doctrine_mongodb.odm.types')) {
             // no types defined
-            exit;
+            return;
         }
 
         $types = $this->container->getParameter('doctrine_mongodb.odm.types');
