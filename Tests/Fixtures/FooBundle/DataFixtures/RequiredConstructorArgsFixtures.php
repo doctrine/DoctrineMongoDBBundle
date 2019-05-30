@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures;
 
 use Doctrine\Bundle\MongoDBBundle\Fixture\ODMFixtureInterface;
@@ -13,7 +11,7 @@ class RequiredConstructorArgsFixtures implements ODMFixtureInterface
     {
     }
 
-    public function load(ObjectManager $manager) : void
+    public function load(ObjectManager $manager)
     {
         // ...
     }

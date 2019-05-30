@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures;
 
 use Doctrine\Bundle\MongoDBBundle\Fixture\FixtureGroupInterface;
@@ -11,17 +9,17 @@ use Doctrine\Common\Persistence\ObjectManager;
 
 class WithDependenciesFixtures implements ODMFixtureInterface, DependentFixtureInterface, FixtureGroupInterface
 {
-    public function load(ObjectManager $manager) : void
+    public function load(ObjectManager $manager)
     {
         // ...
     }
 
-    public function getDependencies() : array
+    public function getDependencies()
     {
         return [OtherFixtures::class];
     }
 
-    public static function getGroups() : array
+    public static function getGroups()
     {
         return ['missingDependencyGroup', 'fulfilledDependencyGroup'];
     }

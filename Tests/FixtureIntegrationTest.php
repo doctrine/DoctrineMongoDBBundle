@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Doctrine\Bundle\MongoDBBundle\Tests;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerPass;
@@ -37,10 +35,10 @@ class FixtureIntegrationTest extends TestCase
         }
     }
 
-    public function testFixturesLoader(): void
+    public function testFixturesLoader()
     {
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c): void {
+        $kernel->addServices(static function (ContainerBuilder $c) {
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
 
@@ -68,12 +66,12 @@ class FixtureIntegrationTest extends TestCase
         $this->assertInstanceOf(WithDependenciesFixtures::class, $actualFixtures[1]);
     }
 
-    public function testFixturesLoaderWhenFixtureHasDependencyThatIsNotYetLoaded(): void
+    public function testFixturesLoaderWhenFixtureHasDependencyThatIsNotYetLoaded()
     {
         // See https://github.com/doctrine/DoctrineFixturesBundle/issues/215
 
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c): void {
+        $kernel->addServices(static function (ContainerBuilder $c) {
             $c->autowire(WithDependenciesFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
 
@@ -105,7 +103,7 @@ class FixtureIntegrationTest extends TestCase
      * @expectedException \LogicException
      * @expectedExceptionMessage The getDependencies() method returned a class (Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures) that has required constructor arguments. Upgrade to "doctrine/data-fixtures" version 1.3 or higher to support this.
      */
-    public function testExceptionWithDependenciesWithRequiredArguments(): void
+    public function testExceptionWithDependenciesWithRequiredArguments()
     {
         // see https://github.com/doctrine/data-fixtures/pull/274
         // When that is merged, this test will only run when using
@@ -138,7 +136,7 @@ class FixtureIntegrationTest extends TestCase
      * @expectedException \LogicException
      * @expectedExceptionMessage The "Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures" fixture class is trying to be loaded, but is not available. Make sure this class is defined as a service and tagged with "doctrine.fixture.odm.mongodb".
      */
-    public function testExceptionIfDependentFixtureNotWired(): void
+    public function testExceptionIfDependentFixtureNotWired()
     {
         // only runs on newer versions of doctrine/data-fixtures
         if (! method_exists(Loader::class, 'createFixture')) {
@@ -146,7 +144,7 @@ class FixtureIntegrationTest extends TestCase
         }
 
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c): void {
+        $kernel->addServices(static function (ContainerBuilder $c) {
             $c->autowire(DependentOnRequiredConstructorArgsFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
 
@@ -161,10 +159,10 @@ class FixtureIntegrationTest extends TestCase
         $loader->getFixtures();
     }
 
-    public function testFixturesLoaderWithGroupsOptionViaInterface(): void
+    public function testFixturesLoaderWithGroupsOptionViaInterface()
     {
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c): void {
+        $kernel->addServices(static function (ContainerBuilder $c) {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -193,10 +191,10 @@ class FixtureIntegrationTest extends TestCase
         $this->assertInstanceOf(OtherFixtures::class, $actualFixtures[0]);
     }
 
-    public function testFixturesLoaderWithGroupsOptionViaTag(): void
+    public function testFixturesLoaderWithGroupsOptionViaTag()
     {
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c): void {
+        $kernel->addServices(static function (ContainerBuilder $c) {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG, ['group' => 'group1'])
@@ -220,10 +218,10 @@ class FixtureIntegrationTest extends TestCase
         $this->assertCount(0, $loader->getFixtures(['group3']));
     }
 
-    public function testLoadFixturesViaGroupWithMissingDependency(): void
+    public function testLoadFixturesViaGroupWithMissingDependency()
     {
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c): void {
+        $kernel->addServices(static function (ContainerBuilder $c) {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -246,10 +244,10 @@ class FixtureIntegrationTest extends TestCase
         $loader->getFixtures(['missingDependencyGroup']);
     }
 
-    public function testLoadFixturesViaGroupWithFulfilledDependency(): void
+    public function testLoadFixturesViaGroupWithFulfilledDependency()
     {
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c): void {
+        $kernel->addServices(static function (ContainerBuilder $c) {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -279,10 +277,10 @@ class FixtureIntegrationTest extends TestCase
         ], $actualFixtureClasses);
     }
 
-    public function testLoadFixturesByShortName(): void
+    public function testLoadFixturesByShortName()
     {
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c): void {
+        $kernel->addServices(static function (ContainerBuilder $c) {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -322,19 +320,19 @@ class IntegrationTestKernel extends Kernel
     /** @var int */
     private $randomKey;
 
-    public function __construct(string $environment, bool $debug)
+    public function __construct($environment, $debug)
     {
         $this->randomKey = rand(100, 999);
 
         parent::__construct($environment, $debug);
     }
 
-    protected function getContainerClass(): string
+    protected function getContainerClass()
     {
         return 'test' . $this->randomKey . parent::getContainerClass();
     }
 
-    public function registerBundles(): array
+    public function registerBundles()
     {
         return [
             new FrameworkBundle(),
@@ -343,16 +341,16 @@ class IntegrationTestKernel extends Kernel
         ];
     }
 
-    public function addServices(callable $callback): void
+    public function addServices(callable $callback)
     {
         $this->servicesCallback = $callback;
     }
 
-    protected function configureRoutes(RouteCollectionBuilder $routes): void
+    protected function configureRoutes(RouteCollectionBuilder $routes)
     {
     }
 
-    protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader): void
+    protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader)
     {
         $c->setParameter('kernel.secret', 'foo');
 
@@ -363,12 +361,12 @@ class IntegrationTestKernel extends Kernel
         $callback($c);
     }
 
-    public function getCacheDir(): string
+    public function getCacheDir()
     {
         return sys_get_temp_dir() . '/doctrine_mongodb_odm_bundle' . $this->randomKey;
     }
 
-    public function getLogDir(): string
+    public function getLogDir()
     {
         return sys_get_temp_dir();
     }

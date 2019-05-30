@@ -12,7 +12,7 @@ interface SymfonyFixturesLoaderInterface
      * @internal
      * @param array $fixtures
      */
-    public function addFixtures(array $fixtures);
+    public function addFixtures($fixtures);
 
     /**
      * Add a single fixture
@@ -29,5 +29,5 @@ interface SymfonyFixturesLoaderInterface
      *
      * @return FixtureInterface[]
      */
-    public function getFixtures(array $groups = []);
+    public function getFixtures($groups = []);
 }

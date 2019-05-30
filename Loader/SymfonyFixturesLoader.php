@@ -27,7 +27,7 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader implements Symfon
      * @internal
      * @param array $fixtures
      */
-    public function addFixtures(array $fixtures)
+    public function addFixtures($fixtures)
     {
         // Because parent::addFixture may call $this->createFixture
         // we cannot call $this->addFixture in this loop
@@ -90,7 +90,7 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader implements Symfon
      *
      * @return FixtureInterface[]
      */
-    public function getFixtures(array $groups = [])
+    public function getFixtures($groups = [])
     {
         $fixtures = parent::getFixtures();
 
