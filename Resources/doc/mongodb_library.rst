@@ -36,7 +36,7 @@ in your Mongo database you may fetch it by defining following services:
         services:
             mongo.connection:
                 class: Doctrine\MongoDB\Connection
-                factory: ["@doctrine.odm.mongodb.document_manager", getConnection]
+                factory: ["@doctrine_mongodb.odm.document_manager", getConnection]
                 calls:
                     - [initialize, []]
             mongo:
@@ -52,7 +52,7 @@ in your Mongo database you may fetch it by defining following services:
 
             <services>
                 <service id="mongo.connection" class="Doctrine\MongoDB\Connection">
-                    <factory service="doctrine.odm.mongodb.document_manager" method="getConnection" />
+                    <factory service="doctrine_mongodb.odm.document_manager" method="getConnection" />
                     <call method="initialize" />
                 </service>
                 <service id="mongo" class="Doctrine\MongoDB\Connection">

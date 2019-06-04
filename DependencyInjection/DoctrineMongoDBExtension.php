@@ -94,9 +94,6 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             }
         }
 
-        // BC Aliases for Document Manager
-        $container->setAlias('doctrine.odm.mongodb.document_manager', new Alias('doctrine_mongodb.odm.document_manager'));
-
         $container->registerForAutoconfiguration(ServiceDocumentRepositoryInterface::class)
             ->addTag(ServiceRepositoryCompilerPass::REPOSITORY_SERVICE_TAG);
     }

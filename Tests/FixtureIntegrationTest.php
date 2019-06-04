@@ -13,7 +13,6 @@ use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDepe
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\FooBundle;
 use Doctrine\Common\DataFixtures\Loader;
 use RuntimeException;
-use Stubs\DocumentManager;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
@@ -366,9 +365,6 @@ class IntegrationTestKernel extends Kernel
     protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader) : void
     {
         $c->setParameter('kernel.secret', 'foo');
-
-        // Inject a mock document manager to avoid errors with a BC alias
-        $c->autowire('doctrine_mongodb.odm.document_manager', DocumentManager::class);
 
         $callback = $this->servicesCallback;
         $callback($c);

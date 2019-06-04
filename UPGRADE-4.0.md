@@ -11,3 +11,5 @@ UPGRADE FROM 3.x to 4.0
 * The `doctrine:mongodb:generate:documents` and
   `doctrine:mongodb:generate:repositories` commands have been dropped without
   replacement.
+* The `doctrine.odm.mongodb.document_manager` service was removed. Use the
+  `doctrine_mongodb.odm.document_manager` service instead.
