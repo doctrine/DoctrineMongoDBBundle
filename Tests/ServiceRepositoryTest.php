@@ -1,6 +1,6 @@
 <?php
 
-namespace Doctrine\Bundle\DoctrineBundle\Tests;
+namespace Doctrine\Bundle\MongoDBBundle\Tests;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;

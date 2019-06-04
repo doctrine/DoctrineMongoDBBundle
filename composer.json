@@ -24,7 +24,7 @@
         "symfony/config": "^3.4 || ^4.0"
     },
     "require-dev": {
-        "doctrine/data-fixtures": "@dev",
+        "doctrine/data-fixtures": "^1.2.2",
         "symfony/form": "^3.4 || ^4.0",
         "symfony/yaml": "^3.4 || ^4.0",
         "symfony/phpunit-bridge": "^3.4 || ^4.0",
