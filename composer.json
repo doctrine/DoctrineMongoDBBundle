@@ -24,7 +24,7 @@
     },
     "require-dev": {
         "doctrine/coding-standard": "^6.0",
-        "doctrine/data-fixtures": "@dev",
+        "doctrine/data-fixtures": "^1.2.2",
         "phpunit/phpunit": "^7.3",
         "symfony/form": "^3.4 || ^4.0",
         "symfony/phpunit-bridge": "^3.4 || ^4.0",

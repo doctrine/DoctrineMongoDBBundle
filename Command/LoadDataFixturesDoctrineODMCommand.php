@@ -4,22 +4,26 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Command;
 
+use Doctrine\Bundle\MongoDBBundle\Loader\SymfonyFixturesLoaderInterface;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\Common\DataFixtures\Executor\MongoDBExecutor;
 use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\MongoDBPurger;
-use InvalidArgumentException;
+use RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpKernel\KernelInterface;
+use const E_USER_DEPRECATED;
 use function class_exists;
 use function implode;
 use function is_array;
 use function is_dir;
 use function is_file;
 use function sprintf;
+use function trigger_error;
 
 /**
  * Load data fixtures from bundles.
@@ -29,11 +33,15 @@ class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
     /** @var KernelInterface|null */
     private $kernel;
 
-    public function __construct(?ManagerRegistry $registry = null, ?KernelInterface $kernel = null)
+    /** @var SymfonyFixturesLoaderInterface */
+    private $fixturesLoader;
+
+    public function __construct(?ManagerRegistry $registry = null, ?KernelInterface $kernel = null, ?SymfonyFixturesLoaderInterface $fixturesLoader = null)
     {
         parent::__construct($registry);
 
-        $this->kernel = $kernel;
+        $this->kernel         = $kernel;
+        $this->fixturesLoader = $fixturesLoader;
     }
 
     /**
@@ -51,20 +59,31 @@ class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
             ->setDescription('Load data fixtures to your database.')
             ->addOption('fixtures', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The directory or file to load data fixtures from.')
             ->addOption('bundles', 'b', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The bundles to load data fixtures from.')
+            ->addOption('services', null, InputOption::VALUE_NONE, 'Use services as fixtures')
+            ->addOption('group', null, InputOption::VALUE_IS_ARRAY|InputOption::VALUE_REQUIRED, 'Only load fixtures that belong to this group (use with --services)')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of flushing the database first.')
             ->addOption('dm', null, InputOption::VALUE_REQUIRED, 'The document manager to use for this command.')
             ->setHelp(<<<EOT
-The <info>doctrine:mongodb:fixtures:load</info> command loads data fixtures from your bundles:
+The <info>doctrine:mongodb:fixtures:load</info> command loads data fixtures from your application:
 
-  <info>./app/console doctrine:mongodb:fixtures:load</info>
+  <info>php %command.full_name%</info>
 
 You can also optionally specify the path to fixtures with the <info>--fixtures</info> option:
-
-  <info>./app/console doctrine:mongodb:fixtures:load --fixtures=/path/to/fixtures1 --fixtures=/path/to/fixtures2</info>
+  <info>php %command.full_name%</info> --fixtures=/path/to/fixtures1 --fixtures=/path/to/fixtures2</info>
 
 If you want to append the fixtures instead of flushing the database first you can use the <info>--append</info> option:
 
-  <info>./app/console doctrine:mongodb:fixtures:load --append</info>
+  <info>php %command.full_name%</info> --append</info>
+
+
+Alternatively, you can also load fixture services instead of files. Fixture services are tagged with `<comment>doctrine.fixture.odm</comment>`.
+When using `<comment>--services</comment>`, both `<comment>--fixtures</comment>` and `<comment>--bundles</comment>` will no longer work.
+Using `<comment>--services</comment>` will be the default behaviour in 4.0.
+When loading fixture services, you can also choose to load only fixtures that live in a certain group:
+`<info>php %command.full_name%</info> <comment>--group=group1</comment> <comment>--services</comment>`
+
+
+
 EOT
         );
     }
@@ -72,11 +91,13 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dm = $this->getManagerRegistry()->getManager($input->getOption('dm'));
+        $ui = new SymfonyStyle($input, $output);
 
         $dirOrFile = $input->getOption('fixtures');
         $bundles   = $input->getOption('bundles');
-        if ($bundles && $dirOrFile) {
-            throw new InvalidArgumentException('Use only one option: --bundles or --fixtures.');
+        $services  = (bool) $input->getOption('services');
+        if (($services && $bundles) || ($services && $dirOrFile) || ($bundles && $dirOrFile)) {
+            throw new InvalidArgumentException('Can only use one of "--bundles", "--fixtures", "--services".');
         }
 
         if ($input->isInteractive() && ! $input->getOption('append')) {
@@ -88,37 +109,57 @@ EOT
             }
         }
 
-        if ($dirOrFile) {
-            $paths = is_array($dirOrFile) ? $dirOrFile : [$dirOrFile];
-        } elseif ($bundles) {
-            $paths = [$this->getKernel()->getRootDir() . '/DataFixtures/MongoDB'];
-            foreach ($bundles as $bundle) {
-                $paths[] = $this->getKernel()->getBundle($bundle)->getPath();
+        if (! $services) {
+            @trigger_error('--bundles and --fixtures are deprecated since doctrine/mongodb-odm-bundle 3.6 and will be removed in 4.0. Use --services instead.', E_USER_DEPRECATED);
+
+            if ($dirOrFile) {
+                $paths = is_array($dirOrFile) ? $dirOrFile : [$dirOrFile];
+            } elseif ($bundles) {
+                $paths = [$this->getKernel()->getRootDir() . '/DataFixtures/MongoDB'];
+                foreach ($bundles as $bundle) {
+                    $paths[] = $this->getKernel()->getBundle($bundle)->getPath();
+                }
+            } else {
+                $paths   = $this->container->getParameter('doctrine_mongodb.odm.fixtures_dirs');
+                $paths   = is_array($paths) ? $paths : [$paths];
+                $paths[] = $this->getKernel()->getRootDir() . '/DataFixtures/MongoDB';
+                foreach ($this->getKernel()->getBundles() as $bundle) {
+                    $paths[] = $bundle->getPath() . '/DataFixtures/MongoDB';
+                }
+            }
+            $loaderClass = $this->container->getParameter('doctrine_mongodb.odm.fixture_loader');
+            $loader      = new $loaderClass($this->container);
+            foreach ($paths as $path) {
+                if (is_dir($path)) {
+                    $loader->loadFromDirectory($path);
+                } elseif (is_file($path)) {
+                    $loader->loadFromFile($path);
+                }
+            }
+            $fixtures = $loader->getFixtures();
+            if (! $fixtures) {
+                throw new InvalidArgumentException(
+                    sprintf('Could not find any fixtures to load in: %s', "\n\n- " . implode("\n- ", $paths))
+                );
             }
         } else {
-            $paths   = $this->container->getParameter('doctrine_mongodb.odm.fixtures_dirs');
-            $paths   = is_array($paths) ? $paths : [$paths];
-            $paths[] = $this->getKernel()->getRootDir() . '/DataFixtures/MongoDB';
-            foreach ($this->getKernel()->getBundles() as $bundle) {
-                $paths[] = $bundle->getPath() . '/DataFixtures/MongoDB';
+            if (! $this->fixturesLoader) {
+                throw new RuntimeException('Cannot use fixture services without injecting a fixtures loader.');
             }
-        }
 
-        $loaderClass = $this->container->getParameter('doctrine_mongodb.odm.fixture_loader');
-        $loader      = new $loaderClass($this->container);
-        foreach ($paths as $path) {
-            if (is_dir($path)) {
-                $loader->loadFromDirectory($path);
-            } elseif (is_file($path)) {
-                $loader->loadFromFile($path);
+            $groups   = $input->getOption('group');
+            $fixtures = $this->fixturesLoader->getFixtures($groups);
+            if (! $fixtures) {
+                $message = 'Could not find any fixture services to load';
+
+                if (! empty($groups)) {
+                    $message .= sprintf(' in the groups (%s)', implode(', ', $groups));
+                }
+
+                $ui->error($message . '.');
+
+                return 1;
             }
-        }
-
-        $fixtures = $loader->getFixtures();
-        if (! $fixtures) {
-            throw new InvalidArgumentException(
-                sprintf('Could not find any fixtures to load in: %s', "\n\n- " . implode("\n- ", $paths))
-            );
         }
 
         $purger   = new MongoDBPurger($dm);

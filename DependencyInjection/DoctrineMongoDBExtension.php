@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
+use Doctrine\Bundle\MongoDBBundle\Fixture\ODMFixtureInterface;
 use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepositoryInterface;
+use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 use Symfony\Component\Config\FileLocator;
@@ -19,6 +22,8 @@ use Symfony\Component\DependencyInjection\Reference;
 use function array_keys;
 use function array_merge;
 use function class_exists;
+use function class_implements;
+use function in_array;
 use function reset;
 use function sprintf;
 
@@ -58,6 +63,10 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         // set the fixtures loader
         $container->setParameter('doctrine_mongodb.odm.fixture_loader', $config['fixture_loader']);
 
+        // Autowiring fixture loader
+        $container->registerForAutoconfiguration(ODMFixtureInterface::class)
+            ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
         // load the connections
         $this->loadConnections($config['connections'], $container);
 
@@ -76,7 +85,13 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             foreach ($config['resolve_target_documents'] as $name => $implementation) {
                 $def->addMethodCall('addResolveTargetDocument', [$name, $implementation, []]);
             }
-            $def->addTag('doctrine_mongodb.odm.event_listener', ['event' => 'loadClassMetadata']);
+
+            // Register service has an event subscriber if implement interface
+            if (in_array(EventSubscriber::class, class_implements($container->getParameterBag()->resolveValue($def->getClass())))) {
+                $def->addTag('doctrine_mongodb.odm.event_subscriber');
+            } else {
+                $def->addTag('doctrine_mongodb.odm.event_listener', ['event' => 'loadClassMetadata']);
+            }
         }
 
         // BC Aliases for Document Manager

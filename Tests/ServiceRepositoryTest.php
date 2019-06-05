@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Bundle\DoctrineBundle\Tests;
+namespace Doctrine\Bundle\MongoDBBundle\Tests;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
-use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
