@@ -112,14 +112,14 @@ EOT
             if ($dirOrFile) {
                 $paths = is_array($dirOrFile) ? $dirOrFile : [$dirOrFile];
             } elseif ($bundles) {
-                $paths = [$this->getKernel()->getRootDir().'/DataFixtures/MongoDB'];
+                $paths = [$this->getKernel()->getProjectDir().'/DataFixtures/MongoDB'];
                 foreach ($bundles as $bundle) {
                     $paths[] = $this->getKernel()->getBundle($bundle)->getPath();
                 }
             } else {
                 $paths = $this->container->getParameter('doctrine_mongodb.odm.fixtures_dirs');
                 $paths = is_array($paths) ? $paths : [$paths];
-                $paths[] = $this->getKernel()->getRootDir().'/DataFixtures/MongoDB';
+                $paths[] = $this->getKernel()->getProjectDir().'/DataFixtures/MongoDB';
                 foreach ($this->getKernel()->getBundles() as $bundle) {
                     $paths[] = $bundle->getPath().'/DataFixtures/MongoDB';
                 }
