@@ -8,18 +8,16 @@ use Doctrine\Bundle\MongoDBBundle\CacheWarmer\HydratorCacheWarmer;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
-use ReflectionObject;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use const DIRECTORY_SEPARATOR;
 use function sys_get_temp_dir;
+use function unlink;
 
 class HydratorCacheWarmerTest extends TestCase
 {
     /** @var ContainerInterface */
     private $container;
-
-    private $hydratorMock;
 
     /** @var HydratorCacheWarmer */
     private $warmer;
@@ -30,13 +28,7 @@ class HydratorCacheWarmerTest extends TestCase
         $this->container->setParameter('doctrine_mongodb.odm.hydrator_dir', sys_get_temp_dir());
         $this->container->setParameter('doctrine_mongodb.odm.auto_generate_hydrator_classes', Configuration::AUTOGENERATE_NEVER);
 
-        $this->hydratorMock = $this->getMockBuilder(HydratorFactory::class)->disableOriginalConstructor()->getMock();
-
         $dm = $this->createTestDocumentManager([__DIR__ . '/../Fixtures/Validator']);
-        $r  = new ReflectionObject($dm);
-        $p  = $r->getProperty('hydratorFactory');
-        $p->setAccessible(true);
-        $p->setValue($dm, $this->hydratorMock);
 
         $registryStub = $this->getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->getMock();
         $registryStub->expects($this->any())->method('getManagers')->willReturn([ $dm ]);
@@ -52,8 +44,14 @@ class HydratorCacheWarmerTest extends TestCase
 
     public function testWarmerExecuted()
     {
-        $this->hydratorMock->expects($this->once())->method('generateHydratorClasses');
-        $this->warmer->warmUp('meh');
+        $hydratorFilename = $this->getHydratorFilename();
+
+        try {
+            $this->warmer->warmUp('meh');
+            $this->assertFileExists($hydratorFilename);
+        } finally {
+            @unlink($hydratorFilename);
+        }
     }
 
     /**
@@ -62,8 +60,14 @@ class HydratorCacheWarmerTest extends TestCase
     public function testWarmerNotExecuted($autoGenerate)
     {
         $this->container->setParameter('doctrine_mongodb.odm.auto_generate_hydrator_classes', $autoGenerate);
-        $this->hydratorMock->expects($this->exactly(0))->method('generateHydratorClasses');
-        $this->warmer->warmUp('meh');
+        $hydratorFilename = $this->getHydratorFilename();
+
+        try {
+            $this->warmer->warmUp('meh');
+            $this->assertFileNotExists($hydratorFilename);
+        } finally {
+            @unlink($hydratorFilename);
+        }
     }
 
     public function provideWarmerNotExecuted()
@@ -73,5 +77,10 @@ class HydratorCacheWarmerTest extends TestCase
             [ Configuration::AUTOGENERATE_EVAL ],
             [ Configuration::AUTOGENERATE_FILE_NOT_EXISTS ],
         ];
+    }
+
+    private function getHydratorFilename() : string
+    {
+        return sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'DoctrineBundleMongoDBBundleTestsFixturesValidatorDocumentHydrator.php';
     }
 }

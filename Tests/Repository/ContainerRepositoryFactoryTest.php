@@ -17,6 +17,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use stdClass;
+use function sys_get_temp_dir;
 
 class ContainerRepositoryFactoryTest extends TestCase
 {
@@ -142,7 +143,9 @@ class ContainerRepositoryFactoryTest extends TestCase
                 return $classMetadatas[$class];
             });
 
-        $uow = new UnitOfWork($dm, $this->createMock(EventManager::class), $this->createMock(HydratorFactory::class));
+        $evm = $this->createMock(EventManager::class);
+
+        $uow = new UnitOfWork($dm, $evm, new HydratorFactory($dm, $evm, sys_get_temp_dir(), sys_get_temp_dir(), Configuration::AUTOGENERATE_EVAL));
         $dm->expects($this->any())
             ->method('getUnitOfWork')
             ->willReturn($uow);
