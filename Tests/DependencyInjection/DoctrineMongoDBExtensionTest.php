@@ -40,14 +40,6 @@ class DoctrineMongoDBExtensionTest extends TestCase
         ]));
     }
 
-    public function testBackwardCompatibilityAliases()
-    {
-        $loader                                              = new DoctrineMongoDBExtension();
-        $loader->load(self::buildConfiguration(), $container = $this->buildMinimalContainer());
-
-        $this->assertEquals('doctrine_mongodb.odm.document_manager', (string) $container->getAlias('doctrine.odm.mongodb.document_manager'));
-    }
-
     /**
      * @dataProvider parameterProvider
      */
