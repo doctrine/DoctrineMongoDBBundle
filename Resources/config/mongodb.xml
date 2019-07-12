@@ -92,9 +92,7 @@
         <service id="Doctrine\Bundle\MongoDBBundle\Command\LoadDataFixturesDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\LoadDataFixturesDoctrineODMCommand">
             <argument type="service" id="doctrine_mongodb"/>
             <argument type="service" id="kernel" on-invalid="null"/>
-            <argument type="service" id="doctrine_mongodb.odm.symfony.fixtures.loader" on-invalid="null" />
-
-            <tag name="console.command"/>
+            <argument type="service" id="doctrine_mongodb.odm.symfony.fixtures.loader" />
         </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\QueryDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\QueryDoctrineODMCommand">
             <tag name="console.command"/>

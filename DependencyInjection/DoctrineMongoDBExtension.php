@@ -3,6 +3,7 @@
 
 namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 
+use Doctrine\Bundle\MongoDBBundle\Command\LoadDataFixturesDoctrineODMCommand;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\Fixture\ODMFixtureInterface;
@@ -98,6 +99,10 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         // BC Aliases for Document Manager
         $container->setAlias('doctrine.odm.mongodb.document_manager', new Alias('doctrine_mongodb.odm.document_manager'));
 
+        if (class_exists(DataFixturesLoader::class)) {
+            $container->findDefinition(LoadDataFixturesDoctrineODMCommand::class)
+                ->addTag('console.command');
+        }
 
         $container->registerForAutoconfiguration(ServiceDocumentRepositoryInterface::class)
             ->addTag(ServiceRepositoryCompilerPass::REPOSITORY_SERVICE_TAG);
