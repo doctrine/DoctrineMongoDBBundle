@@ -59,9 +59,6 @@ The <info>doctrine:mongodb:fixtures:load</info> command loads data fixtures from
 
   <info>php %command.full_name%</info>
 
-You can also optionally specify the path to fixtures with the <info>--fixtures</info> option:
-  <info>php %command.full_name%</info> --fixtures=/path/to/fixtures1 --fixtures=/path/to/fixtures2</info>
-
 If you want to append the fixtures instead of flushing the database first you can use the <info>--append</info> option:
 
   <info>php %command.full_name%</info> --append</info>
