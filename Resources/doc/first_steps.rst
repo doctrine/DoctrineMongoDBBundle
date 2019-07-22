@@ -102,10 +102,6 @@ in a number of different formats including XML or directly inside the
             </document>
         </doctrine-mongo-mapping>
 
-Doctrine allows you to choose from a wide variety of different field types,
-each with their own options. For information on the available field types,
-see the :ref:`cookbook-mongodb-field-types` section.
-
 .. seealso::
 
     You can also check out Doctrine's `Basic Mapping Documentation`_ for
