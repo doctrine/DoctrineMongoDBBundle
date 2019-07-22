@@ -31,6 +31,7 @@ making it easy to configure and use.
    events
    console
    mongodb_library
+   cookbook/registration_form
 
 Doctrine Extensions: Timestampable, Sluggable, etc.
 ---------------------------------------------------
@@ -42,11 +43,6 @@ and *Tree*.
 
 For more information on how to find and use these extensions, see the cookbook
 article about `using common Doctrine extensions`_.
-
-Learn more from the Cookbook
-----------------------------
-
-* :doc:`/cookbook/registration_form`
 
 .. _`MongoDB`:          http://www.mongodb.org/
 .. _`Doctrine2 ORM`: http://symfony.com/doc/current/book/doctrine.html
