@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler;
 
+use RuntimeException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use function dirname;
@@ -27,10 +28,14 @@ class CreateProxyDirectoryPass implements CompilerPassInterface
         $proxyCacheDir = $container->getParameter('doctrine_mongodb.odm.proxy_dir');
         if (! is_dir($proxyCacheDir)) {
             if (@mkdir($proxyCacheDir, 0775, true) === false) {
-                exit(sprintf('Unable to create the Doctrine Proxy directory (%s)', dirname($proxyCacheDir)));
+                throw new RuntimeException(
+                    sprintf('Unable to create the Doctrine Proxy directory (%s)', dirname($proxyCacheDir))
+                );
             }
         } elseif (! is_writable($proxyCacheDir)) {
-            exit(sprintf('Unable to write in the Doctrine Proxy directory (%s)', $proxyCacheDir));
+            throw new RuntimeException(
+                sprintf('Unable to write in the Doctrine Proxy directory (%s)', $proxyCacheDir)
+            );
         }
     }
 }
