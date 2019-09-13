@@ -25,7 +25,8 @@ class Guesser
     /**
      * @ODM\ReferenceMany(
      *     targetDocument="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Category",
-     *     inversedBy="documents"
+     *     inversedBy="documents",
+     *     strategy="atomicSetArray"
      * )
      */
     public $categories;
