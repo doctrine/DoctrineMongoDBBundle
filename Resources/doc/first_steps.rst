@@ -96,7 +96,7 @@ in a number of different formats including XML or directly inside the
                             http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
             <document name="Acme\StoreBundle\Document\Product">
-                <field fieldName="id" id="true" />
+                <id />
                 <field fieldName="name" type="string" />
                 <field fieldName="price" type="float" />
             </document>
