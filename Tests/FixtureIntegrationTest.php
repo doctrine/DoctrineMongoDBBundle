@@ -41,7 +41,7 @@ class FixtureIntegrationTest extends TestCase
 
     public function testFixturesLoader() : void
     {
-        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel = new IntegrationTestKernel('dev', false);
         $kernel->addServices(static function (ContainerBuilder $c) : void {
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -74,7 +74,7 @@ class FixtureIntegrationTest extends TestCase
     {
         // See https://github.com/doctrine/DoctrineFixturesBundle/issues/215
 
-        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel = new IntegrationTestKernel('dev', false);
         $kernel->addServices(static function (ContainerBuilder $c) : void {
             $c->autowire(WithDependenciesFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -116,7 +116,7 @@ class FixtureIntegrationTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel = new IntegrationTestKernel('dev', false);
         $kernel->addServices(static function (ContainerBuilder $c) {
             $c->autowire(DependentOnRequiredConstructorArgsFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -147,7 +147,7 @@ class FixtureIntegrationTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel = new IntegrationTestKernel('dev', false);
         $kernel->addServices(static function (ContainerBuilder $c) : void {
             $c->autowire(DependentOnRequiredConstructorArgsFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -165,7 +165,7 @@ class FixtureIntegrationTest extends TestCase
 
     public function testFixturesLoaderWithGroupsOptionViaInterface() : void
     {
-        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel = new IntegrationTestKernel('dev', false);
         $kernel->addServices(static function (ContainerBuilder $c) : void {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
@@ -197,7 +197,7 @@ class FixtureIntegrationTest extends TestCase
 
     public function testFixturesLoaderWithGroupsOptionViaTag() : void
     {
-        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel = new IntegrationTestKernel('dev', false);
         $kernel->addServices(static function (ContainerBuilder $c) : void {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
@@ -224,7 +224,7 @@ class FixtureIntegrationTest extends TestCase
 
     public function testLoadFixturesViaGroupWithMissingDependency() : void
     {
-        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel = new IntegrationTestKernel('dev', false);
         $kernel->addServices(static function (ContainerBuilder $c) : void {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
@@ -250,7 +250,7 @@ class FixtureIntegrationTest extends TestCase
 
     public function testLoadFixturesViaGroupWithFulfilledDependency() : void
     {
-        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel = new IntegrationTestKernel('dev', false);
         $kernel->addServices(static function (ContainerBuilder $c) : void {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
@@ -283,7 +283,7 @@ class FixtureIntegrationTest extends TestCase
 
     public function testLoadFixturesByShortName() : void
     {
-        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel = new IntegrationTestKernel('dev', false);
         $kernel->addServices(static function (ContainerBuilder $c) : void {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
