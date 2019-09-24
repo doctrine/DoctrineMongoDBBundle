@@ -107,6 +107,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
                 'default' => [
                     'server' => 'mongodb://localhost:27017',
                     'options' => [],
+                    'driver_options' => ['context' => 'my_context'],
                 ],
             ],
             'document_managers' => ['default' => []],
@@ -121,6 +122,8 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertEquals([], $arguments[1]);
         $this->assertArrayHasKey('typeMap', $arguments[2]);
         $this->assertSame(['root' => 'array', 'document' => 'array'], $arguments[2]['typeMap']);
+        $this->assertArrayHasKey('context', $arguments[2]);
+        $this->assertEquals(new Reference('my_context'), $arguments[2]['context']);
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_document_manager');
         $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getClass());
