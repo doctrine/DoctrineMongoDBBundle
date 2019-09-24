@@ -214,13 +214,13 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         // logging
         if ($container->getParameterBag()->resolveValue($documentManager['logging'])) {
             $logger = $container->getDefinition('doctrine_mongodb.odm.command_logger');
-            $logger->addMethodCall('register');
+            $logger->addTag('doctrine_mongodb.odm.command_logger');
         }
 
         // profiler
         if ($container->getParameterBag()->resolveValue($documentManager['profiler']['enabled'])) {
             $logger = $container->getDefinition('doctrine_mongodb.odm.data_collector.command_logger');
-            $logger->addMethodCall('register');
+            $logger->addTag('doctrine_mongodb.odm.command_logger');
 
             $container
                 ->getDefinition('doctrine_mongodb.odm.data_collector')

@@ -55,6 +55,7 @@ class DoctrineMongoDBBundle extends Bundle
         $registry = $this->container->get('doctrine_mongodb');
 
         $this->registerAutoloader($registry->getManager());
+        $this->registerCommandLoggers();
     }
 
     private function registerAutoloader(DocumentManager $documentManager) : void
@@ -69,7 +70,7 @@ class DoctrineMongoDBBundle extends Bundle
         spl_autoload_register($this->autoloader);
     }
 
-    public function shutdown()
+    private function unregisterAutoloader() : void
     {
         if ($this->autoloader === null) {
             return;
@@ -77,5 +78,23 @@ class DoctrineMongoDBBundle extends Bundle
 
         spl_autoload_unregister($this->autoloader);
         $this->autoloader = null;
+    }
+
+    private function registerCommandLoggers() : void
+    {
+        $commandLoggerRegistry = $this->container->get('doctrine_mongodb.odm.command_logger_registry');
+        $commandLoggerRegistry->register();
+    }
+
+    private function unregisterCommandLoggers() : void
+    {
+        $commandLoggerRegistry = $this->container->get('doctrine_mongodb.odm.command_logger_registry');
+        $commandLoggerRegistry->unregister();
+    }
+
+    public function shutdown()
+    {
+        $this->unregisterAutoloader();
+        $this->unregisterCommandLoggers();
     }
 }

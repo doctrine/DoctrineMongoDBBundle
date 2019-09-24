@@ -46,7 +46,7 @@ class ContainerTest extends TestCase
         $this->extension->load([$config], $this->container);
 
         $definition = $this->container->getDefinition('doctrine_mongodb.odm.command_logger');
-        $this->assertSame($expected, $definition->hasMethodCall('register'));
+        $this->assertSame($expected, $definition->hasTag('doctrine_mongodb.odm.command_logger'));
     }
 
     public function provideLoggerConfigs()
@@ -90,7 +90,7 @@ class ContainerTest extends TestCase
         $this->extension->load([$config], $this->container);
 
         $loggerDefinition = $this->container->getDefinition('doctrine_mongodb.odm.data_collector.command_logger');
-        $this->assertSame($expected, $loggerDefinition->hasMethodCall('register'));
+        $this->assertSame($expected, $loggerDefinition->hasTag('doctrine_mongodb.odm.command_logger'));
 
         $dataCollectorDefinition = $this->container->getDefinition('doctrine_mongodb.odm.data_collector');
         $this->assertSame($expected, $dataCollectorDefinition->hasTag('data_collector'));
