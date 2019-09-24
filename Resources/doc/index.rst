@@ -30,7 +30,6 @@ making it easy to configure and use.
    security_bundle
    events
    console
-   mongodb_library
    cookbook/registration_form
 
 Doctrine Extensions: Timestampable, Sluggable, etc.
