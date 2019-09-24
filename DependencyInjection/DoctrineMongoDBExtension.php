@@ -333,7 +333,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      */
     private function normalizeDriverOptions(array $connection)
     {
-        $driverOptions            = $connection['driverOptions'] ?? [];
+        $driverOptions            = $connection['driver_options'] ?? [];
         $driverOptions['typeMap'] = DocumentManager::CLIENT_TYPEMAP;
 
         if (isset($driverOptions['context'])) {
