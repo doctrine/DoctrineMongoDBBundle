@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler;
 
+use RuntimeException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use function dirname;
@@ -27,10 +28,14 @@ class CreateHydratorDirectoryPass implements CompilerPassInterface
         $hydratorCacheDir = $container->getParameter('doctrine_mongodb.odm.hydrator_dir');
         if (! is_dir($hydratorCacheDir)) {
             if (@mkdir($hydratorCacheDir, 0775, true) === false) {
-                exit(sprintf('Unable to create the Doctrine Hydrator directory (%s)', dirname($hydratorCacheDir)));
+                throw new RuntimeException(
+                    sprintf('Unable to create the Doctrine Hydrator directory (%s)', dirname($hydratorCacheDir))
+                );
             }
         } elseif (! is_writable($hydratorCacheDir)) {
-            exit(sprintf('Unable to write in the Doctrine Hydrator directory (%s)', $hydratorCacheDir));
+            throw new RuntimeException(
+                sprintf('Unable to write in the Doctrine Hydrator directory (%s)', $hydratorCacheDir)
+            );
         }
     }
 }
