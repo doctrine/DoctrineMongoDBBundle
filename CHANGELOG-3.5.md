@@ -12,6 +12,15 @@ where XXX and YYY are the older and newer versions, respectively.
 To generate a changelog summary since the last version, run
 `git log --no-merges --oneline XXX...HEAD`
 
+3.5.4 (2019-09-24)
+------------------
+
+All issues and pull requests in this release may be found under the [3.5.4 milestone](https://github.com/doctrine/DoctrineMongoDBBundle/issues?q=milestone%3A3.5.4).
+
+ * [580](https://github.com/doctrine/DoctrineMongoDBBundle/pull/514) fixes issues in the travis-ci build
+ * [578](https://github.com/doctrine/DoctrineMongoDBBundle/pull/513) removes hardcoded exit calls in favour of exceptions
+ * [534](https://github.com/doctrine/DoctrineMongoDBBundle/pull/534) fixes the link to the PHP 7 usage instructions
+
 3.5.3 (2018-12-22)
 ------------------
 
