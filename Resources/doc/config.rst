@@ -204,7 +204,7 @@ The following configuration shows a bunch of mapping examples:
                     <doctrine_mongodb:mapping name="MyBundle2" type="yml" />
                     <doctrine_mongodb:mapping name="MyBundle3" type="annotation" dir="Documents/" />
                     <doctrine_mongodb:mapping name="MyNundle4" type="xml" dir="Resources/config/doctrine/mapping" />
-                    <doctrine_mongodb:mapping name="MyBundle5" type="yml" dir="my-bundle-mappings-dir" alias="BundleAlias" />
+                    <doctrine_mongodb:mapping name="MyBundle5" type="xml" dir="my-bundle-mappings-dir" alias="BundleAlias" />
                     <doctrine_mongodb:mapping name="doctrine_extensions"
                                               type="xml"
                                               dir="%kernel.root_dir%/../src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents"
