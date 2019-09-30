@@ -71,7 +71,7 @@ final class ContainerRepositoryFactory implements RepositoryFactory
             return $this->managedRepositories[$repositoryHash];
         }
 
-        $repositoryClassName = $metadata->customRepositoryClassName ?: $documentManager->getConfiguration()->getDefaultRepositoryClassName();
+        $repositoryClassName = $metadata->customRepositoryClassName ?: (method_exists($documentManager->getConfiguration(), 'getDefaultDocumentRepositoryClassName') ? $documentManager->getConfiguration()->getDefaultDocumentRepositoryClassName() : $documentManager->getConfiguration()->getDefaultRepositoryClassName());
 
         return $this->managedRepositories[$repositoryHash] = new $repositoryClassName($documentManager, $documentManager->getUnitOfWork(), $metadata);
     }

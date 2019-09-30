@@ -5,6 +5,9 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\Mapping\Driver;
 
 use Doctrine\Bundle\MongoDBBundle\Mapping\Driver\YamlDriver;
 
+/**
+ * @group legacy
+ */
 class YamlDriverTest extends AbstractDriverTest
 {
     protected function getFileExtension()

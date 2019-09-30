@@ -12,6 +12,7 @@ env:
     - DRIVER_VERSION="stable"
     - ADAPTER_VERSION="^1.0.0"
     - COMPOSER_FLAGS="--prefer-dist"
+    - SYMFONY_DEPRECATIONS_HELPER="max[self]=0"
 
 matrix:
   include:
