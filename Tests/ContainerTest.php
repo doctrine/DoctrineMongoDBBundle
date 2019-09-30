@@ -47,6 +47,11 @@ class ContainerTest extends TestCase
 
         $definition = $this->container->getDefinition('doctrine_mongodb.odm.command_logger');
         $this->assertSame($expected, $definition->hasTag('doctrine_mongodb.odm.command_logger'));
+
+        $this->container->compile();
+
+        // Fetch the command logger registry to make sure the appropriate number of services has been registered
+        $this->container->get('doctrine_mongodb.odm.command_logger_registry');
     }
 
     public function provideLoggerConfigs()
@@ -54,29 +59,29 @@ class ContainerTest extends TestCase
         $config = ['connections' => ['default' => []]];
 
         return [
-            [
+            'Debug mode enabled' => [
                 // Logging is always enabled in debug mode
-                true,
-                [
+                'expected' => true,
+                'config' => [
                     'document_managers' => ['default' => []],
                 ] + $config,
-                true,
+                'debug' => true,
             ],
-            [
+            'Debug mode disabled' => [
                 // Logging is disabled by default when not in debug mode
-                false,
-                [
+                'expected' => false,
+                'config' => [
                     'document_managers' => ['default' => []],
                 ] + $config,
-                false,
+                'debug' => false,
             ],
-            [
+            'Logging enabled by config' => [
                 // Logging can be enabled by config
-                true,
-                [
+                'expected' => true,
+                'config' => [
                     'document_managers' => ['default' => ['logging' => true]],
                 ] + $config,
-                false,
+                'debug' => false,
             ],
         ];
     }
@@ -94,6 +99,11 @@ class ContainerTest extends TestCase
 
         $dataCollectorDefinition = $this->container->getDefinition('doctrine_mongodb.odm.data_collector');
         $this->assertSame($expected, $dataCollectorDefinition->hasTag('data_collector'));
+
+        $this->container->compile();
+
+        // Fetch the command logger registry to make sure the appropriate number of services has been registered
+        $this->container->get('doctrine_mongodb.odm.command_logger_registry');
     }
 
     public function provideDataCollectorConfigs()
@@ -101,29 +111,29 @@ class ContainerTest extends TestCase
         $config = ['connections' => ['default' => []]];
 
         return [
-            [
+            'Debug mode enabled' => [
                 // Profiling is always enabled in debug mode
-                true,
-                [
+                'expected' => true,
+                'config' => [
                     'document_managers' => ['default' => []],
                 ] + $config,
-                true,
+                'debug' => true,
             ],
-            [
+            'Debug mode disabled' => [
                 // Profiling is disabled by default when not in debug mode
-                false,
-                [
+                'expected' => false,
+                'config' => [
                     'document_managers' => ['default' => []],
                 ] + $config,
-                false,
+                'debug' => false,
             ],
-            [
+            'Profiling enabled by config' => [
                 // Profiling can be enabled by config
-                true,
-                [
+                'expected' => true,
+                'config' => [
                     'document_managers' => ['default' => ['profiler' => true]],
                 ] + $config,
-                false,
+                'debug' => false,
             ],
         ];
     }

@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\APM;
 
+use Doctrine\ODM\MongoDB\APM\CommandLoggerInterface;
 use MongoDB\Driver\Monitoring\CommandFailedEvent;
 use MongoDB\Driver\Monitoring\CommandStartedEvent;
-use MongoDB\Driver\Monitoring\CommandSubscriber;
 use MongoDB\Driver\Monitoring\CommandSucceededEvent;
 use Psr\Log\LoggerInterface;
 use function json_encode;
 use function MongoDB\Driver\Monitoring\addSubscriber;
 use function MongoDB\Driver\Monitoring\removeSubscriber;
 
-final class PSRCommandLogger implements CommandSubscriber
+final class PSRCommandLogger implements CommandLoggerInterface
 {
     /** @var bool */
     private $registered = false;
