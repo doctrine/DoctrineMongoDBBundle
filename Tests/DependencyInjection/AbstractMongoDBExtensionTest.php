@@ -158,9 +158,9 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertArrayHasKey('typeMap', $arguments[2]);
         $this->assertSame(['root' => 'array', 'document' => 'array'], $arguments[2]['typeMap']);
 
-        $definition                               = $container->getDefinition('doctrine_mongodb.odm.default_configuration');
-        $methodCalls                              = $definition->getMethodCalls();
-        $methodNames                              = array_map(static function ($call) {
+        $definition  = $container->getDefinition('doctrine_mongodb.odm.default_configuration');
+        $methodCalls = $definition->getMethodCalls();
+        $methodNames = array_map(static function ($call) {
             return $call[0];
         }, $methodCalls);
         $this->assertInternalType('integer', $pos = array_search('setDefaultDB', $methodNames));
