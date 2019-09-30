@@ -222,7 +222,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
     public function testPublicServicesAndAliases()
     {
-        $loader                                              = new DoctrineMongoDBExtension();
+        $loader = new DoctrineMongoDBExtension();
         $loader->load(self::buildConfiguration(), $container = $this->buildMinimalContainer());
 
         $this->assertTrue($container->getDefinition('doctrine_mongodb')->isPublic());
