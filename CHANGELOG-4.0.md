@@ -1,6 +1,13 @@
 CHANGELOG for 4.0.x
 ===================
 
+4.0.0-RC3 (2019-09-30)
+----------------------
+
+All issues and pull requests in this release may be found under the [4.0.0-RC3 milestone](https://github.com/doctrine/DoctrineMongoDBBundle/issues?q=milestone%3A4.0.0-RC3).
+
+ - [585: Fix wrong interface inheritance in command logger](https://github.com/doctrine/DoctrineMongoDBBundle/pull/585) thanks to @alcaeus and @lljaworski
+
 4.0.0-RC2 (2019-09-24)
 ----------------------
 
