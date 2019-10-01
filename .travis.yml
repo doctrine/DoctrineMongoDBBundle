@@ -13,9 +13,6 @@ env:
     - COMPOSER_FLAGS="--prefer-dist"
 
 jobs:
-  allow_failures:
-    - php: 7.4snapshot
-
   include:
     # Test against lowest dependencies with coverage
     - stage: Test
