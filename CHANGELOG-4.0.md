@@ -1,6 +1,13 @@
 CHANGELOG for 4.0.x
 ===================
 
+4.0.0 (2019-10-02)
+------------------
+
+All issues and pull requests in this release may be found under the [4.0.0 milestone](https://github.com/doctrine/DoctrineMongoDBBundle/issues?q=milestone%3A4.0.0).
+
+ - [588: Removing travis allow failure for php7.4](https://github.com/doctrine/DoctrineMongoDBBundle/pull/588) thanks to @ishyevandro and @carusogabriel
+
 4.0.0-RC3 (2019-09-30)
 ----------------------
 
