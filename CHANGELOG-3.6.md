@@ -1,6 +1,14 @@
 CHANGELOG for 3.6.x
 ===================
 
+3.6.1 (2019-10-02)
+------------------
+
+All issues and pull requests in this release may be found under the [3.6.1 milestone](https://github.com/doctrine/DoctrineMongoDBBundle/issues?q=milestone%3A3.6.1).
+
+ - [589: Adding support for php 7.3 and 7.4 in branch 3.6](https://github.com/doctrine/DoctrineMongoDBBundle/pull/589) thanks to @ishyevandro
+ - [586: Fix deprecations when running against ODM 1.3](https://github.com/doctrine/DoctrineMongoDBBundle/pull/586) thanks to @alcaeus
+
 3.6.0 (2019-09-24)
 ------------------
 
