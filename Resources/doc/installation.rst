@@ -78,6 +78,21 @@ the MongoDB ODM across your application:
     Of course, you'll also need to make sure that the MongoDB server is running
     in the background. For more details, see the MongoDB `Quick Start`_ guide.
 
+
+Authentication
+--------------
+
+If you use authentication on your MongoDB database you can the provide username, 
+password, and authentication database in the following way:
+
+    # app/config/parameters.yaml
+    parameters:
+        mongodb_server: "mongodb://username:password@localhost:27017/?authSource=auth-db"
+
+.. note::
+
+    The authentication database is different to the default database used by MongoDB.
+
 .. _`installation chapter`: https://getcomposer.org/doc/00-intro.md
 .. _`MongoDB driver`: https://docs.mongodb.com/ecosystem/drivers/php/
 .. _`Quick Start`: http://www.mongodb.org/display/DOCS/Quickstart
