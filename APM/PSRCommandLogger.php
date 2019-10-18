@@ -62,7 +62,7 @@ final class PSRCommandLogger implements CommandLoggerInterface
         }
 
         if ($this->stopwatch !== null) {
-            $this->stopwatch->start('mongodb', 'mongodb');
+            $this->stopwatch->start($event->getCommandName(), 'mongodb');
         }
 
         $this->logger->debug($this->prefix . json_encode($event->getCommand()));
@@ -71,14 +71,14 @@ final class PSRCommandLogger implements CommandLoggerInterface
     public function commandSucceeded(CommandSucceededEvent $event)
     {
         if ($this->stopwatch !== null) {
-            $this->stopwatch->stop('mongodb');
+            $this->stopwatch->stop($event->getCommandName());
         }
     }
 
     public function commandFailed(CommandFailedEvent $event)
     {
         if ($this->stopwatch !== null) {
-            $this->stopwatch->stop('mongodb');
+            $this->stopwatch->stop($event->getCommandName());
         }
     }
 }
