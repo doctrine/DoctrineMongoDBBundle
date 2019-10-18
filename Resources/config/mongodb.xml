@@ -42,6 +42,7 @@
 
         <!-- logger -->
         <parameter key="doctrine_mongodb.odm.logger.batch_insert_threshold">4</parameter>
+        <parameter key="doctrine_mongodb.odm.command_logger.prefix">MongoDB command: </parameter>
 
         <!-- listeners -->
         <parameter key="doctrine_mongodb.odm.listeners.resolve_target_document.class">Doctrine\ODM\MongoDB\Tools\ResolveTargetDocumentListener</parameter>
@@ -138,6 +139,8 @@
 
         <service id="doctrine_mongodb.odm.command_logger" class="Doctrine\Bundle\MongoDBBundle\APM\PSRCommandLogger" public="false">
             <argument type="service" id="logger" on-invalid="null" />
+            <argument>%doctrine_mongodb.odm.command_logger.prefix%</argument>
+            <argument type="service" id="debug.stopwatch" on-invalid="null" />
 
             <tag name="monolog.logger" channel="doctrine" />
         </service>
