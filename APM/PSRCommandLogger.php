@@ -9,6 +9,7 @@ use MongoDB\Driver\Monitoring\CommandFailedEvent;
 use MongoDB\Driver\Monitoring\CommandStartedEvent;
 use MongoDB\Driver\Monitoring\CommandSucceededEvent;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Stopwatch\Stopwatch;
 use function json_encode;
 use function MongoDB\Driver\Monitoring\addSubscriber;
 use function MongoDB\Driver\Monitoring\removeSubscriber;
@@ -24,10 +25,14 @@ final class PSRCommandLogger implements CommandLoggerInterface
     /** @var string */
     private $prefix;
 
-    public function __construct(?LoggerInterface $logger, string $prefix = 'MongoDB command: ')
+    /** @var Stopwatch */
+    private $stopwatch;
+
+    public function __construct(?LoggerInterface $logger, string $prefix = 'MongoDB command: ', Stopwatch $stopwatch = null)
     {
         $this->logger = $logger;
         $this->prefix = $prefix;
+        $this->stopwatch = $stopwatch;
     }
 
     public function register() : void
@@ -56,14 +61,24 @@ final class PSRCommandLogger implements CommandLoggerInterface
             return;
         }
 
+        if (null !== $this->stopwatch) {
+            $this->stopwatch->start('mongodb', 'mongodb');
+        }
+
         $this->logger->debug($this->prefix . json_encode($event->getCommand()));
     }
 
     public function commandSucceeded(CommandSucceededEvent $event)
     {
+        if (null !== $this->stopwatch) {
+            $this->stopwatch->stop('mongodb');
+        }
     }
 
     public function commandFailed(CommandFailedEvent $event)
     {
+        if (null !== $this->stopwatch) {
+            $this->stopwatch->stop('mongodb');
+        }
     }
 }

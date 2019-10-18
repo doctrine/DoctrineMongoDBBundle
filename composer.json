@@ -29,7 +29,8 @@
         "squizlabs/php_codesniffer": "^3.5",
         "symfony/form": "^3.4 || ^4.0",
         "symfony/phpunit-bridge": "^3.4 || ^4.0",
-        "symfony/yaml": "^3.4 || ^4.0"
+        "symfony/yaml": "^3.4 || ^4.0",
+        "symfony/stopwatch": "^3.4 || ^4.0"
     },
     "suggest": {
         "doctrine/data-fixtures": "Load data fixtures"
