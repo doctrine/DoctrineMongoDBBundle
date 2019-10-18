@@ -28,10 +28,10 @@ final class PSRCommandLogger implements CommandLoggerInterface
     /** @var Stopwatch */
     private $stopwatch;
 
-    public function __construct(?LoggerInterface $logger, string $prefix = 'MongoDB command: ', Stopwatch $stopwatch = null)
+    public function __construct(?LoggerInterface $logger, string $prefix = 'MongoDB command: ', ?Stopwatch $stopwatch = null)
     {
-        $this->logger = $logger;
-        $this->prefix = $prefix;
+        $this->logger    = $logger;
+        $this->prefix    = $prefix;
         $this->stopwatch = $stopwatch;
     }
 
@@ -61,7 +61,7 @@ final class PSRCommandLogger implements CommandLoggerInterface
             return;
         }
 
-        if (null !== $this->stopwatch) {
+        if ($this->stopwatch !== null) {
             $this->stopwatch->start('mongodb', 'mongodb');
         }
 
@@ -70,14 +70,14 @@ final class PSRCommandLogger implements CommandLoggerInterface
 
     public function commandSucceeded(CommandSucceededEvent $event)
     {
-        if (null !== $this->stopwatch) {
+        if ($this->stopwatch !== null) {
             $this->stopwatch->stop('mongodb');
         }
     }
 
     public function commandFailed(CommandFailedEvent $event)
     {
-        if (null !== $this->stopwatch) {
+        if ($this->stopwatch !== null) {
             $this->stopwatch->stop('mongodb');
         }
     }
