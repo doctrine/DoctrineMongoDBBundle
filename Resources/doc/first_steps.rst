@@ -467,8 +467,8 @@ is to use the repository as a service and inject it as a dependency into other s
     }
 
 The ``ServiceDocumentRepository`` class your custom repository is extending allows you to
-leverage Symfony's `autowiring`_ and `autoconfiguration`_. To register all your repositories
-as services you can use the following service configuration:
+leverage Symfony's `autowiring`_ and `autoconfiguration`_. To register all of your
+repositories as services you can use the following service configuration:
 
 .. configuration-block::
 
