@@ -438,7 +438,68 @@ You can use this new method just like the default finder methods of the reposito
     When using a custom repository class, you still have access to the default
     finder methods such as ``find()`` and ``findAll()``.
 
+Service Repositories
+~~~~~~~~~~~~~~~~~~~~
+
+In the previous section, you learnt how to create custom repository classes and how
+to get them using ``DocumentManager``. Another way of obtaining a repository instance
+is to use the repository as a service and inject it as a dependency into other services.
+
+.. code-block:: php
+
+    // src/Acme/StoreBundle/Repository/ProductRepository.php
+    namespace Acme\StoreBundle\Repository;
+
+    use Acme\StoreBundle\Document\Product;
+    use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepository;
+    use Doctrine\Common\Persistence\ManagerRegistry;
+
+    /**
+     * Remember to map this repository in the corresponding document's repositoryClass.
+     * For more information on this see the previous chapter.
+     */
+    class ProductRepository extends ServiceDocumentRepository
+    {
+        public function __construct(ManagerRegistry $registry)
+        {
+            parent::__construct($registry, Product::class);
+        }
+    }
+
+The ``ServiceDocumentRepository`` class your custom repository is extending allows you to
+leverage Symfony's `autowiring`_ and `autoconfiguration`_. To register all your repositories
+as services you can use the following service configuration:
+
+.. configuration-block::
+
+    .. code-block:: yaml
+
+        services:
+            _defaults:
+                autowire: true
+                autoconfigure: true
+
+            Acme\StoreBundle\Repository\:
+                resource: '%kernel.root_dir%/../src/Acme/StoreBundle/Repository/*'
+
+    .. code-block:: xml
+
+        <?xml version="1.0" encoding="UTF-8" ?>
+        <container xmlns="http://symfony.com/schema/dic/services"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://symfony.com/schema/dic/services
+                https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+            <services>
+                <defaults autowire="true" autoconfigure="true"/>
+
+                <prototype namespace="Acme\StoreBundle\Repository\" resource="%kernel.root_dir%/../src/Acme/StoreBundle/Repository/*"/>
+            </services>
+        </container>
+
 .. _`Basic Mapping Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html
 .. _`Conditional Operators`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html#conditional-operators
 .. _`DoctrineFixturesBundle`: http://symfony.com/doc/master/bundles/DoctrineFixturesBundle/index.html
 .. _`Query Builder`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html
+.. _`autowiring`: https://symfony.com/doc/current/service_container/autowiring.html
+.. _`autoconfiguration`: https://symfony.com/doc/current/service_container.html#the-autoconfigure-option
