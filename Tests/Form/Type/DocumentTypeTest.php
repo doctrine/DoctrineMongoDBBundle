@@ -30,7 +30,7 @@ class DocumentTypeTest extends TypeTestCase
 
     private $typeFQCN;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->typeFQCN = method_exists(AbstractType::class, 'getBlockPrefix');
 
@@ -42,7 +42,7 @@ class DocumentTypeTest extends TypeTestCase
         parent::setUp();
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         $documentClasses = [
             Document::class,
