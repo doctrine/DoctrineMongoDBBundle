@@ -89,6 +89,8 @@ class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInte
 
             $dm->clear();
         }
+
+        return 0;
     }
 
     /**

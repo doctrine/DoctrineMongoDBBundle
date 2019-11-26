@@ -2,34 +2,26 @@ dist: xenial
 language: php
 sudo: false
 
+cache:
+  directories:
+    - $HOME/.composer/cache
+
 php:
   - 7.2
   - 7.3
   - 7.4snapshot
 
+services: mongodb
+
 env:
   global:
     - DRIVER_VERSION="stable"
-    - COMPOSER_FLAGS="--prefer-dist"
+    - COMPOSER_FLAGS=" -n --prefer-dist --prefer-stable"
+    - COMPOSER_MEMORY_LIMIT=-1
 
-jobs:
-  include:
-    # Test against lowest dependencies with coverage
-    - stage: Test
-      php: 7.2
-      env: DRIVER_VERSION="1.5.0" COMPOSER_FLAGS="--prefer-dist --prefer-lowest" PHPUNIT_FLAGS="--coverage-clover=coverage.clover"
-
-    - stage: Code Quality
-      php: 7.2
-      env: DRIVER_VERSION="stable" COMPOSER_FLAGS="--prefer-dist"
-      script:
-        - vendor/bin/phpcs
-
-cache:
-  directories:
-    - $HOME/.composer/cache
-
-services: mongodb
+before_install:
+  - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{,.disabled} || echo "xdebug not available"
+  - composer global require --no-update --no-progress --no-scripts --no-plugins symfony/flex dev-master
 
 install:
   - composer self-update
@@ -37,8 +29,44 @@ install:
   - composer update ${COMPOSER_FLAGS}
 
 script:
-    - ./vendor/bin/phpunit ${PHPUNIT_FLAGS}
+  - ./vendor/bin/phpunit ${PHPUNIT_FLAGS}
 
-after_script:
-  - wget https://scrutinizer-ci.com/ocular.phar
-  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+jobs:
+  include:
+    # Tests the lowest set of dependencies
+    - php: 7.2
+      env: LOWEST DRIVER_VERSION="1.5.0" SYMFONY_DEPRECATIONS_HELPER=weak COMPOSER_FLAGS=" -n --prefer-lowest --prefer-stable --prefer-dist"
+
+    # Test against latest Symfony 3.4 stable
+    - php: 7.3
+      env: SYMFONY_REQUIRE="3.4.*"
+
+    # Test against latest Symfony 4.3 stable
+    - php: 7.3
+      env: SYMFONY_REQUIRE="4.3.*"
+
+    # Test against latest Symfony 4.4 dev
+    - php: 7.3
+      env: SYMFONY_REQUIRE="4.4.*"
+
+    # Test against latest Symfony 5.0 dev
+    - php: 7.3
+      env: SYMFONY_REQUIRE="5.0.*"
+
+    # Test dev versions
+    - php: 7.3
+      if: type = cron
+      env: DEV COMPOSER_FLAGS="-n --prefer-dist"
+
+    - stage: Code Quality
+      env: CODING_STANDARDS
+      php: 7.2
+      script:
+        - ./vendor/bin/phpcs
+
+    - stage: Coverage
+      php: 7.3
+      env: COVERAGE PHPUNIT_FLAGS="--coverage-clover=coverage.clover"
+      before_script:
+        - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{.disabled,}
+        - if [[ ! $(php -m | grep -si xdebug) ]]; then echo "xdebug required for coverage"; exit 1; fi
