@@ -27,7 +27,7 @@ class TypeGuesserTest extends TypeTestCase
 
     private $typeFQCN;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->typeFQCN = method_exists(AbstractType::class, 'getBlockPrefix');
 
@@ -39,7 +39,7 @@ class TypeGuesserTest extends TypeTestCase
         parent::setUp();
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         $documentClasses = [
             Document::class,

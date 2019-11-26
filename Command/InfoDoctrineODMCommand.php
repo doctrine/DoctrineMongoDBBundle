@@ -75,5 +75,7 @@ EOT
                 $output->write('', true);
             }
         }
+
+        return 0;
     }
 }

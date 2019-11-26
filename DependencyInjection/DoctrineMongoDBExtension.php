@@ -420,6 +420,11 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         return 'mongodb';
     }
 
+    protected function getMetadataDriverClass(string $driverType) : string
+    {
+        return '%' . $this->getObjectManagerElementName('metadata.' . $driverType . '.class') . '%';
+    }
+
     public function getAlias()
     {
         return 'doctrine_mongodb';

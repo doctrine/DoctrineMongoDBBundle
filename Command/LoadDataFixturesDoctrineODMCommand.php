@@ -90,7 +90,7 @@ EOT
             $question = new ConfirmationQuestion('Careful, database will be purged. Do you want to continue (y/N) ?', false);
 
             if (! $helper->ask($input, $output, $question)) {
-                return;
+                return 0;
             }
         }
 
@@ -118,5 +118,7 @@ EOT
             $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
         });
         $executor->execute($fixtures, $input->getOption('append'));
+
+        return 0;
     }
 }
