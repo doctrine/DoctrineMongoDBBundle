@@ -11,8 +11,8 @@
         },
         {
             "name": "4.0",
-            "branchName": "master",
-            "slug": "latest",
+            "branchName": "4.0.x",
+            "slug": "4.0",
             "current": true,
             "aliases": [
                 "current",
@@ -21,7 +21,7 @@
         },
         {
             "name": "3.6",
-            "branchName": "3.6",
+            "branchName": "3.6.x",
             "slug": "3.6"
         },
         {
