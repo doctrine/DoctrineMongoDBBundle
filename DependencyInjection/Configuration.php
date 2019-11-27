@@ -18,7 +18,6 @@ use function in_array;
 use function is_array;
 use function is_string;
 use function json_decode;
-use function method_exists;
 use function preg_match;
 use function sprintf;
 
@@ -35,7 +34,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder('doctrine_mongodb');
-        $rootNode    = method_exists(TreeBuilder::class, 'getRootNode') ? $treeBuilder->getRootNode() : $treeBuilder->root('doctrine_mongodb');
+        $rootNode    = $treeBuilder->getRootNode();
 
         $this->addDocumentManagersSection($rootNode);
         $this->addConnectionsSection($rootNode);

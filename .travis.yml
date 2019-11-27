@@ -37,10 +37,6 @@ jobs:
     - php: 7.2
       env: LOWEST DRIVER_VERSION="1.5.0" SYMFONY_DEPRECATIONS_HELPER=weak COMPOSER_FLAGS=" -n --prefer-lowest --prefer-stable --prefer-dist"
 
-    # Test against latest Symfony 3.4 stable
-    - php: 7.3
-      env: SYMFONY_REQUIRE="3.4.*"
-
     # Test against latest Symfony 4.3 stable
     - php: 7.3
       env: SYMFONY_REQUIRE="4.3.*"
