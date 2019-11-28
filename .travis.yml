@@ -21,7 +21,7 @@ env:
 
 before_install:
   - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{,.disabled} || echo "xdebug not available"
-  - composer global require --no-update --no-progress --no-scripts --no-plugins symfony/flex dev-master
+  - composer global require --no-progress --no-scripts --no-plugins symfony/flex dev-master
 
 install:
   - composer self-update
@@ -36,10 +36,6 @@ jobs:
     # Tests the lowest set of dependencies
     - php: 7.2
       env: LOWEST DRIVER_VERSION="1.5.0" SYMFONY_DEPRECATIONS_HELPER=weak COMPOSER_FLAGS=" -n --prefer-lowest --prefer-stable --prefer-dist"
-
-    # Test against latest Symfony 3.4 stable
-    - php: 7.3
-      env: SYMFONY_REQUIRE="3.4.*"
 
     # Test against latest Symfony 4.3 stable
     - php: 7.3
