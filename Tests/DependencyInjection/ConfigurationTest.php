@@ -99,6 +99,8 @@ class ConfigurationTest extends TestCase
                         'replicaSet'        => 'foo',
                         'slaveOkay'         => true,
                         'socketTimeoutMS'   => 1000,
+                        'serverSelectionTimeoutMS' => 5000,
+                        'serverSelectionTryOnce' => false,
                         'ssl'               => true,
                         'authMechanism'     => 'MONGODB-X509',
                         'authSource'        => 'some_db',

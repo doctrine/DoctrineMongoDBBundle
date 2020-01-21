@@ -39,6 +39,8 @@ doctrine_mongodb:
                   - { dc: west }
                   - {  }
                 replicaSet:       foo
+                serverSelectionTimeoutMS: 5000
+                serverSelectionTryOnce: false
                 slaveOkay:        true
                 socketTimeoutMS:  1000
                 ssl:              true
