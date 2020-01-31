@@ -214,7 +214,7 @@ in a number of different formats including YAML, XML or directly inside the
         <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-                            http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+                            https://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
             <document name="Acme\StoreBundle\Document\Product">
                 <field fieldName="id" id="true" />
@@ -556,7 +556,7 @@ To do this, add the name of the repository class to your mapping definition.
         <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-                            http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+                            https://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
             <document name="Acme\StoreBundle\Document\Product"
                     repository-class="Acme\StoreBundle\Repository\ProductRepository">
@@ -841,7 +841,7 @@ in your Mongo database you may fetch it by defining following services:
         <?xml version="1.0" encoding="UTF-8" ?>
         <container xmlns="http://symfony.com/schema/dic/services"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+            xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd">
 
             <services>
                 <service id="mongo.connection" class="Doctrine\MongoDB\Connection">
