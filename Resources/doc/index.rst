@@ -168,7 +168,7 @@ in a number of different formats including YAML, XML or directly inside the
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: php-annotations
 
         // src/Acme/StoreBundle/Document/Product.php
         namespace Acme\StoreBundle\Document;
