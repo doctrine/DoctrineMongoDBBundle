@@ -427,7 +427,7 @@ Otherwise you will get a *auth failed* exception.
                                 http://symfony.com/schema/dic/doctrine/odm/mongodb https://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
 
             <doctrine:mongodb>
-                <doctrine:connection id="default" server="mongodb://localhost:27017"/>
+                <doctrine:connection id="default" server="mongodb://localhost:27017" />
                     <doctrine:options
                             username="someuser"
                             password="somepass"
@@ -485,7 +485,7 @@ You can then use this service in your configuration:
                                 http://symfony.com/schema/dic/doctrine/odm/mongodb https://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
 
             <doctrine:mongodb>
-                <doctrine:connection id="default" server="mongodb://localhost:27017"/>
+                <doctrine:connection id="default" server="mongodb://localhost:27017" />
                     <doctrine:driver-options
                         context="app.mongodb.context_service"
                     >
