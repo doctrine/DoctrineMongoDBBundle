@@ -871,17 +871,16 @@ Learn more from the Cookbook
 
 * :doc:`/form`
 
-.. _`MongoDB`:          http://www.mongodb.org/
+.. _`MongoDB`: http://www.mongodb.org/
 .. _`Doctrine2 ORM`: http://symfony.com/doc/current/book/doctrine.html
-.. _`documentation`:    http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/
+.. _`documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/
 .. _`Doctrine2 ORM chapter`: http://symfony.com/doc/current/book/doctrine.html
 .. _`DoctrineFixturesBundle`: http://symfony.com/doc/master/bundles/DoctrineFixturesBundle/index.html
-.. _`schema documentation`: http://getcomposer.org/doc/04-schema.md#minimum-stability
-.. _`Quick Start`:      http://www.mongodb.org/display/DOCS/Quickstart
+.. _`Quick Start`: http://www.mongodb.org/display/DOCS/Quickstart
 .. _`Basic Mapping Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html
 .. _`MongoDB type`: http://us.php.net/manual/en/mongo.types.php
 .. _`using common Doctrine extensions`: http://symfony.com/doc/current/cookbook/doctrine/common_extensions.html
-.. _`Mapping Types Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html#doctrine-mapping-types
+.. _`Mapping Types documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html#doctrine-mapping-types
 .. _`Querying for Objects`: http://symfony.com/doc/current/book/doctrine.html#book-doctrine-queries
 .. _`Query Builder`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html
 .. _`Conditional Operators`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html#conditional-operators
