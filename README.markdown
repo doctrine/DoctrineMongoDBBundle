@@ -7,7 +7,7 @@ into Symfony so that you can persist and retrieve objects to and from MongoDB.
 [![Build Status](https://secure.travis-ci.org/doctrine/DoctrineMongoDBBundle.png?branch=master)](http://travis-ci.org/doctrine/DoctrineMongoDBBundle)
 
 Documentation on how to install and use this bundle is available in the
-Symfony2 [documentation](http://symfony.com/doc/current/bundles/DoctrineMongoDBBundle/index.html).
+Symfony [documentation](http://symfony.com/doc/current/bundles/DoctrineMongoDBBundle/index.html).
 
 Compatibility
 =============
