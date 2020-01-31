@@ -539,7 +539,7 @@ To do this, add the name of the repository class to your mapping definition.
          */
         class Product
         {
-            //...
+            // ...
         }
 
     .. code-block:: yaml
