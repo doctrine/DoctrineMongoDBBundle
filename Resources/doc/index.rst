@@ -319,9 +319,9 @@ If you are using `autowiring`, you can use type hinting to fetch the ``doctrine_
     // App/Controller/DefaultController.php
     namespace App\Controller;
 
-    use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-    use Doctrine\ODM\MongoDB\DocumentManager as DocumentManager;
     use App\Document\Product;
+    use Doctrine\ODM\MongoDB\DocumentManager as DocumentManager;
+    use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
     use Symfony\Component\HttpFoundation\Response;
 
     class DefaultController extends AbstractController
