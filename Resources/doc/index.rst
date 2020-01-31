@@ -602,7 +602,6 @@ You can use this new method just like the default finder methods of the reposito
         ->getRepository('AcmeStoreBundle:Product')
         ->findAllOrderedByName();
 
-
 .. note::
 
     When using a custom repository class, you still have access to the default

@@ -494,7 +494,6 @@ You can then use this service in your configuration:
             </doctrine:mongodb>
         </container>
 
-
 Retrying Connections and Queries
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
