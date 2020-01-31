@@ -98,7 +98,7 @@ the MongoDB ODM across your application:
 
 .. note::
 
-    If you are using Symfony Flex, you can allow `recipes` in the "contrib" repository to
+    If you are using Symfony Flex, you can allow `recipes`_ in the "contrib" repository to
     work with this bundle by executing the following command:
 
     .. code-block:: bash
