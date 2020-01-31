@@ -103,18 +103,18 @@ Next, create the form for the ``User`` model:
         public function buildForm(FormBuilderInterface $builder, array $options)
         {
             $builder->add('email', EmailType::class);
-            $builder->add('password', RepeatedType::class, array(
-               'first_name' => 'password',
-               'second_name' => 'confirm',
-               'type' => PasswordType::class
-            ));
+            $builder->add('password', RepeatedType::class, [
+                'first_name' => 'password',
+                'second_name' => 'confirm',
+                'type' => PasswordType::class
+            ]);
         }
 
         public function configureOptions(OptionsResolver $resolver)
         {
-            $resolver->setDefaults(array(
+            $resolver->setDefaults([
                 'data_class' => User::class,
-            ));
+            ]);
         }
     }
 
@@ -197,7 +197,7 @@ Next, create the form for this ``Registration`` model:
         public function buildForm(FormBuilderInterface $builder, array $options)
         {
             $builder->add('user', UserType::class);
-            $builder->add('terms', CheckboxType::class, array('property_path' => 'termsAccepted'));
+            $builder->add('terms', CheckboxType::class, ['property_path' => 'termsAccepted']);
         }
     }
 
@@ -229,7 +229,7 @@ controller for displaying the registration form:
         {
             $form = $this->createForm(RegistrationType::class, new Registration());
 
-            return $this->render('AcmeAccountBundle:Account:register.html.twig', array('form' => $form->createView()));
+            return $this->render('AcmeAccountBundle:Account:register.html.twig', ['form' => $form->createView()]);
         }
     }
 
@@ -267,7 +267,7 @@ the validation and saves the data into MongoDB:
             return $this->redirect(...);
         }
 
-        return $this->render('AcmeAccountBundle:Account:register.html.twig', array('form' => $form->createView()));
+        return $this->render('AcmeAccountBundle:Account:register.html.twig', ['form' => $form->createView()]);
     }
 
 That's it! Your form now validates, and allows you to save the ``User``

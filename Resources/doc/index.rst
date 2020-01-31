@@ -60,10 +60,10 @@ register the new bundle:
     // app/AppKernel.php
     public function registerBundles()
     {
-        $bundles = array(
+        $bundles = [
             // ...
             new Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
-        );
+        ];
 
         // ...
     }
@@ -737,9 +737,9 @@ and then `tagging`_ it with a specific tag.
 
         $definition = new Definition('Acme\HelloBundle\Listener\MyDoctrineListener');
         // ...
-        $definition->addTag('doctrine_mongodb.odm.event_listener', array(
+        $definition->addTag('doctrine_mongodb.odm.event_listener', [
             'event' => 'postPersist',
-        ));
+        ]);
         $container->setDefinition('my_doctrine_listener', $definition);
 
 *   **event subscriber**: Use the ``doctrine_mongodb.odm.event_subscriber`` tag
@@ -810,7 +810,7 @@ be fetched from the Symfony2 service container. A similar example like the tutor
     $collection = $db->createCollection('cartoons');
 
     // add a record
-    $document = array( "title" => "Calvin and Hobbes", "author" => "Bill Watterson" );
+    $document = ['title' => 'Calvin and Hobbes', 'author' => 'Bill Watterson'];
     $collection->insert($document);
 
     // find everything in the collection
