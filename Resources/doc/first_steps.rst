@@ -452,7 +452,7 @@ is to use the repository as a service and inject it as a dependency into other s
 
     use Acme\StoreBundle\Document\Product;
     use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepository;
-    use Doctrine\Common\Persistence\ManagerRegistry;
+    use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 
     /**
      * Remember to map this repository in the corresponding document's repositoryClass.
