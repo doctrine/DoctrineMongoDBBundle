@@ -62,6 +62,14 @@ class PrettyDataCollectorTest extends TestCase
                 ['db' => 'foo', 'collection' => 'bar', 'count' => true, 'limit' => ['limit' => true, 'limitNum' => 3]],
                 ['use foo;', 'db.bar.count({ }, { "limit": 3 });'],
             ],
+            'countWithLimitOnlyInSimpleArray' => [
+                ['db' => 'foo', 'collection' => 'bar', 'count' => true, 'limit' => 0],
+                ['use foo;', 'db.bar.count({ }, { "limit": 0 });'],
+            ],
+            'countWithSkipOnlyInSimpleArray' => [
+                ['db' => 'foo', 'collection' => 'bar', 'count' => true, 'skip' => 5],
+                ['use foo;', 'db.bar.count({ }, { "skip": 5 });'],
+            ],
         ];
     }
 

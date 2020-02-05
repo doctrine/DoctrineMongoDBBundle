@@ -102,10 +102,10 @@ class PrettyDataCollector extends StandardDataCollector
 
                         $options = [];
                         if (isset($log['limit'])) {
-                            $options['limit'] = $log['limit']['limitNum'];
+                            $options['limit'] = is_array($log['limit']) ? $log['limit']['limitNum'] : $log['limit'];
                         }
                         if (isset($log['skip'])) {
-                            $options['skip'] = $log['skip']['limitSkip'];
+                            $options['skip'] = is_array($log['skip']) ? $log['skip']['limitSkip'] : $log['skip'];
                         }
 
                         if (! empty($options)) {
