@@ -22,7 +22,8 @@
         "symfony/config": "^4.3.3|^5.0",
         "symfony/framework-bundle": "^4.3.3|^5.0",
         "symfony/http-kernel": "^4.3.7|^5.0",
-        "symfony/options-resolver": "^4.3.3|^5.0"
+        "symfony/options-resolver": "^4.3.3|^5.0",
+        "symfony/service-contracts": "^1.1.1|^2.0"
     },
     "require-dev": {
         "doctrine/coding-standard": "^6.0",

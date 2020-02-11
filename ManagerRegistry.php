@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use ProxyManager\Proxy\LazyLoadingInterface;
 use Symfony\Bridge\Doctrine\ManagerRegistry as BaseManagerRegistry;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Contracts\Service\ResetInterface;
 use function array_keys;
+use function assert;
 use function class_uses;
 
-class ManagerRegistry extends BaseManagerRegistry
+class ManagerRegistry extends BaseManagerRegistry implements ResetInterface
 {
     public function __construct($name, array $connections, array $managers, $defaultConnection, $defaultManager, $proxyInterfaceName, ?ContainerInterface $container = null)
     {
@@ -46,5 +50,31 @@ class ManagerRegistry extends BaseManagerRegistry
         }
 
         throw MongoDBException::unknownDocumentNamespace($alias);
+    }
+
+    public function reset() : void
+    {
+        foreach ($this->getManagerNames() as $managerName => $serviceId) {
+            $this->resetOrClearManager($managerName, $serviceId);
+        }
+    }
+
+    private function resetOrClearManager(string $managerName, string $serviceId) : void
+    {
+        if (! $this->container->initialized($serviceId)) {
+            return;
+        }
+
+        $manager = $this->container->get($serviceId);
+
+        assert($manager instanceof DocumentManager);
+
+        if (! $manager instanceof LazyLoadingInterface || $manager->isOpen()) {
+            $manager->clear();
+
+            return;
+        }
+
+        $this->resetManager($managerName);
     }
 }

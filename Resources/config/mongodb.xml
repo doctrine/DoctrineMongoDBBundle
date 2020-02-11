@@ -187,6 +187,7 @@
             <argument>%doctrine_mongodb.odm.default_document_manager%</argument>
             <argument>ProxyManager\Proxy\GhostObjectInterface</argument>
             <argument type="service" id="service_container" />
+            <tag name="kernel.reset" method="reset" />
         </service>
 
         <!-- listeners -->
