@@ -233,7 +233,7 @@ controller for displaying the registration form:
 
 and its template:
 
-.. code-block:: html+twig
+.. code-block:: html+jinja
 
     {# src/Acme/AccountBundle/Resources/views/Account/register.html.twig #}
     <form action="{{ path('create')}}" method="post" {{ form_enctype(form) }}>
