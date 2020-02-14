@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Form;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Form\AbstractExtension;
 
 /**

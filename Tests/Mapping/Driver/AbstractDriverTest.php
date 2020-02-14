@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Mapping\Driver;
 
-use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\Persistence\Mapping\Driver\FileDriver;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
@@ -38,7 +38,7 @@ abstract class AbstractDriverTest extends TestCase
     }
 
     /**
-     * @expectedException Doctrine\Common\Persistence\Mapping\MappingException
+     * @expectedException Doctrine\Persistence\Mapping\MappingException
      */
     public function testFindMappingFileNamespacedFoundFileNotFound()
     {
@@ -49,7 +49,7 @@ abstract class AbstractDriverTest extends TestCase
     }
 
     /**
-     * @expectedException Doctrine\Common\Persistence\Mapping\MappingException
+     * @expectedException Doctrine\Persistence\Mapping\MappingException
      */
     public function testFindMappingNamespaceNotFound()
     {
