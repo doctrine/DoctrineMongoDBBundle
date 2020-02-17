@@ -104,9 +104,9 @@ Next, create the form for the ``User`` model:
         {
             $builder->add('email', EmailType::class);
             $builder->add('password', RepeatedType::class, [
-                'first_name' => 'password',
-                'second_name' => 'confirm',
-                'type' => PasswordType::class
+               'first_name' => 'password',
+               'second_name' => 'confirm',
+               'type' => PasswordType::class
             ]);
         }
 
@@ -154,7 +154,7 @@ form and adds the extra field needed:
 
         /**
          * @Assert\NotBlank()
-         * @Assert\True()
+         * @Assert\IsTrue()
          */
         protected $termsAccepted;
 
@@ -175,7 +175,7 @@ form and adds the extra field needed:
 
         public function setTermsAccepted($termsAccepted)
         {
-            $this->termsAccepted = (boolean)$termsAccepted;
+            $this->termsAccepted = (bool) $termsAccepted;
         }
     }
 
@@ -187,7 +187,7 @@ Next, create the form for this ``Registration`` model:
     namespace App\Form\Type;
 
     use Symfony\Component\Form\AbstractType;
-    use Symfony\Component\Form\Extension\Core\Type\CheckboxType
+    use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
     use Symfony\Component\Form\FormBuilderInterface;
 
     class RegistrationType extends AbstractType
@@ -215,10 +215,10 @@ controller that will display the registration form:
     // src/Controller/AccountController.php
     namespace App\Controller;
 
-    use Doctrine\ODM\MongoDB\DocumentManager;
     use App\Form\Model\Registration;
     use App\Form\Type\RegistrationType;
-    use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+    use Doctrine\ODM\MongoDB\DocumentManager;
+    use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
     use Symfony\Component\HttpFoundation\Response;
 
     class AccountController extends AbstractController

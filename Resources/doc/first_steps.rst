@@ -127,7 +127,7 @@ a controller. Create new Controller class inside source directory of your projec
         $dm->persist($product);
         $dm->flush();
 
-        return new Response('Created product id '.$product->getId());
+        return new Response('Created product id ' . $product->getId());
     }
 
 .. note::
@@ -137,12 +137,8 @@ a controller. Create new Controller class inside source directory of your projec
 
 Let's walk through this example:
 
-* **lines 8-10** In this section, you instantiate and work with the ``$product``
-  object like any other, normal PHP object;
-
-* **line 12** This line fetches Doctrine's *document manager* object, which is
-  responsible for handling the process of persisting and fetching objects
-  to and from MongoDB;
+* **lines 9-11** In this section, you instantiate and work with the ``$product``
+  object like you would with any other, normal PHP object;
 
 * **line 13** The ``persist()`` method tells Doctrine to "manage" the ``$product``
   object. This does not actually cause a query to be made to MongoDB (yet);
@@ -151,33 +147,6 @@ Let's walk through this example:
   all of the objects that it's managing to see if they need to be persisted
   to MongoDB. In this example, the ``$product`` object has not been persisted yet,
   so the document manager makes a query to MongoDB, which adds a new entry.
-
-If you are using `autowiring`, you can use type hinting to fetch the ``doctrine_mongodb.odm.document_manager`` service:
-
-.. code-block:: php
-
-    // App/Controller/DefaultController.php
-    namespace App\Controller;
-
-    use App\Document\Product;
-    use Doctrine\ODM\MongoDB\DocumentManager;
-    use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-    use Symfony\Component\HttpFoundation\Response;
-
-    class DefaultController extends AbstractController
-    {
-        public function createProduct(DocumentManager $dm)
-        {
-            $product = new Product();
-            $product->setName('A Foo Bar');
-            $product->setPrice('19.99');
-
-            $dm->persist($product);
-            $dm->flush();
-
-            return new Response('Created product id ' . $product->getId());
-        }
-    }
 
 .. note::
 
@@ -208,8 +177,8 @@ that you've configured a route to display a specific ``Product`` based on its
     {
         $product = $dm->getRepository(Product::class)->find($id);
 
-        if (!$product) {
-            throw $this->createNotFoundException('No product found for id '.$id);
+        if (! $product) {
+            throw $this->createNotFoundException('No product found for id ' . $id);
         }
 
         // do something, like pass the $product object into a template
@@ -224,13 +193,6 @@ repository object for a document class via:
 
     $repository = $dm->getRepository(Product::class);
 
-.. note::
-
-    The ``AcmeStoreBundle:Product`` string is a shortcut you can use anywhere
-    in Doctrine instead of the full class name of the document (i.e. ``Acme\StoreBundle\Document\Product``).
-    As long as your document lives under the ``Document`` namespace of your bundle,
-    this will work.
-
 Once you have your repository, you have access to all sorts of helpful methods:
 
 .. code-block:: php
@@ -238,15 +200,11 @@ Once you have your repository, you have access to all sorts of helpful methods:
     // query by the identifier (usually "id")
     $product = $repository->find($id);
 
-    // dynamic method names to find based on a column value
-    $product = $repository->findOneById($id);
-    $product = $repository->findOneByName('foo');
-
     // find *all* products
     $products = $repository->findAll();
 
     // find a group of products based on an arbitrary column value
-    $products = $repository->findByPrice(19.99);
+    $products = $repository->findBy(['price' => 19.99]);
 
 .. note::
 
@@ -258,13 +216,13 @@ to easily fetch objects based on multiple conditions:
 
 .. code-block:: php
 
-    // query for one product matching be name and price
+    // query for one product matching by name and price
     $product = $repository->findOneBy(['name' => 'foo', 'price' => 19.99]);
 
     // query for all products matching the name, ordered by price
     $product = $repository->findBy(
         ['name' => 'foo'],
-        ['price' => 'ASC'],
+        ['price' => 'ASC']
     );
 
 Updating an Object
@@ -279,11 +237,12 @@ you have a route that maps a product id to an update action in a controller:
     {
         $product = $dm->getRepository(Product::class)->find($id);
 
-        if (!$product) {
-            throw $this->createNotFoundException('No product found for id '.$id);
+        if (! $product) {
+            throw $this->createNotFoundException('No product found for id ' . $id);
         }
 
         $product->setName('New product name!');
+
         $dm->flush();
 
         return $this->redirectToRoute('homepage');
