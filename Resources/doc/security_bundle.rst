@@ -9,6 +9,7 @@ the ``entity`` user provider described in `the cookbook`_:
 
     .. code-block:: yaml
 
+        # config/packages/security.yaml
         security:
             providers:
                 my_mongo_provider:
@@ -16,7 +17,7 @@ the ``entity`` user provider described in `the cookbook`_:
 
     .. code-block:: xml
 
-        <!-- app/config/security.xml -->
+        <!-- config/packages/security.xml -->
         <config>
             <provider name="my_mongo_provider">
                 <mongodb class="App\Document\User" property="username" />

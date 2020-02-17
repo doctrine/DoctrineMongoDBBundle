@@ -31,38 +31,36 @@ To install DoctrineMongoDBBundle with Composer run the following command:
 
     composer require doctrine/mongodb-odm-bundle
 
-All that is left to do is to update your ``AppKernel.php`` file, and
-register the new bundle:
+
+Enable the Bundle
+-----------------
+
+Your bundle should be automatically enabled if you use Flex.
+Otherwise, you'll need to manually enable the bundle by adding the
+following line in the ``config/bundles.php`` file of your project:
 
 .. code-block:: php
 
-    // app/AppKernel.php
-    public function registerBundles()
-    {
-        $bundles = [
-            // ...
-            new Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
-        ];
+    // config/bundles.php
+    <?php
 
+    return [
         // ...
-    }
+        Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle::class => ['all' => true],
+    ];
 
 Configuration
 -------------
 
-To get started, you'll need some basic configuration that sets up the document
-manager. The easiest way is to enable ``auto_mapping``, which will activate
+Flex recipe will automatically create ``config/packages/doctrine_mongodb.yaml``
+file with default configuration. Without Flex you need to create the file
+manually and fill it with some basic configuration that sets up the document manager.
+The recommended way is to enable ``auto_mapping``, which will activate
 the MongoDB ODM across your application:
 
 .. code-block:: yaml
 
-    # app/config/parameters.yml
-    parameters:
-        mongodb_server: "mongodb://localhost:27017"
-
-.. code-block:: yaml
-
-    # app/config/config.yml
+    # config/packages/doctrine_mongodb.yaml
     doctrine_mongodb:
         connections:
             default:
@@ -85,7 +83,7 @@ Authentication
 If you use authentication on your MongoDB database you can then provide username,
 password and authentication database in the following way:
 
-    # app/config/parameters.yaml
+    # config/services.yaml
     parameters:
         mongodb_server: "mongodb://username:password@localhost:27017/?authSource=auth-db"
 

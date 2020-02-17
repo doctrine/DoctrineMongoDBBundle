@@ -8,7 +8,7 @@ Sample Configuration
 
     .. code-block:: yaml
 
-        # app/config/config.yml
+        # config/packages/doctrine_mongodb.yaml
         doctrine_mongodb:
             connections:
                 default:
@@ -133,7 +133,7 @@ can control. The following configuration options exist for a mapping:
   this path is relative it is assumed to be relative to the bundle root. This
   only works if the name of your mapping is a bundle name. If you want to use
   this option to specify absolute paths you should prefix the path with the
-  kernel parameters that exist in the DIC (for example %kernel.root_dir%).
+  kernel parameters that exist in the DIC (for example %kernel.project_dir%).
 
 - ``prefix`` A common namespace prefix that all documents of this mapping
   share. This prefix should never conflict with prefixes of other defined
@@ -184,7 +184,7 @@ The following configuration shows a bunch of mapping examples:
                             alias: BundleAlias
                         doctrine_extensions:
                             type: xml
-                            dir: "%kernel.root_dir%/../src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents"
+                            dir: "%kernel.project_dir%/src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents"
                             prefix: DoctrineExtensions\Documents\
                             alias: DExt
 
@@ -207,7 +207,7 @@ The following configuration shows a bunch of mapping examples:
                     <doctrine_mongodb:mapping name="MyBundle5" type="xml" dir="my-bundle-mappings-dir" alias="BundleAlias" />
                     <doctrine_mongodb:mapping name="doctrine_extensions"
                                               type="xml"
-                                              dir="%kernel.root_dir%/../src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents"
+                                              dir="%kernel.project_dir%/src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents"
                                               prefix="DoctrineExtensions\Documents\"
                                               alias="DExt" />
                 </doctrine_mongodb:document-manager>
