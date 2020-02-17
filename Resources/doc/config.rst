@@ -51,20 +51,20 @@ Sample Configuration
 .. tip::
 
     If each environment requires a different MongoDB connection URI, you can
-    define it in a separate parameter and reference it in the bundle config:
+    `define it as environment variable`_ and reference it in the bundle config:
 
     .. code-block:: yaml
 
-        # app/config/parameters.yml
-        mongodb_server: mongodb://localhost:27017
+        # .env
+        MONGODB_URL=mongodb://localhost:27017
 
     .. code-block:: yaml
 
-        # app/config/config.yml
+        # config/packages/doctrine_mongodb.yaml
         doctrine_mongodb:
             connections:
                 default:
-                    server: "%mongodb_server%"
+                    server: '%env(resolve:MONGODB_URL)%'
 
 If you wish to use memcache to cache your metadata, you need to configure the
 ``Memcache`` instance; for example, you can do the following:

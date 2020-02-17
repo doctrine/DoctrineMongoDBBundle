@@ -76,6 +76,10 @@ the MongoDB ODM across your application:
     Please also make sure that the MongoDB server is running in the background.
     For more details, see the MongoDB `Installation Tutorials`_.
 
+.. tip::
+
+    You can configure bundle options that depend on where your application
+    is run (e.g. during tests or development) with `Environment Variables`_.
 
 Authentication
 --------------
