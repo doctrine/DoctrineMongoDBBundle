@@ -2,14 +2,14 @@ Creating a Registration Form
 ============================
 
 Some forms have extra fields whose values don't need to be stored in the
-database. In this example, we'll create a registration form with some extra
-fields and (like a "terms accepted" checkbox field) and embed the form that
-actually stores the account information. We'll use MongoDB for storing the data.
+database. In this example, we'll create a registration form with such
+field ("terms accepted" checkbox field) and embed the form that actually
+stores the account information. We'll use MongoDB for storing the data.
 
 The User Model
 ---------------------
 
-So, in this tutorial we begin with the model for a ``User`` document:
+We begin this tutorial with the model for a ``User`` document:
 
 .. code-block:: php
 
@@ -72,8 +72,8 @@ So, in this tutorial we begin with the model for a ``User`` document:
     }
 
 This ``User`` document contains three fields and two of them (email and
-password) should display on the form. The email property must be unique
-on the database, so we've added this validation at the top of the class.
+password) should be displayed in the form. The email property must be unique
+in the database, so we've added this validation at the top of the class.
 
 .. note::
 
@@ -135,8 +135,7 @@ form will contain further fields like "accept the terms", whose value won't be
 stored in the database.
 
 In other words, create a second form for registration, which embeds the ``User``
-form and adds the extra field needed. Start by creating a simple class which
-represents the "registration":
+form and adds the extra field needed:
 
 .. code-block:: php
 
@@ -200,8 +199,8 @@ Next, create the form for this ``Registration`` model:
         }
     }
 
-You don't need to use special method for embedding the ``UserType`` form.
-A form is a field, too - so you can add this like any other field, with the
+You don't need to use any special method to embed the ``UserType`` form.
+A form is a field, too - you can add it like any other field, with the
 expectation that the corresponding ``user`` property will hold an instance
 of the class ``UserType``.
 
@@ -244,8 +243,8 @@ and its template:
         <input type="submit" />
     {{ form_end(form) }}
 
-Finally, create the controller which handles the form submission.  This performs
-the validation and saves the data into MongoDB:
+Finally, create another action in ``AccountController``, which will handle
+the form submission - perform its validation and save the User into MongoDB:
 
 .. code-block:: php
 
@@ -269,8 +268,8 @@ the validation and saves the data into MongoDB:
         ]);
     }
 
-That's it! Your form now validates, and allows you to save the ``User``
-object to MongoDB.
+That's it! Your form now validates sent data and allows you to save
+the ``User`` object to MongoDB.
 
 .. _`UserInterface`: http://symfony.com/doc/current/book/security.html#book-security-user-entity
 .. _`file`: http://symfony.com/doc/current/book/forms.html

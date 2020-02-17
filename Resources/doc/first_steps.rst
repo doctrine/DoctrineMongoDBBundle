@@ -201,7 +201,7 @@ they already exist in MongoDB.
 .. tip::
 
     Doctrine provides a library that allows you to programmatically load testing
-    data into your project (i.e. "fixture data"). For information, see
+    data into your project (i.e. "fixture data"). For more information, see
     `DoctrineFixturesBundle`_.
 
 Fetching Objects from MongoDB

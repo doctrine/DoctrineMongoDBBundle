@@ -161,7 +161,7 @@ follow these conventions:
    into the ``Resources/config/doctrine/`` directory
    suffixed with mongodb.xml, mongodb.yml or mongodb.php respectively.
 
-3. Annotations is assumed if a ``Document/`` but no
+3. Annotations are assumed if a ``Document/`` but no
    ``Resources/config/doctrine/`` directory is found.
 
 The following configuration shows a bunch of mapping examples:
@@ -398,8 +398,8 @@ Using Authentication on a Database Level
 
 MongoDB supports authentication and authorisation on a database-level. This is mandatory if you have
 e.g. a publicly accessible MongoDB Server. To make use of this feature you need to configure credentials
-for each of your connections. Also every connection needs a database set to authenticate against. The setting is
-represented by the *authSource* `connection string <https://docs.mongodb.com/manual/reference/connection-string/#urioption.authSource>`_.
+for each of your connections. Every connection needs also a database to authenticate against. The setting is
+represented by the *authSource* `connection string`_.
 Otherwise you will get a *auth failed* exception.
 
 .. configuration-block::
@@ -442,7 +442,8 @@ Specifying a context service
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The MongoDB driver supports receiving a stream context to set SSL and logging
-options. This can be used to authenticate using SSL certificates. To do so, create a service that creates your logging context:
+options. This can be used to authenticate using SSL certificates. To do so,
+create a service that creates your logging context:
 
 .. configuration-block::
 

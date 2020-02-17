@@ -11,8 +11,8 @@ in the `installation chapter`_ of the Composer documentation.
 Install the bundle with Symfony Flex
 ------------------------------------
 
-A Flex recipe for the DoctrineMongoDBBundle is provided through a Contrib Recipe
-therefore you need to allow its usage:
+A Flex recipe for the DoctrineMongoDBBundle is provided as Contrib Recipe.
+You need to allow its usage first:
 
 .. code-block:: bash
 
@@ -82,8 +82,8 @@ the MongoDB ODM across your application:
 Authentication
 --------------
 
-If you use authentication on your MongoDB database you can the provide username, 
-password, and authentication database in the following way:
+If you use authentication on your MongoDB database you can then provide username,
+password and authentication database in the following way:
 
     # app/config/parameters.yaml
     parameters:
@@ -91,7 +91,7 @@ password, and authentication database in the following way:
 
 .. note::
 
-    The authentication database is different to the default database used by MongoDB.
+    The authentication database is different from the default database used by MongoDB.
 
 .. _`installation chapter`: https://getcomposer.org/doc/00-intro.md
 .. _`MongoDB driver`: https://docs.mongodb.com/ecosystem/drivers/php/

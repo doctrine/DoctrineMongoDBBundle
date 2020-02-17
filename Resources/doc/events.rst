@@ -24,8 +24,8 @@ event managers for all connections. To restrict a listener to a single
 connection, specify its name in the tag's ``connection`` attribute.
 
 The ``priority`` attribute, which defaults to ``0`` if omitted, may be used
-to control the order that listeners are registered. Much like Symfony's
-`event dispatcher`_, greater numbers will result in the listener executing
+to control the order in which listeners are registered. Much like Symfony's
+`event dispatcher`_, greater number will result in the listener executing
 first and listeners with the same priority will be executed in the order that
 they were registered with the event manager.
 
@@ -64,11 +64,11 @@ Event Subscribers
 -----------------
 
 Use the ``doctrine_mongodb.odm.event_subscriber`` tag
-to register a subscriber. Subscribers are responsible for implementing
-``Doctrine\Common\EventSubscriber`` and a method for returning the events
-they will observe. For this reason, this tag has no ``event`` attribute;
-however, the ``connection``, ``priority`` and ``lazy`` attributes are
-available.
+to register a subscriber. Subscribers must implement interface
+``Doctrine\Common\EventSubscriber``, which means that they must
+contain method returning the events they will observe. For this reason,
+this tag has no ``event`` attribute, however the ``connection``,
+``priority`` and ``lazy`` attributes are available.
 
 .. note::
 
