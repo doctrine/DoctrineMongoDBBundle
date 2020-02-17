@@ -24,4 +24,4 @@ For example, to get details about the ``doctrine:mongodb:query`` task, run:
    ``DoctrineFixturesBundle`` bundle installed. To learn how to do it, read
    the "`DoctrineFixturesBundle`_" entry of the documentation.
 
-.. _`DoctrineFixturesBundle`: http://symfony.com/doc/master/bundles/DoctrineFixturesBundle/index.html
+.. _`DoctrineFixturesBundle`: https://symfony.com/doc/master/bundles/DoctrineFixturesBundle/index.html

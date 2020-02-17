@@ -497,9 +497,9 @@ repositories as services you can use the following service configuration:
             </services>
         </container>
 
-.. _`Basic Mapping Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html
-.. _`Conditional Operators`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html#conditional-operators
-.. _`DoctrineFixturesBundle`: http://symfony.com/doc/master/bundles/DoctrineFixturesBundle/index.html
-.. _`Query Builder`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html
+.. _`Basic Mapping Documentation`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html
+.. _`Conditional Operators`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html#conditional-operators
+.. _`DoctrineFixturesBundle`: https://symfony.com/doc/master/bundles/DoctrineFixturesBundle/index.html
+.. _`Query Builder`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html
 .. _`autowiring`: https://symfony.com/doc/current/service_container/autowiring.html
 .. _`autoconfiguration`: https://symfony.com/doc/current/service_container.html#the-autoconfigure-option

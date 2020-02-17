@@ -40,11 +40,12 @@ that allow you to easily perform repeated and common tasks on your entities.
 These include thing such as *Sluggable*, *Timestampable*, *Loggable*, *Translatable*,
 and *Tree*.
 
-For more information on how to find and use these extensions, see the cookbook
-article about `using common Doctrine extensions`_.
+For more information about them, see `available Doctrine extensions`_
+and use the `StofDoctrineExtensionsBundle`_ to integrate them in your application.
 
-.. _`MongoDB`: http://www.mongodb.org/
-.. _`Doctrine2 ORM`: http://symfony.com/doc/current/book/doctrine.html
-.. _`documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/
-.. _`Doctrine2 ORM chapter`: http://symfony.com/doc/current/book/doctrine.html
-.. _`using common Doctrine extensions`: http://symfony.com/doc/current/cookbook/doctrine/common_extensions.html
+.. _`MongoDB`: https://www.mongodb.com
+.. _`Doctrine2 ORM`: https://symfony.com/doc/current/book/doctrine.html
+.. _`documentation`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/
+.. _`Doctrine2 ORM chapter`: https://symfony.com/doc/current/book/doctrine.html
+.. _`available Doctrine extensions`: https://github.com/Atlantic18/DoctrineExtensions
+.. _`StofDoctrineExtensionsBundle`: https://symfony.com/doc/current/bundles/StofDoctrineExtensionsBundle/index.html

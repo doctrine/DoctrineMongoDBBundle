@@ -75,8 +75,8 @@ the MongoDB ODM across your application:
 
 .. note::
 
-    Of course, you'll also need to make sure that the MongoDB server is running
-    in the background. For more details, see the MongoDB `Quick Start`_ guide.
+    Please also make sure that the MongoDB server is running in the background.
+    For more details, see the MongoDB `Installation Tutorials`_.
 
 
 Authentication
@@ -95,4 +95,5 @@ password, and authentication database in the following way:
 
 .. _`installation chapter`: https://getcomposer.org/doc/00-intro.md
 .. _`MongoDB driver`: https://docs.mongodb.com/ecosystem/drivers/php/
-.. _`Quick Start`: http://www.mongodb.org/display/DOCS/Quickstart
+.. _`Installation Tutorials`: https://docs.mongodb.com/manual/installation/
+.. _`Environment Variables`: https://symfony.com/doc/current/configuration.html#configuration-based-on-environment-variables

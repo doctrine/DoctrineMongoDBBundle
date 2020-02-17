@@ -77,6 +77,6 @@ available.
     event(s). For this reason, the aforementioned tags have no ``method``
     attribute.
 
-.. _`event dispatcher`: http://symfony.com/doc/current/components/event_dispatcher/introduction.html
-.. _`Event Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/events.html
+.. _`event dispatcher`: https://symfony.com/doc/current/components/event_dispatcher.html
+.. _`Event Documentation`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/events.html
 .. _`tagging`: https://symfony.com/doc/current/service_container/tags.html
