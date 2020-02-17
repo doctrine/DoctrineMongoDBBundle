@@ -38,9 +38,9 @@ inside the ``Document`` directory of your ``AcmeStoreBundle``:
     }
 
 The class - often called a "document", meaning *a basic class that holds data* -
-is simple and helps fulfill the business requirement of needing products
-in your application. This class can't be persisted to Doctrine MongoDB yet -
-it's just a simple PHP class.
+helps fulfill the business requirement of needing products in your application.
+This class can't be persisted to Doctrine MongoDB yet - currently it's
+only plain PHP class.
 
 Add Mapping Information
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -51,8 +51,8 @@ you to persist entire *objects* to MongoDB and fetch entire objects out of
 MongoDB. This works by mapping a PHP class and its properties to entries
 of a MongoDB collection.
 
-For Doctrine to be able to do this, you just have to create "metadata", or
-configuration that tells Doctrine exactly how the ``Product`` class and its
+For Doctrine to be able to do this, you have to create "metadata", or
+configuration, that tells Doctrine exactly how the ``Product`` class and its
 properties should be *mapped* to MongoDB. This metadata can be specified
 in a number of different formats including XML or directly inside the
 ``Product`` class via annotations:
@@ -115,9 +115,8 @@ Persisting Objects to MongoDB
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Now that you have a mapped ``Product`` document complete with getter and
-setter methods, you're ready to persist data to MongoDB. From inside a controller,
-this is pretty easy. Add the following method to the ``DefaultController``
-of the bundle:
+setter methods, you're ready to persist data to MongoDB. Let's try it from inside
+a controller. Create new Controller class inside source directory of your project:
 
 .. code-block:: php
     :linenos:
@@ -208,8 +207,8 @@ they already exist in MongoDB.
 Fetching Objects from MongoDB
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Fetching an object back out of MongoDB is even easier. For example, suppose
-you've configured a route to display a specific ``Product`` based on its
+Fetching an object back out of MongoDB is also possible. For example, suppose
+that you've configured a route to display a specific ``Product`` based on its
 ``id`` value:
 
 .. code-block:: php
@@ -260,8 +259,8 @@ Once you have your repository, you have access to all sorts of helpful methods:
 
 .. note::
 
-    Of course, you can also issue complex queries, which you'll learn more
-    about in the `Querying for Objects`_ section.
+    You can also issue complex queries, you can learn more about them
+    in the `Querying for Objects`_ section.
 
 You can also take advantage of the useful ``findBy()`` and ``findOneBy()`` methods
 to easily fetch objects based on multiple conditions:
@@ -280,7 +279,7 @@ to easily fetch objects based on multiple conditions:
 Updating an Object
 ~~~~~~~~~~~~~~~~~~
 
-Once you've fetched an object from Doctrine, updating it is easy. Suppose
+Once you've fetched an object from Doctrine, let's try to update it. Suppose
 you have a route that maps a product id to an update action in a controller:
 
 .. code-block:: php
@@ -299,14 +298,14 @@ you have a route that maps a product id to an update action in a controller:
         return $this->redirectToRoute('homepage');
     }
 
-Updating an object involves just three steps:
+Updating an object involves three steps:
 
 1. Fetching the object from Doctrine;
 2. Modifying the object;
 3. Calling ``flush()`` on the document manager.
 
 Notice that calling ``$dm->persist($product)`` isn't necessary. Recall that
-this method simply tells Doctrine to manage or "watch" the ``$product`` object.
+this method tells Doctrine to manage or "watch" the ``$product`` object.
 In this case, since you fetched the ``$product`` object from Doctrine, it's
 already managed.
 
@@ -321,16 +320,16 @@ method of the document manager:
     $dm->remove($product);
     $dm->flush();
 
-As you might expect, the ``remove()`` method notifies Doctrine that you'd
-like to remove the given document from the MongoDB. The actual delete operation
-however, isn't actually executed until the ``flush()`` method is called.
+The ``remove()`` method notifies Doctrine that you'd like to remove
+the given document from the MongoDB. The actual delete operation
+however, isn't executed until the ``flush()`` method is called.
 
 Querying for Objects
 --------------------
 
 As you saw above, the built-in repository class allows you to query for one
-or many objects based on an number of different parameters. When this is
-enough, this is the easiest way to query for documents. Of course, you can
+or many objects based on any number of different parameters. When this is
+enough, this is the recommended way to query for documents. Of course, you can
 also create more complex queries.
 
 Using the Query Builder
@@ -425,7 +424,7 @@ for all of the ``Product`` documents, ordered alphabetically.
         }
     }
 
-You can use this new method just like the default finder methods of the repository:
+You can use this new method like the default finder methods of the repository:
 
 .. code-block:: php
 

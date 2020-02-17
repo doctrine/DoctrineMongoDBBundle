@@ -6,7 +6,7 @@ database. In this example, we'll create a registration form with some extra
 fields and (like a "terms accepted" checkbox field) and embed the form that
 actually stores the account information. We'll use MongoDB for storing the data.
 
-The simple User model
+The User Model
 ---------------------
 
 So, in this tutorial we begin with the model for a ``User`` document:
@@ -118,9 +118,9 @@ Next, create the form for the ``User`` model:
         }
     }
 
-We just added two fields: email and password (repeated to confirm the entered
-password). The ``data_class`` option tells the form the name of data class
-(i.e. your ``User`` document).
+We added two fields: email and password (repeated to confirm the entered
+password). The ``data_class`` option tells the form the name of the class
+that holds the underlying data (i.e. your ``User`` document).
 
 .. tip::
 
@@ -130,7 +130,7 @@ Embedding the User form into a Registration Form
 ------------------------------------------------
 
 The form that you'll use for the registration page is not the same as the
-form used to simply modify the ``User`` (i.e. ``UserType``). The registration
+form used to modify the ``User`` (i.e. ``UserType``). The registration
 form will contain further fields like "accept the terms", whose value won't be
 stored in the database.
 
@@ -208,8 +208,8 @@ of the class ``UserType``.
 Handling the Form Submission
 ----------------------------
 
-Next, you need a controller to handle the form. Start by creating a simple
-controller for displaying the registration form:
+Next, you need a controller to handle the form. Start by creating a
+controller that will display the registration form:
 
 .. code-block:: php
 

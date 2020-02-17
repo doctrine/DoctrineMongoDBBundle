@@ -36,8 +36,8 @@ Doctrine Extensions: Timestampable, Sluggable, etc.
 ---------------------------------------------------
 
 Doctrine is quite flexible, and a number of third-party extensions are available
-that allow you to easily perform repeated and common tasks on your entities.
-These include thing such as *Sluggable*, *Timestampable*, *Loggable*, *Translatable*,
+that allow you to perform repeated and common tasks on your entities.
+These include things such as *Sluggable*, *Timestampable*, *Loggable*, *Translatable*,
 and *Tree*.
 
 For more information about them, see `available Doctrine extensions`_

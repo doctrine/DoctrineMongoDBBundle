@@ -25,7 +25,7 @@ therefore you need to allow its usage:
 Install the bundle with Composer
 --------------------------------
 
-To install DoctrineMongoDBBundle with Composer just run the following command:
+To install DoctrineMongoDBBundle with Composer run the following command:
 
 .. code-block:: bash
 
