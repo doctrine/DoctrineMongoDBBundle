@@ -363,7 +363,7 @@ Connecting to a pool of mongodb servers on 1 connection
 
 It is possible to connect to several mongodb servers on one connection if
 you are using a replica set by listing all of the servers within the connection
-string as a comma separated list.
+string as a comma separated list and using ``replicaSet`` option.
 
 .. configuration-block::
 
@@ -373,7 +373,7 @@ string as a comma separated list.
             # ...
             connections:
                 default:
-                    server: "mongodb://mongodb-01:27017,mongodb-02:27017,mongodb-03:27017"
+                    server: "mongodb://mongodb-01:27017,mongodb-02:27017,mongodb-03:27017/?replicaSet=replSetName"
 
     .. code-block:: xml
 
@@ -386,12 +386,17 @@ string as a comma separated list.
                                 http://symfony.com/schema/dic/doctrine/odm/mongodb https://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
 
             <doctrine:mongodb>
-                <doctrine:connection id="default" server="mongodb://mongodb-01:27017,mongodb-02:27017,mongodb-03:27017" />
+                <doctrine:connection id="default" server="mongodb://mongodb-01:27017,mongodb-02:27017,mongodb-03:27017/?replicaSet=replSetName" />
             </doctrine:mongodb>
         </container>
 
 Where mongodb-01, mongodb-02 and mongodb-03 are the machine hostnames. You
 can also use IP addresses if you prefer.
+
+.. tip::
+
+    Please refer to `Replica Sets`_ manual of MongoDB PHP Driver for futher details.
+
 
 Using Authentication on a Database Level
 ----------------------------------------
@@ -636,3 +641,7 @@ Full Default Configuration
                 </doctrine:connection>
             </doctrine:config>
         </container>
+
+.. _`define it as environment variable`: https://symfony.com/doc/current/configuration.html#configuration-based-on-environment-variables
+.. _`connection string`: https://docs.mongodb.com/manual/reference/connection-string/#urioption.authSource
+.. _`Replica Sets`: https://www.php.net/manual/en/mongo.connecting.rs.php
