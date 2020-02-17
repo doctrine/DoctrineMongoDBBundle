@@ -77,8 +77,8 @@ in the database, so we've added this validation at the top of the class.
 
 .. note::
 
-    If you want to integrate this User within the security system,you need
-    to implement the `UserInterface`_ of the security component.
+    If you want to integrate this User within the security system, you need
+    to implement the ``UserInterface`` of the `Security component`_.
 
 Create a Form for the Model
 ---------------------------
@@ -124,7 +124,7 @@ that holds the underlying data (i.e. your ``User`` document).
 
 .. tip::
 
-    To explore more things about form component, read this documentation `file`_.
+    To explore more things about the Form component, read its `documentation`_.
 
 Embedding the User form into a Registration Form
 ------------------------------------------------
@@ -274,5 +274,5 @@ the form submission - perform its validation and save the User into MongoDB:
 That's it! Your form now validates sent data and allows you to save
 the ``User`` object to MongoDB.
 
-.. _`UserInterface`: http://symfony.com/doc/current/book/security.html#book-security-user-entity
-.. _`file`: http://symfony.com/doc/current/book/forms.html
+.. _`Security component`: https://symfony.com/doc/current/security.html
+.. _`documentation`: https://symfony.com/doc/current/forms.html
