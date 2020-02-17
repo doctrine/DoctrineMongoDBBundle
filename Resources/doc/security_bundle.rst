@@ -12,14 +12,14 @@ the ``entity`` user provider described in `the cookbook`_:
         security:
             providers:
                 my_mongo_provider:
-                    mongodb: {class: Acme\DemoBundle\Document\User, property: username}
+                    mongodb: {class: App\Document\User, property: username}
 
     .. code-block:: xml
 
         <!-- app/config/security.xml -->
         <config>
             <provider name="my_mongo_provider">
-                <mongodb class="Acme\DemoBundle\Document\User" property="username" />
+                <mongodb class="App\Document\User" property="username" />
             </provider>
         </config>
 

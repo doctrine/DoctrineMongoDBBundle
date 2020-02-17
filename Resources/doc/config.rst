@@ -154,8 +154,8 @@ can control. The following configuration options exist for a mapping:
 To avoid having to configure lots of information for your mappings you should
 follow these conventions:
 
-1. Put all your documents in a directory ``Document/`` inside your bundle. For
-   example ``Acme/HelloBundle/Document/``.
+1. Put all your documents in a directory ``Document/`` inside your project. For
+   example ``src/Document/``.
 
 2. If you are using xml, yml or php mapping put all your configuration files
    into the ``Resources/config/doctrine/`` directory

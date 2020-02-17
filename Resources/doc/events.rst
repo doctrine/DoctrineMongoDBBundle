@@ -39,21 +39,21 @@ when its event is dispatched.
 
         services:
             my_doctrine_listener:
-                class:   Acme\HelloBundle\Listener\MyDoctrineListener
+                class:   App\Listener\MyDoctrineListener
                 # ...
                 tags:
                     -  { name: doctrine_mongodb.odm.event_listener, event: postPersist }
 
     .. code-block:: xml
 
-        <service id="my_doctrine_listener" class="Acme\HelloBundle\Listener\MyDoctrineListener">
+        <service id="my_doctrine_listener" class="App\Listener\MyDoctrineListener">
             <!-- ... -->
             <tag name="doctrine_mongodb.odm.event_listener" event="postPersist" />
         </service>
 
     .. code-block:: php
 
-        $definition = new Definition('Acme\HelloBundle\Listener\MyDoctrineListener');
+        $definition = new Definition('App\Listener\MyDoctrineListener');
         // ...
         $definition->addTag('doctrine_mongodb.odm.event_listener', [
             'event' => 'postPersist',

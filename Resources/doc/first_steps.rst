@@ -5,16 +5,7 @@ The best way to understand the Doctrine MongoDB ODM is to see it in action.
 In this section, you'll walk through each step needed to start persisting
 documents to and from MongoDB.
 
-.. sidebar:: Code along with the example
-
-    If you want to follow along with the example in this chapter, create
-    an ``AcmeStoreBundle`` via:
-
-    .. code-block:: bash
-
-        php bin/console generate:bundle --namespace=Acme/StoreBundle
-
-A Simple Example: A Product
+An Introductory Example: A Product
 ---------------------------
 
 Creating a Document Class
@@ -23,12 +14,12 @@ Creating a Document Class
 Suppose you're building an application where products need to be displayed.
 Without even thinking about Doctrine or MongoDB, you already know that you
 need a ``Product`` object to represent those products. Create this class
-inside the ``Document`` directory of your ``AcmeStoreBundle``:
+inside the ``Document`` subdirectory of your project's source code:
 
 .. code-block:: php
 
-    // src/Acme/StoreBundle/Document/Product.php
-    namespace Acme\StoreBundle\Document;
+    // src/Document/Product.php
+    namespace App\Document;
 
     class Product
     {
@@ -61,13 +52,13 @@ in a number of different formats including XML or directly inside the
 
     .. code-block:: xml
 
-        <!-- src/Acme/StoreBundle/Resources/config/doctrine/Product.mongodb.xml -->
+        <!-- src/Resources/config/doctrine/Product.mongodb.xml -->
         <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                             https://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-            <document name="Acme\StoreBundle\Document\Product">
+            <document name="App\Document\Product">
                 <id />
                 <field fieldName="name" type="string" />
                 <field fieldName="price" type="float" />
@@ -76,8 +67,8 @@ in a number of different formats including XML or directly inside the
 
     .. code-block:: php
 
-        // src/Acme/StoreBundle/Document/Product.php
-        namespace Acme\StoreBundle\Document;
+        // src/Document/Product.php
+        namespace App\Document;
 
         use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
@@ -121,8 +112,8 @@ a controller. Create new Controller class inside source directory of your projec
 .. code-block:: php
     :linenos:
 
-    // src/Acme/StoreBundle/Controller/DefaultController.php
-    use Acme\StoreBundle\Document\Product;
+    // src/App/Controller/ProductController.php
+    use App\Document\Product;
     use Doctrine\ODM\MongoDB\DocumentManager;
     use Symfony\Component\HttpFoundation\Response;
     // ...
@@ -184,7 +175,7 @@ If you are using `autowiring`, you can use type hinting to fetch the ``doctrine_
             $dm->persist($product);
             $dm->flush();
 
-            return new Response('Created product id '.$product->getId());
+            return new Response('Created product id ' . $product->getId());
         }
     }
 
@@ -347,7 +338,7 @@ From inside a controller:
         ->sort('price', 'ASC')
         ->limit(10)
         ->getQuery()
-        ->execute()
+        ->execute();
 
 In this case, 10 products with a name of "foo", ordered from lowest price
 to highest price are returned.
@@ -371,10 +362,10 @@ To do this, add the name of the repository class to your mapping definition.
 
     .. code-block:: php-annotations
 
-        // src/Acme/StoreBundle/Document/Product.php
-        namespace Acme\StoreBundle\Document;
+        // src/Document/Product.php
+        namespace App\Document;
 
-        use Acme\StoreBundle\Repository\ProductRepository;
+        use App\Repository\ProductRepository;
         use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
         /**
@@ -387,15 +378,15 @@ To do this, add the name of the repository class to your mapping definition.
 
     .. code-block:: xml
 
-        <!-- src/Acme/StoreBundle/Resources/config/doctrine/Product.mongodb.xml -->
+        <!-- src/Resources/config/doctrine/Product.mongodb.xml -->
         <!-- ... -->
         <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                             https://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-            <document name="Acme\StoreBundle\Document\Product"
-                    repository-class="Acme\StoreBundle\Repository\ProductRepository">
+            <document name="App\Document\Product"
+                    repository-class="App\Repository\ProductRepository">
                 <!-- ... -->
             </document>
 
@@ -408,8 +399,8 @@ for all of the ``Product`` documents, ordered alphabetically.
 
 .. code-block:: php
 
-    // src/Acme/StoreBundle/Repository/ProductRepository.php
-    namespace Acme\StoreBundle\Repository;
+    // src/Repository/ProductRepository.php
+    namespace App\Repository;
 
     use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 
@@ -446,10 +437,10 @@ is to use the repository as a service and inject it as a dependency into other s
 
 .. code-block:: php
 
-    // src/Acme/StoreBundle/Repository/ProductRepository.php
-    namespace Acme\StoreBundle\Repository;
+    // src/App/Repository/ProductRepository.php
+    namespace App\Repository;
 
-    use Acme\StoreBundle\Document\Product;
+    use App\Document\Product;
     use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
     use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepository;
 
@@ -478,8 +469,8 @@ repositories as services you can use the following service configuration:
                 autowire: true
                 autoconfigure: true
 
-            Acme\StoreBundle\Repository\:
-                resource: '%kernel.root_dir%/../src/Acme/StoreBundle/Repository/*'
+            App\Repository\:
+                resource: '../src/Repository/*'
 
     .. code-block:: xml
 
@@ -492,7 +483,7 @@ repositories as services you can use the following service configuration:
             <services>
                 <defaults autowire="true" autoconfigure="true" />
 
-                <prototype namespace="Acme\StoreBundle\Repository\" resource="%kernel.root_dir%/../src/Acme/StoreBundle/Repository/*" />
+                <prototype namespace="App\Repository\" resource="../src/Repository/*" />
             </services>
         </container>
 
