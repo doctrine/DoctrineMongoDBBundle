@@ -32,8 +32,8 @@ Sample Configuration
         <container xmlns="http://symfony.com/schema/dic/services"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:doctrine_mongodb="http://symfony.com/schema/dic/doctrine/odm/mongodb"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
-                                http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+            xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd
+                                http://symfony.com/schema/dic/doctrine/odm/mongodb https://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
 
             <doctrine_mongodb:config default-database="hello_%kernel.environment%">
                 <doctrine_mongodb:connection id="default" server="mongodb://localhost:27017">
@@ -98,8 +98,8 @@ If you wish to use memcache to cache your metadata, you need to configure the
         <container xmlns="http://symfony.com/schema/dic/services"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:doctrine_mongodb="http://symfony.com/schema/dic/doctrine/odm/mongodb"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
-                                http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+            xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd
+                                http://symfony.com/schema/dic/doctrine/odm/mongodb https://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
 
             <doctrine_mongodb:config default-database="hello_%kernel.environment%">
                 <doctrine_mongodb:document-manager id="default">
@@ -195,8 +195,8 @@ The following configuration shows a bunch of mapping examples:
         <container xmlns="http://symfony.com/schema/dic/services"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xmlns:doctrine_mongodb="http://symfony.com/schema/dic/doctrine/odm/mongodb"
-                   xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
-                                        http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+                   xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd
+                                        http://symfony.com/schema/dic/doctrine/odm/mongodb https://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
 
             <doctrine_mongodb:config>
                 <doctrine_mongodb:document-manager id="default">
@@ -251,8 +251,8 @@ Filters may be registered with a document manager by using the following syntax:
         <container xmlns="http://symfony.com/schema/dic/services"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:doctrine="http://symfony.com/schema/dic/doctrine/odm/mongodb"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
-                                http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+            xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd
+                                http://symfony.com/schema/dic/doctrine/odm/mongodb https://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
 
             <doctrine:mongodb>
                 <doctrine:connection id="default" server="mongodb://localhost:27017" />
@@ -317,8 +317,8 @@ following syntax:
         <container xmlns="http://symfony.com/schema/dic/services"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:doctrine_mongodb="http://symfony.com/schema/dic/doctrine/odm/mongodb"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
-                                http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+            xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd
+                                http://symfony.com/schema/dic/doctrine/odm/mongodb https://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
 
             <doctrine_mongodb:config
                     default-database="hello_%kernel.environment%"
@@ -382,8 +382,8 @@ string as a comma separated list.
         <container xmlns="http://symfony.com/schema/dic/services"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xmlns:doctrine="http://symfony.com/schema/dic/doctrine/odm/mongodb"
-                   xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
-                                http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+                   xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd
+                                http://symfony.com/schema/dic/doctrine/odm/mongodb https://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
 
             <doctrine:mongodb>
                 <doctrine:connection id="default" server="mongodb://mongodb-01:27017,mongodb-02:27017,mongodb-03:27017" />
@@ -423,11 +423,11 @@ Otherwise you will get a *auth failed* exception.
         <container xmlns="http://symfony.com/schema/dic/services"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xmlns:doctrine="http://symfony.com/schema/dic/doctrine/odm/mongodb"
-                   xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
-                                http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+                   xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd
+                                http://symfony.com/schema/dic/doctrine/odm/mongodb https://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
 
             <doctrine:mongodb>
-                <doctrine:connection id="default" server="mongodb://localhost:27017"/>
+                <doctrine:connection id="default" server="mongodb://localhost:27017" />
                     <doctrine:options
                             username="someuser"
                             password="somepass"
@@ -481,11 +481,11 @@ You can then use this service in your configuration:
         <container xmlns="http://symfony.com/schema/dic/services"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xmlns:doctrine="http://symfony.com/schema/dic/doctrine/odm/mongodb"
-                   xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
-                                http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+                   xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd
+                                http://symfony.com/schema/dic/doctrine/odm/mongodb https://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
 
             <doctrine:mongodb>
-                <doctrine:connection id="default" server="mongodb://localhost:27017"/>
+                <doctrine:connection id="default" server="mongodb://localhost:27017" />
                     <doctrine:driver-options
                         context="app.mongodb.context_service"
                     >
@@ -493,7 +493,6 @@ You can then use this service in your configuration:
                 </doctrine:connection>
             </doctrine:mongodb>
         </container>
-
 
 Retrying Connections and Queries
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -589,8 +588,8 @@ Full Default Configuration
         <container xmlns="http://symfony.com/schema/dic/services"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xmlns:doctrine="http://symfony.com/schema/dic/doctrine/odm/mongodb"
-                   xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
-                                http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+                   xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd
+                                http://symfony.com/schema/dic/doctrine/odm/mongodb https://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
 
             <doctrine:config
                     auto-generate-hydrator-classes="0"

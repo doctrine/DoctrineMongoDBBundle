@@ -60,10 +60,10 @@ register the new bundle:
     // app/AppKernel.php
     public function registerBundles()
     {
-        $bundles = array(
+        $bundles = [
             // ...
             new Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
-        );
+        ];
 
         // ...
     }
@@ -98,7 +98,7 @@ the MongoDB ODM across your application:
 
 .. note::
 
-    If you are using Symfony Flex, you can allow `recipes` in the "contrib" repository to
+    If you are using Symfony Flex, you can allow `recipes`_ in the "contrib" repository to
     work with this bundle by executing the following command:
 
     .. code-block:: bash
@@ -168,7 +168,7 @@ in a number of different formats including YAML, XML or directly inside the
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: php-annotations
 
         // src/Acme/StoreBundle/Document/Product.php
         namespace Acme\StoreBundle\Document;
@@ -214,7 +214,7 @@ in a number of different formats including YAML, XML or directly inside the
         <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-                            http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+                            https://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
             <document name="Acme\StoreBundle\Document\Product">
                 <field fieldName="id" id="true" />
@@ -319,9 +319,9 @@ If you are using `autowiring`, you can use type hinting to fetch the ``doctrine_
     // App/Controller/DefaultController.php
     namespace App\Controller;
 
-    use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-    use Doctrine\ODM\MongoDB\DocumentManager as DocumentManager;
     use App\Document\Product;
+    use Doctrine\ODM\MongoDB\DocumentManager as DocumentManager;
+    use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
     use Symfony\Component\HttpFoundation\Response;
 
     class DefaultController extends AbstractController
@@ -539,7 +539,7 @@ To do this, add the name of the repository class to your mapping definition.
          */
         class Product
         {
-            //...
+            // ...
         }
 
     .. code-block:: yaml
@@ -556,7 +556,7 @@ To do this, add the name of the repository class to your mapping definition.
         <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-                            http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+                            https://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
             <document name="Acme\StoreBundle\Document\Product"
                     repository-class="Acme\StoreBundle\Repository\ProductRepository">
@@ -601,7 +601,6 @@ You can use this new method just like the default finder methods of the reposito
         ->getManager()
         ->getRepository('AcmeStoreBundle:Product')
         ->findAllOrderedByName();
-
 
 .. note::
 
@@ -737,9 +736,9 @@ and then `tagging`_ it with a specific tag.
 
         $definition = new Definition('Acme\HelloBundle\Listener\MyDoctrineListener');
         // ...
-        $definition->addTag('doctrine_mongodb.odm.event_listener', array(
+        $definition->addTag('doctrine_mongodb.odm.event_listener', [
             'event' => 'postPersist',
-        ));
+        ]);
         $container->setDefinition('my_doctrine_listener', $definition);
 
 *   **event subscriber**: Use the ``doctrine_mongodb.odm.event_subscriber`` tag
@@ -810,7 +809,7 @@ be fetched from the Symfony2 service container. A similar example like the tutor
     $collection = $db->createCollection('cartoons');
 
     // add a record
-    $document = array( "title" => "Calvin and Hobbes", "author" => "Bill Watterson" );
+    $document = ['title' => 'Calvin and Hobbes', 'author' => 'Bill Watterson'];
     $collection->insert($document);
 
     // find everything in the collection
@@ -841,7 +840,7 @@ in your Mongo database you may fetch it by defining following services:
         <?xml version="1.0" encoding="UTF-8" ?>
         <container xmlns="http://symfony.com/schema/dic/services"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+            xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd">
 
             <services>
                 <service id="mongo.connection" class="Doctrine\MongoDB\Connection">
@@ -872,17 +871,16 @@ Learn more from the Cookbook
 
 * :doc:`/form`
 
-.. _`MongoDB`:          http://www.mongodb.org/
+.. _`MongoDB`: http://www.mongodb.org/
 .. _`Doctrine2 ORM`: http://symfony.com/doc/current/book/doctrine.html
-.. _`documentation`:    http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/
+.. _`documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/
 .. _`Doctrine2 ORM chapter`: http://symfony.com/doc/current/book/doctrine.html
 .. _`DoctrineFixturesBundle`: http://symfony.com/doc/master/bundles/DoctrineFixturesBundle/index.html
-.. _`schema documentation`: http://getcomposer.org/doc/04-schema.md#minimum-stability
-.. _`Quick Start`:      http://www.mongodb.org/display/DOCS/Quickstart
+.. _`Quick Start`: http://www.mongodb.org/display/DOCS/Quickstart
 .. _`Basic Mapping Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html
 .. _`MongoDB type`: http://us.php.net/manual/en/mongo.types.php
 .. _`using common Doctrine extensions`: http://symfony.com/doc/current/cookbook/doctrine/common_extensions.html
-.. _`Mapping Types Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html#doctrine-mapping-types
+.. _`Mapping Types documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html#doctrine-mapping-types
 .. _`Querying for Objects`: http://symfony.com/doc/current/book/doctrine.html#book-doctrine-queries
 .. _`Query Builder`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html
 .. _`Conditional Operators`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html#conditional-operators
