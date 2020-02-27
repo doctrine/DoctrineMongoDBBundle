@@ -59,6 +59,21 @@ in a number of different formats including XML or directly inside the
 
 .. configuration-block::
 
+    .. code-block:: xml
+
+        <!-- src/Acme/StoreBundle/Resources/config/doctrine/Product.mongodb.xml -->
+        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                            https://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+
+            <document name="Acme\StoreBundle\Document\Product">
+                <id />
+                <field fieldName="name" type="string" />
+                <field fieldName="price" type="float" />
+            </document>
+        </doctrine-mongo-mapping>
+
     .. code-block:: php
 
         // src/Acme/StoreBundle/Document/Product.php
@@ -86,21 +101,6 @@ in a number of different formats including XML or directly inside the
              */
             protected $price;
         }
-
-    .. code-block:: xml
-
-        <!-- src/Acme/StoreBundle/Resources/config/doctrine/Product.mongodb.xml -->
-        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-                            http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
-
-            <document name="Acme\StoreBundle\Document\Product">
-                <id />
-                <field fieldName="name" type="string" />
-                <field fieldName="price" type="float" />
-            </document>
-        </doctrine-mongo-mapping>
 
 .. seealso::
 
@@ -169,9 +169,9 @@ If you are using `autowiring`, you can use type hinting to fetch the ``doctrine_
     // App/Controller/DefaultController.php
     namespace App\Controller;
 
-    use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-    use Doctrine\ODM\MongoDB\DocumentManager as DocumentManager;
     use App\Document\Product;
+    use Doctrine\ODM\MongoDB\DocumentManager;
+    use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
     use Symfony\Component\HttpFoundation\Response;
 
     class DefaultController extends AbstractController
@@ -269,12 +269,12 @@ to easily fetch objects based on multiple conditions:
 .. code-block:: php
 
     // query for one product matching be name and price
-    $product = $repository->findOneBy(array('name' => 'foo', 'price' => 19.99));
+    $product = $repository->findOneBy(['name' => 'foo', 'price' => 19.99]);
 
     // query for all products matching the name, ordered by price
     $product = $repository->findBy(
-        array('name' => 'foo'),
-        array('price' => 'ASC'),
+        ['name' => 'foo'],
+        ['price' => 'ASC'],
     );
 
 Updating an Object
@@ -383,7 +383,7 @@ To do this, add the name of the repository class to your mapping definition.
          */
         class Product
         {
-            //...
+            // ...
         }
 
     .. code-block:: xml
@@ -393,7 +393,7 @@ To do this, add the name of the repository class to your mapping definition.
         <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-                            http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+                            https://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
             <document name="Acme\StoreBundle\Document\Product"
                     repository-class="Acme\StoreBundle\Repository\ProductRepository">
@@ -451,8 +451,8 @@ is to use the repository as a service and inject it as a dependency into other s
     namespace Acme\StoreBundle\Repository;
 
     use Acme\StoreBundle\Document\Product;
-    use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepository;
     use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+    use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepository;
 
     /**
      * Remember to map this repository in the corresponding document's repositoryClass.
@@ -491,9 +491,9 @@ repositories as services you can use the following service configuration:
                 https://symfony.com/schema/dic/services/services-1.0.xsd">
 
             <services>
-                <defaults autowire="true" autoconfigure="true"/>
+                <defaults autowire="true" autoconfigure="true" />
 
-                <prototype namespace="Acme\StoreBundle\Repository\" resource="%kernel.root_dir%/../src/Acme/StoreBundle/Repository/*"/>
+                <prototype namespace="Acme\StoreBundle\Repository\" resource="%kernel.root_dir%/../src/Acme/StoreBundle/Repository/*" />
             </services>
         </container>
 
