@@ -423,12 +423,12 @@ to easily fetch objects based on multiple conditions:
 .. code-block:: php
 
     // query for one product matching be name and price
-    $product = $repository->findOneBy(array('name' => 'foo', 'price' => 19.99));
+    $product = $repository->findOneBy(['name' => 'foo', 'price' => 19.99]);
 
     // query for all products matching the name, ordered by price
     $product = $repository->findBy(
-        array('name' => 'foo'),
-        array('price' => 'ASC'),
+        ['name' => 'foo'],
+        ['price' => 'ASC'],
     );
 
 Updating an Object
