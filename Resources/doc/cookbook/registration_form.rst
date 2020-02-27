@@ -16,9 +16,9 @@ So, in this tutorial we begin with the model for a ``User`` document:
     // src/Acme/AccountBundle/Document/User.php
     namespace Acme\AccountBundle\Document;
 
+    use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
     use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
     use Symfony\Component\Validator\Constraints as Assert;
-    use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
     /**
      * @MongoDB\Document(collection="users")
@@ -90,31 +90,31 @@ Next, create the form for the ``User`` model:
     // src/Acme/AccountBundle/Form/Type/UserType.php
     namespace Acme\AccountBundle\Form\Type;
 
+    use Acme\AccountBundle\Document\User;
     use Symfony\Component\Form\AbstractType;
     use Symfony\Component\Form\Extension\Core\Type\EmailType;
     use Symfony\Component\Form\Extension\Core\Type\PasswordType;
     use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
     use Symfony\Component\Form\FormBuilderInterface;
     use Symfony\Component\OptionsResolver\OptionsResolver;
-    use Acme\AccountBundle\Document\User;
 
     class UserType extends AbstractType
     {
         public function buildForm(FormBuilderInterface $builder, array $options)
         {
             $builder->add('email', EmailType::class);
-            $builder->add('password', RepeatedType::class, array(
-               'first_name' => 'password',
-               'second_name' => 'confirm',
-               'type' => PasswordType::class
-            ));
+            $builder->add('password', RepeatedType::class, [
+                'first_name' => 'password',
+                'second_name' => 'confirm',
+                'type' => PasswordType::class
+            ]);
         }
 
         public function configureOptions(OptionsResolver $resolver)
         {
-            $resolver->setDefaults(array(
+            $resolver->setDefaults([
                 'data_class' => User::class,
-            ));
+            ]);
         }
     }
 
@@ -143,9 +143,8 @@ represents the "registration":
     // src/Acme/AccountBundle/Form/Model/Registration.php
     namespace Acme\AccountBundle\Form\Model;
 
-    use Symfony\Component\Validator\Constraints as Assert;
-
     use Acme\AccountBundle\Document\User;
+    use Symfony\Component\Validator\Constraints as Assert;
 
     class Registration
     {
@@ -197,7 +196,7 @@ Next, create the form for this ``Registration`` model:
         public function buildForm(FormBuilderInterface $builder, array $options)
         {
             $builder->add('user', UserType::class);
-            $builder->add('terms', CheckboxType::class, array('property_path' => 'termsAccepted'));
+            $builder->add('terms', CheckboxType::class, ['property_path' => 'termsAccepted']);
         }
     }
 
@@ -217,13 +216,10 @@ controller for displaying the registration form:
     // src/Acme/AccountBundle/Controller/AccountController.php
     namespace Acme\AccountBundle\Controller;
 
-    use Doctrine\ODM\MongoDB\DocumentManager;
-
+    use Acme\AccountBundle\Form\Model\Registration;
+    use Acme\AccountBundle\Form\Type\RegistrationType;
     use Symfony\Bundle\FrameworkBundle\Controller\Controller;
     use Symfony\Component\HttpFoundation\Response;
-
-    use Acme\AccountBundle\Form\Type\RegistrationType;
-    use Acme\AccountBundle\Form\Model\Registration;
 
     class AccountController extends Controller
     {

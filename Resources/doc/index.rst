@@ -43,8 +43,8 @@ and *Tree*.
 For more information on how to find and use these extensions, see the cookbook
 article about `using common Doctrine extensions`_.
 
-.. _`MongoDB`:          http://www.mongodb.org/
+.. _`MongoDB`: http://www.mongodb.org/
 .. _`Doctrine2 ORM`: http://symfony.com/doc/current/book/doctrine.html
-.. _`documentation`:    http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/
+.. _`documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/
 .. _`Doctrine2 ORM chapter`: http://symfony.com/doc/current/book/doctrine.html
 .. _`using common Doctrine extensions`: http://symfony.com/doc/current/cookbook/doctrine/common_extensions.html
