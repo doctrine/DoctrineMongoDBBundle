@@ -892,5 +892,4 @@ Learn more from the Cookbook
 .. _`UniqueEntity`: http://symfony.com/doc/current/reference/constraints/UniqueEntity.html
 .. _`store sessions`: http://symfony.com/doc/current/cookbook/doctrine/mongodb_session_storage.html
 .. _`"Using PHP 7" section`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/1.2/reference/introduction.html#using-php-7
-.. _`autowiring`: https://symfony.com/doc/current/service_container/autowiring.html
 .. _`recipes`: http://fabien.potencier.org/symfony4-contributing-recipes.html
