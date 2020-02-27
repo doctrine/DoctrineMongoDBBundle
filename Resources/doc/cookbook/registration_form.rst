@@ -238,7 +238,6 @@ and its template:
 .. code-block:: html+jinja
 
     {# src/Acme/AccountBundle/Resources/views/Account/register.html.twig #}
-    
     {{ form_start(form, {'action': path('create'), 'method': 'POST'}) }}
         {{ form_widget(form) }}
 
