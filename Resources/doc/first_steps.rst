@@ -491,9 +491,9 @@ repositories as services you can use the following service configuration:
                 https://symfony.com/schema/dic/services/services-1.0.xsd">
 
             <services>
-                <defaults autowire="true" autoconfigure="true"/>
+                <defaults autowire="true" autoconfigure="true" />
 
-                <prototype namespace="Acme\StoreBundle\Repository\" resource="%kernel.root_dir%/../src/Acme/StoreBundle/Repository/*"/>
+                <prototype namespace="Acme\StoreBundle\Repository\" resource="%kernel.root_dir%/../src/Acme/StoreBundle/Repository/*" />
             </services>
         </container>
 
