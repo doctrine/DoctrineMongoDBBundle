@@ -25,7 +25,6 @@ rules:
     lowercase_as_in_use_statements: ~
     ordered_use_statements: ~
     no_namespace_after_use_statements: ~
-    replace_code_block_types: ~
     use_https_xsd_urls: ~
     blank_line_before_directive: ~
     extension_xlf_instead_of_xliff: ~
