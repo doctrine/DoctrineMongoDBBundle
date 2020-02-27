@@ -169,9 +169,9 @@ If you are using `autowiring`, you can use type hinting to fetch the ``doctrine_
     // App/Controller/DefaultController.php
     namespace App\Controller;
 
-    use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-    use Doctrine\ODM\MongoDB\DocumentManager as DocumentManager;
     use App\Document\Product;
+    use Doctrine\ODM\MongoDB\DocumentManager;
+    use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
     use Symfony\Component\HttpFoundation\Response;
 
     class DefaultController extends AbstractController
@@ -451,8 +451,8 @@ is to use the repository as a service and inject it as a dependency into other s
     namespace Acme\StoreBundle\Repository;
 
     use Acme\StoreBundle\Document\Product;
-    use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepository;
     use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+    use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepository;
 
     /**
      * Remember to map this repository in the corresponding document's repositoryClass.
