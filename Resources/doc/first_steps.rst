@@ -65,7 +65,7 @@ in a number of different formats including XML or directly inside the
         <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-                            http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+                            https://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
             <document name="Acme\StoreBundle\Document\Product">
                 <id />
@@ -393,7 +393,7 @@ To do this, add the name of the repository class to your mapping definition.
         <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-                            http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+                            https://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
             <document name="Acme\StoreBundle\Document\Product"
                     repository-class="Acme\StoreBundle\Repository\ProductRepository">
