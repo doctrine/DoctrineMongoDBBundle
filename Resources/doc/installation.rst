@@ -39,10 +39,10 @@ register the new bundle:
     // app/AppKernel.php
     public function registerBundles()
     {
-        $bundles = array(
+        $bundles = [
             // ...
             new Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
-        );
+        ];
 
         // ...
     }
