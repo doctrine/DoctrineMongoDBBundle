@@ -59,6 +59,21 @@ in a number of different formats including XML or directly inside the
 
 .. configuration-block::
 
+    .. code-block:: xml
+
+        <!-- src/Acme/StoreBundle/Resources/config/doctrine/Product.mongodb.xml -->
+        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                            http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+
+            <document name="Acme\StoreBundle\Document\Product">
+                <id />
+                <field fieldName="name" type="string" />
+                <field fieldName="price" type="float" />
+            </document>
+        </doctrine-mongo-mapping>
+
     .. code-block:: php
 
         // src/Acme/StoreBundle/Document/Product.php
@@ -86,21 +101,6 @@ in a number of different formats including XML or directly inside the
              */
             protected $price;
         }
-
-    .. code-block:: xml
-
-        <!-- src/Acme/StoreBundle/Resources/config/doctrine/Product.mongodb.xml -->
-        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-                            http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
-
-            <document name="Acme\StoreBundle\Document\Product">
-                <id />
-                <field fieldName="name" type="string" />
-                <field fieldName="price" type="float" />
-            </document>
-        </doctrine-mongo-mapping>
 
 .. seealso::
 
