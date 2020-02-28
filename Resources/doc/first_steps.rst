@@ -6,7 +6,7 @@ In this section, you'll walk through each step needed to start persisting
 documents to and from MongoDB.
 
 An Introductory Example: A Product
----------------------------
+----------------------------------
 
 Creating a Document Class
 ~~~~~~~~~~~~~~~~~~~~~~~~~
