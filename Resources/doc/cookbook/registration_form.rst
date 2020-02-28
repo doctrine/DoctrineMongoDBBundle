@@ -238,7 +238,6 @@ and its template:
 .. code-block:: html+jinja
 
     {# templates/Account/register.html.twig #}
-
     {{ form_start(form, {'action': path('create'), 'method': 'POST'}) }}
         {{ form_widget(form) }}
 
