@@ -60,6 +60,12 @@ the MongoDB ODM across your application:
 
 .. code-block:: yaml
 
+    # config/services.yaml
+    parameters:
+        mongodb_server: "mongodb://localhost:27017"
+
+.. code-block:: yaml
+
     # config/packages/doctrine_mongodb.yaml
     doctrine_mongodb:
         connections:
