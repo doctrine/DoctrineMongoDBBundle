@@ -51,7 +51,7 @@ Sample Configuration
 .. tip::
 
     If each environment requires a different MongoDB connection URI, you can
-    `define it as environment variable`_ and reference it in the bundle config:
+    `define it as an environment variable`_ and reference it in the bundle's config:
 
     .. code-block:: yaml
 
@@ -642,6 +642,6 @@ Full Default Configuration
             </doctrine:config>
         </container>
 
-.. _`define it as environment variable`: https://symfony.com/doc/current/configuration.html#configuration-based-on-environment-variables
+.. _`define it as an environment variable`: https://symfony.com/doc/current/configuration.html#configuration-based-on-environment-variables
 .. _`connection string`: https://docs.mongodb.com/manual/reference/connection-string/#urioption.authSource
 .. _`Replica Sets`: https://www.php.net/manual/en/mongo.connecting.rs.php

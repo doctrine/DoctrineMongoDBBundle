@@ -11,7 +11,7 @@ in the `installation chapter`_ of the Composer documentation.
 Install the bundle with Symfony Flex
 ------------------------------------
 
-A Flex recipe for the DoctrineMongoDBBundle is provided as Contrib Recipe.
+A Flex recipe for the DoctrineMongoDBBundle is provided as a Contrib Recipe.
 You need to allow its usage first:
 
 .. code-block:: bash
@@ -52,7 +52,7 @@ following line in the ``config/bundles.php`` file of your project:
 Configuration
 -------------
 
-Flex recipe will automatically create ``config/packages/doctrine_mongodb.yaml``
+Flex recipe will automatically create the ``config/packages/doctrine_mongodb.yaml``
 file with default configuration. Without Flex you need to create the file
 manually and fill it with some basic configuration that sets up the document manager.
 The recommended way is to enable ``auto_mapping``, which will activate

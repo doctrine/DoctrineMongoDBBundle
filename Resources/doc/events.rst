@@ -64,8 +64,8 @@ Event Subscribers
 -----------------
 
 Use the ``doctrine_mongodb.odm.event_subscriber`` tag
-to register a subscriber. Subscribers must implement interface
-``Doctrine\Common\EventSubscriber``, which means that they must
+to register a subscriber. Subscribers must implement the
+``Doctrine\Common\EventSubscriber`` interface, which means that they must
 contain method returning the events they will observe. For this reason,
 this tag has no ``event`` attribute, however the ``connection``,
 ``priority`` and ``lazy`` attributes are available.

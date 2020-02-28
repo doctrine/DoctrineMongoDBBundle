@@ -31,7 +31,7 @@ inside the ``Document`` subdirectory of your project's source code:
 The class - often called a "document", meaning *a basic class that holds data* -
 helps fulfill the business requirement of needing products in your application.
 This class can't be persisted to Doctrine MongoDB yet - currently it's
-only plain PHP class.
+only a plain PHP class.
 
 Add Mapping Information
 ~~~~~~~~~~~~~~~~~~~~~~~
