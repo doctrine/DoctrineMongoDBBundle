@@ -90,8 +90,10 @@ the MongoDB ODM across your application:
 Authentication
 --------------
 
-If you use authentication on your MongoDB database you can then provide username,
-password and authentication database in the following way:
+If you use authentication on your MongoDB database, then you can provide username,
+password, and authentication database in the following way:
+
+.. code-block:: yaml
 
     # config/services.yaml
     parameters:
