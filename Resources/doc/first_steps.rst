@@ -43,7 +43,7 @@ MongoDB. This works by mapping a PHP class and its properties to entries
 of a MongoDB collection.
 
 For Doctrine to be able to do this, you have to create "metadata", or
-configuration, that tells Doctrine exactly how the ``Product`` class and its
+configuration that tells Doctrine exactly how the ``Product`` class and its
 properties should be *mapped* to MongoDB. This metadata can be specified
 in a number of different formats including XML or directly inside the
 ``Product`` class via annotations:
@@ -279,8 +279,8 @@ Querying for Objects
 
 As you saw above, the built-in repository class allows you to query for one
 or many objects based on any number of different parameters. When this is
-enough, this is the recommended way to query for documents. Of course, you can
-also create more complex queries.
+enough, this is the easiest way to query for documents. You can also create
+more complex queries.
 
 Using the Query Builder
 ~~~~~~~~~~~~~~~~~~~~~~~
