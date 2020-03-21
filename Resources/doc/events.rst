@@ -24,8 +24,8 @@ event managers for all connections. To restrict a listener to a single
 connection, specify its name in the tag's ``connection`` attribute.
 
 The ``priority`` attribute, which defaults to ``0`` if omitted, may be used
-to control the order that listeners are registered. Much like Symfony's
-`event dispatcher`_, greater numbers will result in the listener executing
+to control the order in which listeners are registered. Much like Symfony's
+`event dispatcher`_, greater number will result in the listener executing
 first and listeners with the same priority will be executed in the order that
 they were registered with the event manager.
 
@@ -39,21 +39,21 @@ when its event is dispatched.
 
         services:
             my_doctrine_listener:
-                class:   Acme\HelloBundle\Listener\MyDoctrineListener
+                class:   App\Listener\MyDoctrineListener
                 # ...
                 tags:
                     -  { name: doctrine_mongodb.odm.event_listener, event: postPersist }
 
     .. code-block:: xml
 
-        <service id="my_doctrine_listener" class="Acme\HelloBundle\Listener\MyDoctrineListener">
+        <service id="my_doctrine_listener" class="App\Listener\MyDoctrineListener">
             <!-- ... -->
             <tag name="doctrine_mongodb.odm.event_listener" event="postPersist" />
         </service>
 
     .. code-block:: php
 
-        $definition = new Definition('Acme\HelloBundle\Listener\MyDoctrineListener');
+        $definition = new Definition('App\Listener\MyDoctrineListener');
         // ...
         $definition->addTag('doctrine_mongodb.odm.event_listener', [
             'event' => 'postPersist',
@@ -64,11 +64,11 @@ Event Subscribers
 -----------------
 
 Use the ``doctrine_mongodb.odm.event_subscriber`` tag
-to register a subscriber. Subscribers are responsible for implementing
-``Doctrine\Common\EventSubscriber`` and a method for returning the events
-they will observe. For this reason, this tag has no ``event`` attribute;
-however, the ``connection``, ``priority`` and ``lazy`` attributes are
-available.
+to register a subscriber. Subscribers must implement the
+``Doctrine\Common\EventSubscriber`` interface, which means that they must
+contain method returning the events they will observe. For this reason,
+this tag has no ``event`` attribute, however the ``connection``,
+``priority`` and ``lazy`` attributes are available.
 
 .. note::
 
@@ -77,6 +77,6 @@ available.
     event(s). For this reason, the aforementioned tags have no ``method``
     attribute.
 
-.. _`event dispatcher`: http://symfony.com/doc/current/components/event_dispatcher/introduction.html
-.. _`Event Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/events.html
+.. _`event dispatcher`: https://symfony.com/doc/current/components/event_dispatcher.html
+.. _`Event Documentation`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/events.html
 .. _`tagging`: https://symfony.com/doc/current/service_container/tags.html

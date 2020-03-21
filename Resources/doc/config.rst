@@ -8,7 +8,7 @@ Sample Configuration
 
     .. code-block:: yaml
 
-        # app/config/config.yml
+        # config/packages/doctrine_mongodb.yaml
         doctrine_mongodb:
             connections:
                 default:
@@ -51,20 +51,20 @@ Sample Configuration
 .. tip::
 
     If each environment requires a different MongoDB connection URI, you can
-    define it in a separate parameter and reference it in the bundle config:
+    `define it as an environment variable`_ and reference it in the bundle's config:
 
     .. code-block:: yaml
 
-        # app/config/parameters.yml
-        mongodb_server: mongodb://localhost:27017
+        # .env
+        MONGODB_URL=mongodb://localhost:27017
 
     .. code-block:: yaml
 
-        # app/config/config.yml
+        # config/packages/doctrine_mongodb.yaml
         doctrine_mongodb:
             connections:
                 default:
-                    server: "%mongodb_server%"
+                    server: '%env(resolve:MONGODB_URL)%'
 
 If you wish to use memcache to cache your metadata, you need to configure the
 ``Memcache`` instance; for example, you can do the following:
@@ -133,7 +133,7 @@ can control. The following configuration options exist for a mapping:
   this path is relative it is assumed to be relative to the bundle root. This
   only works if the name of your mapping is a bundle name. If you want to use
   this option to specify absolute paths you should prefix the path with the
-  kernel parameters that exist in the DIC (for example %kernel.root_dir%).
+  kernel parameters that exist in the DIC (for example ``%kernel.project_dir%``).
 
 - ``prefix`` A common namespace prefix that all documents of this mapping
   share. This prefix should never conflict with prefixes of other defined
@@ -154,14 +154,14 @@ can control. The following configuration options exist for a mapping:
 To avoid having to configure lots of information for your mappings you should
 follow these conventions:
 
-1. Put all your documents in a directory ``Document/`` inside your bundle. For
-   example ``Acme/HelloBundle/Document/``.
+1. Put all your documents in a directory ``Document/`` inside your project. For
+   example ``src/Document/``.
 
 2. If you are using xml, yml or php mapping put all your configuration files
    into the ``Resources/config/doctrine/`` directory
    suffixed with mongodb.xml, mongodb.yml or mongodb.php respectively.
 
-3. Annotations is assumed if a ``Document/`` but no
+3. Annotations are assumed if a ``Document/`` but no
    ``Resources/config/doctrine/`` directory is found.
 
 The following configuration shows a bunch of mapping examples:
@@ -184,7 +184,7 @@ The following configuration shows a bunch of mapping examples:
                             alias: BundleAlias
                         doctrine_extensions:
                             type: xml
-                            dir: "%kernel.root_dir%/../src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents"
+                            dir: "%kernel.project_dir%/src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents"
                             prefix: DoctrineExtensions\Documents\
                             alias: DExt
 
@@ -207,7 +207,7 @@ The following configuration shows a bunch of mapping examples:
                     <doctrine_mongodb:mapping name="MyBundle5" type="xml" dir="my-bundle-mappings-dir" alias="BundleAlias" />
                     <doctrine_mongodb:mapping name="doctrine_extensions"
                                               type="xml"
-                                              dir="%kernel.root_dir%/../src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents"
+                                              dir="%kernel.project_dir%/src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents"
                                               prefix="DoctrineExtensions\Documents\"
                                               alias="DExt" />
                 </doctrine_mongodb:document-manager>
@@ -363,7 +363,7 @@ Connecting to a pool of mongodb servers on 1 connection
 
 It is possible to connect to several mongodb servers on one connection if
 you are using a replica set by listing all of the servers within the connection
-string as a comma separated list.
+string as a comma separated list and using ``replicaSet`` option.
 
 .. configuration-block::
 
@@ -373,7 +373,7 @@ string as a comma separated list.
             # ...
             connections:
                 default:
-                    server: "mongodb://mongodb-01:27017,mongodb-02:27017,mongodb-03:27017"
+                    server: "mongodb://mongodb-01:27017,mongodb-02:27017,mongodb-03:27017/?replicaSet=replSetName"
 
     .. code-block:: xml
 
@@ -386,20 +386,25 @@ string as a comma separated list.
                                 http://symfony.com/schema/dic/doctrine/odm/mongodb https://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
 
             <doctrine:mongodb>
-                <doctrine:connection id="default" server="mongodb://mongodb-01:27017,mongodb-02:27017,mongodb-03:27017" />
+                <doctrine:connection id="default" server="mongodb://mongodb-01:27017,mongodb-02:27017,mongodb-03:27017/?replicaSet=replSetName" />
             </doctrine:mongodb>
         </container>
 
 Where mongodb-01, mongodb-02 and mongodb-03 are the machine hostnames. You
 can also use IP addresses if you prefer.
 
+.. tip::
+
+    Please refer to `Replica Sets`_ manual of MongoDB PHP Driver for futher details.
+
+
 Using Authentication on a Database Level
 ----------------------------------------
 
 MongoDB supports authentication and authorisation on a database-level. This is mandatory if you have
 e.g. a publicly accessible MongoDB Server. To make use of this feature you need to configure credentials
-for each of your connections. Also every connection needs a database set to authenticate against. The setting is
-represented by the *authSource* `connection string <https://docs.mongodb.com/manual/reference/connection-string/#urioption.authSource>`_.
+for each of your connections. Every connection needs also a database to authenticate against. The setting is
+represented by the *authSource* `connection string`_.
 Otherwise you will get a *auth failed* exception.
 
 .. configuration-block::
@@ -442,7 +447,8 @@ Specifying a context service
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The MongoDB driver supports receiving a stream context to set SSL and logging
-options. This can be used to authenticate using SSL certificates. To do so, create a service that creates your logging context:
+options. This can be used to authenticate using SSL certificates. To do so,
+create a service that creates your logging context:
 
 .. configuration-block::
 
@@ -635,3 +641,7 @@ Full Default Configuration
                 </doctrine:connection>
             </doctrine:config>
         </container>
+
+.. _`define it as an environment variable`: https://symfony.com/doc/current/configuration.html#configuration-based-on-environment-variables
+.. _`connection string`: https://docs.mongodb.com/manual/reference/connection-string/#urioption.authSource
+.. _`Replica Sets`: https://www.php.net/manual/en/mongo.connecting.rs.php

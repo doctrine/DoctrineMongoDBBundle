@@ -22,4 +22,4 @@ means that the ``em`` option should be used if you wish to specify the document
 manager explicitly instead of having it be inferred from the document class.
 
 .. _`EntityType`: https://symfony.com/doc/current/reference/forms/types/entity.html
-.. _`UniqueEntity`: http://symfony.com/doc/current/reference/constraints/UniqueEntity.html
+.. _`UniqueEntity`: https://symfony.com/doc/current/reference/constraints/UniqueEntity.html

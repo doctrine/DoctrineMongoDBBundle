@@ -1,25 +1,28 @@
 SecurityBundle integration
 ==========================
 
-A user provider is available for your MongoDB projects, working exactly the
-same as the ``entity`` provider described in `the cookbook`_:
+A user provider is available for your MongoDB projects if you use
+Symfony `SecurityBundle`_. It works exactly the same way as
+the ``entity`` user provider described in `the cookbook`_:
 
 .. configuration-block::
 
     .. code-block:: yaml
 
+        # config/packages/security.yaml
         security:
             providers:
                 my_mongo_provider:
-                    mongodb: {class: Acme\DemoBundle\Document\User, property: username}
+                    mongodb: {class: App\Document\User, property: username}
 
     .. code-block:: xml
 
-        <!-- app/config/security.xml -->
+        <!-- config/packages/security.xml -->
         <config>
             <provider name="my_mongo_provider">
-                <mongodb class="Acme\DemoBundle\Document\User" property="username" />
+                <mongodb class="App\Document\User" property="username" />
             </provider>
         </config>
 
-.. _`the cookbook`: http://symfony.com/doc/current/cookbook/security/entity_provider.html
+.. _`SecurityBundle`: https://symfony.com/doc/current/security.html
+.. _`the cookbook`: https://symfony.com/doc/current/cookbook/security/user_provider.html
