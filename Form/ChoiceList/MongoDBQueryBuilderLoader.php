@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Form\ChoiceList;
 
 use Closure;
-use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ODM\MongoDB\Query\Builder;
+use Doctrine\Persistence\ObjectManager;
 use Symfony\Bridge\Doctrine\Form\ChoiceList\EntityLoaderInterface;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use function array_values;

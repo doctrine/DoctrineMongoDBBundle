@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Repository;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
+use Doctrine\Persistence\ObjectRepository;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
 use function class_exists;

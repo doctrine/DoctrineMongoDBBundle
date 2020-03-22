@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Repository;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Persistence\ManagerRegistry;
 use LogicException;
 use function sprintf;
 
