@@ -5,17 +5,8 @@ The best way to understand the Doctrine MongoDB ODM is to see it in action.
 In this section, you'll walk through each step needed to start persisting
 documents to and from MongoDB.
 
-.. sidebar:: Code along with the example
-
-    If you want to follow along with the example in this chapter, create
-    an ``AcmeStoreBundle`` via:
-
-    .. code-block:: bash
-
-        php bin/console generate:bundle --namespace=Acme/StoreBundle
-
-A Simple Example: A Product
----------------------------
+An Introductory Example: A Product
+----------------------------------
 
 Creating a Document Class
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -23,12 +14,12 @@ Creating a Document Class
 Suppose you're building an application where products need to be displayed.
 Without even thinking about Doctrine or MongoDB, you already know that you
 need a ``Product`` object to represent those products. Create this class
-inside the ``Document`` directory of your ``AcmeStoreBundle``:
+inside the ``Document`` subdirectory of your project's source code:
 
 .. code-block:: php
 
-    // src/Acme/StoreBundle/Document/Product.php
-    namespace Acme\StoreBundle\Document;
+    // src/Document/Product.php
+    namespace App\Document;
 
     class Product
     {
@@ -38,9 +29,9 @@ inside the ``Document`` directory of your ``AcmeStoreBundle``:
     }
 
 The class - often called a "document", meaning *a basic class that holds data* -
-is simple and helps fulfill the business requirement of needing products
-in your application. This class can't be persisted to Doctrine MongoDB yet -
-it's just a simple PHP class.
+helps fulfill the business requirement of needing products in your application.
+This class can't be persisted to Doctrine MongoDB yet - currently it's
+only a plain PHP class.
 
 Add Mapping Information
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -51,7 +42,7 @@ you to persist entire *objects* to MongoDB and fetch entire objects out of
 MongoDB. This works by mapping a PHP class and its properties to entries
 of a MongoDB collection.
 
-For Doctrine to be able to do this, you just have to create "metadata", or
+For Doctrine to be able to do this, you have to create "metadata", or
 configuration that tells Doctrine exactly how the ``Product`` class and its
 properties should be *mapped* to MongoDB. This metadata can be specified
 in a number of different formats including XML or directly inside the
@@ -59,10 +50,25 @@ in a number of different formats including XML or directly inside the
 
 .. configuration-block::
 
+    .. code-block:: xml
+
+        <!-- src/Resources/config/doctrine/Product.mongodb.xml -->
+        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                            https://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+
+            <document name="App\Document\Product">
+                <id />
+                <field fieldName="name" type="string" />
+                <field fieldName="price" type="float" />
+            </document>
+        </doctrine-mongo-mapping>
+
     .. code-block:: php
 
-        // src/Acme/StoreBundle/Document/Product.php
-        namespace Acme\StoreBundle\Document;
+        // src/Document/Product.php
+        namespace App\Document;
 
         use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
@@ -87,21 +93,6 @@ in a number of different formats including XML or directly inside the
             protected $price;
         }
 
-    .. code-block:: xml
-
-        <!-- src/Acme/StoreBundle/Resources/config/doctrine/Product.mongodb.xml -->
-        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-                            http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
-
-            <document name="Acme\StoreBundle\Document\Product">
-                <id />
-                <field fieldName="name" type="string" />
-                <field fieldName="price" type="float" />
-            </document>
-        </doctrine-mongo-mapping>
-
 .. seealso::
 
     You can also check out Doctrine's `Basic Mapping Documentation`_ for
@@ -115,15 +106,14 @@ Persisting Objects to MongoDB
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Now that you have a mapped ``Product`` document complete with getter and
-setter methods, you're ready to persist data to MongoDB. From inside a controller,
-this is pretty easy. Add the following method to the ``DefaultController``
-of the bundle:
+setter methods, you're ready to persist data to MongoDB. Let's try it from inside
+a controller. Create new Controller class inside source directory of your project:
 
 .. code-block:: php
     :linenos:
 
-    // src/Acme/StoreBundle/Controller/DefaultController.php
-    use Acme\StoreBundle\Document\Product;
+    // src/App/Controller/ProductController.php
+    use App\Document\Product;
     use Doctrine\ODM\MongoDB\DocumentManager;
     use Symfony\Component\HttpFoundation\Response;
     // ...
@@ -137,7 +127,7 @@ of the bundle:
         $dm->persist($product);
         $dm->flush();
 
-        return new Response('Created product id '.$product->getId());
+        return new Response('Created product id ' . $product->getId());
     }
 
 .. note::
@@ -147,12 +137,8 @@ of the bundle:
 
 Let's walk through this example:
 
-* **lines 8-10** In this section, you instantiate and work with the ``$product``
-  object like any other, normal PHP object;
-
-* **line 12** This line fetches Doctrine's *document manager* object, which is
-  responsible for handling the process of persisting and fetching objects
-  to and from MongoDB;
+* **lines 9-11** In this section, you instantiate and work with the ``$product``
+  object like you would with any other, normal PHP object;
 
 * **line 13** The ``persist()`` method tells Doctrine to "manage" the ``$product``
   object. This does not actually cause a query to be made to MongoDB (yet);
@@ -161,33 +147,6 @@ Let's walk through this example:
   all of the objects that it's managing to see if they need to be persisted
   to MongoDB. In this example, the ``$product`` object has not been persisted yet,
   so the document manager makes a query to MongoDB, which adds a new entry.
-
-If you are using `autowiring`, you can use type hinting to fetch the ``doctrine_mongodb.odm.document_manager`` service:
-
-.. code-block:: php
-
-    // App/Controller/DefaultController.php
-    namespace App\Controller;
-
-    use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-    use Doctrine\ODM\MongoDB\DocumentManager as DocumentManager;
-    use App\Document\Product;
-    use Symfony\Component\HttpFoundation\Response;
-
-    class DefaultController extends AbstractController
-    {
-        public function createProduct(DocumentManager $dm)
-        {
-            $product = new Product();
-            $product->setName('A Foo Bar');
-            $product->setPrice('19.99');
-
-            $dm->persist($product);
-            $dm->flush();
-
-            return new Response('Created product id '.$product->getId());
-        }
-    }
 
 .. note::
 
@@ -202,14 +161,14 @@ they already exist in MongoDB.
 .. tip::
 
     Doctrine provides a library that allows you to programmatically load testing
-    data into your project (i.e. "fixture data"). For information, see
+    data into your project (i.e. "fixture data"). For more information, see
     `DoctrineFixturesBundle`_.
 
 Fetching Objects from MongoDB
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Fetching an object back out of MongoDB is even easier. For example, suppose
-you've configured a route to display a specific ``Product`` based on its
+Fetching an object back out of MongoDB is also possible. For example, suppose
+that you've configured a route to display a specific ``Product`` based on its
 ``id`` value:
 
 .. code-block:: php
@@ -218,8 +177,8 @@ you've configured a route to display a specific ``Product`` based on its
     {
         $product = $dm->getRepository(Product::class)->find($id);
 
-        if (!$product) {
-            throw $this->createNotFoundException('No product found for id '.$id);
+        if (! $product) {
+            throw $this->createNotFoundException('No product found for id ' . $id);
         }
 
         // do something, like pass the $product object into a template
@@ -234,13 +193,6 @@ repository object for a document class via:
 
     $repository = $dm->getRepository(Product::class);
 
-.. note::
-
-    The ``AcmeStoreBundle:Product`` string is a shortcut you can use anywhere
-    in Doctrine instead of the full class name of the document (i.e. ``Acme\StoreBundle\Document\Product``).
-    As long as your document lives under the ``Document`` namespace of your bundle,
-    this will work.
-
 Once you have your repository, you have access to all sorts of helpful methods:
 
 .. code-block:: php
@@ -248,39 +200,35 @@ Once you have your repository, you have access to all sorts of helpful methods:
     // query by the identifier (usually "id")
     $product = $repository->find($id);
 
-    // dynamic method names to find based on a column value
-    $product = $repository->findOneById($id);
-    $product = $repository->findOneByName('foo');
-
     // find *all* products
     $products = $repository->findAll();
 
     // find a group of products based on an arbitrary column value
-    $products = $repository->findByPrice(19.99);
+    $products = $repository->findBy(['price' => 19.99]);
 
 .. note::
 
-    Of course, you can also issue complex queries, which you'll learn more
-    about in the `Querying for Objects`_ section.
+    You can also issue complex queries, you can learn more about them
+    in the `Querying for Objects`_ section.
 
 You can also take advantage of the useful ``findBy()`` and ``findOneBy()`` methods
 to easily fetch objects based on multiple conditions:
 
 .. code-block:: php
 
-    // query for one product matching be name and price
-    $product = $repository->findOneBy(array('name' => 'foo', 'price' => 19.99));
+    // query for one product matching by name and price
+    $product = $repository->findOneBy(['name' => 'foo', 'price' => 19.99]);
 
     // query for all products matching the name, ordered by price
     $product = $repository->findBy(
-        array('name' => 'foo'),
-        array('price' => 'ASC'),
+        ['name' => 'foo'],
+        ['price' => 'ASC']
     );
 
 Updating an Object
 ~~~~~~~~~~~~~~~~~~
 
-Once you've fetched an object from Doctrine, updating it is easy. Suppose
+Once you've fetched an object from Doctrine, let's try to update it. Suppose
 you have a route that maps a product id to an update action in a controller:
 
 .. code-block:: php
@@ -289,24 +237,25 @@ you have a route that maps a product id to an update action in a controller:
     {
         $product = $dm->getRepository(Product::class)->find($id);
 
-        if (!$product) {
-            throw $this->createNotFoundException('No product found for id '.$id);
+        if (! $product) {
+            throw $this->createNotFoundException('No product found for id ' . $id);
         }
 
         $product->setName('New product name!');
+
         $dm->flush();
 
         return $this->redirectToRoute('homepage');
     }
 
-Updating an object involves just three steps:
+Updating an object involves three steps:
 
 1. Fetching the object from Doctrine;
 2. Modifying the object;
 3. Calling ``flush()`` on the document manager.
 
 Notice that calling ``$dm->persist($product)`` isn't necessary. Recall that
-this method simply tells Doctrine to manage or "watch" the ``$product`` object.
+this method tells Doctrine to manage or "watch" the ``$product`` object.
 In this case, since you fetched the ``$product`` object from Doctrine, it's
 already managed.
 
@@ -321,17 +270,17 @@ method of the document manager:
     $dm->remove($product);
     $dm->flush();
 
-As you might expect, the ``remove()`` method notifies Doctrine that you'd
-like to remove the given document from the MongoDB. The actual delete operation
-however, isn't actually executed until the ``flush()`` method is called.
+The ``remove()`` method notifies Doctrine that you'd like to remove
+the given document from the MongoDB. The actual delete operation
+however, isn't executed until the ``flush()`` method is called.
 
 Querying for Objects
 --------------------
 
 As you saw above, the built-in repository class allows you to query for one
-or many objects based on an number of different parameters. When this is
-enough, this is the easiest way to query for documents. Of course, you can
-also create more complex queries.
+or many objects based on any number of different parameters. When this is
+enough, this is the easiest way to query for documents. You can also create
+more complex queries.
 
 Using the Query Builder
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -348,7 +297,7 @@ From inside a controller:
         ->sort('price', 'ASC')
         ->limit(10)
         ->getQuery()
-        ->execute()
+        ->execute();
 
 In this case, 10 products with a name of "foo", ordered from lowest price
 to highest price are returned.
@@ -372,10 +321,10 @@ To do this, add the name of the repository class to your mapping definition.
 
     .. code-block:: php-annotations
 
-        // src/Acme/StoreBundle/Document/Product.php
-        namespace Acme\StoreBundle\Document;
+        // src/Document/Product.php
+        namespace App\Document;
 
-        use Acme\StoreBundle\Repository\ProductRepository;
+        use App\Repository\ProductRepository;
         use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
         /**
@@ -383,20 +332,20 @@ To do this, add the name of the repository class to your mapping definition.
          */
         class Product
         {
-            //...
+            // ...
         }
 
     .. code-block:: xml
 
-        <!-- src/Acme/StoreBundle/Resources/config/doctrine/Product.mongodb.xml -->
+        <!-- src/Resources/config/doctrine/Product.mongodb.xml -->
         <!-- ... -->
         <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-                            http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+                            https://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-            <document name="Acme\StoreBundle\Document\Product"
-                    repository-class="Acme\StoreBundle\Repository\ProductRepository">
+            <document name="App\Document\Product"
+                    repository-class="App\Repository\ProductRepository">
                 <!-- ... -->
             </document>
 
@@ -409,8 +358,8 @@ for all of the ``Product`` documents, ordered alphabetically.
 
 .. code-block:: php
 
-    // src/Acme/StoreBundle/Repository/ProductRepository.php
-    namespace Acme\StoreBundle\Repository;
+    // src/Repository/ProductRepository.php
+    namespace App\Repository;
 
     use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 
@@ -425,7 +374,7 @@ for all of the ``Product`` documents, ordered alphabetically.
         }
     }
 
-You can use this new method just like the default finder methods of the repository:
+You can use this new method like the default finder methods of the repository:
 
 .. code-block:: php
 
@@ -447,12 +396,12 @@ is to use the repository as a service and inject it as a dependency into other s
 
 .. code-block:: php
 
-    // src/Acme/StoreBundle/Repository/ProductRepository.php
-    namespace Acme\StoreBundle\Repository;
+    // src/App/Repository/ProductRepository.php
+    namespace App\Repository;
 
-    use Acme\StoreBundle\Document\Product;
+    use App\Document\Product;
+    use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
     use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepository;
-    use Doctrine\Common\Persistence\ManagerRegistry;
 
     /**
      * Remember to map this repository in the corresponding document's repositoryClass.
@@ -474,16 +423,18 @@ repositories as services you can use the following service configuration:
 
     .. code-block:: yaml
 
+        # config/services.yaml
         services:
             _defaults:
                 autowire: true
                 autoconfigure: true
 
-            Acme\StoreBundle\Repository\:
-                resource: '%kernel.root_dir%/../src/Acme/StoreBundle/Repository/*'
+            App\Repository\:
+                resource: '../src/Repository/*'
 
     .. code-block:: xml
 
+        <!-- config/services.xml -->
         <?xml version="1.0" encoding="UTF-8" ?>
         <container xmlns="http://symfony.com/schema/dic/services"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -491,15 +442,15 @@ repositories as services you can use the following service configuration:
                 https://symfony.com/schema/dic/services/services-1.0.xsd">
 
             <services>
-                <defaults autowire="true" autoconfigure="true"/>
+                <defaults autowire="true" autoconfigure="true" />
 
-                <prototype namespace="Acme\StoreBundle\Repository\" resource="%kernel.root_dir%/../src/Acme/StoreBundle/Repository/*"/>
+                <prototype namespace="App\Repository\" resource="../src/Repository/*" />
             </services>
         </container>
 
-.. _`Basic Mapping Documentation`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html
-.. _`Conditional Operators`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html#conditional-operators
-.. _`DoctrineFixturesBundle`: http://symfony.com/doc/master/bundles/DoctrineFixturesBundle/index.html
-.. _`Query Builder`: http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html
+.. _`Basic Mapping Documentation`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html
+.. _`Conditional Operators`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html#conditional-operators
+.. _`DoctrineFixturesBundle`: https://symfony.com/doc/master/bundles/DoctrineFixturesBundle/index.html
+.. _`Query Builder`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html
 .. _`autowiring`: https://symfony.com/doc/current/service_container/autowiring.html
 .. _`autoconfiguration`: https://symfony.com/doc/current/service_container.html#the-autoconfigure-option

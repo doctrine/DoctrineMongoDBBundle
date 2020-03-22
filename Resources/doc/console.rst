@@ -1,7 +1,7 @@
 Console Commands
 ================
 
-The Doctrine2 ODM integration offers several console commands under the
+The Doctrine2 ODM integration offers various console commands under the
 ``doctrine:mongodb`` namespace. To view the command list you can run the console
 without any arguments:
 
@@ -9,8 +9,8 @@ without any arguments:
 
     php bin/console
 
-A list of available command will print out, many of which start with the
-``doctrine:mongodb`` prefix. You can find out more information about any
+A list of available commands will be printed out, several of them start
+with the ``doctrine:mongodb`` prefix. You can find out more information about any
 of these commands (or any Symfony command) by running the ``help`` command.
 For example, to get details about the ``doctrine:mongodb:query`` task, run:
 
@@ -24,4 +24,4 @@ For example, to get details about the ``doctrine:mongodb:query`` task, run:
    ``DoctrineFixturesBundle`` bundle installed. To learn how to do it, read
    the "`DoctrineFixturesBundle`_" entry of the documentation.
 
-.. _`DoctrineFixturesBundle`: http://symfony.com/doc/master/bundles/DoctrineFixturesBundle/index.html
+.. _`DoctrineFixturesBundle`: https://symfony.com/doc/master/bundles/DoctrineFixturesBundle/index.html
