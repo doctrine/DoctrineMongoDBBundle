@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Form\Type;
 
 use Doctrine\Bundle\MongoDBBundle\Form\ChoiceList\MongoDBQueryBuilderLoader;
-use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Persistence\ObjectManager;
 use InvalidArgumentException;
 use Symfony\Bridge\Doctrine\Form\Type\DoctrineType;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function interface_exists;
 
 /**
  * Form type for a MongoDB document
@@ -83,3 +84,5 @@ class DocumentType extends DoctrineType
         return $this->getBlockPrefix();
     }
 }
+
+interface_exists(ObjectManager::class);

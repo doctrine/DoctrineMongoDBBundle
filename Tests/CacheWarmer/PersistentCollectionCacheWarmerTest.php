@@ -6,9 +6,9 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\CacheWarmer;
 
 use Doctrine\Bundle\MongoDBBundle\CacheWarmer\PersistentCollectionCacheWarmer;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
-use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionGenerator;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use function sys_get_temp_dir;

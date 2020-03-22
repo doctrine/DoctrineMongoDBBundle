@@ -6,7 +6,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures;
 
 use Doctrine\Bundle\MongoDBBundle\Fixture\FixtureGroupInterface;
 use Doctrine\Bundle\MongoDBBundle\Fixture\ODMFixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 
 class OtherFixtures implements ODMFixtureInterface, FixtureGroupInterface
 {

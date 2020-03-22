@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\CacheWarmer;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Persistence\ManagerRegistry;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
