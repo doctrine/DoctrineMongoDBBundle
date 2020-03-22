@@ -6,6 +6,7 @@ namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
+use Doctrine\Bundle\MongoDBBundle\EventSubscriber\EventSubscriberInterface;
 use Doctrine\Bundle\MongoDBBundle\Fixture\ODMFixtureInterface;
 use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepositoryInterface;
 use Doctrine\Common\DataFixtures\Loader as DataFixturesLoader;
@@ -101,6 +102,9 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
         $container->registerForAutoconfiguration(ServiceDocumentRepositoryInterface::class)
             ->addTag(ServiceRepositoryCompilerPass::REPOSITORY_SERVICE_TAG);
+
+        $container->registerForAutoconfiguration(EventSubscriberInterface::class)
+            ->addTag('doctrine_mongodb.odm.event_subscriber');
     }
 
     /**

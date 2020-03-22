@@ -63,12 +63,105 @@ when its event is dispatched.
 Event Subscribers
 -----------------
 
-Use the ``doctrine_mongodb.odm.event_subscriber`` tag
+Implement ``Doctrine\Bundle\MongoDBBundle\EventSubscriber\EventSubscriberInterface``
+and `autoconfiguration`_ to automatically register your class as a MongoODM
+event subscriber.
+
+.. code-block:: php
+
+    // src/App/EventSubscriber/MongoDB/ProductSubscriber.php
+    namespace App\EventSubscriber\MongoDB;
+
+    use App\Document\Product;
+    use Doctrine\Bundle\MongoDBBundle\EventSubscriber\EventSubscriberInterface;
+
+    class ProductSubscriber implements EventSubscriberInterface
+    {
+        public function getSubscribedEvents()
+        {
+            return [
+                // List events to subscribe
+            ];
+        }
+    }
+
+.. configuration-block::
+
+    .. code-block:: yaml
+
+        # config/services.yaml
+        services:
+
+            App\EventSubscriber\MongoDB\:
+                resource: '../src/EventSubscriber/MongoDB/*'
+                autoconfigure: true
+
+    .. code-block:: xml
+
+        <!-- config/services.xml -->
+        <?xml version="1.0" encoding="UTF-8" ?>
+        <container xmlns="http://symfony.com/schema/dic/services"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://symfony.com/schema/dic/services
+                https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+            <services>
+                <prototype namespace="App\EventSubscriber\MongoDB\" resource="../src/EventSubscriber/MongoDB/*" autoconfigure="true" />
+            </services>
+        </container>
+
+Alternatively, use the ``doctrine_mongodb.odm.event_subscriber`` tag
 to register a subscriber. Subscribers must implement the
 ``Doctrine\Common\EventSubscriber`` interface, which means that they must
 contain method returning the events they will observe. For this reason,
 this tag has no ``event`` attribute, however the ``connection``,
 ``priority`` and ``lazy`` attributes are available.
+
+.. code-block:: php
+
+    // src/App/EventSubscriber/MongoDB/ProductSubscriber.php
+    namespace App\EventSubscriber\MongoDB;
+
+    use App\Document\Product;
+    use Doctrine\Common\EventSubscriber;
+
+    class ProductSubscriber implements EventSubscriber
+    {
+        public function getSubscribedEvents()
+        {
+            return [
+                // List events to subscribe
+            ];
+        }
+    }
+
+.. configuration-block::
+
+    .. code-block:: yaml
+
+        # config/services.yaml
+        services:
+
+            App\EventSubscriber\MongoDB\:
+                resource: '../src/EventSubscriber/MongoDB/*'
+                tags:
+                    - { name: doctrine_mongodb.odm.event_subscriber }
+
+    .. code-block:: xml
+
+        <!-- config/services.xml -->
+        <?xml version="1.0" encoding="UTF-8" ?>
+        <container xmlns="http://symfony.com/schema/dic/services"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://symfony.com/schema/dic/services
+                https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+            <services>
+                <prototype namespace="App\EventSubscriber\MongoDB\" resource="../src/EventSubscriber/MongoDB/*">
+                    <tag name="doctrine_mongodb.odm.event_subscriber" />
+                </prototype>
+            </services>
+        </container>
 
 .. note::
 
@@ -80,3 +173,4 @@ this tag has no ``event`` attribute, however the ``connection``,
 .. _`event dispatcher`: https://symfony.com/doc/current/components/event_dispatcher.html
 .. _`Event Documentation`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/events.html
 .. _`tagging`: https://symfony.com/doc/current/service_container/tags.html
+.. _`autoconfiguration`: https://symfony.com/doc/current/service_container.html#the-autoconfigure-option
