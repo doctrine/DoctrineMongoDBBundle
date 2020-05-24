@@ -59,6 +59,11 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         }
         $container->setParameter('doctrine_mongodb.odm.default_document_manager', $config['default_document_manager']);
 
+        if (! empty($config['types'])) {
+            $configuratorDefinition = $container->getDefinition('doctrine_mongodb.odm.manager_configurator.abstract');
+            $configuratorDefinition->addMethodCall('loadTypes', [$config['types']]);
+        }
+
         // set some options as parameters and unset them
         $config = $this->overrideParameters($config, $container);
 

@@ -433,6 +433,27 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertEquals($enabledFilters, $definition->getArgument(0), 'Only enabled filters are passed to the ManagerConfigurator.');
     }
 
+    public function testCustomTypes()
+    {
+        $container = $this->getContainer();
+        $loader    = new DoctrineMongoDBExtension();
+        $container->registerExtension($loader);
+
+        $this->loadFromFile($container, 'odm_types');
+
+        $container->getCompilerPassConfig()->setOptimizationPasses([]);
+        $container->getCompilerPassConfig()->setRemovingPasses([]);
+        $container->compile();
+
+        $expected = [
+            'custom_type_shortcut' => ['class' => 'Vendor\Type\CustomTypeShortcut'],
+            'custom_type' => ['class' => 'Vendor\Type\CustomType'],
+        ];
+
+        $definition = $container->getDefinition('doctrine_mongodb.odm.manager_configurator.abstract');
+        $this->assertDefinitionMethodCallAny($definition, 'loadTypes', [$expected]);
+    }
+
     /**
      * Asserts that the given definition contains a call to the method that uses
      * the specified parameters.

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Types\Type;
 
 /**
  * Configurator for an DocumentManager
@@ -46,6 +48,24 @@ class ManagerConfigurator
         $filterCollection = $documentManager->getFilterCollection();
         foreach ($this->enabledFilters as $filter) {
             $filterCollection->enable($filter);
+        }
+    }
+
+    /**
+     * Loads custom types.
+     *
+     * @param array $types
+     *
+     * @throws MappingException
+     */
+    public static function loadTypes(array $types) : void
+    {
+        foreach ($types as $typeName => $typeConfig) {
+            if (Type::hasType($typeName)) {
+                Type::overrideType($typeName, $typeConfig['class']);
+            } else {
+                Type::addType($typeName, $typeConfig['class']);
+            }
         }
     }
 }
