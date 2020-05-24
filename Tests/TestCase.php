@@ -9,7 +9,6 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
-use MongoDB\Client;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use function sys_get_temp_dir;
 
@@ -29,6 +28,6 @@ class TestCase extends BaseTestCase
         $config->setMetadataDriverImpl(new AnnotationDriver(new AnnotationReader(), $paths));
         $config->setMetadataCacheImpl(new ArrayCache());
 
-        return DocumentManager::create(new Client('mongodb://mongo_test:27017', [], ['typeMap' => DocumentManager::CLIENT_TYPEMAP]), $config);
+        return DocumentManager::create(null, $config);
     }
 }
