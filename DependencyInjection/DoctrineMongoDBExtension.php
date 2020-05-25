@@ -319,7 +319,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
             $odmConnArgs = [
                 $connection['server'] ?? null,
-                ($connection['options'] ?? []),
+                /* phpcs:ignore Squiz.Arrays.ArrayDeclaration.ValueNoNewline */
+                $connection['options'] ?? [],
                 $this->normalizeDriverOptions($connection),
             ];
 
