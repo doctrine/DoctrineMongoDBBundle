@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:doctrine="http://symfony.com/schema/dic/doctrine/odm/mongodb"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+                        http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+
+    <doctrine:mongodb>
+        <doctrine:connection id="default" server="mongodb://localhost:27017" />
+        <doctrine:type name="custom_type_shortcut" class="Vendor\Type\CustomTypeShortcut" />
+        <doctrine:type name="custom_type" class="Vendor\Type\CustomType" />
+    </doctrine:mongodb>
+</container>

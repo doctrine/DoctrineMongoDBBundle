@@ -46,6 +46,7 @@ class ConfigurationTest extends TestCase
             'default_commit_options'         => [],
             'persistent_collection_dir'      => '%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections',
             'persistent_collection_namespace'=> 'PersistentCollections',
+            'types'                          => [],
         ];
 
         $this->assertEquals($defaults, $options);
@@ -186,6 +187,7 @@ class ConfigurationTest extends TestCase
                 ],
             ],
             'resolve_target_documents' => ['Foo\BarInterface' => 'Bar\FooClass'],
+            'types' => [],
         ];
 
         $this->assertEquals($expected, $options);

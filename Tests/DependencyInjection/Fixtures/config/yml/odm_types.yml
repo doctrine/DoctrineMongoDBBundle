@@ -1,0 +1,8 @@
+doctrine_mongodb:
+    connections:
+        default:
+            server: mongodb://localhost:27017
+    types:
+        custom_type_shortcut: Vendor\Type\CustomTypeShortcut
+        custom_type:
+            class: Vendor\Type\CustomType

@@ -17,13 +17,14 @@ class DoctrineMongoDBExtensionTest extends TestCase
 {
     public static function buildConfiguration(array $settings = [])
     {
-        return [array_merge(
-            [
-                'connections' => ['default' => []],
-                'document_managers' => ['default' => []],
-            ],
-            $settings
-        ),
+        return [
+            array_merge(
+                [
+                    'connections' => ['default' => []],
+                    'document_managers' => ['default' => []],
+                ],
+                $settings
+            ),
         ];
     }
 
