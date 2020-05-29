@@ -13,6 +13,7 @@ use Doctrine\Common\DataFixtures\Loader as DataFixturesLoader;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
+use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -21,11 +22,13 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\Messenger\MessageBusInterface;
 use function array_keys;
 use function array_merge;
 use function class_exists;
 use function class_implements;
 use function in_array;
+use function interface_exists;
 use function reset;
 use function sprintf;
 
@@ -110,6 +113,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
         $container->registerForAutoconfiguration(EventSubscriberInterface::class)
             ->addTag('doctrine_mongodb.odm.event_subscriber');
+
+        $this->loadMessengerServices($container);
     }
 
     /**
@@ -332,6 +337,16 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         }
 
         $container->setParameter('doctrine_mongodb.odm.connections', $cons);
+    }
+
+    private function loadMessengerServices(ContainerBuilder $container)
+    {
+        if (! interface_exists(MessageBusInterface::class) || ! class_exists(DoctrineClearEntityManagerWorkerSubscriber::class)) {
+            return;
+        }
+
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader->load('messenger.xml');
     }
 
     /**
