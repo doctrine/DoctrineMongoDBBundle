@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="doctrine_mongodb.messenger.event_subscriber.doctrine_clear_document_manager"
+                 class="Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber" public="false">
+            <tag name="kernel.event_subscriber"/>
+            <argument type="service" id="doctrine_mongodb"/>
+        </service>
+    </services>
+</container>

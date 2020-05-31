@@ -26,6 +26,7 @@ before_install:
 install:
   - composer self-update
   - pecl install -f mongodb-${DRIVER_VERSION}
+  - if [[ -z ${REQUIRE_SYMFONY_MESSENGER} ]]; then composer require --dev symfony/messenger --no-update; fi
   - composer update ${COMPOSER_FLAGS}
 
 script:
@@ -39,15 +40,15 @@ jobs:
 
     # Test against latest Symfony 4.3 stable
     - php: 7.3
-      env: SYMFONY_REQUIRE="4.3.*"
+      env: SYMFONY_REQUIRE="4.3.*" REQUIRE_SYMFONY_MESSENGER
 
     # Test against latest Symfony 4.4 dev
     - php: 7.3
-      env: SYMFONY_REQUIRE="4.4.*"
+      env: SYMFONY_REQUIRE="4.4.*" REQUIRE_SYMFONY_MESSENGER
 
     # Test against latest Symfony 5.0 dev
     - php: 7.3
-      env: SYMFONY_REQUIRE="5.0.*"
+      env: SYMFONY_REQUIRE="5.0.*" REQUIRE_SYMFONY_MESSENGER
 
     # Test dev versions
     - php: 7.3
@@ -62,7 +63,7 @@ jobs:
 
     - stage: Coverage
       php: 7.3
-      env: COVERAGE PHPUNIT_FLAGS="--coverage-clover=coverage.clover"
+      env: COVERAGE PHPUNIT_FLAGS="--coverage-clover=coverage.clover" REQUIRE_SYMFONY_MESSENGER
       before_script:
         - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{.disabled,}
         - if [[ ! $(php -m | grep -si xdebug) ]]; then echo "xdebug required for coverage"; exit 1; fi

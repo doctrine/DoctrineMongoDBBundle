@@ -6,11 +6,15 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\Messenger\MessageBusInterface;
 use function array_merge;
+use function class_exists;
+use function interface_exists;
 use function sys_get_temp_dir;
 
 class DoctrineMongoDBExtensionTest extends TestCase
@@ -229,5 +233,21 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $this->assertTrue($container->getDefinition('doctrine_mongodb')->isPublic());
         $this->assertTrue($container->getDefinition('doctrine_mongodb.odm.default_document_manager')->isPublic());
         $this->assertTrue($container->getAlias('doctrine_mongodb.odm.document_manager')->isPublic());
+    }
+
+    public function testMessengerIntegration()
+    {
+        if (! interface_exists(MessageBusInterface::class)) {
+            $this->markTestSkipped('Symfony Messenger component is not installed');
+        }
+        if (! class_exists(DoctrineClearEntityManagerWorkerSubscriber::class)) {
+            $this->markTestSkipped('DoctrineClearEntityManagerWorkerSubscriber is not available in symfony/doctrine-bridge');
+        }
+
+        $loader = new DoctrineMongoDBExtension();
+        $loader->load(self::buildConfiguration(), $container = $this->buildMinimalContainer());
+
+        $this->assertNotNull($subscriber = $container->getDefinition('doctrine_mongodb.messenger.event_subscriber.doctrine_clear_document_manager'));
+        $this->assertCount(1, $subscriber->getArguments());
     }
 }
