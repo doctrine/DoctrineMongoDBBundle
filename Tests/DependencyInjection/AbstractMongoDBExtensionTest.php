@@ -397,9 +397,9 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertDefinitionMethodCallOnce($definition, 'addResolveTargetDocument', [UserInterface::class, 'MyUserClass', []]);
 
         if (in_array(EventSubscriber::class, class_implements($container->getParameterBag()->resolveValue($definition->getClass())))) {
-            $this->assertEquals(['doctrine_mongodb.odm.event_subscriber' => [[]]], $definition->getTags());
+            $this->assertEquals([[]], $definition->getTags()['doctrine_mongodb.odm.event_subscriber']);
         } else {
-            $this->assertEquals(['doctrine_mongodb.odm.event_listener' => [['event' => 'loadClassMetadata']]], $definition->getTags());
+            $this->assertEquals([['event' => 'loadClassMetadata']], $definition->getTags()['doctrine_mongodb.odm.event_listener']);
         }
     }
 
