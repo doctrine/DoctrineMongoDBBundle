@@ -364,7 +364,10 @@ class IntegrationTestKernel extends Kernel
 
     protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader) : void
     {
-        $c->setParameter('kernel.secret', 'foo');
+        $c->loadFromExtension('framework', [
+            'secret' => 'foo',
+            'router' => ['utf8' => false],
+        ]);
 
         $callback = $this->servicesCallback;
         $callback($c);
