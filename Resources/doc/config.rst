@@ -214,6 +214,36 @@ The following configuration shows a bunch of mapping examples:
             </doctrine_mongodb:config>
         </container>
 
+Custom Types
+------------
+
+`Custom types`_ can come in handy when you're missing a specific mapping type
+or when you want to replace the existing implementation of a mapping type for
+your documents.
+
+.. configuration-block::
+
+    .. code-block:: yaml
+
+        doctrine_mongodb:
+            types:
+                custom_type: Fully\Qualified\Class\Name
+
+    .. code-block:: xml
+
+        <?xml version="1.0" ?>
+
+        <container xmlns="http://symfony.com/schema/dic/services"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:doctrine_mongodb="http://symfony.com/schema/dic/doctrine/odm/mongodb"
+                   xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd
+                                        http://symfony.com/schema/dic/doctrine/odm/mongodb https://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+
+            <doctrine_mongodb:config>
+                <doctrine_mongodb:type name="custom_type" class="Fully\Qualified\Class\Name" />
+            </doctrine_mongodb:config>
+        </container>
+
 Filters
 -------
 
@@ -536,6 +566,10 @@ Full Default Configuration
                             prefix:               ~
                             alias:                ~
                             is_bundle:            ~
+            types:
+
+                # Prototype
+                custom_type: Fully\Qualified\Class\Name
             connections:
 
                 # Prototype
@@ -620,6 +654,7 @@ Full Default Configuration
                     />
                     <doctrine:profiler enabled="true" pretty="false" />
                 </doctrine:document-manager>
+                <doctrine:type name="custom_type" class="Fully\Qualified\Class\Name" />
                 <doctrine:connection id="conn1" server="mongodb://localhost">
                     <doctrine:options
                             authMechanism=""
@@ -642,6 +677,7 @@ Full Default Configuration
             </doctrine:config>
         </container>
 
+.. _`Custom types`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/current/reference/custom-mapping-types.html
 .. _`define it as an environment variable`: https://symfony.com/doc/current/configuration.html#configuration-based-on-environment-variables
 .. _`connection string`: https://docs.mongodb.com/manual/reference/connection-string/#urioption.authSource
 .. _`Replica Sets`: https://www.php.net/manual/en/mongo.connecting.rs.php
