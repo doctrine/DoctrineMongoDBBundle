@@ -28,6 +28,7 @@ helping you to configure and use it in your application.
    first_steps
    form_validation
    security_bundle
+   messenger
    events
    console
    cookbook/registration_form
