@@ -15,6 +15,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ShardDoctrineODMCommand extends ShardCommand
 {
+    /** @var string */
+    protected static $defaultName = 'doctrine:mongodb:schema:shard';
+
     protected function configure()
     {
         parent::configure();

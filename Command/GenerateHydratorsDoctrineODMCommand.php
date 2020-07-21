@@ -14,6 +14,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GenerateHydratorsDoctrineODMCommand extends GenerateHydratorsCommand
 {
+    /** @var string */
+    protected static $defaultName = 'doctrine:mongodb:generate:hydrators';
+
     protected function configure()
     {
         parent::configure();

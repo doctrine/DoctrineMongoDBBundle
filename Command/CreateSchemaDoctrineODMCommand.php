@@ -15,6 +15,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class CreateSchemaDoctrineODMCommand extends CreateCommand
 {
+    /** @var string */
+    protected static $defaultName = 'doctrine:mongodb:schema:create';
+
     protected function configure()
     {
         parent::configure();

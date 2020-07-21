@@ -14,6 +14,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GenerateProxiesDoctrineODMCommand extends GenerateProxiesCommand
 {
+    /** @var string */
+    protected static $defaultName = 'doctrine:mongodb:generate:proxies';
+
     protected function configure()
     {
         parent::configure();

@@ -24,6 +24,9 @@ use function sprintf;
  */
 class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInterface
 {
+    /** @var string */
+    protected static $defaultName = 'doctrine:mongodb:tail-cursor';
+
     use ContainerAwareTrait;
 
     protected function configure()

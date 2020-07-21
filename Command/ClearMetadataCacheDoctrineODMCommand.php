@@ -14,6 +14,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ClearMetadataCacheDoctrineODMCommand extends MetadataCommand
 {
+    /** @var string */
+    protected static $defaultName = 'doctrine:mongodb:cache:clear-metadata';
+
     protected function configure()
     {
         parent::configure();

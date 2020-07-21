@@ -18,6 +18,9 @@ use function sprintf;
  */
 class InfoDoctrineODMCommand extends DoctrineODMCommand
 {
+    /** @var string */
+    protected static $defaultName = 'doctrine:mongodb:mapping:info';
+
     protected function configure()
     {
         $this

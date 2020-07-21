@@ -27,6 +27,9 @@ use function trigger_error;
  */
 class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
 {
+    /** @var string */
+    protected static $defaultName = 'doctrine:mongodb:fixtures:load';
+
     /** @var SymfonyFixturesLoaderInterface */
     private $fixturesLoader;
 

@@ -14,6 +14,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class QueryDoctrineODMCommand extends QueryCommand
 {
+    /** @var string */
+    protected static $defaultName = 'doctrine:mongodb:query';
+
     protected function configure()
     {
         parent::configure();

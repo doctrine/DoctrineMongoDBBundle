@@ -15,6 +15,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class UpdateSchemaDoctrineODMCommand extends UpdateCommand
 {
+    /** @var string */
+    protected static $defaultName = 'doctrine:mongodb:schema:update';
+
     protected function configure()
     {
         parent::configure();

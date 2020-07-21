@@ -15,6 +15,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class DropSchemaDoctrineODMCommand extends DropCommand
 {
+    /** @var string */
+    protected static $defaultName = 'doctrine:mongodb:schema:drop';
+
     protected function configure()
     {
         parent::configure();
