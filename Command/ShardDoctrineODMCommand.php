@@ -15,12 +15,14 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ShardDoctrineODMCommand extends ShardCommand
 {
+    /** @var string */
+    protected static $defaultName = 'doctrine:mongodb:schema:shard';
+
     protected function configure()
     {
         parent::configure();
 
         $this
-            ->setName('doctrine:mongodb:schema:shard')
             ->addOption('dm', null, InputOption::VALUE_REQUIRED, 'The document manager to use for this command.')
             ->setHelp(<<<EOT
 The <info>doctrine:mongodb:schema:shard</info> command shards collections based on their metadata:

@@ -14,12 +14,14 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GenerateHydratorsDoctrineODMCommand extends GenerateHydratorsCommand
 {
+    /** @var string */
+    protected static $defaultName = 'doctrine:mongodb:generate:hydrators';
+
     protected function configure()
     {
         parent::configure();
 
         $this
-            ->setName('doctrine:mongodb:generate:hydrators')
             ->addOption('dm', null, InputOption::VALUE_OPTIONAL, 'The document manager to use for this command.')
             ->setHelp(<<<EOT
 The <info>doctrine:mongodb:generate:hydrators</info> command generates hydrator classes for your documents:

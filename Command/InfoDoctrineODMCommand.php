@@ -18,10 +18,12 @@ use function sprintf;
  */
 class InfoDoctrineODMCommand extends DoctrineODMCommand
 {
+    /** @var string */
+    protected static $defaultName = 'doctrine:mongodb:mapping:info';
+
     protected function configure()
     {
         $this
-            ->setName('doctrine:mongodb:mapping:info')
             ->addOption('dm', null, InputOption::VALUE_OPTIONAL, 'The document manager to use for this command.')
             ->setDescription('Show basic information about all mapped documents.')
             ->setHelp(<<<EOT
