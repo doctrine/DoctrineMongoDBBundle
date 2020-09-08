@@ -64,9 +64,8 @@ If you want to append the fixtures instead of flushing the database first you ca
   <info>php %command.full_name%</info> --append</info>
 
 
-Alternatively, you can also load fixture services instead of files. Fixture services are tagged with `<comment>doctrine.fixture.odm</comment>`.
-When using `<comment>--services</comment>`, both `<comment>--fixtures</comment>` and `<comment>--bundles</comment>` will no longer work.
-Using `<comment>--services</comment>` will be the default behaviour in 4.0.
+Alternatively, you can also load fixture services instead of files. Fixture services are tagged with `<comment>doctrine.fixture.odm.mongodb</comment>`.
+Using `<comment>--services</comment>` will be the default behaviour in 5.0.
 When loading fixture services, you can also choose to load only fixtures that live in a certain group:
 `<info>php %command.full_name%</info> <comment>--group=group1</comment> <comment>--services</comment>`
 
