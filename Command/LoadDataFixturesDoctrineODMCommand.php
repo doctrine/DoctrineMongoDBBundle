@@ -27,7 +27,10 @@ use function trigger_error;
  */
 class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
 {
-    /** @var SymfonyFixturesLoaderInterface */
+    /** @var string */
+    protected static $defaultName = 'doctrine:mongodb:fixtures:load';
+
+    /** @var SymfonyFixturesLoaderInterface  */
     private $fixturesLoader;
 
     public function __construct(?ManagerRegistry $registry = null, ?KernelInterface $kernel = null, ?SymfonyFixturesLoaderInterface $fixturesLoader = null)
@@ -48,7 +51,6 @@ class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
     protected function configure()
     {
         $this
-            ->setName('doctrine:mongodb:fixtures:load')
             ->setDescription('Load data fixtures to your database.')
             ->addOption('services', null, InputOption::VALUE_NONE, 'Use services as fixtures')
             ->addOption('group', null, InputOption::VALUE_IS_ARRAY|InputOption::VALUE_REQUIRED, 'Only load fixtures that belong to this group (use with --services)')
