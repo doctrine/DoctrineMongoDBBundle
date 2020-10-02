@@ -12,6 +12,7 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 use Throwable;
 
 use function array_map;
+use function array_reduce;
 use function count;
 use function json_encode;
 
@@ -30,7 +31,7 @@ class CommandDataCollector extends DataCollector
         $this->data = [
             'num_commands' => count($this->commandLogger),
             'commands' => array_map(
-                static function (Command $command): array {
+                static function (Command $command) : array {
                     return [
                         'command' => json_encode($command->getCommand()),
                         'durationMicros' => $command->getDurationMicros(),
@@ -40,7 +41,7 @@ class CommandDataCollector extends DataCollector
             ),
             'time' => array_reduce(
                 $this->commandLogger->getAll(),
-                static function(int $total, Command $command) {
+                static function (int $total, Command $command) : int {
                     return $total + $command->getDurationMicros();
                 },
                 0
@@ -62,7 +63,7 @@ class CommandDataCollector extends DataCollector
         return $this->data['num_commands'];
     }
 
-    public function getTime(): int
+    public function getTime() : int
     {
         return $this->data['time'];
     }

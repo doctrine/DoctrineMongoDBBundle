@@ -53,7 +53,7 @@
             <em>No commands were performed.</em>
         </div>
     {% endif %}
-    <table class="alt queries-table">
+    <table>
         <thead>
         <tr>
             <th class="nowrap">#</th>
@@ -63,11 +63,11 @@
         </thead>
         <tbody id="commands">
         {% for command in collector.commands %}
-            <tr id="queryNo-{{ loop.index0 }}">
+            <tr>
                 <td class="nowrap">{{ loop.index }}</td>
                 <td class="nowrap">{{ command.durationMicros }} ms</td>
                 <td>
-                    {{ command.command }}
+                    <code>{{ command.command }}</code>
                 </td>
             </tr>
         {% endfor %}
