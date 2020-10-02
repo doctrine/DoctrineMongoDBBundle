@@ -34,21 +34,43 @@
 {% endblock %}
 
 {% block panel %}
-    <h2>Commands</h2>
+    <h2>Command metrics</h2>
+    <div class="metrics">
+        <div class="metric">
+            <span class="value">{{ collector.commandCount }}</span>
+            <span class="label">Database Queries</span>
+        </div>
 
+        <div class="metric">
+            <span class="value">{{ collector.time }} ms</span>
+            <span class="label">Query time</span>
+        </div>
+    </div>
+
+    <h2>Commands</h2>
     {% if collector.commands is empty %}
-        <p>
-            <em>No commands.</em>
-        </p>
-    {% else %}
-        <ul class="alt">
-            {% for command in collector.commands %}
-                <li class="{{ cycle(['odd', 'even'], loop.index) }}">
-                    <div>
-                        <code>{{ command }}</code>
-                    </div>
-                </li>
-            {% endfor %}
-        </ul>
+        <div class="empty">
+            <em>No commands were performed.</em>
+        </div>
     {% endif %}
+    <table class="alt queries-table">
+        <thead>
+        <tr>
+            <th class="nowrap">#</th>
+            <th class="nowrap">Time</th>
+            <th style="width: 100%;">Info</th>
+        </tr>
+        </thead>
+        <tbody id="commands">
+        {% for command in collector.commands %}
+            <tr id="queryNo-{{ loop.index0 }}">
+                <td class="nowrap">{{ loop.index }}</td>
+                <td class="nowrap">{{ command.durationMicros }} ms</td>
+                <td>
+                    {{ command.command }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

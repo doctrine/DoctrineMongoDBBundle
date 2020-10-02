@@ -30,10 +30,20 @@ class CommandDataCollector extends DataCollector
         $this->data = [
             'num_commands' => count($this->commandLogger),
             'commands' => array_map(
-                static function (Command $command): string {
-                    return json_encode($command->getCommand());
+                static function (Command $command): array {
+                    return [
+                        'command' => json_encode($command->getCommand()),
+                        'durationMicros' => $command->getDurationMicros(),
+                    ];
                 },
                 $this->commandLogger->getAll()
+            ),
+            'time' => array_reduce(
+                $this->commandLogger->getAll(),
+                static function(int $total, Command $command) {
+                    return $total + $command->getDurationMicros();
+                },
+                0
             ),
         ];
     }
@@ -50,6 +60,11 @@ class CommandDataCollector extends DataCollector
     public function getCommandCount(): int
     {
         return $this->data['num_commands'];
+    }
+
+    public function getTime(): int
+    {
+        return $this->data['time'];
     }
 
     /**
