@@ -5,20 +5,20 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Configuration;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\BasicFilter;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\ComplexFilter;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\DisabledFilter;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Repository\CustomGridFSRepository;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Repository\CustomRepository;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
-use Foo\Bar\CustomGridFSRepository;
-use Foo\Bar\CustomRepository;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\Util\XmlUtils;
 use Symfony\Component\Yaml\Yaml;
-use Vendor\Filter\BasicFilter;
-use Vendor\Filter\ComplexFilter;
-use Vendor\Filter\DisabledFilter;
 use function array_key_exists;
 use function file_get_contents;
 
