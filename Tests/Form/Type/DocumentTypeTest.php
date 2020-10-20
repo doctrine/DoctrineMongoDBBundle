@@ -58,7 +58,7 @@ class DocumentTypeTest extends TypeTestCase
 
     public function testDocumentManagerOptionSetsEmOption()
     {
-        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, [
+        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::class : 'document', null, [
             'class' => Document::class,
             'document_manager' => 'default',
         ]);
@@ -68,7 +68,7 @@ class DocumentTypeTest extends TypeTestCase
 
     public function testDocumentManagerInstancePassedAsOption()
     {
-        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, [
+        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::class : 'document', null, [
             'class' => Document::class,
             'document_manager' => $this->dm,
         ]);
@@ -81,7 +81,7 @@ class DocumentTypeTest extends TypeTestCase
      */
     public function testSettingDocumentManagerAndEmOptionShouldThrowException()
     {
-        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, [
+        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::class : 'document', null, [
             'document_manager' => 'default',
             'em' => 'default',
         ]);
@@ -100,10 +100,10 @@ class DocumentTypeTest extends TypeTestCase
 
         $this->dm->flush();
 
-        $form = $this->factory->create($this->typeFQCN ? FormType::CLASS : 'form', $document)
+        $form = $this->factory->create($this->typeFQCN ? FormType::class : 'form', $document)
             ->add(
                 'categories',
-                $this->typeFQCN ? DocumentType::CLASS : 'document',
+                $this->typeFQCN ? DocumentType::class : 'document',
                 [
                     'class' => Category::class,
                     'multiple' => true,
