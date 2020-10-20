@@ -33,7 +33,7 @@ class ServiceRepositoryTest extends TestCase
     /** @var ContainerBuilder */
     private $container;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

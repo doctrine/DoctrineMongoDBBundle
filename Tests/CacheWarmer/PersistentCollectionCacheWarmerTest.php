@@ -23,7 +23,7 @@ class PersistentCollectionCacheWarmerTest extends TestCase
     /** @var PersistentCollectionCacheWarmer */
     private $warmer;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->container = new Container();
         $this->container->setParameter('doctrine_mongodb.odm.persistent_collection_dir', sys_get_temp_dir());

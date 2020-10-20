@@ -27,7 +27,7 @@ class TypeGuesserTest extends TypeTestCase
 
     private $typeFQCN;
 
-    public function setUp() : void
+    protected function setUp() : void
     {
         $this->typeFQCN = method_exists(AbstractType::class, 'getBlockPrefix');
 

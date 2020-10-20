@@ -22,7 +22,7 @@ class HydratorCacheWarmerTest extends TestCase
     /** @var HydratorCacheWarmer */
     private $warmer;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->container = new Container();
         $this->container->setParameter('doctrine_mongodb.odm.hydrator_dir', sys_get_temp_dir());

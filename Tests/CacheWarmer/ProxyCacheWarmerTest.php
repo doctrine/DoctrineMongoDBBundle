@@ -26,7 +26,7 @@ class ProxyCacheWarmerTest extends TestCase
     /** @var ProxyCacheWarmer */
     private $warmer;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->container = new Container();
         $this->container->setParameter('doctrine_mongodb.odm.proxy_dir', sys_get_temp_dir());
