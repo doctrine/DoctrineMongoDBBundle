@@ -12,7 +12,7 @@ use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ManagerRegistry;
 use MongoDB\BSON\ObjectId;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormView;
@@ -25,7 +25,7 @@ class DocumentTypeTest extends TypeTestCase
     /** @var DocumentManager */
     private $dm;
 
-    /** @var PHPUnit_Framework_MockObject_MockObject */
+    /** @var MockObject */
     private $dmRegistry;
 
     private $typeFQCN;

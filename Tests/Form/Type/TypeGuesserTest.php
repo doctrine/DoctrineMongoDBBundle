@@ -11,7 +11,7 @@ use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Guesser;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ManagerRegistry;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Test\TypeTestCase;
 use function array_merge;
@@ -22,7 +22,7 @@ class TypeGuesserTest extends TypeTestCase
     /** @var DocumentManager */
     private $dm;
 
-    /** @var PHPUnit_Framework_MockObject_MockObject */
+    /** @var MockObject */
     private $dmRegistry;
 
     private $typeFQCN;

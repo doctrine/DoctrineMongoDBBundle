@@ -21,8 +21,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use MongoDB\Client;
-use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit_Framework_AssertionFailedError;
+use PHPUnit\Framework\AssertionFailedError;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -478,9 +477,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
                 $this->assertSame($params, $call[1], "Expected parameters to method '" . $methodName . "' did not match the actual parameters.");
 
                 return;
-            } catch (PHPUnit_Framework_AssertionFailedError $e) {
-                $lastError = $e;
-            } catch (ExpectationFailedException $e) {
+            } catch (AssertionFailedError $e) {
                 $lastError = $e;
             }
         }
