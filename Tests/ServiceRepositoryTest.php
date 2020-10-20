@@ -15,6 +15,7 @@ use Fixtures\Bundles\RepositoryServiceBundle\Document\TestCustomServiceRepoDocum
 use Fixtures\Bundles\RepositoryServiceBundle\Document\TestCustomServiceRepoFile;
 use Fixtures\Bundles\RepositoryServiceBundle\Document\TestDefaultRepoDocument;
 use Fixtures\Bundles\RepositoryServiceBundle\Document\TestDefaultRepoFile;
+use Fixtures\Bundles\RepositoryServiceBundle\Document\TestUnmappedDocument;
 use Fixtures\Bundles\RepositoryServiceBundle\Repository\TestCustomClassRepoRepository;
 use Fixtures\Bundles\RepositoryServiceBundle\Repository\TestCustomServiceRepoDocumentRepository;
 use Fixtures\Bundles\RepositoryServiceBundle\Repository\TestCustomServiceRepoGridFSRepository;
@@ -26,6 +27,7 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+use function sprintf;
 use function sys_get_temp_dir;
 
 class ServiceRepositoryTest extends TestCase
@@ -133,12 +135,14 @@ class ServiceRepositoryTest extends TestCase
         $this->assertInstanceOf(Builder::class, $customServiceGridFSRepo->createQueryBuilder());
     }
 
-    /**
-     * @expectedException LogicException
-     * @expectedExceptionMessage Could not find the document manager for class "Fixtures\Bundles\RepositoryServiceBundle\Document\TestUnmappedDocument". Check your Doctrine configuration to make sure it is configured to load this document’s metadata.
-     */
     public function testInstantiatingServiceRepositoryForUnmappedClass()
     {
+        $this->expectExceptionMessage(sprintf(
+            'Could not find the document manager for class "%s".'
+            . ' Check your Doctrine configuration to make sure it is configured to load this document’s metadata.',
+            TestUnmappedDocument::class
+        ));
+        $this->expectException(LogicException::class);
         new TestUnmappedDocumentRepository($this->container->get('doctrine_mongodb'));
     }
 }

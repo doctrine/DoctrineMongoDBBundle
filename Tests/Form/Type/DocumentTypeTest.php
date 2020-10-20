@@ -11,6 +11,7 @@ use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ManagerRegistry;
+use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Form\AbstractType;
@@ -76,12 +77,10 @@ class DocumentTypeTest extends TypeTestCase
         $this->assertSame($this->dm, $field->getConfig()->getOption('em'));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testSettingDocumentManagerAndEmOptionShouldThrowException()
     {
-        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::class : 'document', null, [
+        $this->expectException(InvalidArgumentException::class);
+        $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::class : 'document', null, [
             'document_manager' => 'default',
             'em' => 'default',
         ]);

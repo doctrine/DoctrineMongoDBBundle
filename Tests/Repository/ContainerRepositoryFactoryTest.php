@@ -16,7 +16,9 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
+use RuntimeException;
 use stdClass;
+use function sprintf;
 use function sys_get_temp_dir;
 
 class ContainerRepositoryFactoryTest extends TestCase
@@ -57,10 +59,6 @@ class ContainerRepositoryFactoryTest extends TestCase
         $this->assertSame($actualRepo, $factory->getRepository($dm, CustomNormalRepoDocument::class));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage The service "my_repo" must extend DocumentRepository (or a base class, like ServiceDocumentRepository).
-     */
     public function testServiceRepositoriesMustExtendDocumentRepository()
     {
         $repo = new stdClass();
@@ -70,13 +68,14 @@ class ContainerRepositoryFactoryTest extends TestCase
         $dm = $this->createDocumentManager([CoolDocument::class => 'my_repo']);
 
         $factory = new ContainerRepositoryFactory($container);
+
+        $this->expectExceptionMessage(
+            'The service "my_repo" must extend DocumentRepository (or a base class, like ServiceDocumentRepository).'
+        );
+        $this->expectException(RuntimeException::class);
         $factory->getRepository($dm, CoolDocument::class);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage The "Doctrine\Bundle\MongoDBBundle\Tests\Repository\StubServiceRepository" document repository implements "Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepositoryInterface", but its service could not be found. Make sure the service exists and is tagged with "doctrine_mongodb.odm.repository_service".
-     */
     public function testRepositoryMatchesServiceInterfaceButServiceNotFound()
     {
         $container = $this->createContainer([]);
@@ -86,13 +85,18 @@ class ContainerRepositoryFactoryTest extends TestCase
         ]);
 
         $factory = new ContainerRepositoryFactory($container);
+
+        $this->expectExceptionMessage(sprintf(
+            'The "%s" document repository implements "%s", but its service could not be found.'
+            . ' Make sure the service exists and is tagged with "doctrine_mongodb.odm.repository_service".',
+            StubServiceRepository::class,
+            ServiceDocumentRepositoryInterface::class
+        ));
+        $this->expectException(RuntimeException::class);
+
         $factory->getRepository($dm, CoolDocument::class);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage The "Doctrine\Bundle\MongoDBBundle\Tests\Repository\CoolDocument" document has a repositoryClass set to "not_a_real_class", but this is not a valid class. Check your class naming. If this is meant to be a service id, make sure this service exists and is tagged with "doctrine_mongodb.odm.repository_service".
-     */
     public function testCustomRepositoryIsNotAValidClass()
     {
         $container = $this->createContainer([]);
@@ -100,6 +104,14 @@ class ContainerRepositoryFactoryTest extends TestCase
         $dm = $this->createDocumentManager([CoolDocument::class => 'not_a_real_class']);
 
         $factory = new ContainerRepositoryFactory($container);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage(sprintf(
+            'The "%s" document has a repositoryClass set to "not_a_real_class", but this is not a valid class.'
+            . ' Check your class naming. If this is meant to be a service id, make sure this service exists and'
+            . ' is tagged with "doctrine_mongodb.odm.repository_service".',
+            CoolDocument::class
+        ));
         $factory->getRepository($dm, CoolDocument::class);
     }
 

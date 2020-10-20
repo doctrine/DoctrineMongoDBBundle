@@ -16,6 +16,7 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\Util\XmlUtils;
 use Symfony\Component\Yaml\Yaml;
@@ -454,10 +455,6 @@ class ConfigurationTest extends TestCase
         $this->assertEquals([], $options['connections']['conn3']['options']);
     }
 
-    /**
-     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     * @expectedExceptionMessage The replicaSet option must be a string
-     */
     public function testInvalidReplicaSetValue()
     {
         $config = [
@@ -471,6 +468,10 @@ class ConfigurationTest extends TestCase
 
         $processor     = new Processor();
         $configuration = new Configuration(false);
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('The replicaSet option must be a string');
+
         $processor->processConfiguration($configuration, [$config]);
     }
 

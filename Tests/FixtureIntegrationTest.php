@@ -8,8 +8,10 @@ use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerP
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\DependentOnRequiredConstructorArgsFixtures;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\OtherFixtures;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDependenciesFixtures;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\FooBundle;
+use LogicException;
 use RuntimeException;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
@@ -22,6 +24,7 @@ use Symfony\Component\Routing\RouteCollectionBuilder;
 use function array_map;
 use function get_class;
 use function rand;
+use function sprintf;
 use function sys_get_temp_dir;
 
 class FixtureIntegrationTest extends TestCase
@@ -90,10 +93,6 @@ class FixtureIntegrationTest extends TestCase
         $this->assertInstanceOf(WithDependenciesFixtures::class, $actualFixtures[1]);
     }
 
-    /**
-     * @expectedException \LogicException
-     * @expectedExceptionMessage The "Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures" fixture class is trying to be loaded, but is not available. Make sure this class is defined as a service and tagged with "doctrine.fixture.odm.mongodb".
-     */
     public function testExceptionIfDependentFixtureNotWired() : void
     {
         $kernel = new IntegrationTestKernel('dev', false);
@@ -105,6 +104,13 @@ class FixtureIntegrationTest extends TestCase
         });
         $kernel->boot();
         $container = $kernel->getContainer();
+
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage(sprintf(
+            'The "%s" fixture class is trying to be loaded, but is not available.'
+            . ' Make sure this class is defined as a service and tagged with "doctrine.fixture.odm.mongodb".',
+            RequiredConstructorArgsFixtures::class
+        ));
 
         /** @var ContainerAwareLoader $loader */
         $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
@@ -192,7 +198,12 @@ class FixtureIntegrationTest extends TestCase
         $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Fixture "Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\OtherFixtures" was declared as a dependency for fixture "Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDependenciesFixtures", but it was not included in any of the loaded fixture groups.');
+        $this->expectExceptionMessage(sprintf(
+            'Fixture "%s" was declared as a dependency for fixture "%s",'
+            . ' but it was not included in any of the loaded fixture groups.',
+            OtherFixtures::class,
+            WithDependenciesFixtures::class
+        ));
 
         $loader->getFixtures(['missingDependencyGroup']);
     }
