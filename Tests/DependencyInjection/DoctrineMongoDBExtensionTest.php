@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -209,20 +210,14 @@ class DoctrineMongoDBExtensionTest extends TestCase
         );
 
         $configDm1 = $container->getDefinition('doctrine_mongodb.odm.dm1_configuration');
-        $this->assertContains(
-            [
-                'setRepositoryFactory',
-                [new Reference('repository_factory_service')],
-            ],
-            $configDm1->getMethodCalls()
-        );
-        $this->assertContains(
-            [
-                'setPersistentCollectionFactory',
-                [new Reference('persistent_collection_factory_service')],
-            ],
-            $configDm1->getMethodCalls()
-        );
+
+        $this->assertDICDefinitionMethodCall($configDm1, 'setRepositoryFactory', [
+            new Reference('repository_factory_service'),
+        ]);
+
+        $this->assertDICDefinitionMethodCall($configDm1, 'setPersistentCollectionFactory', [
+            new Reference('persistent_collection_factory_service'),
+        ]);
     }
 
     public function testPublicServicesAndAliases()
@@ -249,5 +244,22 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
         $this->assertNotNull($subscriber = $container->getDefinition('doctrine_mongodb.messenger.event_subscriber.doctrine_clear_document_manager'));
         $this->assertCount(1, $subscriber->getArguments());
+    }
+
+    private function assertDICDefinitionMethodCall(Definition $definition, string $methodName, array $params = []) : void
+    {
+        $calls = $definition->getMethodCalls();
+
+        foreach ($calls as $call) {
+            if ($call[0] !== $methodName) {
+                continue;
+            }
+
+            $this->assertEquals($params, $call[1], "Expected parameters to methods '" . $methodName . "' do not match the actual parameters.");
+
+            return;
+        }
+
+        $this->fail("Method '" . $methodName . "' is expected to be called once, definition does not contain a call though.");
     }
 }
