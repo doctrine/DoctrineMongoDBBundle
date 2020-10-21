@@ -8,18 +8,13 @@ use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerP
 use Doctrine\Bundle\MongoDBBundle\Fixture\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\DataFixtures\FixtureInterface;
-use Doctrine\Common\DataFixtures\Loader;
-use Exception;
 use LogicException;
 use ReflectionClass;
-use ReflectionMethod;
 use RuntimeException;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use function array_key_exists;
 use function array_values;
-use function class_exists;
 use function get_class;
-use function method_exists;
 use function sprintf;
 
 final class SymfonyFixturesLoader extends ContainerAwareLoader implements SymfonyFixturesLoaderInterface
@@ -56,12 +51,6 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader implements Symfon
     {
         $class                        = get_class($fixture);
         $this->loadedFixtures[$class] = $fixture;
-
-        // see https://github.com/doctrine/data-fixtures/pull/274
-        // this is to give a clear error if you do not have this version
-        if (! method_exists(Loader::class, 'createFixture')) {
-            $this->checkForNonInstantiableFixtures($fixture);
-        }
 
         $reflection = new ReflectionClass($fixture);
         $this->addGroupsFixtureMapping($class, [$reflection->getShortName()]);
@@ -157,37 +146,6 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader implements Symfon
         foreach ($dependenciesClasses as $class) {
             if (! array_key_exists($class, $fixtures)) {
                 throw new RuntimeException(sprintf('Fixture "%s" was declared as a dependency for fixture "%s", but it was not included in any of the loaded fixture groups.', $class, get_class($fixture)));
-            }
-        }
-    }
-
-    /**
-     * For doctrine/data-fixtures 1.2 or lower, this detects an unsupported
-     * feature with DependentFixtureInterface so that we can throw a
-     * clear exception.
-     *
-     * @throws Exception
-     */
-    private function checkForNonInstantiableFixtures(FixtureInterface $fixture)
-    {
-        if (! $fixture instanceof DependentFixtureInterface) {
-            return;
-        }
-
-        foreach ($fixture->getDependencies() as $dependency) {
-            if (! class_exists($dependency)) {
-                continue;
-            }
-
-            if (! method_exists($dependency, '__construct')) {
-                continue;
-            }
-
-            $reflMethod = new ReflectionMethod($dependency, '__construct');
-            foreach ($reflMethod->getParameters() as $param) {
-                if (! $param->isOptional()) {
-                    throw new LogicException(sprintf('The getDependencies() method returned a class (%s) that has required constructor arguments. Upgrade to "doctrine/data-fixtures" version 1.3 or higher to support this.', $dependency));
-                }
             }
         }
     }

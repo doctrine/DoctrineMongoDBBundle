@@ -7,10 +7,8 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\Command;
 use Doctrine\Bundle\MongoDBBundle\Command\LoadDataFixturesDoctrineODMCommand;
 use Doctrine\Bundle\MongoDBBundle\Loader\SymfonyFixturesLoaderInterface;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
-use Doctrine\Common\DataFixtures\Loader;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
-use function class_exists;
 
 class LoadDataFixturesDoctrineODMCommandTest extends TestCase
 {
@@ -23,21 +21,8 @@ class LoadDataFixturesDoctrineODMCommandTest extends TestCase
         $this->command = new LoadDataFixturesDoctrineODMCommand($registry, $kernel, $loader);
     }
 
-    public function testCommandIsNotEnabledWithMissingDependency()
-    {
-        if (class_exists(Loader::class)) {
-            $this->markTestSkipped();
-        }
-
-        $this->assertFalse($this->command->isEnabled());
-    }
-
     public function testCommandIsEnabledWithDependency()
     {
-        if (! class_exists(Loader::class)) {
-            $this->markTestSkipped();
-        }
-
         $this->assertTrue($this->command->isEnabled());
     }
 }
