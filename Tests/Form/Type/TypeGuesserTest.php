@@ -78,13 +78,13 @@ class TypeGuesserTest extends TypeTestCase
     protected function createRegistryMock($name, $dm)
     {
         $registry = $this->createMock(ManagerRegistry::class);
-        $registry->expects($this->any())
+        $registry
             ->method('getManager')
             ->with($this->equalTo($name))
-            ->will($this->returnValue($dm));
-        $registry->expects($this->any())
+            ->willReturn($dm);
+        $registry
             ->method('getManagers')
-            ->will($this->returnValue(['default' => $dm]));
+            ->willReturn(['default' => $dm]);
 
         return $registry;
     }

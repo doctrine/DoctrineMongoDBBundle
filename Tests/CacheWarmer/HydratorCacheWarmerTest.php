@@ -31,7 +31,7 @@ class HydratorCacheWarmerTest extends TestCase
         $dm = $this->createTestDocumentManager([__DIR__ . '/../Fixtures/Validator']);
 
         $registryStub = $this->getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->getMock();
-        $registryStub->expects($this->any())->method('getManagers')->willReturn([ $dm ]);
+        $registryStub->method('getManagers')->willReturn([ $dm ]);
         $this->container->set('doctrine_mongodb', $registryStub);
 
         $this->warmer = new HydratorCacheWarmer($this->container);

@@ -35,7 +35,7 @@ class PersistentCollectionCacheWarmerTest extends TestCase
         $dm->getConfiguration()->setPersistentCollectionGenerator($this->generatorMock);
 
         $registryStub = $this->getMockBuilder(ManagerRegistry::class)->getMock();
-        $registryStub->expects($this->any())->method('getManagers')->willReturn([ $dm ]);
+        $registryStub->method('getManagers')->willReturn([ $dm ]);
         $this->container->set('doctrine_mongodb', $registryStub);
 
         $this->warmer = new PersistentCollectionCacheWarmer($this->container);

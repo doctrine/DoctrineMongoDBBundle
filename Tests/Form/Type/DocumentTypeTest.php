@@ -123,10 +123,10 @@ class DocumentTypeTest extends TypeTestCase
     protected function createRegistryMock($name, $dm)
     {
         $registry = $this->createMock(ManagerRegistry::class);
-        $registry->expects($this->any())
+        $registry
                  ->method('getManager')
                  ->with($this->equalTo($name))
-                 ->will($this->returnValue($dm));
+                 ->willReturn($dm);
 
         return $registry;
     }

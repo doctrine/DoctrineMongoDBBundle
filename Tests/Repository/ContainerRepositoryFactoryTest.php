@@ -121,12 +121,12 @@ class ContainerRepositoryFactoryTest extends TestCase
     private function createContainer(array $services)
     {
         $container = $this->getMockBuilder(ContainerInterface::class)->getMock();
-        $container->expects($this->any())
+        $container
             ->method('has')
             ->willReturnCallback(static function ($id) use ($services) {
                 return isset($services[$id]);
             });
-        $container->expects($this->any())
+        $container
             ->method('get')
             ->willReturnCallback(static function ($id) use ($services) {
                 return $services[$id];
@@ -149,7 +149,7 @@ class ContainerRepositoryFactoryTest extends TestCase
         }
 
         $dm = $this->getMockBuilder(DocumentManager::class)->disableOriginalConstructor()->getMock();
-        $dm->expects($this->any())
+        $dm
             ->method('getClassMetadata')
             ->willReturnCallback(static function ($class) use ($classMetadatas) {
                 return $classMetadatas[$class];
@@ -158,11 +158,11 @@ class ContainerRepositoryFactoryTest extends TestCase
         $evm = $this->createMock(EventManager::class);
 
         $uow = new UnitOfWork($dm, $evm, new HydratorFactory($dm, $evm, sys_get_temp_dir(), sys_get_temp_dir(), Configuration::AUTOGENERATE_EVAL));
-        $dm->expects($this->any())
+        $dm
             ->method('getUnitOfWork')
             ->willReturn($uow);
 
-        $dm->expects($this->any())
+        $dm
             ->method('getConfiguration')
             ->willReturn(new Configuration());
 

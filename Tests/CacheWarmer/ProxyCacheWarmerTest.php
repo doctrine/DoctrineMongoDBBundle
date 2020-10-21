@@ -41,7 +41,7 @@ class ProxyCacheWarmerTest extends TestCase
         $p->setValue($dm, $this->proxyMock);
 
         $registryStub = $this->getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->getMock();
-        $registryStub->expects($this->any())->method('getManagers')->willReturn([ $dm ]);
+        $registryStub->method('getManagers')->willReturn([ $dm ]);
         $this->container->set('doctrine_mongodb', $registryStub);
 
         $this->warmer = new ProxyCacheWarmer($this->container);
