@@ -42,7 +42,7 @@
         </div>
 
         <div class="metric">
-            <span class="value">{{ collector.time }} ms</span>
+            <span class="value">{{ '%0.3f'|format(collector.time / 1000) }} ms</span>
             <span class="label">Query time</span>
         </div>
     </div>
@@ -65,7 +65,7 @@
         {% for command in collector.commands %}
             <tr>
                 <td class="nowrap">{{ loop.index }}</td>
-                <td class="nowrap">{{ command.durationMicros }} ms</td>
+                <td class="nowrap">{{ '%0.3f'|format(command.durationMicros / 1000) }} ms</td>
                 <td>
                     <code>{{ command.command }}</code>
                 </td>
