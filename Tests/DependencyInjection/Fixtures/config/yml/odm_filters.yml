@@ -6,13 +6,13 @@ doctrine_mongodb:
         default:
             filters:
                 disabled_filter:
-                    class:   Vendor\Filter\DisabledFilter
+                    class:   Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\DisabledFilter
                     enabled: false
                 basic_filter:
-                    class:   Vendor\Filter\BasicFilter
+                    class:   Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\BasicFilter
                     enabled: true
                 complex_filter:
-                    class:   Vendor\Filter\ComplexFilter
+                    class:   Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\ComplexFilter
                     enabled: true
                     parameters:
                         integer: 1

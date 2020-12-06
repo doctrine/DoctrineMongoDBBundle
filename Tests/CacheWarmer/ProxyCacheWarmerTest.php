@@ -26,7 +26,7 @@ class ProxyCacheWarmerTest extends TestCase
     /** @var ProxyCacheWarmer */
     private $warmer;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->container = new Container();
         $this->container->setParameter('doctrine_mongodb.odm.proxy_dir', sys_get_temp_dir());
@@ -41,7 +41,7 @@ class ProxyCacheWarmerTest extends TestCase
         $p->setValue($dm, $this->proxyMock);
 
         $registryStub = $this->getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->getMock();
-        $registryStub->expects($this->any())->method('getManagers')->willReturn([ $dm ]);
+        $registryStub->method('getManagers')->willReturn([ $dm ]);
         $this->container->set('doctrine_mongodb', $registryStub);
 
         $this->warmer = new ProxyCacheWarmer($this->container);

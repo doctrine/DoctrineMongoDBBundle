@@ -11,8 +11,9 @@ use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ManagerRegistry;
+use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormView;
@@ -25,12 +26,12 @@ class DocumentTypeTest extends TypeTestCase
     /** @var DocumentManager */
     private $dm;
 
-    /** @var PHPUnit_Framework_MockObject_MockObject */
+    /** @var MockObject */
     private $dmRegistry;
 
     private $typeFQCN;
 
-    public function setUp() : void
+    protected function setUp() : void
     {
         $this->typeFQCN = method_exists(AbstractType::class, 'getBlockPrefix');
 
@@ -58,7 +59,7 @@ class DocumentTypeTest extends TypeTestCase
 
     public function testDocumentManagerOptionSetsEmOption()
     {
-        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, [
+        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::class : 'document', null, [
             'class' => Document::class,
             'document_manager' => 'default',
         ]);
@@ -68,7 +69,7 @@ class DocumentTypeTest extends TypeTestCase
 
     public function testDocumentManagerInstancePassedAsOption()
     {
-        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, [
+        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::class : 'document', null, [
             'class' => Document::class,
             'document_manager' => $this->dm,
         ]);
@@ -76,12 +77,10 @@ class DocumentTypeTest extends TypeTestCase
         $this->assertSame($this->dm, $field->getConfig()->getOption('em'));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testSettingDocumentManagerAndEmOptionShouldThrowException()
     {
-        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, [
+        $this->expectException(InvalidArgumentException::class);
+        $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::class : 'document', null, [
             'document_manager' => 'default',
             'em' => 'default',
         ]);
@@ -100,10 +99,10 @@ class DocumentTypeTest extends TypeTestCase
 
         $this->dm->flush();
 
-        $form = $this->factory->create($this->typeFQCN ? FormType::CLASS : 'form', $document)
+        $form = $this->factory->create($this->typeFQCN ? FormType::class : 'form', $document)
             ->add(
                 'categories',
-                $this->typeFQCN ? DocumentType::CLASS : 'document',
+                $this->typeFQCN ? DocumentType::class : 'document',
                 [
                     'class' => Category::class,
                     'multiple' => true,
@@ -124,10 +123,10 @@ class DocumentTypeTest extends TypeTestCase
     protected function createRegistryMock($name, $dm)
     {
         $registry = $this->createMock(ManagerRegistry::class);
-        $registry->expects($this->any())
+        $registry
                  ->method('getManager')
                  ->with($this->equalTo($name))
-                 ->will($this->returnValue($dm));
+                 ->willReturn($dm);
 
         return $registry;
     }

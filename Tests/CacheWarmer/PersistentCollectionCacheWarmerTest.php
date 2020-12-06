@@ -23,7 +23,7 @@ class PersistentCollectionCacheWarmerTest extends TestCase
     /** @var PersistentCollectionCacheWarmer */
     private $warmer;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->container = new Container();
         $this->container->setParameter('doctrine_mongodb.odm.persistent_collection_dir', sys_get_temp_dir());
@@ -35,7 +35,7 @@ class PersistentCollectionCacheWarmerTest extends TestCase
         $dm->getConfiguration()->setPersistentCollectionGenerator($this->generatorMock);
 
         $registryStub = $this->getMockBuilder(ManagerRegistry::class)->getMock();
-        $registryStub->expects($this->any())->method('getManagers')->willReturn([ $dm ]);
+        $registryStub->method('getManagers')->willReturn([ $dm ]);
         $this->container->set('doctrine_mongodb', $registryStub);
 
         $this->warmer = new PersistentCollectionCacheWarmer($this->container);

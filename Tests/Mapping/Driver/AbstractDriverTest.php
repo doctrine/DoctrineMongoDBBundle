@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Mapping\Driver;
 
 use Doctrine\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\Persistence\Mapping\MappingException;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
@@ -37,25 +38,25 @@ abstract class AbstractDriverTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException Doctrine\Persistence\Mapping\MappingException
-     */
     public function testFindMappingFileNamespacedFoundFileNotFound()
     {
         $driver = $this->getDriver([$this->getFixtureDir() => 'MyNamespace\MyBundle\Document']);
 
         $locator = $this->getDriverLocator($driver);
+
+        $this->expectException(MappingException::class);
+
         $locator->findMappingFile('MyNamespace\MyBundle\Document\Missing');
     }
 
-    /**
-     * @expectedException Doctrine\Persistence\Mapping\MappingException
-     */
     public function testFindMappingNamespaceNotFound()
     {
         $driver = $this->getDriver([$this->getFixtureDir() => 'MyNamespace\MyBundle\Document']);
 
         $locator = $this->getDriverLocator($driver);
+
+        $this->expectException(MappingException::class);
+
         $locator->findMappingFile('MyOtherNamespace\MyBundle\Document\Foo');
     }
 

@@ -68,13 +68,13 @@ doctrine_mongodb:
                 pretty:  false
             filters:
                 disabled_filter:
-                    class:   Vendor\Filter\DisabledFilter
+                    class:   Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\DisabledFilter
                     enabled: false
                 basic_filter:
-                    class:   Vendor\Filter\BasicFilter
+                    class:   Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\BasicFilter
                     enabled: true
                 complex_filter:
-                    class:   Vendor\Filter\ComplexFilter
+                    class:   Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\ComplexFilter
                     enabled: true
                     parameters:
                         integer: 1
@@ -84,8 +84,8 @@ doctrine_mongodb:
         dm2:
             connection:       dm2_connection
             database:         db1
-            default_document_repository_class: Foo\Bar\CustomRepository
-            default_gridfs_repository_class:   Foo\Bar\CustomGridFSRepository
+            default_document_repository_class: Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Repository\CustomRepository
+            default_gridfs_repository_class:   Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Repository\CustomGridFSRepository
             repository_factory: doctrine_mongodb.odm.container_repository_factory
             persistent_collection_factory: ~
             mappings:

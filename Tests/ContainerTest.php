@@ -20,7 +20,7 @@ class ContainerTest extends TestCase
     /** @var DoctrineMongoDBExtension */
     private $extension;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->container = new ContainerBuilder(new ParameterBag([
             'kernel.bundles'         => [],

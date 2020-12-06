@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 class LoadDataFixturesDoctrineODMCommandTest extends TestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         $registry = $this->createMock(ManagerRegistry::class);
         $kernel   = $this->createMock(KernelInterface::class);

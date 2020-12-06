@@ -70,7 +70,7 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           tools: "pecl"
           extensions: "mongodb-${{ matrix.driver-version }}"
-          coverage: "xdebug"
+          coverage: "pcov"
           ini-values: "zend.assertions=1"
 
       - name: "Cache dependencies installed with composer"

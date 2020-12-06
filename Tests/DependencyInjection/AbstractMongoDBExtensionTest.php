@@ -6,6 +6,9 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\BasicFilter;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\ComplexFilter;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\DisabledFilter;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\ArrayCache;
@@ -18,8 +21,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use MongoDB\Client;
-use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit_Framework_AssertionFailedError;
+use PHPUnit\Framework\AssertionFailedError;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -27,9 +29,6 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Vendor\Filter\BasicFilter;
-use Vendor\Filter\ComplexFilter;
-use Vendor\Filter\DisabledFilter;
 use function array_map;
 use function array_search;
 use function class_implements;
@@ -163,7 +162,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $methodNames = array_map(static function ($call) {
             return $call[0];
         }, $methodCalls);
-        $this->assertInternalType('integer', $pos = array_search('setDefaultDB', $methodNames));
+        $this->assertIsInt($pos = array_search('setDefaultDB', $methodNames));
         $this->assertEquals('mydb', $methodCalls[$pos][1][0]);
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_document_manager');
@@ -478,9 +477,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
                 $this->assertSame($params, $call[1], "Expected parameters to method '" . $methodName . "' did not match the actual parameters.");
 
                 return;
-            } catch (PHPUnit_Framework_AssertionFailedError $e) {
-                $lastError = $e;
-            } catch (ExpectationFailedException $e) {
+            } catch (AssertionFailedError $e) {
                 $lastError = $e;
             }
         }

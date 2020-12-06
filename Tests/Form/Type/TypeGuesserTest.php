@@ -11,7 +11,7 @@ use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Guesser;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ManagerRegistry;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Test\TypeTestCase;
 use function array_merge;
@@ -22,12 +22,12 @@ class TypeGuesserTest extends TypeTestCase
     /** @var DocumentManager */
     private $dm;
 
-    /** @var PHPUnit_Framework_MockObject_MockObject */
+    /** @var MockObject */
     private $dmRegistry;
 
     private $typeFQCN;
 
-    public function setUp() : void
+    protected function setUp() : void
     {
         $this->typeFQCN = method_exists(AbstractType::class, 'getBlockPrefix');
 
@@ -78,13 +78,13 @@ class TypeGuesserTest extends TypeTestCase
     protected function createRegistryMock($name, $dm)
     {
         $registry = $this->createMock(ManagerRegistry::class);
-        $registry->expects($this->any())
+        $registry
             ->method('getManager')
             ->with($this->equalTo($name))
-            ->will($this->returnValue($dm));
-        $registry->expects($this->any())
+            ->willReturn($dm);
+        $registry
             ->method('getManagers')
-            ->will($this->returnValue(['default' => $dm]));
+            ->willReturn(['default' => $dm]);
 
         return $registry;
     }
