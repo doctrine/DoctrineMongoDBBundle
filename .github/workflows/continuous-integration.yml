@@ -23,9 +23,11 @@ jobs:
           - "7.2"
           - "7.3"
           - "7.4"
+          - "8.0"
         symfony-version:
           - "4.4.x"
           - "5.1.x"
+          - "5.2.x"
         driver-version:
           - "stable"
         deps:
