@@ -19,10 +19,8 @@ class GuesserTestType extends AbstractType
             ->add('ts')
             ->add('categories', null, ['document_manager' => $options['dm']])
             ->add('boolField')
-            ->add('booleanField')
             ->add('floatField')
             ->add('intField')
-            ->add('integerField')
             ->add('collectionField')
             ->add('nonMappedField');
     }
