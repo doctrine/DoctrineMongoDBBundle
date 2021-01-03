@@ -64,7 +64,7 @@ class HydratorCacheWarmerTest extends TestCase
 
         try {
             $this->warmer->warmUp('meh');
-            $this->assertFileNotExists($hydratorFilename);
+            $this->assertFileDoesNotExist($hydratorFilename);
         } finally {
             @unlink($hydratorFilename);
         }
