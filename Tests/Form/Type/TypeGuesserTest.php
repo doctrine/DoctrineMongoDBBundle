@@ -13,7 +13,10 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormExtensionInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\Test\TypeTestCase;
+
 use function array_merge;
 use function method_exists;
 
@@ -27,7 +30,7 @@ class TypeGuesserTest extends TypeTestCase
 
     private $typeFQCN;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->typeFQCN = method_exists(AbstractType::class, 'getBlockPrefix');
 
@@ -39,7 +42,7 @@ class TypeGuesserTest extends TypeTestCase
         parent::setUp();
     }
 
-    protected function tearDown() : void
+    protected function tearDown(): void
     {
         $documentClasses = [
             Document::class,
@@ -54,7 +57,7 @@ class TypeGuesserTest extends TypeTestCase
         parent::tearDown();
     }
 
-    public function testTypesShouldBeGuessedCorrectly()
+    public function testTypesShouldBeGuessedCorrectly(): void
     {
         $form = $this->factory->create($this->typeFQCN ? GuesserTestType::class : new GuesserTestType(), null, ['dm' => $this->dm]);
         $this->assertType('text', $form->get('name'));
@@ -70,12 +73,15 @@ class TypeGuesserTest extends TypeTestCase
         $this->assertType('text', $form->get('nonMappedField'));
     }
 
-    protected function assertType($type, $form)
+    protected function assertType(string $type, FormInterface $form): void
     {
         $this->assertEquals($type, $this->typeFQCN ? $form->getConfig()->getType()->getBlockPrefix() : $form->getConfig()->getType()->getName());
     }
 
-    protected function createRegistryMock($name, $dm)
+    /**
+     * @return MockObject&ManagerRegistry
+     */
+    protected function createRegistryMock(string $name, DocumentManager $dm): MockObject
     {
         $registry = $this->createMock(ManagerRegistry::class);
         $registry
@@ -90,7 +96,7 @@ class TypeGuesserTest extends TypeTestCase
     }
 
     /**
-     * @see Symfony\Component\Form\Tests\FormIntegrationTestCase::getExtensions()
+     * @return FormExtensionInterface[]
      */
     protected function getExtensions()
     {

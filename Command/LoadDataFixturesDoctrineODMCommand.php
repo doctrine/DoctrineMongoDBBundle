@@ -16,11 +16,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpKernel\KernelInterface;
-use const E_USER_DEPRECATED;
+
 use function class_exists;
 use function implode;
 use function sprintf;
 use function trigger_error;
+
+use const E_USER_DEPRECATED;
 
 /**
  * Load data fixtures from bundles.
@@ -53,7 +55,7 @@ class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
         $this
             ->setDescription('Load data fixtures to your database.')
             ->addOption('services', null, InputOption::VALUE_NONE, 'Use services as fixtures')
-            ->addOption('group', null, InputOption::VALUE_IS_ARRAY|InputOption::VALUE_REQUIRED, 'Only load fixtures that belong to this group (use with --services)')
+            ->addOption('group', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Only load fixtures that belong to this group (use with --services)')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of flushing the database first.')
             ->addOption('dm', null, InputOption::VALUE_REQUIRED, 'The document manager to use for this command.')
             ->setHelp(<<<EOT
@@ -77,6 +79,9 @@ EOT
         );
     }
 
+    /**
+     * @return int
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dm = $this->getManagerRegistry()->getManager($input->getOption('dm'));

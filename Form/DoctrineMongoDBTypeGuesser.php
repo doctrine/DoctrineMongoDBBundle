@@ -18,6 +18,7 @@ use Symfony\Component\Form\FormTypeGuesserInterface;
 use Symfony\Component\Form\Guess\Guess;
 use Symfony\Component\Form\Guess\TypeGuess;
 use Symfony\Component\Form\Guess\ValueGuess;
+
 use function array_key_exists;
 use function method_exists;
 
@@ -80,6 +81,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
                     [],
                     Guess::MEDIUM_CONFIDENCE
                 );
+
             case 'bool':
             case 'boolean':
                 return new TypeGuess(
@@ -87,6 +89,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
                     [],
                     Guess::HIGH_CONFIDENCE
                 );
+
             case 'date':
             case 'timestamp':
                 return new TypeGuess(
@@ -94,12 +97,14 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
                     [],
                     Guess::HIGH_CONFIDENCE
                 );
+
             case 'float':
                 return new TypeGuess(
                     $this->typeFQCN ? NumberType::class : 'number',
                     [],
                     Guess::MEDIUM_CONFIDENCE
                 );
+
             case 'int':
             case 'integer':
                 return new TypeGuess(
@@ -107,6 +112,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
                     [],
                     Guess::MEDIUM_CONFIDENCE
                 );
+
             case 'string':
                 return new TypeGuess(
                     $this->typeFQCN ? TextType::class : 'text',
@@ -182,6 +188,11 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
         }
     }
 
+    /**
+     * @param string $class
+     *
+     * @return array{ClassMetadata, string}|null
+     */
     protected function getMetadata($class)
     {
         if (array_key_exists($class, $this->cache)) {

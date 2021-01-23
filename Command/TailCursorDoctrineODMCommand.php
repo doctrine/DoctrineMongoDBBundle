@@ -16,6 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Throwable;
+
 use function sleep;
 use function sprintf;
 
@@ -40,6 +41,9 @@ class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInte
             ->addOption('sleep-time', null, InputOption::VALUE_REQUIRED, 'The number of seconds to wait between two checks.', 10);
     }
 
+    /**
+     * @return int
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dm                   = $this->getContainer()->get('doctrine_mongodb.odm.document_manager');
@@ -66,6 +70,7 @@ class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInte
                     $output->writeln('<error>Invalid cursor, requerying</error>');
                     $cursor = $repository->$method();
                 }
+
                 $output->writeln('<comment>Nothing found, waiting to try again</comment>');
                 // read all results so far, wait for more
                 sleep($sleepTime);

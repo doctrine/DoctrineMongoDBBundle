@@ -18,12 +18,13 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
 use stdClass;
+
 use function sprintf;
 use function sys_get_temp_dir;
 
 class ContainerRepositoryFactoryTest extends TestCase
 {
-    public function testGetRepositoryReturnsService()
+    public function testGetRepositoryReturnsService(): void
     {
         $dm        = $this->createDocumentManager([CoolDocument::class => 'my_repo']);
         $repo      = new StubRepository($dm, $dm->getUnitOfWork(), new ClassMetadata(CoolDocument::class));
@@ -33,7 +34,7 @@ class ContainerRepositoryFactoryTest extends TestCase
         $this->assertSame($repo, $factory->getRepository($dm, CoolDocument::class));
     }
 
-    public function testGetRepositoryReturnsDocumentRepository()
+    public function testGetRepositoryReturnsDocumentRepository(): void
     {
         $container = $this->createContainer([]);
         $dm        = $this->createDocumentManager([BoringDocument::class => null]);
@@ -45,7 +46,7 @@ class ContainerRepositoryFactoryTest extends TestCase
         $this->assertSame($actualRepo, $factory->getRepository($dm, BoringDocument::class));
     }
 
-    public function testCustomRepositoryIsReturned()
+    public function testCustomRepositoryIsReturned(): void
     {
         $container = $this->createContainer([]);
         $dm        = $this->createDocumentManager([
@@ -59,7 +60,7 @@ class ContainerRepositoryFactoryTest extends TestCase
         $this->assertSame($actualRepo, $factory->getRepository($dm, CustomNormalRepoDocument::class));
     }
 
-    public function testServiceRepositoriesMustExtendDocumentRepository()
+    public function testServiceRepositoriesMustExtendDocumentRepository(): void
     {
         $repo = new stdClass();
 
@@ -76,7 +77,7 @@ class ContainerRepositoryFactoryTest extends TestCase
         $factory->getRepository($dm, CoolDocument::class);
     }
 
-    public function testRepositoryMatchesServiceInterfaceButServiceNotFound()
+    public function testRepositoryMatchesServiceInterfaceButServiceNotFound(): void
     {
         $container = $this->createContainer([]);
 
@@ -97,7 +98,7 @@ class ContainerRepositoryFactoryTest extends TestCase
         $factory->getRepository($dm, CoolDocument::class);
     }
 
-    public function testCustomRepositoryIsNotAValidClass()
+    public function testCustomRepositoryIsNotAValidClass(): void
     {
         $container = $this->createContainer([]);
 

@@ -10,6 +10,8 @@ use Doctrine\Persistence\ManagerRegistry;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
+
+use function assert;
 use function dirname;
 use function file_exists;
 use function in_array;
@@ -43,6 +45,9 @@ class PersistentCollectionCacheWarmer implements CacheWarmerInterface
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function warmUp($cacheDir)
     {
         // we need the directory no matter the hydrator cache generation strategy.
@@ -61,8 +66,8 @@ class PersistentCollectionCacheWarmer implements CacheWarmerInterface
         }
 
         $generated = [];
-        /** @var ManagerRegistry $registry */
-        $registry = $this->container->get('doctrine_mongodb');
+        $registry  = $this->container->get('doctrine_mongodb');
+        assert($registry instanceof ManagerRegistry);
         foreach ($registry->getManagers() as $dm) {
             /** @var DocumentManager $dm */
             $collectionGenerator = $dm->getConfiguration()->getPersistentCollectionGenerator();
@@ -73,6 +78,7 @@ class PersistentCollectionCacheWarmer implements CacheWarmerInterface
                     if (empty($mapping['collectionClass']) || in_array($mapping['collectionClass'], $generated)) {
                         continue;
                     }
+
                     $generated[] = $mapping['collectionClass'];
                     $collectionGenerator->generateClass($mapping['collectionClass'], $collCacheDir);
                 }

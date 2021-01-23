@@ -20,6 +20,9 @@ class DoctrineMongoDBExtension extends AbstractExtension
         $this->registry = $registry;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function loadTypes()
     {
         return [
@@ -27,6 +30,9 @@ class DoctrineMongoDBExtension extends AbstractExtension
         ];
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function loadTypeGuesser()
     {
         return new DoctrineMongoDBTypeGuesser($this->registry);

@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Query\Filter\BsonFilter;
 
 final class DisabledFilter extends BsonFilter
 {
-    public function addFilterCriteria(ClassMetadata $class) : array
+    public function addFilterCriteria(ClassMetadata $class): array
     {
         return [];
     }

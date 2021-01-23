@@ -27,6 +27,7 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+
 use function sprintf;
 use function sys_get_temp_dir;
 
@@ -35,7 +36,7 @@ class ServiceRepositoryTest extends TestCase
     /** @var ContainerBuilder */
     private $container;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -91,7 +92,7 @@ class ServiceRepositoryTest extends TestCase
         $this->container->compile();
     }
 
-    public function testRepositoryServiceWiring()
+    public function testRepositoryServiceWiring(): void
     {
         $dm = $this->container->get('doctrine_mongodb.odm.document_manager');
 
@@ -135,7 +136,7 @@ class ServiceRepositoryTest extends TestCase
         $this->assertInstanceOf(Builder::class, $customServiceGridFSRepo->createQueryBuilder());
     }
 
-    public function testInstantiatingServiceRepositoryForUnmappedClass()
+    public function testInstantiatingServiceRepositoryForUnmappedClass(): void
     {
         $this->expectExceptionMessage(sprintf(
             'Could not find the document manager for class "%s".'
