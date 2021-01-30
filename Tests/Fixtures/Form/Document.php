@@ -6,6 +6,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MongoDB\BSON\ObjectId;
 
 /** @ODM\Document */
 class Document
@@ -25,6 +26,10 @@ class Document
      */
     public $categories;
 
+    /**
+     * @param ObjectId $id
+     * @param string   $name
+     */
     public function __construct($id, $name)
     {
         $this->id         = $id;

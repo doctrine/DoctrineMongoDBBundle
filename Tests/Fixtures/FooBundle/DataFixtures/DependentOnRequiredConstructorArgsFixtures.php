@@ -10,12 +10,12 @@ use Doctrine\Persistence\ObjectManager;
 
 class DependentOnRequiredConstructorArgsFixtures implements ODMFixtureInterface, DependentFixtureInterface
 {
-    public function load(ObjectManager $manager) : void
+    public function load(ObjectManager $manager): void
     {
         // ...
     }
 
-    public function getDependencies() : array
+    public function getDependencies(): array
     {
         return [RequiredConstructorArgsFixtures::class];
     }

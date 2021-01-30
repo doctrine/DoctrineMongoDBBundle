@@ -13,6 +13,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionObject;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+
 use function sys_get_temp_dir;
 
 class ProxyCacheWarmerTest extends TestCase
@@ -26,7 +27,7 @@ class ProxyCacheWarmerTest extends TestCase
     /** @var ProxyCacheWarmer */
     private $warmer;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->container = new Container();
         $this->container->setParameter('doctrine_mongodb.odm.proxy_dir', sys_get_temp_dir());
@@ -41,18 +42,18 @@ class ProxyCacheWarmerTest extends TestCase
         $p->setValue($dm, $this->proxyMock);
 
         $registryStub = $this->getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->getMock();
-        $registryStub->method('getManagers')->willReturn([ $dm ]);
+        $registryStub->method('getManagers')->willReturn([$dm]);
         $this->container->set('doctrine_mongodb', $registryStub);
 
         $this->warmer = new ProxyCacheWarmer($this->container);
     }
 
-    public function testWarmerNotOptional()
+    public function testWarmerNotOptional(): void
     {
         $this->assertFalse($this->warmer->isOptional());
     }
 
-    public function testWarmerExecuted()
+    public function testWarmerExecuted(): void
     {
         $this->container->setParameter('doctrine_mongodb.odm.auto_generate_proxy_classes', Configuration::AUTOGENERATE_FILE_NOT_EXISTS);
 
@@ -63,7 +64,7 @@ class ProxyCacheWarmerTest extends TestCase
         $this->warmer->warmUp('meh');
     }
 
-    public function testWarmerNotExecuted()
+    public function testWarmerNotExecuted(): void
     {
         $this->container->setParameter('doctrine_mongodb.odm.auto_generate_proxy_classes', Configuration::AUTOGENERATE_EVAL);
         $this->proxyMock->expects($this->exactly(0))->method('generateProxyClasses');

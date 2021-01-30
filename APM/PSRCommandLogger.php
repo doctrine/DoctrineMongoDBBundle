@@ -9,6 +9,7 @@ use MongoDB\Driver\Monitoring\CommandFailedEvent;
 use MongoDB\Driver\Monitoring\CommandStartedEvent;
 use MongoDB\Driver\Monitoring\CommandSucceededEvent;
 use Psr\Log\LoggerInterface;
+
 use function json_encode;
 use function MongoDB\Driver\Monitoring\addSubscriber;
 use function MongoDB\Driver\Monitoring\removeSubscriber;
@@ -30,7 +31,7 @@ final class PSRCommandLogger implements CommandLoggerInterface
         $this->prefix = $prefix;
     }
 
-    public function register() : void
+    public function register(): void
     {
         if ($this->logger === null || $this->registered) {
             return;
@@ -40,7 +41,7 @@ final class PSRCommandLogger implements CommandLoggerInterface
         addSubscriber($this);
     }
 
-    public function unregister() : void
+    public function unregister(): void
     {
         if (! $this->registered) {
             return;
