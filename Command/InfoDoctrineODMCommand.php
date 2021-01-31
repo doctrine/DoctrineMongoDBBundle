@@ -10,6 +10,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
+
+use function assert;
 use function count;
 use function sprintf;
 
@@ -39,14 +41,17 @@ EOT
         );
     }
 
+    /**
+     * @return int
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $documentManagerName = $input->getOption('dm') ?
             $input->getOption('dm') :
             $this->getManagerRegistry()->getDefaultManagerName();
 
-        /** @var DocumentManager $documentManager */
         $documentManager = $this->getManagerRegistry()->getManager($documentManagerName);
+        assert($documentManager instanceof DocumentManager);
 
         $documentClassNames = $documentManager->getConfiguration()
                                           ->getMetadataDriverImpl()

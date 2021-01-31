@@ -23,6 +23,7 @@ use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Messenger\MessageBusInterface;
+
 use function array_keys;
 use function array_merge;
 use function class_exists;
@@ -54,12 +55,14 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $keys                         = array_keys($config['connections']);
             $config['default_connection'] = reset($keys);
         }
+
         $container->setParameter('doctrine_mongodb.odm.default_connection', $config['default_connection']);
 
         if (empty($config['default_document_manager'])) {
             $keys                               = array_keys($config['document_managers']);
             $config['default_document_manager'] = reset($keys);
         }
+
         $container->setParameter('doctrine_mongodb.odm.default_document_manager', $config['default_document_manager']);
 
         if (! empty($config['types'])) {
@@ -122,6 +125,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      *
      * @param array            $options   The available configuration options
      * @param ContainerBuilder $container A ContainerBuilder instance
+     *
+     * @return array<string, mixed>
      */
     protected function overrideParameters($options, ContainerBuilder $container)
     {
@@ -173,6 +178,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             );
             $dms[$name] = sprintf('doctrine_mongodb.odm.%s_document_manager', $name);
         }
+
         $container->setParameter('doctrine_mongodb.odm.document_managers', $dms);
     }
 
@@ -265,6 +271,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             if ($odmConfigDef->hasMethodCall($method)) {
                 $odmConfigDef->removeMethodCall($method);
             }
+
             $odmConfigDef->addMethodCall($method, [$arg]);
         }
 
@@ -420,36 +427,53 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
                 $this->aliasMap = array_merge($call[1][0], $this->aliasMap);
             }
+
             $method = $odmConfigDef->removeMethodCall('setDocumentNamespaces');
         }
+
         $odmConfigDef->addMethodCall('setDocumentNamespaces', [$this->aliasMap]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getObjectManagerElementName($name)
     {
         return 'doctrine_mongodb.odm.' . $name;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getMappingObjectDefaultName()
     {
         return 'Document';
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getMappingResourceConfigDirectory()
     {
         return 'Resources/config/doctrine';
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getMappingResourceExtension()
     {
         return 'mongodb';
     }
 
-    protected function getMetadataDriverClass(string $driverType) : string
+    protected function getMetadataDriverClass(string $driverType): string
     {
         return '%' . $this->getObjectManagerElementName('metadata.' . $driverType . '.class') . '%';
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getAlias()
     {
         return 'doctrine_mongodb';

@@ -10,9 +10,11 @@ use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\ODM\MongoDB\Configuration;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use const DIRECTORY_SEPARATOR;
+
 use function sys_get_temp_dir;
 use function unlink;
+
+use const DIRECTORY_SEPARATOR;
 
 class HydratorCacheWarmerTest extends TestCase
 {
@@ -22,7 +24,7 @@ class HydratorCacheWarmerTest extends TestCase
     /** @var HydratorCacheWarmer */
     private $warmer;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->container = new Container();
         $this->container->setParameter('doctrine_mongodb.odm.hydrator_dir', sys_get_temp_dir());
@@ -31,18 +33,18 @@ class HydratorCacheWarmerTest extends TestCase
         $dm = $this->createTestDocumentManager([__DIR__ . '/../Fixtures/Validator']);
 
         $registryStub = $this->getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->getMock();
-        $registryStub->method('getManagers')->willReturn([ $dm ]);
+        $registryStub->method('getManagers')->willReturn([$dm]);
         $this->container->set('doctrine_mongodb', $registryStub);
 
         $this->warmer = new HydratorCacheWarmer($this->container);
     }
 
-    public function testWarmerNotOptional()
+    public function testWarmerNotOptional(): void
     {
         $this->assertFalse($this->warmer->isOptional());
     }
 
-    public function testWarmerExecuted()
+    public function testWarmerExecuted(): void
     {
         $hydratorFilename = $this->getHydratorFilename();
 
@@ -57,7 +59,7 @@ class HydratorCacheWarmerTest extends TestCase
     /**
      * @dataProvider provideWarmerNotExecuted
      */
-    public function testWarmerNotExecuted($autoGenerate)
+    public function testWarmerNotExecuted(int $autoGenerate): void
     {
         $this->container->setParameter('doctrine_mongodb.odm.auto_generate_hydrator_classes', $autoGenerate);
         $hydratorFilename = $this->getHydratorFilename();
@@ -70,7 +72,10 @@ class HydratorCacheWarmerTest extends TestCase
         }
     }
 
-    public function provideWarmerNotExecuted()
+    /**
+     * @return array<array{int}>
+     */
+    public function provideWarmerNotExecuted(): array
     {
         return [
             [ Configuration::AUTOGENERATE_ALWAYS ],
@@ -79,7 +84,7 @@ class HydratorCacheWarmerTest extends TestCase
         ];
     }
 
-    private function getHydratorFilename() : string
+    private function getHydratorFilename(): string
     {
         return sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'DoctrineBundleMongoDBBundleTestsFixturesValidatorDocumentHydrator.php';
     }

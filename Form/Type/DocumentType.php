@@ -11,6 +11,7 @@ use InvalidArgumentException;
 use Symfony\Bridge\Doctrine\Form\Type\DoctrineType;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+
 use function interface_exists;
 
 /**
@@ -19,7 +20,7 @@ use function interface_exists;
 class DocumentType extends DoctrineType
 {
     /**
-     * @see Symfony\Bridge\Doctrine\Form\Type\DoctrineType::getLoader()
+     * {@inheritDoc}
      */
     public function getLoader(ObjectManager $manager, $queryBuilder, $class)
     {

@@ -15,13 +15,15 @@
 
     <rule ref="Doctrine">
         <!-- Traversable type hints often end up as mixed[], so we skip them for now -->
-        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversablePropertyTypeHintSpecification" />
-        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableParameterTypeHintSpecification" />
-        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableReturnTypeHintSpecification" />
+        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingTraversableTypeHintSpecification" />
+        <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingTraversableTypeHintSpecification" />
+        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification" />
 
         <!-- Will cause BC breaks to method signatures - disabled for now -->
-        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint" />
-        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint" />
+        <exclude name="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceEqualOperator.RequiredNullCoalesceEqualOperator"/> <!-- PHP 7.4 required-->
+        <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint"/> <!-- PHP 7.4 required-->
+        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint"/> <!-- we can do it in doctrine-bundle 3.0-->
+        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint"/> <!-- we can do it in doctrine-bundle 3.0 -->
 
         <!-- Disabled to avoid class renaming - to be handled in a separate PR -->
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming" />
@@ -30,17 +32,8 @@
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousTraitNaming" />
     </rule>
 
-    <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements">
-        <properties>
-            <property name="alwaysUsedPropertiesAnnotations" type="array" value="
-                @ODM\Id,
-                @ODM\Field,
-                @ODM\EmbedOne,
-                @ODM\EmbedMany,
-                @ODM\ReferenceOne,
-                @ODM\ReferenceMany
-            "/>
-        </properties>
+    <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedProperty">
+        <exclude-pattern>Tests/DependencyInjection/Fixtures/*</exclude-pattern>
     </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
@@ -51,7 +44,7 @@
         <exclude-pattern>Tests/*</exclude-pattern>
     </rule>
 
-    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingPropertyTypeHint">
+    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint">
         <exclude-pattern>Tests/*</exclude-pattern>
     </rule>
 </ruleset>

@@ -12,7 +12,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CommandDataCollectorTest extends TestCase
 {
-    public function testCollector()
+    /**
+     * @doesNotPerformAssertions
+     */
+    public function testCollector(): void
     {
         $collector = new CommandDataCollector(new CommandLogger());
 

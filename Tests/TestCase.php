@@ -10,14 +10,15 @@ use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use PHPUnit\Framework\TestCase as BaseTestCase;
+
 use function sys_get_temp_dir;
 
 class TestCase extends BaseTestCase
 {
     /**
-     * @return DocumentManager
+     * @param string[] $paths
      */
-    public static function createTestDocumentManager($paths = [])
+    public static function createTestDocumentManager(array $paths = []): DocumentManager
     {
         $config = new Configuration();
         $config->setAutoGenerateProxyClasses(Configuration::AUTOGENERATE_FILE_NOT_EXISTS);

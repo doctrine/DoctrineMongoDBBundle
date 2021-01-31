@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MongoDB\BSON\ObjectId;
 
 /** @ODM\Document(collection="DoctrineMongoDBBundle_Tests_Validator_Document") */
 class Document
@@ -30,6 +31,9 @@ class Document
     /** @ODM\EmbedMany(targetDocument="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument") */
     public $embedMany = [];
 
+    /**
+     * @param ObjectId $id
+     */
     public function __construct($id)
     {
         $this->id = $id;
