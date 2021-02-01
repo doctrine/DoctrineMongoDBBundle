@@ -28,10 +28,10 @@ jobs:
           - "5.1.x"
         driver-version:
           - "stable"
-        deps:
-          - "normal"
+        dependencies:
+          - "highest"
         include:
-          - deps: "low"
+          - dependencies: "lowest"
             os: "ubuntu-20.04"
             php-version: "7.2"
             driver-version: "1.5.0"
@@ -73,23 +73,17 @@ jobs:
           coverage: "pcov"
           ini-values: "zend.assertions=1"
 
-      - name: "Cache dependencies installed with composer"
-        uses: "actions/cache@v2"
-        with:
-          path: "~/.composer/cache"
-          key: "php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}"
-          restore-keys: "php-${{ matrix.php-version }}-composer-locked-"
-
       - name: "Install Symfony"
         run: "composer require symfony/symfony:${{ matrix.symfony-version }} --no-update"
 
-      - name: "Install dependencies with composer"
-        run: "composer update --no-interaction --no-progress --prefer-stable"
-        if: "${{ matrix.deps == 'normal' }}"
+      - name: "Set minimum-stability to stable in Composer"
+        run: "composer config minimum-stability stable"
 
-      - name: "Install lowest possible dependencies with composer"
-        run: "composer update --no-interaction --no-progress --prefer-dist --prefer-stable --prefer-lowest"
-        if: "${{ matrix.deps == 'low' }}"
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v1"
+        with:
+          dependency-versions: "${{ matrix.dependencies }}"
+          composer-options: "--prefer-dist"
 
       - name: "Run PHPUnit"
         run: "vendor/bin/phpunit --coverage-clover=coverage.xml"
