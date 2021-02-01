@@ -14,15 +14,20 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class QueryDoctrineODMCommand extends QueryCommand
 {
+    /** @var string */
+    protected static $defaultName = 'doctrine:mongodb:query';
+
     protected function configure()
     {
         parent::configure();
 
         $this
-            ->setName('doctrine:mongodb:query')
             ->addOption('dm', null, InputOption::VALUE_OPTIONAL, 'The document manager to use for this command.');
     }
 
+    /**
+     * @return int
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         DoctrineODMCommand::setApplicationDocumentManager($this->getApplication(), $input->getOption('dm'));

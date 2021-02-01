@@ -17,6 +17,8 @@ use Symfony\Bridge\Doctrine\DependencyInjection\Security\UserProvider\EntityFact
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+
+use function assert;
 use function spl_autoload_register;
 use function spl_autoload_unregister;
 
@@ -44,6 +46,9 @@ class DoctrineMongoDBBundle extends Bundle
         $container->getExtension('security')->addUserProviderFactory(new EntityFactory('mongodb', 'doctrine_mongodb.odm.security.user.provider'));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getContainerExtension()
     {
         return new DoctrineMongoDBExtension();
@@ -51,14 +56,14 @@ class DoctrineMongoDBBundle extends Bundle
 
     public function boot()
     {
-        /** @var ManagerRegistry $registry */
         $registry = $this->container->get('doctrine_mongodb');
+        assert($registry instanceof ManagerRegistry);
 
         $this->registerAutoloader($registry->getManager());
         $this->registerCommandLoggers();
     }
 
-    private function registerAutoloader(DocumentManager $documentManager) : void
+    private function registerAutoloader(DocumentManager $documentManager): void
     {
         $configuration = $documentManager->getConfiguration();
         if ($configuration->getAutoGenerateProxyClasses() !== Configuration::AUTOGENERATE_FILE_NOT_EXISTS) {
@@ -70,7 +75,7 @@ class DoctrineMongoDBBundle extends Bundle
         spl_autoload_register($this->autoloader);
     }
 
-    private function unregisterAutoloader() : void
+    private function unregisterAutoloader(): void
     {
         if ($this->autoloader === null) {
             return;
@@ -80,13 +85,13 @@ class DoctrineMongoDBBundle extends Bundle
         $this->autoloader = null;
     }
 
-    private function registerCommandLoggers() : void
+    private function registerCommandLoggers(): void
     {
         $commandLoggerRegistry = $this->container->get('doctrine_mongodb.odm.command_logger_registry');
         $commandLoggerRegistry->register();
     }
 
-    private function unregisterCommandLoggers() : void
+    private function unregisterCommandLoggers(): void
     {
         $commandLoggerRegistry = $this->container->get('doctrine_mongodb.odm.command_logger_registry');
         $commandLoggerRegistry->unregister();

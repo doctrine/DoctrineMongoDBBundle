@@ -10,6 +10,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
+
+use function assert;
 use function count;
 use function sprintf;
 
@@ -18,10 +20,12 @@ use function sprintf;
  */
 class InfoDoctrineODMCommand extends DoctrineODMCommand
 {
+    /** @var string */
+    protected static $defaultName = 'doctrine:mongodb:mapping:info';
+
     protected function configure()
     {
         $this
-            ->setName('doctrine:mongodb:mapping:info')
             ->addOption('dm', null, InputOption::VALUE_OPTIONAL, 'The document manager to use for this command.')
             ->setDescription('Show basic information about all mapped documents.')
             ->setHelp(<<<EOT
@@ -37,14 +41,17 @@ EOT
         );
     }
 
+    /**
+     * @return int
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $documentManagerName = $input->getOption('dm') ?
             $input->getOption('dm') :
             $this->getManagerRegistry()->getDefaultManagerName();
 
-        /** @var DocumentManager $documentManager */
         $documentManager = $this->getManagerRegistry()->getManager($documentManagerName);
+        assert($documentManager instanceof DocumentManager);
 
         $documentClassNames = $documentManager->getConfiguration()
                                           ->getMetadataDriverImpl()

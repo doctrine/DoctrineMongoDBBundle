@@ -15,12 +15,14 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class UpdateSchemaDoctrineODMCommand extends UpdateCommand
 {
+    /** @var string */
+    protected static $defaultName = 'doctrine:mongodb:schema:update';
+
     protected function configure()
     {
         parent::configure();
 
         $this
-            ->setName('doctrine:mongodb:schema:update')
             ->addOption('dm', null, InputOption::VALUE_REQUIRED, 'The document manager to use for this command.')
             ->setHelp(<<<EOT
 The <info>doctrine:mongodb:schema:update</info> command updates the default document manager's schema:
@@ -34,6 +36,9 @@ EOT
         );
     }
 
+    /**
+     * @return int
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         DoctrineODMCommand::setApplicationDocumentManager($this->getApplication(), $input->getOption('dm'));

@@ -11,17 +11,17 @@ use Doctrine\Persistence\ObjectManager;
 
 class WithDependenciesFixtures implements ODMFixtureInterface, DependentFixtureInterface, FixtureGroupInterface
 {
-    public function load(ObjectManager $manager) : void
+    public function load(ObjectManager $manager): void
     {
         // ...
     }
 
-    public function getDependencies() : array
+    public function getDependencies(): array
     {
         return [OtherFixtures::class];
     }
 
-    public static function getGroups() : array
+    public static function getGroups(): array
     {
         return ['missingDependencyGroup', 'fulfilledDependencyGroup'];
     }

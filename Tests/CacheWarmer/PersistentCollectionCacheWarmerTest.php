@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionGenerator;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+
 use function sys_get_temp_dir;
 
 class PersistentCollectionCacheWarmerTest extends TestCase
@@ -23,7 +24,7 @@ class PersistentCollectionCacheWarmerTest extends TestCase
     /** @var PersistentCollectionCacheWarmer */
     private $warmer;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->container = new Container();
         $this->container->setParameter('doctrine_mongodb.odm.persistent_collection_dir', sys_get_temp_dir());
@@ -35,18 +36,18 @@ class PersistentCollectionCacheWarmerTest extends TestCase
         $dm->getConfiguration()->setPersistentCollectionGenerator($this->generatorMock);
 
         $registryStub = $this->getMockBuilder(ManagerRegistry::class)->getMock();
-        $registryStub->expects($this->any())->method('getManagers')->willReturn([ $dm ]);
+        $registryStub->method('getManagers')->willReturn([$dm]);
         $this->container->set('doctrine_mongodb', $registryStub);
 
         $this->warmer = new PersistentCollectionCacheWarmer($this->container);
     }
 
-    public function testWarmerNotOptional()
+    public function testWarmerNotOptional(): void
     {
         $this->assertFalse($this->warmer->isOptional());
     }
 
-    public function testWarmerExecuted()
+    public function testWarmerExecuted(): void
     {
         $this->generatorMock->expects($this->exactly(2))->method('generateClass');
         $this->warmer->warmUp('meh');
@@ -55,14 +56,14 @@ class PersistentCollectionCacheWarmerTest extends TestCase
     /**
      * @dataProvider provideWarmerNotExecuted
      */
-    public function testWarmerNotExecuted($autoGenerate)
+    public function testWarmerNotExecuted(int $autoGenerate): void
     {
         $this->container->setParameter('doctrine_mongodb.odm.auto_generate_persistent_collection_classes', $autoGenerate);
         $this->generatorMock->expects($this->exactly(0))->method('generateClass');
         $this->warmer->warmUp('meh');
     }
 
-    public function provideWarmerNotExecuted()
+    public function provideWarmerNotExecuted(): array
     {
         return [
             [ Configuration::AUTOGENERATE_ALWAYS ],

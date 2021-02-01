@@ -10,6 +10,7 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+
 use function sys_get_temp_dir;
 
 class ContainerTest extends TestCase
@@ -20,7 +21,7 @@ class ContainerTest extends TestCase
     /** @var DoctrineMongoDBExtension */
     private $extension;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->container = new ContainerBuilder(new ParameterBag([
             'kernel.bundles'         => [],
@@ -40,7 +41,7 @@ class ContainerTest extends TestCase
     /**
      * @dataProvider provideLoggerConfigs
      */
-    public function testLoggerConfig(bool $expected, array $config, bool $debug)
+    public function testLoggerConfig(bool $expected, array $config, bool $debug): void
     {
         $this->container->setParameter('kernel.debug', $debug);
         $this->extension->load([$config], $this->container);
@@ -54,7 +55,10 @@ class ContainerTest extends TestCase
         $this->container->get('doctrine_mongodb.odm.command_logger_registry');
     }
 
-    public function provideLoggerConfigs()
+    /**
+     * @return array<string, array{expected: bool, config: array, debug: bool}>
+     */
+    public function provideLoggerConfigs(): array
     {
         $config = ['connections' => ['default' => []]];
 
@@ -89,7 +93,7 @@ class ContainerTest extends TestCase
     /**
      * @dataProvider provideDataCollectorConfigs
      */
-    public function testDataCollectorConfig(bool $expected, array $config, bool $debug)
+    public function testDataCollectorConfig(bool $expected, array $config, bool $debug): void
     {
         $this->container->setParameter('kernel.debug', $debug);
         $this->extension->load([$config], $this->container);
@@ -106,7 +110,10 @@ class ContainerTest extends TestCase
         $this->container->get('doctrine_mongodb.odm.command_logger_registry');
     }
 
-    public function provideDataCollectorConfigs()
+    /**
+     * @return array<string, array{expected: bool, config: array, debug: bool}>
+     */
+    public function provideDataCollectorConfigs(): array
     {
         $config = ['connections' => ['default' => []]];
 

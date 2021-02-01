@@ -11,7 +11,7 @@ use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\OtherFix
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDependenciesFixtures;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\FooBundle;
-use Doctrine\Common\DataFixtures\Loader;
+use LogicException;
 use RuntimeException;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
@@ -21,28 +21,20 @@ use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\RouteCollectionBuilder;
+
 use function array_map;
-use function class_exists;
+use function assert;
 use function get_class;
-use function method_exists;
 use function rand;
+use function sprintf;
 use function sys_get_temp_dir;
 
 class FixtureIntegrationTest extends TestCase
 {
-    protected function setUp()
-    {
-        if (class_exists(Loader::class)) {
-            return;
-        }
-
-        $this->markTestSkipped();
-    }
-
-    public function testFixturesLoader() : void
+    public function testFixturesLoader(): void
     {
         $kernel = new IntegrationTestKernel('dev', false);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
 
@@ -54,8 +46,8 @@ class FixtureIntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        /** @var ContainerAwareLoader $loader */
         $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
+        assert($loader instanceof ContainerAwareLoader);
 
         $actualFixtures = $loader->getFixtures();
         $this->assertCount(2, $actualFixtures);
@@ -70,12 +62,12 @@ class FixtureIntegrationTest extends TestCase
         $this->assertInstanceOf(WithDependenciesFixtures::class, $actualFixtures[1]);
     }
 
-    public function testFixturesLoaderWhenFixtureHasDependencyThatIsNotYetLoaded() : void
+    public function testFixturesLoaderWhenFixtureHasDependencyThatIsNotYetLoaded(): void
     {
         // See https://github.com/doctrine/DoctrineFixturesBundle/issues/215
 
         $kernel = new IntegrationTestKernel('dev', false);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             $c->autowire(WithDependenciesFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
 
@@ -87,8 +79,8 @@ class FixtureIntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        /** @var ContainerAwareLoader $loader */
         $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
+        assert($loader instanceof ContainerAwareLoader);
 
         $actualFixtures = $loader->getFixtures();
         $this->assertCount(2, $actualFixtures);
@@ -103,52 +95,10 @@ class FixtureIntegrationTest extends TestCase
         $this->assertInstanceOf(WithDependenciesFixtures::class, $actualFixtures[1]);
     }
 
-    /**
-     * @expectedException \LogicException
-     * @expectedExceptionMessage The getDependencies() method returned a class (Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures) that has required constructor arguments. Upgrade to "doctrine/data-fixtures" version 1.3 or higher to support this.
-     */
-    public function testExceptionWithDependenciesWithRequiredArguments() : void
+    public function testExceptionIfDependentFixtureNotWired(): void
     {
-        // see https://github.com/doctrine/data-fixtures/pull/274
-        // When that is merged, this test will only run when using
-        // an older version of that library.
-        if (method_exists(Loader::class, 'createFixture')) {
-            $this->markTestSkipped();
-        }
-
         $kernel = new IntegrationTestKernel('dev', false);
-        $kernel->addServices(static function (ContainerBuilder $c) {
-            $c->autowire(DependentOnRequiredConstructorArgsFixtures::class)
-                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
-
-            $c->autowire(RequiredConstructorArgsFixtures::class)
-                ->setArgument(0, 'foo')
-                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
-
-            $c->setAlias('test.doctrine_mongodb.odm.symfony.fixtures.loader', new Alias('doctrine_mongodb.odm.symfony.fixtures.loader', true));
-        });
-        $kernel->boot();
-        $container = $kernel->getContainer();
-
-        /** @var ContainerAwareLoader $loader */
-        $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
-
-        $loader->getFixtures();
-    }
-
-    /**
-     * @expectedException \LogicException
-     * @expectedExceptionMessage The "Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures" fixture class is trying to be loaded, but is not available. Make sure this class is defined as a service and tagged with "doctrine.fixture.odm.mongodb".
-     */
-    public function testExceptionIfDependentFixtureNotWired() : void
-    {
-        // only runs on newer versions of doctrine/data-fixtures
-        if (! method_exists(Loader::class, 'createFixture')) {
-            $this->markTestSkipped();
-        }
-
-        $kernel = new IntegrationTestKernel('dev', false);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             $c->autowire(DependentOnRequiredConstructorArgsFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
 
@@ -157,16 +107,23 @@ class FixtureIntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        /** @var ContainerAwareLoader $loader */
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage(sprintf(
+            'The "%s" fixture class is trying to be loaded, but is not available.'
+            . ' Make sure this class is defined as a service and tagged with "doctrine.fixture.odm.mongodb".',
+            RequiredConstructorArgsFixtures::class
+        ));
+
         $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
+        assert($loader instanceof ContainerAwareLoader);
 
         $loader->getFixtures();
     }
 
-    public function testFixturesLoaderWithGroupsOptionViaInterface() : void
+    public function testFixturesLoaderWithGroupsOptionViaInterface(): void
     {
         $kernel = new IntegrationTestKernel('dev', false);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -180,8 +137,8 @@ class FixtureIntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        /** @var ContainerAwareLoader $loader */
         $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
+        assert($loader instanceof ContainerAwareLoader);
 
         $actualFixtures = $loader->getFixtures(['staging']);
         $this->assertCount(1, $actualFixtures);
@@ -195,10 +152,10 @@ class FixtureIntegrationTest extends TestCase
         $this->assertInstanceOf(OtherFixtures::class, $actualFixtures[0]);
     }
 
-    public function testFixturesLoaderWithGroupsOptionViaTag() : void
+    public function testFixturesLoaderWithGroupsOptionViaTag(): void
     {
         $kernel = new IntegrationTestKernel('dev', false);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG, ['group' => 'group1'])
@@ -213,8 +170,8 @@ class FixtureIntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        /** @var ContainerAwareLoader $loader */
         $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
+        assert($loader instanceof ContainerAwareLoader);
 
         $this->assertCount(1, $loader->getFixtures(['staging']));
         $this->assertCount(1, $loader->getFixtures(['group1']));
@@ -222,10 +179,10 @@ class FixtureIntegrationTest extends TestCase
         $this->assertCount(0, $loader->getFixtures(['group3']));
     }
 
-    public function testLoadFixturesViaGroupWithMissingDependency() : void
+    public function testLoadFixturesViaGroupWithMissingDependency(): void
     {
         $kernel = new IntegrationTestKernel('dev', false);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -239,19 +196,24 @@ class FixtureIntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        /** @var ContainerAwareLoader $loader */
         $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
+        assert($loader instanceof ContainerAwareLoader);
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Fixture "Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\OtherFixtures" was declared as a dependency for fixture "Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDependenciesFixtures", but it was not included in any of the loaded fixture groups.');
+        $this->expectExceptionMessage(sprintf(
+            'Fixture "%s" was declared as a dependency for fixture "%s",'
+            . ' but it was not included in any of the loaded fixture groups.',
+            OtherFixtures::class,
+            WithDependenciesFixtures::class
+        ));
 
         $loader->getFixtures(['missingDependencyGroup']);
     }
 
-    public function testLoadFixturesViaGroupWithFulfilledDependency() : void
+    public function testLoadFixturesViaGroupWithFulfilledDependency(): void
     {
         $kernel = new IntegrationTestKernel('dev', false);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -265,8 +227,8 @@ class FixtureIntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        /** @var ContainerAwareLoader $loader */
         $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
+        assert($loader instanceof ContainerAwareLoader);
 
         $actualFixtures = $loader->getFixtures(['fulfilledDependencyGroup']);
 
@@ -281,10 +243,10 @@ class FixtureIntegrationTest extends TestCase
         ], $actualFixtureClasses);
     }
 
-    public function testLoadFixturesByShortName() : void
+    public function testLoadFixturesByShortName(): void
     {
         $kernel = new IntegrationTestKernel('dev', false);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -298,8 +260,8 @@ class FixtureIntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        /** @var ContainerAwareLoader $loader */
         $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
+        assert($loader instanceof ContainerAwareLoader);
 
         $actualFixtures = $loader->getFixtures(['OtherFixtures']);
 
@@ -331,12 +293,12 @@ class IntegrationTestKernel extends Kernel
         parent::__construct($environment, $debug);
     }
 
-    protected function getContainerClass() : string
+    protected function getContainerClass(): string
     {
         return 'test' . $this->randomKey . parent::getContainerClass();
     }
 
-    public function registerBundles() : array
+    public function registerBundles(): array
     {
         return [
             new FrameworkBundle(),
@@ -345,6 +307,9 @@ class IntegrationTestKernel extends Kernel
         ];
     }
 
+    /**
+     * @return void
+     */
     protected function build(ContainerBuilder $container)
     {
         $container->prependExtensionConfig('doctrine_mongodb', [
@@ -353,16 +318,16 @@ class IntegrationTestKernel extends Kernel
         ]);
     }
 
-    public function addServices(callable $callback) : void
+    public function addServices(callable $callback): void
     {
         $this->servicesCallback = $callback;
     }
 
-    protected function configureRoutes(RouteCollectionBuilder $routes) : void
+    protected function configureRoutes(RouteCollectionBuilder $routes): void
     {
     }
 
-    protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader) : void
+    protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader): void
     {
         $c->loadFromExtension('framework', [
             'secret' => 'foo',
@@ -373,12 +338,12 @@ class IntegrationTestKernel extends Kernel
         $callback($c);
     }
 
-    public function getCacheDir() : string
+    public function getCacheDir(): string
     {
         return sys_get_temp_dir() . '/doctrine_mongodb_odm_bundle' . $this->randomKey;
     }
 
-    public function getLogDir() : string
+    public function getLogDir(): string
     {
         return sys_get_temp_dir();
     }

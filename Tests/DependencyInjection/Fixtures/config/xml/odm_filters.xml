@@ -10,9 +10,9 @@
         <doctrine:connection id="default" server="mongodb://localhost:27017" />
 
         <doctrine:document-manager id="default" connection="default">
-            <doctrine:filter name="disabled_filter" enabled="false" class="Vendor\Filter\DisabledFilter" />
-            <doctrine:filter name="basic_filter" enabled="true" class="Vendor\Filter\BasicFilter" />
-            <doctrine:filter name="complex_filter" enabled="true" class="Vendor\Filter\ComplexFilter">
+            <doctrine:filter name="disabled_filter" enabled="false" class="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\DisabledFilter" />
+            <doctrine:filter name="basic_filter" enabled="true" class="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\BasicFilter" />
+            <doctrine:filter name="complex_filter" enabled="true" class="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\ComplexFilter">
                 <doctrine:parameter name="integer">1</doctrine:parameter>
                 <doctrine:parameter name="string">foo</doctrine:parameter>
                 <doctrine:parameter name="object">{"key":"value"}</doctrine:parameter>

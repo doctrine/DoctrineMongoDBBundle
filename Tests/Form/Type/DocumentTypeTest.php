@@ -11,12 +11,15 @@ use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ManagerRegistry;
+use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\FormExtensionInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\Test\TypeTestCase;
+
 use function array_merge;
 use function method_exists;
 
@@ -25,12 +28,12 @@ class DocumentTypeTest extends TypeTestCase
     /** @var DocumentManager */
     private $dm;
 
-    /** @var PHPUnit_Framework_MockObject_MockObject */
+    /** @var MockObject */
     private $dmRegistry;
 
     private $typeFQCN;
 
-    public function setUp() : void
+    protected function setUp(): void
     {
         $this->typeFQCN = method_exists(AbstractType::class, 'getBlockPrefix');
 
@@ -42,7 +45,7 @@ class DocumentTypeTest extends TypeTestCase
         parent::setUp();
     }
 
-    protected function tearDown() : void
+    protected function tearDown(): void
     {
         $documentClasses = [
             Document::class,
@@ -56,9 +59,9 @@ class DocumentTypeTest extends TypeTestCase
         parent::tearDown();
     }
 
-    public function testDocumentManagerOptionSetsEmOption()
+    public function testDocumentManagerOptionSetsEmOption(): void
     {
-        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, [
+        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::class : 'document', null, [
             'class' => Document::class,
             'document_manager' => 'default',
         ]);
@@ -66,9 +69,9 @@ class DocumentTypeTest extends TypeTestCase
         $this->assertSame($this->dm, $field->getConfig()->getOption('em'));
     }
 
-    public function testDocumentManagerInstancePassedAsOption()
+    public function testDocumentManagerInstancePassedAsOption(): void
     {
-        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, [
+        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::class : 'document', null, [
             'class' => Document::class,
             'document_manager' => $this->dm,
         ]);
@@ -76,18 +79,16 @@ class DocumentTypeTest extends TypeTestCase
         $this->assertSame($this->dm, $field->getConfig()->getOption('em'));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testSettingDocumentManagerAndEmOptionShouldThrowException()
+    public function testSettingDocumentManagerAndEmOptionShouldThrowException(): void
     {
-        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::CLASS : 'document', null, [
+        $this->expectException(InvalidArgumentException::class);
+        $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::class : 'document', null, [
             'document_manager' => 'default',
             'em' => 'default',
         ]);
     }
 
-    public function testManyToManyReferences()
+    public function testManyToManyReferences(): void
     {
         $categoryOne = new Category('one');
         $this->dm->persist($categoryOne);
@@ -100,10 +101,10 @@ class DocumentTypeTest extends TypeTestCase
 
         $this->dm->flush();
 
-        $form = $this->factory->create($this->typeFQCN ? FormType::CLASS : 'form', $document)
+        $form = $this->factory->create($this->typeFQCN ? FormType::class : 'form', $document)
             ->add(
                 'categories',
-                $this->typeFQCN ? DocumentType::CLASS : 'document',
+                $this->typeFQCN ? DocumentType::class : 'document',
                 [
                     'class' => Category::class,
                     'multiple' => true,
@@ -121,19 +122,22 @@ class DocumentTypeTest extends TypeTestCase
         $this->assertFalse($categoryView->children[1]->vars['checked']);
     }
 
-    protected function createRegistryMock($name, $dm)
+    /**
+     * @return MockObject&ManagerRegistry
+     */
+    protected function createRegistryMock(string $name, DocumentManager $dm): MockObject
     {
         $registry = $this->createMock(ManagerRegistry::class);
-        $registry->expects($this->any())
+        $registry
                  ->method('getManager')
                  ->with($this->equalTo($name))
-                 ->will($this->returnValue($dm));
+                 ->willReturn($dm);
 
         return $registry;
     }
 
     /**
-     * @see \Symfony\Component\Form\Tests\FormIntegrationTestCase::getExtensions()
+     * @return FormExtensionInterface[]
      */
     protected function getExtensions()
     {

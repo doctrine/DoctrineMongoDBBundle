@@ -12,6 +12,7 @@ use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Doctrine\Persistence\ObjectRepository;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
+
 use function class_exists;
 use function is_a;
 use function spl_object_hash;
@@ -36,10 +37,7 @@ final class ContainerRepositoryFactory implements RepositoryFactory
         $this->container = $container;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getRepository(DocumentManager $documentManager, string $documentName) : ObjectRepository
+    public function getRepository(DocumentManager $documentManager, string $documentName): ObjectRepository
     {
         $metadata             = $documentManager->getClassMetadata($documentName);
         $customRepositoryName = $metadata->customRepositoryClassName;
@@ -71,7 +69,7 @@ final class ContainerRepositoryFactory implements RepositoryFactory
         return $this->getOrCreateRepository($documentManager, $metadata);
     }
 
-    private function getOrCreateRepository(DocumentManager $documentManager, ClassMetadata $metadata)
+    private function getOrCreateRepository(DocumentManager $documentManager, ClassMetadata $metadata): ObjectRepository
     {
         $repositoryHash = $metadata->getName() . spl_object_hash($documentManager);
         if (isset($this->managedRepositories[$repositoryHash])) {

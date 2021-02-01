@@ -57,6 +57,8 @@ class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
      *                                    enable the mapping. Set to false to not do any check,
      *                                    optional.
      * @param string[] $aliasMap          Map of alias to namespace.
+     *
+     * @return DoctrineMongoDBMappingsPass
      */
     public static function createXmlMappingDriver(array $mappings, array $managerParameters, $enabledParameter = false, array $aliasMap = [])
     {
@@ -77,6 +79,8 @@ class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
      *                                    enable the mapping. Set to false to not do any check,
      *                                    optional.
      * @param string[] $aliasMap          Map of alias to namespace.
+     *
+     * @return DoctrineMongoDBMappingsPass
      */
     public static function createPhpMappingDriver(array $mappings, array $managerParameters = [], $enabledParameter = false, array $aliasMap = [])
     {
@@ -98,6 +102,8 @@ class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
      *                                    enable the mapping. Set to false to not do any check,
      *                                    optional.
      * @param string[] $aliasMap          Map of alias to namespace.
+     *
+     * @return DoctrineMongoDBMappingsPass
      */
     public static function createAnnotationMappingDriver(array $namespaces, array $directories, array $managerParameters, $enabledParameter = false, array $aliasMap = [])
     {
@@ -117,6 +123,8 @@ class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
      *                                    enable the mapping. Set to false to not do any check,
      *                                    optional.
      * @param string[] $aliasMap          Map of alias to namespace.
+     *
+     * @return DoctrineMongoDBMappingsPass
      */
     public static function createStaticPhpMappingDriver(array $namespaces, array $directories, array $managerParameters = [], $enabledParameter = false, array $aliasMap = [])
     {

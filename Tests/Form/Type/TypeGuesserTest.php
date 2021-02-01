@@ -11,9 +11,12 @@ use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Guesser;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ManagerRegistry;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormExtensionInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\Test\TypeTestCase;
+
 use function array_merge;
 use function method_exists;
 
@@ -22,12 +25,12 @@ class TypeGuesserTest extends TypeTestCase
     /** @var DocumentManager */
     private $dm;
 
-    /** @var PHPUnit_Framework_MockObject_MockObject */
+    /** @var MockObject */
     private $dmRegistry;
 
     private $typeFQCN;
 
-    public function setUp() : void
+    protected function setUp(): void
     {
         $this->typeFQCN = method_exists(AbstractType::class, 'getBlockPrefix');
 
@@ -39,7 +42,7 @@ class TypeGuesserTest extends TypeTestCase
         parent::setUp();
     }
 
-    protected function tearDown() : void
+    protected function tearDown(): void
     {
         $documentClasses = [
             Document::class,
@@ -54,7 +57,10 @@ class TypeGuesserTest extends TypeTestCase
         parent::tearDown();
     }
 
-    public function testTypesShouldBeGuessedCorrectly()
+    /**
+     * @group legacy
+     */
+    public function testTypesShouldBeGuessedCorrectly(): void
     {
         $form = $this->factory->create($this->typeFQCN ? GuesserTestType::class : new GuesserTestType(), null, ['dm' => $this->dm]);
         $this->assertType('text', $form->get('name'));
@@ -62,35 +68,36 @@ class TypeGuesserTest extends TypeTestCase
         $this->assertType('datetime', $form->get('date'));
         $this->assertType('datetime', $form->get('ts'));
         $this->assertType('checkbox', $form->get('boolField'));
-        $this->assertType('checkbox', $form->get('booleanField'));
         $this->assertType('number', $form->get('floatField'));
         $this->assertType('integer', $form->get('intField'));
-        $this->assertType('integer', $form->get('integerField'));
         $this->assertType('collection', $form->get('collectionField'));
         $this->assertType('text', $form->get('nonMappedField'));
     }
 
-    protected function assertType($type, $form)
+    protected function assertType(string $type, FormInterface $form): void
     {
         $this->assertEquals($type, $this->typeFQCN ? $form->getConfig()->getType()->getBlockPrefix() : $form->getConfig()->getType()->getName());
     }
 
-    protected function createRegistryMock($name, $dm)
+    /**
+     * @return MockObject&ManagerRegistry
+     */
+    protected function createRegistryMock(string $name, DocumentManager $dm): MockObject
     {
         $registry = $this->createMock(ManagerRegistry::class);
-        $registry->expects($this->any())
+        $registry
             ->method('getManager')
             ->with($this->equalTo($name))
-            ->will($this->returnValue($dm));
-        $registry->expects($this->any())
+            ->willReturn($dm);
+        $registry
             ->method('getManagers')
-            ->will($this->returnValue(['default' => $dm]));
+            ->willReturn(['default' => $dm]);
 
         return $registry;
     }
 
     /**
-     * @see Symfony\Component\Form\Tests\FormIntegrationTestCase::getExtensions()
+     * @return FormExtensionInterface[]
      */
     protected function getExtensions()
     {

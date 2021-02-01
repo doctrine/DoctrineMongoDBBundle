@@ -9,9 +9,11 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Messenger\MessageBusInterface;
+
 use function array_merge;
 use function class_exists;
 use function interface_exists;
@@ -19,7 +21,7 @@ use function sys_get_temp_dir;
 
 class DoctrineMongoDBExtensionTest extends TestCase
 {
-    public static function buildConfiguration(array $settings = [])
+    public static function buildConfiguration(array $settings = []): array
     {
         return [
             array_merge(
@@ -32,7 +34,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         ];
     }
 
-    public function buildMinimalContainer()
+    public function buildMinimalContainer(): ContainerBuilder
     {
         return new ContainerBuilder(new ParameterBag([
             'kernel.root_dir'        => __DIR__,
@@ -48,7 +50,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
     /**
      * @dataProvider parameterProvider
      */
-    public function testParameterOverride($option, $parameter, $value)
+    public function testParameterOverride(string $option, string $parameter, string $value): void
     {
         $container = $this->buildMinimalContainer();
         $container->setParameter('kernel.debug', false);
@@ -59,7 +61,10 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $this->assertEquals($value, $container->getParameter('doctrine_mongodb.odm.' . $parameter));
     }
 
-    private function getContainer($bundles = 'OtherXmlBundle')
+    /**
+     * @param string|string[] $bundles
+     */
+    private function getContainer($bundles = 'OtherXmlBundle'): ContainerBuilder
     {
         $bundles = (array) $bundles;
 
@@ -82,7 +87,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         ]));
     }
 
-    public function parameterProvider()
+    public function parameterProvider(): array
     {
         return [
             ['proxy_namespace', 'proxy_namespace', 'foo'],
@@ -90,7 +95,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         ];
     }
 
-    public function getAutomappingConfigurations()
+    public function getAutomappingConfigurations(): array
     {
         return [
             [
@@ -136,7 +141,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
     /**
      * @dataProvider getAutomappingConfigurations
      */
-    public function testAutomapping(array $documentManagers)
+    public function testAutomapping(array $documentManagers): void
     {
         $container = $this->getContainer([
             'OtherXmlBundle',
@@ -183,7 +188,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         );
     }
 
-    public function testFactoriesAreRegistered()
+    public function testFactoriesAreRegistered(): void
     {
         $container = $this->getContainer();
 
@@ -209,23 +214,17 @@ class DoctrineMongoDBExtensionTest extends TestCase
         );
 
         $configDm1 = $container->getDefinition('doctrine_mongodb.odm.dm1_configuration');
-        $this->assertContains(
-            [
-                'setRepositoryFactory',
-                [new Reference('repository_factory_service')],
-            ],
-            $configDm1->getMethodCalls()
-        );
-        $this->assertContains(
-            [
-                'setPersistentCollectionFactory',
-                [new Reference('persistent_collection_factory_service')],
-            ],
-            $configDm1->getMethodCalls()
-        );
+
+        $this->assertDICDefinitionMethodCall($configDm1, 'setRepositoryFactory', [
+            new Reference('repository_factory_service'),
+        ]);
+
+        $this->assertDICDefinitionMethodCall($configDm1, 'setPersistentCollectionFactory', [
+            new Reference('persistent_collection_factory_service'),
+        ]);
     }
 
-    public function testPublicServicesAndAliases()
+    public function testPublicServicesAndAliases(): void
     {
         $loader = new DoctrineMongoDBExtension();
         $loader->load(self::buildConfiguration(), $container = $this->buildMinimalContainer());
@@ -235,11 +234,12 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $this->assertTrue($container->getAlias('doctrine_mongodb.odm.document_manager')->isPublic());
     }
 
-    public function testMessengerIntegration()
+    public function testMessengerIntegration(): void
     {
         if (! interface_exists(MessageBusInterface::class)) {
             $this->markTestSkipped('Symfony Messenger component is not installed');
         }
+
         if (! class_exists(DoctrineClearEntityManagerWorkerSubscriber::class)) {
             $this->markTestSkipped('DoctrineClearEntityManagerWorkerSubscriber is not available in symfony/doctrine-bridge');
         }
@@ -249,5 +249,22 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
         $this->assertNotNull($subscriber = $container->getDefinition('doctrine_mongodb.messenger.event_subscriber.doctrine_clear_document_manager'));
         $this->assertCount(1, $subscriber->getArguments());
+    }
+
+    private function assertDICDefinitionMethodCall(Definition $definition, string $methodName, array $params = []): void
+    {
+        $calls = $definition->getMethodCalls();
+
+        foreach ($calls as $call) {
+            if ($call[0] !== $methodName) {
+                continue;
+            }
+
+            $this->assertEquals($params, $call[1], "Expected parameters to methods '" . $methodName . "' do not match the actual parameters.");
+
+            return;
+        }
+
+        $this->fail("Method '" . $methodName . "' is expected to be called once, definition does not contain a call though.");
     }
 }

@@ -5,26 +5,28 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Configuration;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\BasicFilter;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\ComplexFilter;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\DisabledFilter;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Repository\CustomGridFSRepository;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Repository\CustomRepository;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
-use Foo\Bar\CustomGridFSRepository;
-use Foo\Bar\CustomRepository;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\Util\XmlUtils;
 use Symfony\Component\Yaml\Yaml;
-use Vendor\Filter\BasicFilter;
-use Vendor\Filter\ComplexFilter;
-use Vendor\Filter\DisabledFilter;
+
 use function array_key_exists;
 use function file_get_contents;
 
 class ConfigurationTest extends TestCase
 {
-    public function testDefaults()
+    public function testDefaults(): void
     {
         $processor     = new Processor();
         $configuration = new Configuration(false);
@@ -45,7 +47,7 @@ class ConfigurationTest extends TestCase
             'hydrator_namespace'             => 'Hydrators',
             'default_commit_options'         => [],
             'persistent_collection_dir'      => '%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections',
-            'persistent_collection_namespace'=> 'PersistentCollections',
+            'persistent_collection_namespace' => 'PersistentCollections',
             'types'                          => [],
         ];
 
@@ -55,7 +57,7 @@ class ConfigurationTest extends TestCase
     /**
      * @dataProvider provideFullConfiguration
      */
-    public function testFullConfiguration($config)
+    public function testFullConfiguration(array $config): void
     {
         $processor     = new Processor();
         $configuration = new Configuration(false);
@@ -74,7 +76,7 @@ class ConfigurationTest extends TestCase
             'proxy_dir'                      => '%kernel.cache_dir%/doctrine/odm/mongodb/Test_Proxies',
             'proxy_namespace'                => 'Test_Proxies',
             'persistent_collection_dir'      => '%kernel.cache_dir%/doctrine/odm/mongodb/Test_Pcolls',
-            'persistent_collection_namespace'=> 'Test_Pcolls',
+            'persistent_collection_namespace' => 'Test_Pcolls',
             'default_commit_options' => [
                 'j' => false,
                 'timeout' => 10,
@@ -193,7 +195,10 @@ class ConfigurationTest extends TestCase
         $this->assertEquals($expected, $options);
     }
 
-    public function provideFullConfiguration()
+    /**
+     * @return array<mixed[]>
+     */
+    public function provideFullConfiguration(): array
     {
         $yaml = Yaml::parse(file_get_contents(__DIR__ . '/Fixtures/config/yml/full.yml'));
         $yaml = $yaml['doctrine_mongodb'];
@@ -213,7 +218,7 @@ class ConfigurationTest extends TestCase
      *
      * @dataProvider provideMergeOptions
      */
-    public function testMergeOptions(array $configs, array $expected)
+    public function testMergeOptions(array $configs, array $expected): void
     {
         $processor     = new Processor();
         $configuration = new Configuration(false);
@@ -224,7 +229,10 @@ class ConfigurationTest extends TestCase
         }
     }
 
-    public function provideMergeOptions()
+    /**
+     * @return array<mixed[]>
+     */
+    public function provideMergeOptions(): array
     {
         $cases = [];
 
@@ -334,7 +342,7 @@ class ConfigurationTest extends TestCase
      *
      * @dataProvider provideNormalizeOptions
      */
-    public function testNormalizeOptions(array $config, array $expected)
+    public function testNormalizeOptions(array $config, array $expected): void
     {
         $processor     = new Processor();
         $configuration = new Configuration(false);
@@ -345,7 +353,10 @@ class ConfigurationTest extends TestCase
         }
     }
 
-    public function provideNormalizeOptions()
+    /**
+     * @return array<mixed[]>
+     */
+    public function provideNormalizeOptions(): array
     {
         $cases = [];
 
@@ -417,7 +428,7 @@ class ConfigurationTest extends TestCase
         return $cases;
     }
 
-    public function testPasswordAndUsernameShouldBeUnsetIfNull()
+    public function testPasswordAndUsernameShouldBeUnsetIfNull(): void
     {
         $config = [
             'connections' => [
@@ -454,11 +465,7 @@ class ConfigurationTest extends TestCase
         $this->assertEquals([], $options['connections']['conn3']['options']);
     }
 
-    /**
-     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     * @expectedExceptionMessage The replicaSet option must be a string
-     */
-    public function testInvalidReplicaSetValue()
+    public function testInvalidReplicaSetValue(): void
     {
         $config = [
             'connections' => [
@@ -471,10 +478,14 @@ class ConfigurationTest extends TestCase
 
         $processor     = new Processor();
         $configuration = new Configuration(false);
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('The replicaSet option must be a string');
+
         $processor->processConfiguration($configuration, [$config]);
     }
 
-    public function testNullReplicaSetValue()
+    public function testNullReplicaSetValue(): void
     {
         $config = [
             'connections' => [
@@ -494,7 +505,7 @@ class ConfigurationTest extends TestCase
     /**
      * @dataProvider provideExceptionConfiguration
      */
-    public function testFixtureLoaderValidation($config)
+    public function testFixtureLoaderValidation(array $config): void
     {
         $processor     = new Processor();
         $configuration = new Configuration(false);
@@ -502,7 +513,10 @@ class ConfigurationTest extends TestCase
         $processor->processConfiguration($configuration, [$config]);
     }
 
-    public function provideExceptionConfiguration()
+    /**
+     * @return array<mixed[]>
+     */
+    public function provideExceptionConfiguration(): array
     {
         $yaml = Yaml::parse(file_get_contents(__DIR__ . '/Fixtures/config/yml/exception.yml'));
         $yaml = $yaml['doctrine_mongodb'];

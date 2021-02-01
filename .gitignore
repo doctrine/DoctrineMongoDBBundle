@@ -3,3 +3,4 @@ composer.phar
 composer.lock
 phpunit.xml
 .phpcs-cache
+.phpunit.result.cache

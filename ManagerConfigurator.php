@@ -58,7 +58,7 @@ class ManagerConfigurator
      *
      * @throws MappingException
      */
-    public static function loadTypes(array $types) : void
+    public static function loadTypes(array $types): void
     {
         foreach ($types as $typeName => $typeConfig) {
             if (Type::hasType($typeName)) {

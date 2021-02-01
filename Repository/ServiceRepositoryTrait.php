@@ -7,6 +7,8 @@ namespace Doctrine\Bundle\MongoDBBundle\Repository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ManagerRegistry;
 use LogicException;
+
+use function assert;
 use function sprintf;
 
 trait ServiceRepositoryTrait
@@ -16,8 +18,8 @@ trait ServiceRepositoryTrait
      */
     public function __construct(ManagerRegistry $registry, $documentClass)
     {
-        /** @var DocumentManager $manager */
         $manager = $registry->getManagerForClass($documentClass);
+        assert($manager instanceof DocumentManager || $manager === null);
 
         if ($manager === null) {
             throw new LogicException(sprintf(

@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Mapping\Driver;
 
 use Doctrine\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\Persistence\Mapping\Driver\FileLocator;
+use Doctrine\Persistence\Mapping\MappingException;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
 abstract class AbstractDriverTest extends TestCase
 {
-    public function testFindMappingFile()
+    public function testFindMappingFile(): void
     {
         $driver = $this->getDriver([
             'foo' => 'MyNamespace\MyBundle\DocumentFoo',
@@ -25,7 +27,7 @@ abstract class AbstractDriverTest extends TestCase
         );
     }
 
-    public function testFindMappingFileInSubnamespace()
+    public function testFindMappingFileInSubnamespace(): void
     {
         $driver = $this->getDriver([$this->getFixtureDir() => 'MyNamespace\MyBundle\Document']);
 
@@ -37,25 +39,25 @@ abstract class AbstractDriverTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException Doctrine\Persistence\Mapping\MappingException
-     */
-    public function testFindMappingFileNamespacedFoundFileNotFound()
+    public function testFindMappingFileNamespacedFoundFileNotFound(): void
     {
         $driver = $this->getDriver([$this->getFixtureDir() => 'MyNamespace\MyBundle\Document']);
 
         $locator = $this->getDriverLocator($driver);
+
+        $this->expectException(MappingException::class);
+
         $locator->findMappingFile('MyNamespace\MyBundle\Document\Missing');
     }
 
-    /**
-     * @expectedException Doctrine\Persistence\Mapping\MappingException
-     */
-    public function testFindMappingNamespaceNotFound()
+    public function testFindMappingNamespaceNotFound(): void
     {
         $driver = $this->getDriver([$this->getFixtureDir() => 'MyNamespace\MyBundle\Document']);
 
         $locator = $this->getDriverLocator($driver);
+
+        $this->expectException(MappingException::class);
+
         $locator->findMappingFile('MyOtherNamespace\MyBundle\Document\Foo');
     }
 
@@ -65,7 +67,7 @@ abstract class AbstractDriverTest extends TestCase
 
     abstract protected function getDriver(array $paths = []);
 
-    private function getDriverLocator(FileDriver $driver)
+    private function getDriverLocator(FileDriver $driver): FileLocator
     {
         $ref = new ReflectionProperty($driver, 'locator');
         $ref->setAccessible(true);

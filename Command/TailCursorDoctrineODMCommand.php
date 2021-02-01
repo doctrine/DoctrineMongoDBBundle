@@ -16,6 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Throwable;
+
 use function sleep;
 use function sprintf;
 
@@ -26,10 +27,12 @@ class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInte
 {
     use ContainerAwareTrait;
 
+    /** @var string */
+    protected static $defaultName = 'doctrine:mongodb:tail-cursor';
+
     protected function configure()
     {
         $this
-            ->setName('doctrine:mongodb:tail-cursor')
             ->setDescription('Tails a mongodb cursor and processes the documents that come through')
             ->addArgument('document', InputArgument::REQUIRED, 'The document we are going to tail the cursor for.')
             ->addArgument('finder', InputArgument::REQUIRED, 'The repository finder method which returns the cursor to tail.')
@@ -38,6 +41,9 @@ class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInte
             ->addOption('sleep-time', null, InputOption::VALUE_REQUIRED, 'The number of seconds to wait between two checks.', 10);
     }
 
+    /**
+     * @return int
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dm                   = $this->getContainer()->get('doctrine_mongodb.odm.document_manager');
@@ -64,6 +70,7 @@ class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInte
                     $output->writeln('<error>Invalid cursor, requerying</error>');
                     $cursor = $repository->$method();
                 }
+
                 $output->writeln('<comment>Nothing found, waiting to try again</comment>');
                 // read all results so far, wait for more
                 sleep($sleepTime);

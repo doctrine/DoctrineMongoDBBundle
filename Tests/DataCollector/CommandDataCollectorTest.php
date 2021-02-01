@@ -12,10 +12,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CommandDataCollectorTest extends TestCase
 {
-    public function testCollector()
+    /**
+     * @doesNotPerformAssertions
+     */
+    public function testCollector(): void
     {
         $collector = new CommandDataCollector(new CommandLogger());
 
         $collector->collect($request = new Request(['group' => '0']), $response = new Response());
+        $this->assertSame(0, $collector->getCommandCount());
     }
 }

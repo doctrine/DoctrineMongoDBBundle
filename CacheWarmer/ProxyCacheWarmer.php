@@ -11,7 +11,9 @@ use Doctrine\Persistence\ManagerRegistry;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
+
 use function array_filter;
+use function assert;
 use function dirname;
 use function file_exists;
 use function is_writable;
@@ -44,6 +46,9 @@ class ProxyCacheWarmer implements CacheWarmerInterface
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function warmUp($cacheDir)
     {
         // we need the directory no matter the proxy cache generation strategy.
@@ -60,8 +65,8 @@ class ProxyCacheWarmer implements CacheWarmerInterface
             return;
         }
 
-        /** @var ManagerRegistry $registry */
         $registry = $this->container->get('doctrine_mongodb');
+        assert($registry instanceof ManagerRegistry);
         foreach ($registry->getManagers() as $dm) {
             /** @var DocumentManager $dm */
             $classes = $this->getClassesForProxyGeneration($dm);

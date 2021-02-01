@@ -10,12 +10,12 @@ use Doctrine\Persistence\ObjectManager;
 
 class OtherFixtures implements ODMFixtureInterface, FixtureGroupInterface
 {
-    public function load(ObjectManager $manager) : void
+    public function load(ObjectManager $manager): void
     {
         // ...
     }
 
-    public static function getGroups() : array
+    public static function getGroups(): array
     {
         return ['staging', 'fulfilledDependencyGroup'];
     }

@@ -35,17 +35,11 @@ class Guesser
     /** @ODM\Field(type="bool") */
     public $boolField;
 
-    /** @ODM\Field(type="boolean") */
-    public $booleanField;
-
     /** @ODM\Field(type="float") */
     public $floatField;
 
     /** @ODM\Field(type="int") */
     public $intField;
-
-    /** @ODM\Field(type="integer") */
-    public $integerField;
 
     /** @ODM\Field(type="collection") */
     public $collectionField;
