@@ -12,7 +12,7 @@
         {"name": "Jonathan H. Wage", "email": "jonwage@gmail.com"}
     ],
     "require": {
-        "php": "^7.2",
+        "php": "^7.2 || ^8.0",
         "doctrine/annotations": "^1.2",
         "doctrine/mongodb-odm": "^2.0.0",
         "doctrine/persistence": "^1.3.6|^2.0",

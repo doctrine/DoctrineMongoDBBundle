@@ -23,6 +23,7 @@ jobs:
           - "7.2"
           - "7.3"
           - "7.4"
+          - "8.0"
         symfony-version:
           - "4.4.x"
           - "5.1.x"
@@ -85,14 +86,20 @@ jobs:
           dependency-versions: "${{ matrix.dependencies }}"
           composer-options: "--prefer-dist"
 
-      - name: "Run PHPUnit"
+      - name: "Run PHPUnit with coverage"
         run: "vendor/bin/phpunit --coverage-clover=coverage.xml"
+        if: "${{ matrix.php-version != '8.0' }}"
+
+      - name: "Run PHPUnit without coverage"
+        run: "vendor/bin/phpunit"
+        if: "${{ matrix.php-version == '8.0' }}"
 
       - name: "Upload coverage file"
         uses: "actions/upload-artifact@v2"
         with:
           name: "phpunit-${{ matrix.php-version }}.coverage"
           path: "coverage.xml"
+        if: "${{ matrix.php-version != '8.0' }}"
 
   upload_coverage:
     name: "Upload coverage to Codecov"
