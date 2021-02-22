@@ -3,7 +3,7 @@ SecurityBundle integration
 
 A user provider is available for your MongoDB projects if you use
 Symfony `SecurityBundle`_. It works exactly the same way as
-the ``entity`` user provider described in `the cookbook`_:
+the ``entity`` user provider described in `the documentation`_:
 
 .. configuration-block::
 
@@ -25,4 +25,4 @@ the ``entity`` user provider described in `the cookbook`_:
         </config>
 
 .. _`SecurityBundle`: https://symfony.com/doc/current/security.html
-.. _`the cookbook`: https://symfony.com/doc/current/cookbook/security/user_provider.html
+.. _`the documentation`: https://symfony.com/doc/current/security/user_provider.html
