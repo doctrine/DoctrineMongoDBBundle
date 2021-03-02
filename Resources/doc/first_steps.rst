@@ -60,8 +60,8 @@ in a number of different formats including XML or directly inside the
 
             <document name="App\Document\Product">
                 <id />
-                <field fieldName="name" type="string" />
-                <field fieldName="price" type="float" />
+                <field field-name="name" type="string" />
+                <field field-name="price" type="float" />
             </document>
         </doctrine-mongo-mapping>
 
