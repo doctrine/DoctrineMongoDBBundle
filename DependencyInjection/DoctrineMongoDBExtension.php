@@ -23,6 +23,7 @@ use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Doctrine\ODM\MongoDB\Configuration;
 
 use function array_keys;
 use function array_merge;
@@ -206,7 +207,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $this->loadObjectManagerCacheDriver($documentManager, $container, 'metadata_cache');
 
         $methods = [
-            'setMetadataCacheImpl' => new Reference(sprintf('doctrine_mongodb.odm.%s_metadata_cache', $documentManager['name'])),
+            method_exists(Configuration::class, 'setMetadataCache') ? 'setMetadataCache' : 'setMetadataCacheImpl' => new Reference(sprintf('doctrine_mongodb.odm.%s_metadata_cache', $documentManager['name'])),
             'setMetadataDriverImpl' => new Reference(sprintf('doctrine_mongodb.odm.%s_metadata_driver', $documentManager['name'])),
             'setProxyDir' => '%doctrine_mongodb.odm.proxy_dir%',
             'setProxyNamespace' => '%doctrine_mongodb.odm.proxy_namespace%',
