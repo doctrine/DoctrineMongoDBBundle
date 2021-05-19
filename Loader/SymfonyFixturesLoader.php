@@ -109,6 +109,7 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader implements Symfon
                 $fixtureClass = get_class($fixture);
                 if (isset($this->groupsFixtureMapping[$group][$fixtureClass])) {
                     $filteredFixtures[$fixtureClass] = $fixture;
+
                     continue 2;
                 }
             }

@@ -32,10 +32,6 @@
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousTraitNaming" />
     </rule>
 
-    <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedProperty">
-        <exclude-pattern>Tests/DependencyInjection/Fixtures/*</exclude-pattern>
-    </rule>
-
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
         <exclude-pattern>Tests/*</exclude-pattern>
     </rule>
