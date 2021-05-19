@@ -23,7 +23,6 @@ Sample Configuration
                         filter-name:
                             class: Class\Example\Filter\ODM\ExampleFilter
                             enabled: true
-                    metadata_cache_driver: array # array, apc, apcu, memcache, memcached, redis, wincache, zenddata, xcache
 
     .. code-block:: xml
 
@@ -43,7 +42,6 @@ Sample Configuration
                 <doctrine_mongodb:document-manager id="default">
                     <doctrine_mongodb:mapping name="AcmeDemoBundle" />
                     <doctrine_mongodb:filter name="filter-name" enabled="true" class="Class\Example\Filter\ODM\ExampleFilter" />
-                    <doctrine_mongodb:metadata-cache-driver type="array" />
                 </doctrine_mongodb:document-manager>
             </doctrine_mongodb:config>
         </container>
@@ -65,58 +63,6 @@ Sample Configuration
             connections:
                 default:
                     server: '%env(resolve:MONGODB_URL)%'
-
-If you wish to use memcache to cache your metadata, you need to configure the
-``Memcache`` instance; for example, you can do the following:
-
-.. configuration-block::
-
-    .. code-block:: yaml
-
-        # app/config/config.yml
-        doctrine_mongodb:
-            default_database: hello_%kernel.environment%
-            connections:
-                default:
-                    server: mongodb://localhost:27017
-                    options: {}
-            document_managers:
-                default:
-                    mappings:
-                        AcmeDemoBundle: ~
-                    metadata_cache_driver:
-                        type: memcache
-                        class: Doctrine\Common\Cache\MemcacheCache
-                        host: localhost
-                        port: 11211
-                        instance_class: Memcache
-
-    .. code-block:: xml
-
-        <?xml version="1.0" ?>
-
-        <container xmlns="http://symfony.com/schema/dic/services"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns:doctrine_mongodb="http://symfony.com/schema/dic/doctrine/odm/mongodb"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd
-                                http://symfony.com/schema/dic/doctrine/odm/mongodb https://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
-
-            <doctrine_mongodb:config default-database="hello_%kernel.environment%">
-                <doctrine_mongodb:document-manager id="default">
-                    <doctrine_mongodb:mapping name="AcmeDemoBundle" />
-                    <doctrine_mongodb:metadata-cache-driver type="memcache">
-                        <doctrine_mongodb:class>Doctrine\Common\Cache\MemcacheCache</doctrine_mongodb:class>
-                        <doctrine_mongodb:host>localhost</doctrine_mongodb:host>
-                        <doctrine_mongodb:port>11211</doctrine_mongodb:port>
-                        <doctrine_mongodb:instance-class>Memcache</doctrine_mongodb:instance-class>
-                    </doctrine_mongodb:metadata-cache-driver>
-                </doctrine_mongodb:document-manager>
-                <doctrine_mongodb:connection id="default" server="mongodb://localhost:27017">
-                    <doctrine_mongodb:options>
-                    </doctrine_mongodb:options>
-                </doctrine_mongodb:connection>
-            </doctrine_mongodb:config>
-        </container>
 
 
 Mapping Configuration
@@ -321,7 +267,6 @@ following syntax:
             default_database: hello_%kernel.environment%
             default_connection: conn2
             default_document_manager: dm2
-            metadata_cache_driver: apc
             connections:
                 conn1:
                     server: mongodb://localhost:27017
@@ -331,7 +276,6 @@ following syntax:
                 dm1:
                     connection: conn1
                     database: db1
-                    metadata_cache_driver: xcache
                     mappings:
                         AcmeDemoBundle: ~
                 dm2:
@@ -364,7 +308,7 @@ following syntax:
                     <doctrine_mongodb:options>
                     </doctrine_mongodb:options>
                 </doctrine_mongodb:connection>
-                <doctrine_mongodb:document-manager id="dm1" metadata-cache-driver="xcache" connection="conn1" database="db1">
+                <doctrine_mongodb:document-manager id="dm1" connection="conn1" database="db1">
                     <doctrine_mongodb:mapping name="AcmeDemoBundle" />
                 </doctrine_mongodb:document-manager>
                 <doctrine_mongodb:document-manager id="dm2" connection="conn2" database="db2">
@@ -550,12 +494,6 @@ Full Default Configuration
                     persistent_collection_factory:     ~
                     logging:                           true
                     auto_mapping:                      false
-                    metadata_cache_driver:
-                        type:                 ~
-                        class:                ~
-                        host:                 ~
-                        port:                 ~
-                        instance_class:       ~
                     mappings:
 
                         # Prototype
@@ -639,12 +577,6 @@ Full Default Configuration
                                            logging="true"
                                            auto-mapping="false"
                 >
-                    <doctrine:metadata-cache-driver type="">
-                        <doctrine:class></doctrine:class>
-                        <doctrine:host></doctrine:host>
-                        <doctrine:port></doctrine:port>
-                        <doctrine:instance-class></doctrine:instance-class>
-                    </doctrine:metadata-cache-driver>
                     <doctrine:mapping name="name"
                                       type=""
                                       dir=""

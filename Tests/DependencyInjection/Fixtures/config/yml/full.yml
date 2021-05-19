@@ -57,12 +57,7 @@ doctrine_mongodb:
             persistent_collection_factory: ~
             mappings:
                 FooBundle:   annotation
-            metadata_cache_driver:
-                type:                  memcached
-                class:                 fooClass
-                host:                  host_val
-                port:                  1234
-                instance_class:        instance_val
+            metadata_cache_driver: array
             profiler:
                 enabled: true
                 pretty:  false
@@ -95,5 +90,5 @@ doctrine_mongodb:
                     prefix: prefix_val
                     alias:  alias_val
                     is_bundle: false
-            metadata_cache_driver: apc
+            metadata_cache_driver: array
             logging: true

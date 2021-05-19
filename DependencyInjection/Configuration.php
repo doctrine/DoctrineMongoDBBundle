@@ -191,7 +191,7 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                             ->arrayNode('metadata_cache_driver')
-                                ->addDefaultsIfNotSet()
+                                ->setDeprecated('doctrine/mongodb-odm-bundle', '4.4')
                                 ->beforeNormalization()
                                     ->ifString()
                                     ->then(static function ($v) {

@@ -4,16 +4,27 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 
+use Doctrine\Bundle\MongoDBBundle\CacheWarmer\MetadataCacheWarmer;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\EventSubscriber\EventSubscriberInterface;
 use Doctrine\Bundle\MongoDBBundle\Fixture\ODMFixtureInterface;
 use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepositoryInterface;
+use Doctrine\Common\Cache\MemcacheCache;
+use Doctrine\Common\Cache\Psr6\CacheAdapter;
+use Doctrine\Common\Cache\RedisCache;
 use Doctrine\Common\DataFixtures\Loader as DataFixturesLoader;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use InvalidArgumentException;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
+use Symfony\Component\Cache\Adapter\ApcuAdapter;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\MemcachedAdapter;
+use Symfony\Component\Cache\Adapter\PhpArrayAdapter;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -30,6 +41,7 @@ use function class_exists;
 use function class_implements;
 use function in_array;
 use function interface_exists;
+use function is_a;
 use function reset;
 use function sprintf;
 
@@ -203,10 +215,10 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         );
 
         $this->loadDocumentManagerBundlesMappingInformation($documentManager, $odmConfigDef, $container);
-        $this->loadObjectManagerCacheDriver($documentManager, $container, 'metadata_cache');
+        $this->loadMetadataCacheDriver($documentManager, $container);
 
         $methods = [
-            'setMetadataCacheImpl' => new Reference(sprintf('doctrine_mongodb.odm.%s_metadata_cache', $documentManager['name'])),
+            'setMetadataCache' => new Reference($this->getObjectManagerElementName($documentManager['name'] . '_metadata_cache')),
             'setMetadataDriverImpl' => new Reference(sprintf('doctrine_mongodb.odm.%s_metadata_driver', $documentManager['name'])),
             'setProxyDir' => '%doctrine_mongodb.odm.proxy_dir%',
             'setProxyNamespace' => '%doctrine_mongodb.odm.proxy_namespace%',
@@ -498,6 +510,88 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     }
 
     /**
+     * Loads a cache driver.
+     *
+     * @return string
+     *
+     * @throws InvalidArgumentException
+     */
+    protected function loadCacheDriver(string $cacheName, string $objectManagerName, array $cacheDriver, ContainerBuilder $container)
+    {
+        if (isset($cacheDriver['namespace'])) {
+            // @todo wrap
+            return parent::loadCacheDriver($cacheName, $objectManagerName, $cacheDriver, $container);
+        }
+
+        $cacheDriverServiceId = $this->getObjectManagerElementName($objectManagerName . '_' . $cacheName);
+
+        switch ($cacheDriver['type']) {
+            case 'service':
+                $container->setAlias($cacheDriverServiceId, new Alias($cacheDriver['id'], false));
+
+                // @todo wrap conditionally
+                return $cacheDriverServiceId;
+
+            case 'memcached':
+                if (! empty($cacheDriver['class']) && $cacheDriver !== MemcacheCache::class) {
+                    return parent::loadCacheDriver($cacheName, $objectManagerName, $cacheDriver, $container);
+                }
+
+                $memcachedInstanceClass = ! empty($cacheDriver['instance_class']) ? $cacheDriver['instance_class'] : '%' . $this->getObjectManagerElementName('cache.memcached_instance.class') . '%';
+                $memcachedHost          = ! empty($cacheDriver['host']) ? $cacheDriver['host'] : '%' . $this->getObjectManagerElementName('cache.memcached_host') . '%';
+                $memcachedPort          = ! empty($cacheDriver['port']) ? $cacheDriver['port'] : '%' . $this->getObjectManagerElementName('cache.memcached_port') . '%';
+                $memcachedInstance      = new Definition($memcachedInstanceClass);
+                $memcachedInstance->addMethodCall('addServer', [
+                    $memcachedHost,
+                    $memcachedPort,
+                ]);
+                $container->setDefinition($this->getObjectManagerElementName(sprintf('%s_memcached_instance', $objectManagerName)), $memcachedInstance);
+
+                $cacheDef = new Definition(MemcachedAdapter::class, [new Reference($this->getObjectManagerElementName(sprintf('%s_memcached_instance', $objectManagerName)))]);
+
+                break;
+
+            case 'redis':
+                if (! empty($cacheDriver['class']) && $cacheDriver !== RedisCache::class) {
+                    return parent::loadCacheDriver($cacheName, $objectManagerName, $cacheDriver, $container);
+                }
+
+                $redisInstanceClass = ! empty($cacheDriver['instance_class']) ? $cacheDriver['instance_class'] : '%' . $this->getObjectManagerElementName('cache.redis_instance.class') . '%';
+                $redisHost          = ! empty($cacheDriver['host']) ? $cacheDriver['host'] : '%' . $this->getObjectManagerElementName('cache.redis_host') . '%';
+                $redisPort          = ! empty($cacheDriver['port']) ? $cacheDriver['port'] : '%' . $this->getObjectManagerElementName('cache.redis_port') . '%';
+                $redisInstance      = new Definition($redisInstanceClass);
+                $redisInstance->addMethodCall('connect', [
+                    $redisHost,
+                    $redisPort,
+                ]);
+                $container->setDefinition($this->getObjectManagerElementName(sprintf('%s_redis_instance', $objectManagerName)), $redisInstance);
+
+                $cacheDef = new Definition(RedisAdapter::class, [new Reference($this->getObjectManagerElementName(sprintf('%s_redis_instance', $objectManagerName)))]);
+
+                break;
+
+            case 'apcu':
+                $cacheDef = new Definition(ApcuAdapter::class);
+
+                break;
+
+            case 'array':
+                $cacheDef = new Definition(ArrayAdapter::class);
+
+                break;
+
+            default:
+                // @todo wrap
+                return parent::loadCacheDriver($cacheName, $objectManagerName, $cacheDriver, $container);
+        }
+
+        $cacheDef->setPublic(false);
+        $container->setDefinition($cacheDriverServiceId, $cacheDef);
+
+        return $cacheDriverServiceId;
+    }
+
+    /**
      * Instantiate new ChildDefinition if available, otherwise fall back to deprecated DefinitionDecorator
      *
      * @param string $id service ID passed to ctor
@@ -507,5 +601,54 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     private function getChildDefinitionOrDefinitionDecorator($id)
     {
         return class_exists(ChildDefinition::class) ? new ChildDefinition($id) : new DefinitionDecorator($id);
+    }
+
+    private function loadMetadataCacheDriver(array $documentManager, ContainerBuilder $container): void
+    {
+        if (! isset($documentManager['metadata_cache_driver'])) {
+            // Automatically configure cache
+            $this->configureDefaultMetadataCache($documentManager, $container);
+
+            return;
+        }
+
+        $this->loadObjectManagerCacheDriver($documentManager, $container, 'metadata_cache');
+
+        // Convert to PSR-6 cache if required
+        $cacheServiceId  = $this->getObjectManagerElementName($documentManager['name'] . '_metadata_cache');
+        $cacheDefinition = $container->getDefinition($cacheServiceId);
+        if (is_a($cacheDefinition->getClass(), CacheItemPoolInterface::class, true)) {
+            return;
+        }
+
+        $adapterDefinition = new Definition(CacheItemPoolInterface::class);
+        $adapterDefinition
+            ->setFactory([CacheAdapter::class, 'wrap'])
+            ->setArgument(0, $cacheDefinition);
+
+        $container->setDefinition($cacheServiceId, $adapterDefinition);
+    }
+
+    private function configureDefaultMetadataCache(array $documentManager, ContainerBuilder $container): void
+    {
+        $documentManagerName = $documentManager['name'];
+        $cacheServiceId      = $this->getObjectManagerElementName($documentManager['name'] . '_metadata_cache');
+
+        if ($container->getParameter('kernel.debug')) {
+            $container->register($cacheServiceId, ArrayAdapter::class);
+
+            return;
+        }
+
+        $phpArrayFile = '%kernel.cache_dir%' . sprintf('/doctrine/odm/mongodb/%s_metadata.php', $documentManagerName);
+
+        $cacheWarmerServiceId = $this->getObjectManagerElementName($documentManagerName . '_metadata_cache_warmer');
+        $container->register($cacheWarmerServiceId, MetadataCacheWarmer::class)
+            ->setArguments([new Reference(sprintf('doctrine.orm.%s_entity_manager', $documentManagerName)), $phpArrayFile])
+            ->addTag('kernel.cache_warmer', ['priority' => 1000]); // priority should be higher than ProxyCacheWarmer
+
+        $container->register($cacheServiceId, PhpArrayAdapter::class)
+            ->addArgument($phpArrayFile)
+            ->addArgument(new Definition(ArrayAdapter::class));
     }
 }

@@ -5,3 +5,4 @@ doctrine_mongodb:
   document_managers:
     default:
       connection: default
+      metadata_cache_driver: array

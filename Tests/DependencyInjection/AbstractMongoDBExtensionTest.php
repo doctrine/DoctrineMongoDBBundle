@@ -10,11 +10,6 @@ use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\BasicFilter;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\ComplexFilter;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\DisabledFilter;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
-use Doctrine\Common\Cache\ApcCache;
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Cache\MemcacheCache;
-use Doctrine\Common\Cache\MemcachedCache;
-use Doctrine\Common\Cache\XcacheCache;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -23,6 +18,8 @@ use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use MongoDB\Client;
 use PHPUnit\Framework\AssertionFailedError;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\PhpArrayAdapter;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -52,13 +49,6 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertEquals(DocumentManager::class, $container->getParameter('doctrine_mongodb.odm.document_manager.class'));
         $this->assertEquals('MongoDBODMProxies', $container->getParameter('doctrine_mongodb.odm.proxy_namespace'));
         $this->assertEquals(Configuration::AUTOGENERATE_EVAL, $container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes'));
-        $this->assertEquals(ArrayCache::class, $container->getParameter('doctrine_mongodb.odm.cache.array.class'));
-        $this->assertEquals(ApcCache::class, $container->getParameter('doctrine_mongodb.odm.cache.apc.class'));
-        $this->assertEquals(MemcacheCache::class, $container->getParameter('doctrine_mongodb.odm.cache.memcache.class'));
-        $this->assertEquals('localhost', $container->getParameter('doctrine_mongodb.odm.cache.memcache_host'));
-        $this->assertEquals('11211', $container->getParameter('doctrine_mongodb.odm.cache.memcache_port'));
-        $this->assertEquals('Memcache', $container->getParameter('doctrine_mongodb.odm.cache.memcache_instance.class'));
-        $this->assertEquals(XcacheCache::class, $container->getParameter('doctrine_mongodb.odm.cache.xcache.class'));
         $this->assertEquals(MappingDriverChain::class, $container->getParameter('doctrine_mongodb.odm.metadata.driver_chain.class'));
         $this->assertEquals(AnnotationDriver::class, $container->getParameter('doctrine_mongodb.odm.metadata.annotation.class'));
         $this->assertEquals(XmlDriver::class, $container->getParameter('doctrine_mongodb.odm.metadata.xml.class'));
@@ -317,51 +307,53 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertEquals('DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\AnnotationsBundle\Document', $calls[0][1][1]);
     }
 
-    public function testDocumentManagerMetadataCacheDriverConfiguration(): void
+    /**
+     * @dataProvider metadataCacheProvider
+     */
+    public function testAutomaticMetadataCacheConfiguration(string $config, bool $debug, string $expectedClass): void
     {
         $container = $this->getContainer();
-        $loader    = new DoctrineMongoDBExtension();
+        $container->setParameter('kernel.debug', $debug);
+
+        $loader = new DoctrineMongoDBExtension();
         $container->registerExtension($loader);
 
-        $this->loadFromFile($container, 'mongodb_service_multiple_connections');
-
-        $container->getCompilerPassConfig()->setOptimizationPasses([]);
-        $container->getCompilerPassConfig()->setRemovingPasses([]);
-        $container->compile();
-
-        $definition = $container->getDefinition('doctrine_mongodb.odm.dm1_metadata_cache');
-        $this->assertEquals('%doctrine_mongodb.odm.cache.xcache.class%', $definition->getClass());
-
-        $definition = $container->getDefinition('doctrine_mongodb.odm.dm2_metadata_cache');
-        $this->assertEquals('%doctrine_mongodb.odm.cache.apc.class%', $definition->getClass());
-    }
-
-    public function testDocumentManagerMemcachedMetadataCacheDriverConfiguration(): void
-    {
-        $container = $this->getContainer();
-        $loader    = new DoctrineMongoDBExtension();
-        $container->registerExtension($loader);
-
-        $this->loadFromFile($container, 'mongodb_service_simple_single_connection');
+        $this->loadFromFile($container, $config);
 
         $container->getCompilerPassConfig()->setOptimizationPasses([]);
         $container->getCompilerPassConfig()->setRemovingPasses([]);
         $container->compile();
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_metadata_cache');
-        $this->assertEquals(MemcachedCache::class, $definition->getClass());
+        $this->assertEquals($expectedClass, $definition->getClass());
+    }
 
-        $calls = $definition->getMethodCalls();
-        $this->assertEquals('setMemcached', $calls[0][0]);
-        $this->assertEquals('doctrine_mongodb.odm.default_memcached_instance', (string) $calls[0][1][0]);
+    public static function metadataCacheProvider(): array
+    {
+        return [
+            'No cache configured' => [
+                'config' => 'mongodb_service_single_connection',
+                'debug' => false,
+                'expectedClass' => PhpArrayAdapter::class,
+            ],
+            'No cache configured, debug mode' => [
+                'config' => 'mongodb_service_single_connection',
+                'debug' => true,
+                'expectedClass' => ArrayAdapter::class,
+            ],
+        ];
+    }
 
-        $definition = $container->getDefinition('doctrine_mongodb.odm.default_memcached_instance');
-        $this->assertEquals('Memcached', $definition->getClass());
-
-        $calls = $definition->getMethodCalls();
-        $this->assertEquals('addServer', $calls[0][0]);
-        $this->assertEquals('localhost', $calls[0][1][0]);
-        $this->assertEquals(11211, $calls[0][1][1]);
+    /**
+     * @group legacy
+     */
+    public function testDeprecatedMetadataCacheConfiguration(): void
+    {
+        $this->testAutomaticMetadataCacheConfiguration(
+            'mongodb_service_single_connection_cache',
+            false,
+            ArrayAdapter::class
+        );
     }
 
     public function testDependencyInjectionImportsOverrideDefaults(): void

@@ -6,9 +6,9 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
                         http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
 
-    <doctrine:mongodb default_database="mydb">
-        <doctrine:connection server="mongodb://localhost:27017" id="default" />
+    <doctrine:mongodb>
+        <doctrine:connection id="default" server="mongodb://localhost:27017" />
 
-        <doctrine:document-manager id="default" connection="default" />
+        <doctrine:document-manager id="default" connection="default" metadata-cache-driver="array" />
     </doctrine:mongodb>
 </container>
