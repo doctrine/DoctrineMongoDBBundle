@@ -92,6 +92,7 @@ abstract class DoctrineODMCommand extends Command implements ContainerAwareInter
             assert($bundle instanceof Bundle);
             if (strtolower($bundleName) === strtolower($bundle->getName())) {
                 $foundBundle = $bundle;
+
                 break;
             }
         }

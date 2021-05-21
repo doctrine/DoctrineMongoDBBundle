@@ -87,6 +87,7 @@ class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInte
                 $processor->process($document);
             } catch (Throwable $e) {
                 $output->writeln(sprintf('Error occurred while processing document: <error>%s</error>', $e->getMessage()));
+
                 continue;
             }
 
