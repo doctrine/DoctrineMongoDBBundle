@@ -58,6 +58,7 @@
         <tr>
             <th class="nowrap">#</th>
             <th class="nowrap">Time</th>
+            <th class="nowrap">Database</th>
             <th style="width: 100%;">Info</th>
         </tr>
         </thead>
@@ -66,8 +67,9 @@
             <tr>
                 <td class="nowrap">{{ loop.index }}</td>
                 <td class="nowrap">{{ '%0.3f'|format(command.durationMicros / 1000) }} ms</td>
+                <td class="nowrap">{{ attribute(command.command, '$db') }}</td>
                 <td>
-                    <code>{{ command.command }}</code>
+                    <pre>{{ command.command|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
                 </td>
             </tr>
         {% endfor %}

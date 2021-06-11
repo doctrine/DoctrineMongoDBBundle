@@ -14,7 +14,6 @@ use Throwable;
 use function array_map;
 use function array_reduce;
 use function count;
-use function json_encode;
 
 class CommandDataCollector extends DataCollector
 {
@@ -33,7 +32,7 @@ class CommandDataCollector extends DataCollector
             'commands' => array_map(
                 static function (Command $command) : array {
                     return [
-                        'command' => json_encode($command->getCommand()),
+                        'command' => $command->getCommand(),
                         'durationMicros' => $command->getDurationMicros(),
                     ];
                 },

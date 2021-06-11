@@ -18,19 +18,19 @@ class CommandDataCollectorTest extends TestCase
     public function testCollector(): void
     {
         $commandLogger = $this->createCommandLogger([
-            $this->createCommand(['first' => 'command'], 100),
-            $this->createCommand(['second' => 'command'], 200),
+            $this->createCommand(['first' => 'firstCommand'], 100),
+            $this->createCommand(['second' => 'secondCommand'], 200),
         ]);
 
         $collector = new CommandDataCollector($commandLogger);
         $collector->collect(new Request(), new Response());
 
-        $this->assertSame(300, $collector->getTime());
-        $this->assertSame(2, $collector->getCommandCount());
-        $this->assertSame([
-            ['command' => '{"first":"command"}', 'durationMicros' => 100],
-            ['command' => '{"second":"command"}', 'durationMicros' => 200],
-        ], $collector->getCommands());
+        self::assertSame(300, $collector->getTime());
+        self::assertSame(2, $collector->getCommandCount());
+        self::assertSame(100, $collector->getCommands()[0]['durationMicros']);
+        self::assertSame('firstCommand', $collector->getCommands()[0]['command']->first);
+        self::assertSame(200, $collector->getCommands()[1]['durationMicros']);
+        self::assertSame('secondCommand', $collector->getCommands()[1]['command']->second);
     }
 
     private function createCommandLogger(array $commands) : CommandLogger
