@@ -32,7 +32,7 @@ class CommandDataCollector extends DataCollector
         $this->data = [
             'num_commands' => count($this->commandLogger),
             'commands' => array_map(
-                static function (Command $command) : array {
+                static function (Command $command): array {
                     $dbProperty = '$db';
                     return [
                         'database' => $command->getCommand()->$dbProperty ?? '',
@@ -44,7 +44,7 @@ class CommandDataCollector extends DataCollector
             ),
             'time' => array_reduce(
                 $this->commandLogger->getAll(),
-                static function (int $total, Command $command) : int {
+                static function (int $total, Command $command): int {
                     return $total + $command->getDurationMicros();
                 },
                 0
@@ -66,7 +66,7 @@ class CommandDataCollector extends DataCollector
         return $this->data['num_commands'];
     }
 
-    public function getTime() : int
+    public function getTime(): int
     {
         return $this->data['time'];
     }

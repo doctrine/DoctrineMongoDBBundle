@@ -12,8 +12,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-use function count;
-
 class CommandDataCollectorTest extends TestCase
 {
     /** @var CommandLogger */
