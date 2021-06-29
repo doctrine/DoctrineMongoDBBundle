@@ -14,6 +14,8 @@ use Throwable;
 use function array_map;
 use function array_reduce;
 use function count;
+use function MongoDB\BSON\fromPHP;
+use function MongoDB\BSON\toCanonicalExtendedJSON;
 
 class CommandDataCollector extends DataCollector
 {
@@ -31,8 +33,10 @@ class CommandDataCollector extends DataCollector
             'num_commands' => count($this->commandLogger),
             'commands' => array_map(
                 static function (Command $command) : array {
+                    $dbProperty = '$db';
                     return [
-                        'command' => $command->getCommand(),
+                        'database' => $command->getCommand()->$dbProperty ?? '',
+                        'command' => toCanonicalExtendedJSON(fromPHP($command->getCommand())),
                         'durationMicros' => $command->getDurationMicros(),
                     ];
                 },
