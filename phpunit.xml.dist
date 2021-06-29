@@ -10,11 +10,6 @@
          stopOnFailure="false"
          bootstrap="./Tests/bootstrap.php"
 >
-
-    <extensions>
-        <extension class="Doctrine\Bundle\MongoDBBundle\Tests\Hook\BypassFinalHook"/>
-    </extensions>
-
     <testsuites>
         <testsuite name="DoctrineMongoDBBundle Test Suite">
             <directory>./Tests/</directory>
