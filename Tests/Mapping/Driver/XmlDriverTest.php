@@ -27,8 +27,8 @@ class XmlDriverTest extends AbstractDriverTest
     /**
      * @return XmlDriver
      */
-    protected function getDriver(array $prefixes = [])
+    protected function getDriver(array $paths = [])
     {
-        return new XmlDriver($prefixes, $this->getFileExtension());
+        return new XmlDriver($paths, $this->getFileExtension());
     }
 }
