@@ -53,9 +53,9 @@ class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
      *                                    your bundle uses. This compiler pass will automatically
      *                                    append the parameter name for the default entity manager
      *                                    to this list.
-     * @param string   $enabledParameter  Service container parameter that must be present to
-     *                                    enable the mapping. Set to false to not do any check,
-     *                                    optional.
+     * @param bool     $enabledParameter  Service container parameter that must be present to
+     *                                      enable the mapping. Set to false to not do any check,
+     *                                      optional.
      * @param string[] $aliasMap          Map of alias to namespace.
      *
      * @return DoctrineMongoDBMappingsPass
@@ -75,9 +75,9 @@ class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
      *                                    your bundle uses. This compiler pass will automatically
      *                                    append the parameter name for the default entity manager
      *                                    to this list.
-     * @param string   $enabledParameter  Service container parameter that must be present to
-     *                                    enable the mapping. Set to false to not do any check,
-     *                                    optional.
+     * @param bool     $enabledParameter  Service container parameter that must be present to
+     *                                      enable the mapping. Set to false to not do any check,
+     *                                      optional.
      * @param string[] $aliasMap          Map of alias to namespace.
      *
      * @return DoctrineMongoDBMappingsPass
@@ -98,9 +98,9 @@ class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
      *                                    your bundle uses. This compiler pass will automatically
      *                                    append the parameter name for the default entity manager
      *                                    to this list.
-     * @param string   $enabledParameter  Service container parameter that must be present to
-     *                                    enable the mapping. Set to false to not do any check,
-     *                                    optional.
+     * @param bool     $enabledParameter  Service container parameter that must be present to
+     *                                      enable the mapping. Set to false to not do any check,
+     *                                      optional.
      * @param string[] $aliasMap          Map of alias to namespace.
      *
      * @return DoctrineMongoDBMappingsPass
@@ -119,9 +119,9 @@ class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
      *                                    your bundle uses. This compiler pass will automatically
      *                                    append the parameter name for the default entity manager
      *                                    to this list.
-     * @param string   $enabledParameter  Service container parameter that must be present to
-     *                                    enable the mapping. Set to false to not do any check,
-     *                                    optional.
+     * @param bool     $enabledParameter  Service container parameter that must be present to
+     *                                      enable the mapping. Set to false to not do any check,
+     *                                      optional.
      * @param string[] $aliasMap          Map of alias to namespace.
      *
      * @return DoctrineMongoDBMappingsPass
