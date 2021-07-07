@@ -14,6 +14,8 @@ jobs:
   phpunit:
     name: "PHPUnit"
     runs-on: "${{ matrix.os }}"
+    env:
+      SYMFONY_REQUIRE: ${{matrix.symfony-require}}
 
     strategy:
       matrix:
@@ -74,8 +76,8 @@ jobs:
           coverage: "pcov"
           ini-values: "zend.assertions=1"
 
-      - name: "Install Symfony"
-        run: "composer require symfony/symfony:${{ matrix.symfony-version }} --no-update"
+      - name: "Globally install symfony/flex"
+        run: "composer global require --no-progress --no-scripts --no-plugins symfony/flex"
 
       - name: "Set minimum-stability to stable in Composer"
         run: "composer config minimum-stability stable"
