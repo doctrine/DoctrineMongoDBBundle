@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\Form\AbstractType;
