@@ -236,6 +236,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
     public function testMessengerIntegration(): void
     {
+        /** @psalm-suppress UndefinedClass Optional dependency */
         if (! interface_exists(MessageBusInterface::class)) {
             $this->markTestSkipped('Symfony Messenger component is not installed');
         }

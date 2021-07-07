@@ -347,6 +347,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
     private function loadMessengerServices(ContainerBuilder $container)
     {
+        /** @psalm-suppress UndefinedClass Optional dependency */
         if (! interface_exists(MessageBusInterface::class) || ! class_exists(DoctrineClearEntityManagerWorkerSubscriber::class)) {
             return;
         }
