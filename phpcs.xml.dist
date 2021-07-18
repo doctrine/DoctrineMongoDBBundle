@@ -30,6 +30,8 @@
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming" />
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming" />
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousTraitNaming" />
+
+        <exclude name="SlevomatCodingStandard.Classes.ModernClassNameReference" /> <!-- PHP 8.0 required-->
     </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">

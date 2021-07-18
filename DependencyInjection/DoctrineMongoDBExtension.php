@@ -19,7 +19,6 @@ use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -263,7 +262,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $container
             ->setDefinition(
                 $managerConfiguratorName,
-                $this->getChildDefinitionOrDefinitionDecorator('doctrine_mongodb.odm.manager_configurator.abstract')
+                new ChildDefinition('doctrine_mongodb.odm.manager_configurator.abstract')
             )
             ->replaceArgument(0, $enabledFilters);
 
@@ -320,7 +319,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $eventManagerId = sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $name);
             $container->setDefinition(
                 $eventManagerId,
-                $this->getChildDefinitionOrDefinitionDecorator('doctrine_mongodb.odm.connection.event_manager')
+                new ChildDefinition('doctrine_mongodb.odm.connection.event_manager')
             );
 
             $configurationId = sprintf('doctrine_mongodb.odm.%s_configuration', $name);
@@ -348,6 +347,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
     private function loadMessengerServices(ContainerBuilder $container)
     {
+        /** @psalm-suppress UndefinedClass Optional dependency */
         if (! interface_exists(MessageBusInterface::class) || ! class_exists(DoctrineClearEntityManagerWorkerSubscriber::class)) {
             return;
         }
@@ -495,17 +495,5 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     public function getXsdValidationBasePath()
     {
         return __DIR__ . '/../Resources/config/schema';
-    }
-
-    /**
-     * Instantiate new ChildDefinition if available, otherwise fall back to deprecated DefinitionDecorator
-     *
-     * @param string $id service ID passed to ctor
-     *
-     * @return ChildDefinition|DefinitionDecorator
-     */
-    private function getChildDefinitionOrDefinitionDecorator($id)
-    {
-        return class_exists(ChildDefinition::class) ? new ChildDefinition($id) : new DefinitionDecorator($id);
     }
 }

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="7"
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+>
+    <projectFiles>
+        <directory name="APM" />
+        <directory name="CacheWarmer" />
+        <directory name="Command" />
+        <directory name="Cursor" />
+        <directory name="DataCollector" />
+        <directory name="DependencyInjection" />
+        <directory name="EventSubscriber" />
+        <directory name="Fixture" />
+        <directory name="Form" />
+        <directory name="Loader" />
+        <directory name="Mapping" />
+        <directory name="Repository" />
+        <directory name="Tests" />
+        <directory name="Validator" />
+        <file name="DoctrineMongoDBBundle.php" />
+        <file name="ManagerConfigurator.php" />
+        <file name="ManagerRegistry.php" />
+        <ignoreFiles>
+            <directory name="vendor" />
+        </ignoreFiles>
+    </projectFiles>
+</psalm>
