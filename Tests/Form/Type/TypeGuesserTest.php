@@ -12,28 +12,22 @@ use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\MockObject\MockObject;
-use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormExtensionInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\Test\TypeTestCase;
 
 use function array_merge;
-use function method_exists;
 
 class TypeGuesserTest extends TypeTestCase
 {
     /** @var DocumentManager */
     private $dm;
 
-    /** @var MockObject */
+    /** @var MockObject&ManagerRegistry */
     private $dmRegistry;
-
-    private $typeFQCN;
 
     protected function setUp(): void
     {
-        $this->typeFQCN = method_exists(AbstractType::class, 'getBlockPrefix');
-
         $this->dm         = TestCase::createTestDocumentManager([
             __DIR__ . '/../../Fixtures/Form/Guesser',
         ]);
@@ -62,7 +56,7 @@ class TypeGuesserTest extends TypeTestCase
      */
     public function testTypesShouldBeGuessedCorrectly(): void
     {
-        $form = $this->factory->create($this->typeFQCN ? GuesserTestType::class : new GuesserTestType(), null, ['dm' => $this->dm]);
+        $form = $this->factory->create(GuesserTestType::class, null, ['dm' => $this->dm]);
         $this->assertType('text', $form->get('name'));
         $this->assertType('document', $form->get('categories'));
         $this->assertType('datetime', $form->get('date'));
@@ -76,7 +70,7 @@ class TypeGuesserTest extends TypeTestCase
 
     protected function assertType(string $type, FormInterface $form): void
     {
-        $this->assertEquals($type, $this->typeFQCN ? $form->getConfig()->getType()->getBlockPrefix() : $form->getConfig()->getType()->getName());
+        $this->assertEquals($type, $form->getConfig()->getType()->getBlockPrefix());
     }
 
     /**
