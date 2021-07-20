@@ -60,7 +60,7 @@ class HydratorCacheWarmer implements CacheWarmerInterface
         }
 
         if ($this->container->getParameter('doctrine_mongodb.odm.auto_generate_hydrator_classes') !== Configuration::AUTOGENERATE_NEVER) {
-            return;
+            return [];
         }
 
         $registry = $this->container->get('doctrine_mongodb');
@@ -70,5 +70,7 @@ class HydratorCacheWarmer implements CacheWarmerInterface
             $classes = $dm->getMetadataFactory()->getAllMetadata();
             $dm->getHydratorFactory()->generateHydratorClasses($classes);
         }
+
+        return [];
     }
 }
