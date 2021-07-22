@@ -34,6 +34,7 @@ class CommandDataCollector extends DataCollector
             'commands' => array_map(
                 static function (Command $command): array {
                     $dbProperty = '$db';
+
                     return [
                         'database' => $command->getCommand()->$dbProperty ?? '',
                         'command' => toCanonicalExtendedJSON(fromPHP($command->getCommand())),
