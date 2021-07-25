@@ -56,6 +56,7 @@ class ConfigurationTest extends TestCase
 
     /**
      * @dataProvider provideFullConfiguration
+     * @group legacy
      */
     public function testFullConfiguration(array $config): void
     {
@@ -143,6 +144,7 @@ class ConfigurationTest extends TestCase
                             ],
                         ],
                     ],
+                    'metadata_cache_driver' => ['type' => 'array'],
                     'mappings' => [
                         'FooBundle' => [
                             'type'    => 'annotation',
@@ -164,6 +166,7 @@ class ConfigurationTest extends TestCase
                     'persistent_collection_factory' => null,
                     'auto_mapping' => false,
                     'filters'      => [],
+                    'metadata_cache_driver' => ['type' => 'array'],
                     'mappings' => [
                         'BarBundle' => [
                             'type'      => 'yml',

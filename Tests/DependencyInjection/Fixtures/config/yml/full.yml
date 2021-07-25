@@ -57,6 +57,7 @@ doctrine_mongodb:
             persistent_collection_factory: ~
             mappings:
                 FooBundle:   annotation
+            metadata_cache_driver: array
             profiler:
                 enabled: true
                 pretty:  false
@@ -89,4 +90,5 @@ doctrine_mongodb:
                     prefix: prefix_val
                     alias:  alias_val
                     is_bundle: false
+            metadata_cache_driver: array
             logging: true

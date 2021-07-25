@@ -34,6 +34,7 @@ use function class_exists;
 use function class_implements;
 use function in_array;
 use function interface_exists;
+use function is_a;
 use function reset;
 use function sprintf;
 
@@ -211,7 +212,6 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
         $methods = [
             'setMetadataCache' => new Reference($this->getObjectManagerElementName($documentManager['name'] . '_metadata_cache')),
-            'setMetadataCacheImpl' => new Reference(sprintf('doctrine_mongodb.odm.%s_metadata_cache', $documentManager['name'])),
             'setMetadataDriverImpl' => new Reference(sprintf('doctrine_mongodb.odm.%s_metadata_driver', $documentManager['name'])),
             'setProxyDir' => '%doctrine_mongodb.odm.proxy_dir%',
             'setProxyNamespace' => '%doctrine_mongodb.odm.proxy_namespace%',
@@ -512,7 +512,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $cacheWarmerServiceId            = $this->getObjectManagerElementName($documentManagerName . '_metadata_cache_warmer');
 
         $container->register($cacheWarmerServiceId, MetadataCacheWarmer::class)
-            ->setArguments([new Reference(sprintf('doctrine.orm.%s_entity_manager', $documentManagerName)), $phpArrayFile])
+            ->setArguments([new Reference(sprintf('doctrine_mongodb.odm.%s_document_manager', $documentManagerName)), $phpArrayFile])
             ->addTag('kernel.cache_warmer', ['priority' => 1000]); // priority should be higher than ProxyCacheWarmer
 
         $container->setAlias($metadataCacheAlias, $phpArrayCacheDecoratorServiceId);
@@ -521,7 +521,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             ->addArgument(new Definition(ArrayAdapter::class));
     }
 
-    private function loadMetadataCacheDriver($documentManager, ContainerBuilder $container): void
+    private function loadMetadataCacheDriver(array $documentManager, ContainerBuilder $container): void
     {
         if (! isset($documentManager['metadata_cache_driver'])) {
             // Automatically configure cache
@@ -547,7 +547,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $container->setDefinition($cacheServiceId, $adapterDefinition);
     }
 
-    private function configureDefaultMetadataCache($documentManager, ContainerBuilder $container)
+    private function configureDefaultMetadataCache(array $documentManager, ContainerBuilder $container)
     {
         $documentManagerName = $documentManager['name'];
         $cacheServiceId      = $this->getObjectManagerElementName($documentManager['name'] . '_metadata_cache');
@@ -562,7 +562,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
         $cacheWarmerServiceId = $this->getObjectManagerElementName($documentManagerName . '_metadata_cache_warmer');
         $container->register($cacheWarmerServiceId, MetadataCacheWarmer::class)
-            ->setArguments([new Reference(sprintf('doctrine.orm.%s_entity_manager', $documentManagerName)), $phpArrayFile])
+            ->setArguments([new Reference(sprintf('doctrine_mongodb.odm.%s_document_manager', $documentManagerName)), $phpArrayFile])
             ->addTag('kernel.cache_warmer', ['priority' => 1000]); // priority should be higher than ProxyCacheWarmer
 
         $container->register($cacheServiceId, PhpArrayAdapter::class)

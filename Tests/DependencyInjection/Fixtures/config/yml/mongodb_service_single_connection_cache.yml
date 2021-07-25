@@ -2,6 +2,7 @@ doctrine_mongodb:
   connections:
     default:
       server: mongodb://localhost:27017
-  default_database: mydb
   document_managers:
-    default: ~
+    default:
+      connection: default
+      metadata_cache_driver: array
