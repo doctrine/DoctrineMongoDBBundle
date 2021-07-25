@@ -9,13 +9,6 @@
     <doctrine:mongodb default_database="mydb">
         <doctrine:connection server="mongodb://localhost:27017" id="default" />
 
-        <doctrine:document-manager id="default" connection="default">
-            <doctrine:metadata-cache-driver type="memcached">
-                <doctrine:class>Doctrine\Common\Cache\MemcachedCache</doctrine:class>
-                <doctrine:host>localhost</doctrine:host>
-                <doctrine:port>11211</doctrine:port>
-                <doctrine:instance-class>Memcached</doctrine:instance-class>
-            </doctrine:metadata-cache-driver>
-        </doctrine:document-manager>
+        <doctrine:document-manager id="default" connection="default" />
     </doctrine:mongodb>
 </container>

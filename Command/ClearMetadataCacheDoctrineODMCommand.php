@@ -9,6 +9,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function sprintf;
+use function trigger_error;
+
+use const E_USER_DEPRECATED;
+
 /**
  * Command to clear the metadata cache of the various cache drivers.
  */
@@ -41,6 +46,8 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        @trigger_error(sprintf('The "%s" (doctrine:cache:clear-metadata) is deprecated, metadata cache now uses PHP Array cache which can not be cleared.', self::class), E_USER_DEPRECATED);
+
         DoctrineODMCommand::setApplicationDocumentManager($this->getApplication(), $input->getOption('dm'));
 
         return parent::execute($input, $output);

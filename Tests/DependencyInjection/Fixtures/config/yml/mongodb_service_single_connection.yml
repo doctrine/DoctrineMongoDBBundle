@@ -5,9 +5,3 @@ doctrine_mongodb:
   document_managers:
     default:
       connection: default
-      metadata_cache_driver:
-        type: memcached
-        class: Doctrine\Common\Cache\MemcachedCache
-        host: localhost
-        port: 11211
-        instance_class: Memcached
