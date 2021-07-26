@@ -62,7 +62,7 @@ class ProxyCacheWarmer implements CacheWarmerInterface
         }
 
         if ($this->container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes') === Configuration::AUTOGENERATE_EVAL) {
-            return;
+            return [];
         }
 
         $registry = $this->container->get('doctrine_mongodb');
@@ -72,6 +72,8 @@ class ProxyCacheWarmer implements CacheWarmerInterface
             $classes = $this->getClassesForProxyGeneration($dm);
             $dm->getProxyFactory()->generateProxyClasses($classes);
         }
+
+        return [];
     }
 
     /**
