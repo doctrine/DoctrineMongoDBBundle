@@ -12,8 +12,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-use function json_decode;
-
 class CommandDataCollectorTest extends TestCase
 {
     /** @var CommandLogger */
@@ -57,11 +55,11 @@ class CommandDataCollectorTest extends TestCase
 
         self::assertSame(3, $collector->getCommandCount());
         self::assertGreaterThan(0, $collector->getTime());
-        self::assertSame('Category', json_decode($collector->getCommands()[0]['command'])->insert);
+        self::assertSame('Category', $collector->getCommands()[0]['command']->insert);
         self::assertGreaterThan(0, $collector->getCommands()[0]['durationMicros']);
-        self::assertSame('Category', json_decode($collector->getCommands()[1]['command'])->delete);
+        self::assertSame('Category', $collector->getCommands()[1]['command']->delete);
         self::assertGreaterThan(0, $collector->getCommands()[1]['durationMicros']);
-        self::assertSame('Category', json_decode($collector->getCommands()[2]['command'])->find);
+        self::assertSame('Category', $collector->getCommands()[2]['command']->find);
         self::assertGreaterThan(0, $collector->getCommands()[2]['durationMicros']);
     }
 }
