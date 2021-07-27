@@ -53,7 +53,7 @@
             <em>No commands were performed.</em>
         </div>
     {% endif %}
-    <table>
+    <table class="queries-table">
         <thead>
         <tr>
             <th class="nowrap">#</th>
@@ -69,7 +69,13 @@
                 <td class="nowrap">{{ '%0.3f'|format(command.durationMicros / 1000) }} ms</td>
                 <td class="nowrap">{{ command.database }}</td>
                 <td>
-                    <pre>{{ command.command|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+                    {{ command.command|json_encode() }}
+                    <div class="text-small font-normal">
+                        <a href="#" class="sf-toggle link-inverse" data-toggle-selector="#formatted-query-{{ loop.index }}" data-toggle-alt-content="Hide formatted query">View formatted query</a>
+                    </div>
+                    <div id="formatted-query-{{ loop.index }}" class="sql-runnable hidden">
+                        <pre>{{ command.command|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+                    </div>
                 </td>
             </tr>
         {% endfor %}
