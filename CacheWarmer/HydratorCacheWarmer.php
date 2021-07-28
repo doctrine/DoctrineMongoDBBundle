@@ -50,7 +50,7 @@ class HydratorCacheWarmer implements CacheWarmerInterface
     public function warmUp($cacheDir)
     {
         // we need the directory no matter the hydrator cache generation strategy.
-        $hydratorCacheDir = $this->container->getParameter('doctrine_mongodb.odm.hydrator_dir');
+        $hydratorCacheDir = (string) $this->container->getParameter('doctrine_mongodb.odm.hydrator_dir');
         if (! file_exists($hydratorCacheDir)) {
             if (@mkdir($hydratorCacheDir, 0775, true) === false) {
                 throw new RuntimeException(sprintf('Unable to create the Doctrine Hydrator directory (%s)', dirname($hydratorCacheDir)));

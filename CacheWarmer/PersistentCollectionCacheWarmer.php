@@ -51,7 +51,7 @@ class PersistentCollectionCacheWarmer implements CacheWarmerInterface
     public function warmUp($cacheDir)
     {
         // we need the directory no matter the hydrator cache generation strategy.
-        $collCacheDir = $this->container->getParameter('doctrine_mongodb.odm.persistent_collection_dir');
+        $collCacheDir = (string) $this->container->getParameter('doctrine_mongodb.odm.persistent_collection_dir');
         if (! file_exists($collCacheDir)) {
             if (@mkdir($collCacheDir, 0775, true) === false) {
                 throw new RuntimeException(sprintf('Unable to create the Doctrine persistent collection directory (%s)', dirname($collCacheDir)));
