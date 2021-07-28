@@ -23,6 +23,10 @@ use function sprintf;
  *
  * In the process of generating hydrators the cache for all the metadata is primed also,
  * since this information is necessary to build the hydrators in the first place.
+ *
+ * @internal since version 4.4
+ *
+ * @psalm-suppress ContainerDependency
  */
 class HydratorCacheWarmer implements CacheWarmerInterface
 {

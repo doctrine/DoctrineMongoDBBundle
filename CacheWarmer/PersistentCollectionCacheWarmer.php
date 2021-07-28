@@ -6,6 +6,7 @@ namespace Doctrine\Bundle\MongoDBBundle\CacheWarmer;
 
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -24,6 +25,10 @@ use function sprintf;
  *
  * In the process of generating persistent collections the cache for all the metadata is primed also,
  * since this information is necessary to build the persistent collections in the first place.
+ *
+ * @internal since version 4.4
+ *
+ * @psalm-suppress ContainerDependency
  */
 class PersistentCollectionCacheWarmer implements CacheWarmerInterface
 {
@@ -73,6 +78,7 @@ class PersistentCollectionCacheWarmer implements CacheWarmerInterface
             $collectionGenerator = $dm->getConfiguration()->getPersistentCollectionGenerator();
             $classes             = $dm->getMetadataFactory()->getAllMetadata();
             foreach ($classes as $metadata) {
+                assert($metadata instanceof ClassMetadata);
                 foreach ($metadata->getAssociationNames() as $fieldName) {
                     $mapping = $metadata->getFieldMapping($fieldName);
                     if (empty($mapping['collectionClass']) || in_array($mapping['collectionClass'], $generated)) {

@@ -112,8 +112,8 @@ class DocumentTypeTest extends TypeTestCase
         $this->assertInstanceOf(FormView::class, $categoryView);
 
         $this->assertCount(2, $categoryView->children);
-        $this->assertTrue($categoryView->children[0]->vars['checked']);
-        $this->assertFalse($categoryView->children[1]->vars['checked']);
+        $this->assertTrue($form->get('categories')->get('0')->createView()->vars['checked']);
+        $this->assertFalse($form->get('categories')->get('1')->createView()->vars['checked']);
     }
 
     /**

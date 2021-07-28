@@ -87,7 +87,7 @@ EOT
         $dm = $this->getManagerRegistry()->getManager($input->getOption('dm'));
         $ui = new SymfonyStyle($input, $output);
 
-        if ((bool) $input->getOption('services')) {
+        if ($input->getOption('services')) {
             @trigger_error(sprintf('The "services" option to the "%s" command is deprecated and will be dropped in DoctrineMongoDBBundle 5.0.', $this->getName()), E_USER_DEPRECATED);
         }
 
