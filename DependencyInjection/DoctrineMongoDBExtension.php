@@ -39,6 +39,8 @@ use function sprintf;
  */
 class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 {
+    public const CONFIGURATION_TAG = 'doctrine.odm.configuration';
+
     /**
      * Responds to the doctrine_mongodb configuration parameter.
      */
@@ -198,6 +200,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $defaultDatabase = $documentManager['database'] ?? $defaultDB;
 
         $odmConfigDef = new Definition('%doctrine_mongodb.odm.configuration.class%');
+        $odmConfigDef->addTag(self::CONFIGURATION_TAG);
         $container->setDefinition(
             $configurationId,
             $odmConfigDef
