@@ -38,7 +38,7 @@ class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInte
             ->addArgument('finder', InputArgument::REQUIRED, 'The repository finder method which returns the cursor to tail.')
             ->addArgument('processor', InputArgument::REQUIRED, 'The service id to use to process the documents.')
             ->addOption('no-flush', null, InputOption::VALUE_NONE, 'If set, the document manager won\'t be flushed after each document processing')
-            ->addOption('sleep-time', null, InputOption::VALUE_REQUIRED, 'The number of seconds to wait between two checks.', 10);
+            ->addOption('sleep-time', null, InputOption::VALUE_REQUIRED, 'The number of seconds to wait between two checks.', '10');
     }
 
     /**
@@ -51,7 +51,7 @@ class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInte
         $repositoryReflection = new ReflectionClass($repository);
         $documentReflection   = $repository->getDocumentManager()->getMetadataFactory()->getMetadataFor($input->getArgument('document'))->getReflectionClass();
         $processor            = $this->getContainer()->get($input->getArgument('processor'));
-        $sleepTime            = $input->getOption('sleep-time');
+        $sleepTime            = (int) $input->getOption('sleep-time');
 
         if (! $processor instanceof TailableCursorProcessorInterface) {
             throw new InvalidArgumentException('A tailable cursor processor must implement the ProcessorInterface.');

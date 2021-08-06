@@ -25,6 +25,10 @@ use function sprintf;
  *
  * In the process of generating proxies the cache for all the metadata is primed also,
  * since this information is necessary to build the proxies in the first place.
+ *
+ * @internal since version 4.4
+ *
+ * @psalm-suppress ContainerDependency
  */
 class ProxyCacheWarmer implements CacheWarmerInterface
 {
@@ -52,7 +56,7 @@ class ProxyCacheWarmer implements CacheWarmerInterface
     public function warmUp($cacheDir)
     {
         // we need the directory no matter the proxy cache generation strategy.
-        $proxyCacheDir = $this->container->getParameter('doctrine_mongodb.odm.proxy_dir');
+        $proxyCacheDir = (string) $this->container->getParameter('doctrine_mongodb.odm.proxy_dir');
         if (! file_exists($proxyCacheDir)) {
             if (@mkdir($proxyCacheDir, 0775, true) === false) {
                 throw new RuntimeException(sprintf('Unable to create the Doctrine Proxy directory (%s)', dirname($proxyCacheDir)));

@@ -75,6 +75,7 @@ abstract class DoctrineODMCommand extends Command implements ContainerAwareInter
     {
         if ($this->managerRegistry === null) {
             $this->managerRegistry = $this->container->get('doctrine_mongodb');
+            assert($this->managerRegistry instanceof ManagerRegistry);
         }
 
         return $this->managerRegistry;
@@ -88,7 +89,12 @@ abstract class DoctrineODMCommand extends Command implements ContainerAwareInter
     protected function findBundle($bundleName)
     {
         $foundBundle = false;
-        foreach ($this->getApplication()->getKernel()->getBundles() as $bundle) {
+
+        $application = $this->getApplication();
+
+        assert($application instanceof Application);
+
+        foreach ($application->getKernel()->getBundles() as $bundle) {
             assert($bundle instanceof Bundle);
             if (strtolower($bundleName) === strtolower($bundle->getName())) {
                 $foundBundle = $bundle;

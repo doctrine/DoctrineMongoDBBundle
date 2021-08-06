@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Psr\Container\ContainerInterface;
 use Symfony\Bridge\Doctrine\ManagerRegistry as BaseManagerRegistry;
@@ -37,8 +38,14 @@ class ManagerRegistry extends BaseManagerRegistry
     public function getAliasNamespace($alias)
     {
         foreach (array_keys($this->getManagers()) as $name) {
+            $objectManager = $this->getManager($name);
+
+            if (! $objectManager instanceof DocumentManager) {
+                continue;
+            }
+
             try {
-                return $this->getManager($name)->getConfiguration()->getDocumentNamespace($alias);
+                return $objectManager->getConfiguration()->getDocumentNamespace($alias);
             } catch (MongoDBException $e) {
             }
         }

@@ -6,6 +6,7 @@ namespace Doctrine\Bundle\MongoDBBundle\CacheWarmer;
 
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -24,6 +25,10 @@ use function sprintf;
  *
  * In the process of generating persistent collections the cache for all the metadata is primed also,
  * since this information is necessary to build the persistent collections in the first place.
+ *
+ * @internal since version 4.4
+ *
+ * @psalm-suppress ContainerDependency
  */
 class PersistentCollectionCacheWarmer implements CacheWarmerInterface
 {
@@ -51,7 +56,7 @@ class PersistentCollectionCacheWarmer implements CacheWarmerInterface
     public function warmUp($cacheDir)
     {
         // we need the directory no matter the hydrator cache generation strategy.
-        $collCacheDir = $this->container->getParameter('doctrine_mongodb.odm.persistent_collection_dir');
+        $collCacheDir = (string) $this->container->getParameter('doctrine_mongodb.odm.persistent_collection_dir');
         if (! file_exists($collCacheDir)) {
             if (@mkdir($collCacheDir, 0775, true) === false) {
                 throw new RuntimeException(sprintf('Unable to create the Doctrine persistent collection directory (%s)', dirname($collCacheDir)));
@@ -73,6 +78,7 @@ class PersistentCollectionCacheWarmer implements CacheWarmerInterface
             $collectionGenerator = $dm->getConfiguration()->getPersistentCollectionGenerator();
             $classes             = $dm->getMetadataFactory()->getAllMetadata();
             foreach ($classes as $metadata) {
+                assert($metadata instanceof ClassMetadata);
                 foreach ($metadata->getAssociationNames() as $fieldName) {
                     $mapping = $metadata->getFieldMapping($fieldName);
                     if (empty($mapping['collectionClass']) || in_array($mapping['collectionClass'], $generated)) {
