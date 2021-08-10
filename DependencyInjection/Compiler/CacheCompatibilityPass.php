@@ -16,32 +16,25 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
 use function array_keys;
-use function assert;
 use function is_a;
-use function is_string;
 use function trigger_deprecation;
 
 /** @internal */
 final class CacheCompatibilityPass implements CompilerPassInterface
 {
-    private const CACHE_SETTER_METHODS_PSR6_SUPPORT = [
-        'setMetadataCache' => true,
-        'setMetadataCacheImpl' => true,
-    ];
+    private const CACHE_SETTER_METHODS_PSR6_SUPPORT = ['setMetadataCache' => true];
 
     public function process(ContainerBuilder $container): void
     {
         foreach (array_keys($container->findTaggedServiceIds(DoctrineMongoDBExtension::CONFIGURATION_TAG)) as $id) {
-            /** @var array<int, string|Reference[]> $methodCall */
+            /** @var array{0: string, 1: mixed[]} $methodCall */
             foreach ($container->getDefinition($id)->getMethodCalls() as $methodCall) {
                 $methodName = $methodCall[0];
-                assert(is_string($methodName));
 
                 if (! isset(self::CACHE_SETTER_METHODS_PSR6_SUPPORT[$methodName])) {
                     continue;
                 }
 
-                /** @var Reference[] $methodArgs */
                 $methodArgs   = $methodCall[1];
                 $definitionId = (string) $methodArgs[0];
                 $aliasId      = null;
@@ -77,8 +70,8 @@ final class CacheCompatibilityPass implements CompilerPassInterface
             $targetFactory = CacheAdapter::class;
 
             trigger_deprecation(
-                'doctrine/doctrine-bundle',
-                '2.4',
+                'doctrine/mongodb-odm-bundle',
+                '4.4',
                 'Configuring doctrine/cache is deprecated. Please update the cache service "%s" to use a PSR-6 cache.',
                 $definitionId
             );
@@ -92,14 +85,16 @@ final class CacheCompatibilityPass implements CompilerPassInterface
     private function wrapIfNecessary(ContainerBuilder $container, ?string $aliasId, string $definitionId, bool $shouldBePsr6): void
     {
         $compatibilityLayer = $this->createCompatibilityLayerDefinition($container, $definitionId, $shouldBePsr6);
+
         if ($compatibilityLayer === null) {
             return;
         }
 
+        $aliasId = $aliasId ?? $definitionId;
+
         $compatibilityLayerId = $definitionId . '.compatibility_layer';
-        if (null !== $aliasId) {
-            $container->setAlias($aliasId, $compatibilityLayerId);
-        }
+        $container->setAlias($compatibilityLayerId, $aliasId);
+
         $container->setDefinition($compatibilityLayerId, $compatibilityLayer);
     }
 }

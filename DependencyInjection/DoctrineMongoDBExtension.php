@@ -35,6 +35,8 @@ use function reset;
 use function sprintf;
 
 /**
+ * @internal
+ *
  * Doctrine MongoDB ODM extension.
  */
 class DoctrineMongoDBExtension extends AbstractDoctrineExtension
@@ -210,7 +212,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $this->loadObjectManagerCacheDriver($documentManager, $container, 'metadata_cache');
 
         $methods = [
-            'setMetadataCacheImpl' => new Reference(sprintf('doctrine_mongodb.odm.%s_metadata_cache', $documentManager['name'])),
+            'setMetadataCache' => new Reference(sprintf('doctrine_mongodb.odm.%s_metadata_cache', $documentManager['name'])),
             'setMetadataDriverImpl' => new Reference(sprintf('doctrine_mongodb.odm.%s_metadata_driver', $documentManager['name'])),
             'setProxyDir' => '%doctrine_mongodb.odm.proxy_dir%',
             'setProxyNamespace' => '%doctrine_mongodb.odm.proxy_namespace%',

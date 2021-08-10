@@ -29,7 +29,6 @@ use function rand;
 use function sprintf;
 use function sys_get_temp_dir;
 
-/** @group legacy */
 class FixtureIntegrationTest extends TestCase
 {
     public function testFixturesLoader(): void
