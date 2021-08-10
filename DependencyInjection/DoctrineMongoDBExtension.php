@@ -9,11 +9,18 @@ use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepository
 use Doctrine\Bundle\MongoDBBundle\EventSubscriber\EventSubscriberInterface;
 use Doctrine\Bundle\MongoDBBundle\Fixture\ODMFixtureInterface;
 use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepositoryInterface;
+use Doctrine\Common\Cache\MemcacheCache;
+use Doctrine\Common\Cache\RedisCache;
 use Doctrine\Common\DataFixtures\Loader as DataFixturesLoader;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
+use Symfony\Component\Cache\Adapter\ApcuAdapter;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\MemcachedAdapter;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Config\Definition\BaseNode;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
@@ -35,12 +42,11 @@ use function reset;
 use function sprintf;
 
 /**
- * @internal
- *
  * Doctrine MongoDB ODM extension.
  */
 class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 {
+    /** @internal */
     public const CONFIGURATION_TAG = 'doctrine.odm.configuration';
 
     /**
@@ -511,6 +517,83 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     public function getXsdValidationBasePath()
     {
         return __DIR__ . '/../Resources/config/schema';
+    }
+
+    /**
+     * Loads a cache driver.
+     *
+     * @throws InvalidArgumentException
+     */
+    protected function loadCacheDriver(string $cacheName, string $objectManagerName, array $cacheDriver, ContainerBuilder $container): string
+    {
+        if (isset($cacheDriver['namespace'])) {
+            return parent::loadCacheDriver($cacheName, $objectManagerName, $cacheDriver, $container);
+        }
+
+        $cacheDriverServiceId = $this->getObjectManagerElementName($objectManagerName . '_' . $cacheName);
+
+        switch ($cacheDriver['type']) {
+            case 'service':
+                $container->setAlias($cacheDriverServiceId, new Alias($cacheDriver['id'], false));
+
+                return $cacheDriverServiceId;
+
+            case 'memcached':
+                if (! empty($cacheDriver['class']) && $cacheDriver['class'] !== MemcacheCache::class) {
+                    return parent::loadCacheDriver($cacheName, $objectManagerName, $cacheDriver, $container);
+                }
+
+                $memcachedInstanceClass = ! empty($cacheDriver['instance_class']) ? $cacheDriver['instance_class'] : '%' . $this->getObjectManagerElementName('cache.memcached_instance.class') . '%';
+                $memcachedHost          = ! empty($cacheDriver['host']) ? $cacheDriver['host'] : '%' . $this->getObjectManagerElementName('cache.memcached_host') . '%';
+                $memcachedPort          = ! empty($cacheDriver['port']) ? $cacheDriver['port'] : '%' . $this->getObjectManagerElementName('cache.memcached_port') . '%';
+                $memcachedInstance      = new Definition($memcachedInstanceClass);
+                $memcachedInstance->addMethodCall('addServer', [
+                    $memcachedHost,
+                    $memcachedPort,
+                ]);
+                $container->setDefinition($this->getObjectManagerElementName(sprintf('%s_memcached_instance', $objectManagerName)), $memcachedInstance);
+
+                $cacheDef = new Definition(MemcachedAdapter::class, [new Reference($this->getObjectManagerElementName(sprintf('%s_memcached_instance', $objectManagerName)))]);
+
+                break;
+
+            case 'redis':
+                if (! empty($cacheDriver['class']) && $cacheDriver['class'] !== RedisCache::class) {
+                    return parent::loadCacheDriver($cacheName, $objectManagerName, $cacheDriver, $container);
+                }
+
+                $redisInstanceClass = ! empty($cacheDriver['instance_class']) ? $cacheDriver['instance_class'] : '%' . $this->getObjectManagerElementName('cache.redis_instance.class') . '%';
+                $redisHost          = ! empty($cacheDriver['host']) ? $cacheDriver['host'] : '%' . $this->getObjectManagerElementName('cache.redis_host') . '%';
+                $redisPort          = ! empty($cacheDriver['port']) ? $cacheDriver['port'] : '%' . $this->getObjectManagerElementName('cache.redis_port') . '%';
+                $redisInstance      = new Definition($redisInstanceClass);
+                $redisInstance->addMethodCall('connect', [
+                    $redisHost,
+                    $redisPort,
+                ]);
+                $container->setDefinition($this->getObjectManagerElementName(sprintf('%s_redis_instance', $objectManagerName)), $redisInstance);
+
+                $cacheDef = new Definition(RedisAdapter::class, [new Reference($this->getObjectManagerElementName(sprintf('%s_redis_instance', $objectManagerName)))]);
+
+                break;
+
+            case 'apcu':
+                $cacheDef = new Definition(ApcuAdapter::class);
+
+                break;
+
+            case 'array':
+                $cacheDef = new Definition(ArrayAdapter::class);
+
+                break;
+
+            default:
+                return parent::loadCacheDriver($cacheName, $objectManagerName, $cacheDriver, $container);
+        }
+
+        $cacheDef->setPublic(false);
+        $container->setDefinition($cacheDriverServiceId, $cacheDef);
+
+        return $cacheDriverServiceId;
     }
 
     private function buildDeprecationArgs(string $version, string $message): array
