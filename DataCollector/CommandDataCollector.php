@@ -6,6 +6,7 @@ namespace Doctrine\Bundle\MongoDBBundle\DataCollector;
 
 use Doctrine\ODM\MongoDB\APM\Command;
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
+use stdClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
@@ -74,7 +75,7 @@ class CommandDataCollector extends DataCollector
     }
 
     /**
-     * @return string[]
+     * @return array<array{database: string, command: stdClass, durationMicros: int}>
      */
     public function getCommands(): array
     {
