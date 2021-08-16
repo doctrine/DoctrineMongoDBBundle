@@ -6,6 +6,8 @@ namespace Doctrine\Bundle\MongoDBBundle\Cursor;
 
 /**
  * Contract for tailable cursor processors.
+ *
+ * @deprecated since version 4.4
  */
 interface TailableCursorProcessorInterface
 {

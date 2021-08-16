@@ -19,9 +19,12 @@ use Throwable;
 
 use function sleep;
 use function sprintf;
+use function trigger_deprecation;
 
 /**
  * Command helping to configure a daemon listening to a tailable cursor. Works only with capped collections.
+ *
+ * @deprecated since version 4.4
  */
 class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInterface
 {
@@ -46,6 +49,13 @@ class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInte
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        trigger_deprecation(
+            'doctrine/mongodb-odm-bundle',
+            '4.4',
+            'The "%s" command is deprecated and will be dropped in DoctrineMongoDBBundle 5.0. You should consider using https://docs.mongodb.com/manual/changeStreams/ instead.',
+            $this->getName()
+        );
+
         $dm                   = $this->getContainer()->get('doctrine_mongodb.odm.document_manager');
         $repository           = $dm->getRepository($input->getArgument('document'));
         $repositoryReflection = new ReflectionClass($repository);
