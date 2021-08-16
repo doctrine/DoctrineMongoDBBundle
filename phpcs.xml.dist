@@ -41,8 +41,4 @@
     <rule ref="Squiz.Classes.ClassFileName.NoMatch">
         <exclude-pattern>Tests/*</exclude-pattern>
     </rule>
-
-    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint">
-        <exclude-pattern>Tests/*</exclude-pattern>
-    </rule>
 </ruleset>

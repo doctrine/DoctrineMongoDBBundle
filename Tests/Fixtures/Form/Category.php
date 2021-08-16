@@ -5,15 +5,25 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MongoDB\BSON\ObjectId;
 
 /** @ODM\Document */
 class Category
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var ObjectId|null
+     */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
     /**
@@ -21,6 +31,8 @@ class Category
      *     targetDocument="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document",
      *     mappedBy="categories"
      * )
+     *
+     * @var Collection<int, Document>
      */
     public $documents;
 
@@ -37,6 +49,6 @@ class Category
      **/
     public function __toString()
     {
-        return (string) $this->name;
+        return $this->name;
     }
 }
