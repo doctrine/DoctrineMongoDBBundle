@@ -126,7 +126,7 @@ Explicit definition of all the mapped documents is the only necessary
 configuration for the ODM and there are several configuration options that you
 can control. The following configuration options exist for a mapping:
 
-- ``type`` One of ``annotation``, ``xml``, ``yml``, ``php`` or ``staticphp``.
+- ``type`` One of ``annotation``, ``attribute``, ``xml``, ``php`` or ``staticphp``.
   This specifies which type of metadata type your mapping uses.
 
 - ``dir`` Path to the mapping or document files (depending on the driver). If
@@ -176,7 +176,7 @@ The following configuration shows a bunch of mapping examples:
                     mappings:
                         MyBundle1: ~
                         MyBundle2: xml
-                        MyBundle3: { type: annotation, dir: Documents/ }
+                        MyBundle3: { type: attribute, dir: Documents/ }
                         MyBundle4: { type: xml, dir: Resources/config/doctrine/mapping }
                         MyBundle5:
                             type: xml
@@ -202,7 +202,7 @@ The following configuration shows a bunch of mapping examples:
                 <doctrine_mongodb:document-manager id="default">
                     <doctrine_mongodb:mapping name="MyBundle1" />
                     <doctrine_mongodb:mapping name="MyBundle2" type="yml" />
-                    <doctrine_mongodb:mapping name="MyBundle3" type="annotation" dir="Documents/" />
+                    <doctrine_mongodb:mapping name="MyBundle3" type="attribute" dir="Documents/" />
                     <doctrine_mongodb:mapping name="MyNundle4" type="xml" dir="Resources/config/doctrine/mapping" />
                     <doctrine_mongodb:mapping name="MyBundle5" type="xml" dir="my-bundle-mappings-dir" alias="BundleAlias" />
                     <doctrine_mongodb:mapping name="doctrine_extensions"

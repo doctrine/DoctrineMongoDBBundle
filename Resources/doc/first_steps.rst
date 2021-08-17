@@ -46,7 +46,11 @@ For Doctrine to be able to do this, you have to create "metadata", or
 configuration that tells Doctrine exactly how the ``Product`` class and its
 properties should be *mapped* to MongoDB. This metadata can be specified
 in a number of different formats including XML or directly inside the
-``Product`` class via annotations:
+``Product`` class via annotations or PHP 8 attributes:
+
+.. versionadded:: 4.4
+
+    The attribute mapping support was added in Doctrine MongoDB ODM Bundle 4.4 and requires PHP 8.0 or newer.
 
 .. configuration-block::
 
@@ -65,7 +69,7 @@ in a number of different formats including XML or directly inside the
             </document>
         </doctrine-mongo-mapping>
 
-    .. code-block:: php
+    .. code-block:: php-annotations
 
         // src/Document/Product.php
         namespace App\Document;
@@ -91,6 +95,26 @@ in a number of different formats including XML or directly inside the
              * @MongoDB\Field(type="float")
              */
             protected $price;
+        }
+
+    .. code-block:: php-attributes
+
+        // src/Document/Product.php
+        namespace App\Document;
+
+        use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+
+        #[MongoDB\Document]
+        class Product
+        {
+            #[MongoDB\Id]
+            protected string $id;
+
+            #[MongoDB\Field(type: 'string')]
+            protected string $name;
+
+            #[MongoDB\Field(type: 'float')]
+            protected float $price;
         }
 
 .. seealso::
@@ -330,6 +354,20 @@ To do this, add the name of the repository class to your mapping definition.
         /**
          * @MongoDB\Document(repositoryClass=ProductRepository::class)
          */
+        class Product
+        {
+            // ...
+        }
+
+    .. code-block:: php-attributes
+
+        // src/Document/Product.php
+        namespace App\Document;
+
+        use App\Repository\ProductRepository;
+        use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+
+        #[MongoDB\Document(repositoryClass: ProductRepository::class)]
         class Product
         {
             // ...
