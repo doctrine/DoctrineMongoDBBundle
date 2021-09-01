@@ -93,8 +93,8 @@ final class CacheCompatibilityPass implements CompilerPassInterface
         $aliasId = $aliasId ?? $definitionId;
 
         $compatibilityLayerId = $definitionId . '.compatibility_layer';
-        $container->setAlias($compatibilityLayerId, $aliasId);
-
         $container->setDefinition($compatibilityLayerId, $compatibilityLayer);
+
+        $container->setAlias($aliasId, $compatibilityLayerId);
     }
 }
