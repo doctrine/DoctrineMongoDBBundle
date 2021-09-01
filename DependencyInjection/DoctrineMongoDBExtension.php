@@ -14,7 +14,7 @@ use Doctrine\Common\Cache\RedisCache;
 use Doctrine\Common\DataFixtures\Loader as DataFixturesLoader;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Psr\Cache\InvalidArgumentException;
+use InvalidArgumentException;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
@@ -522,11 +522,17 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     /**
      * Loads a cache driver.
      *
+     * @param string $cacheName         The cache driver name
+     * @param string $objectManagerName The object manager name
+     * @param array  $cacheDriver       The cache driver mapping
+     *
+     * @return string
+     *
      * @throws InvalidArgumentException
      *
      * @psalm-suppress UndefinedClass this won't be necessary when removing metadata cache configuration
      */
-    protected function loadCacheDriver(string $cacheName, string $objectManagerName, array $cacheDriver, ContainerBuilder $container): string
+    protected function loadCacheDriver($cacheName, $objectManagerName, array $cacheDriver, ContainerBuilder $container)
     {
         if (isset($cacheDriver['namespace'])) {
             return parent::loadCacheDriver($cacheName, $objectManagerName, $cacheDriver, $container);
