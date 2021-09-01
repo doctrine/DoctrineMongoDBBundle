@@ -37,6 +37,13 @@ final class ContainerRepositoryFactory implements RepositoryFactory
         $this->container = $container;
     }
 
+    /**
+     * @psalm-param class-string<T> $documentName
+     *
+     * @psalm-return ObjectRepository<T>
+     *
+     * @template T of object
+     */
     public function getRepository(DocumentManager $documentManager, string $documentName): ObjectRepository
     {
         $metadata             = $documentManager->getClassMetadata($documentName);
@@ -45,6 +52,7 @@ final class ContainerRepositoryFactory implements RepositoryFactory
         if ($customRepositoryName !== null) {
             // fetch from the container
             if ($this->container && $this->container->has($customRepositoryName)) {
+                /** @var ObjectRepository<T> $repository */
                 $repository = $this->container->get($customRepositoryName);
 
                 if (! $repository instanceof DocumentRepository) {
@@ -69,6 +77,13 @@ final class ContainerRepositoryFactory implements RepositoryFactory
         return $this->getOrCreateRepository($documentManager, $metadata);
     }
 
+    /**
+     * @psalm-param ClassMetadata<T> $metadata
+     *
+     * @psalm-return ObjectRepository<T>
+     *
+     * @template T of object
+     */
     private function getOrCreateRepository(DocumentManager $documentManager, ClassMetadata $metadata): ObjectRepository
     {
         $repositoryHash = $metadata->getName() . spl_object_hash($documentManager);

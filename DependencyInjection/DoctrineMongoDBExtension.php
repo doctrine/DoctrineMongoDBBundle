@@ -523,6 +523,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      * Loads a cache driver.
      *
      * @throws InvalidArgumentException
+     *
+     * @psalm-suppress UndefinedClass this won't be necessary when removing metadata cache configuration
      */
     protected function loadCacheDriver(string $cacheName, string $objectManagerName, array $cacheDriver, ContainerBuilder $container): string
     {
