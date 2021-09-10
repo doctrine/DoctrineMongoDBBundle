@@ -68,6 +68,15 @@
     <xsd:attribute name="readPreference" type="read-preference" />
     <xsd:attribute name="replicaSet" type="xsd:string" />
     <xsd:attribute name="ssl" type="xsd:boolean" />
+    <xsd:attribute name="tls" type="xsd:boolean" />
+    <xsd:attribute name="tlsAllowInvalidCertificates" type="xsd:boolean" />
+    <xsd:attribute name="tlsAllowInvalidHostnames" type="xsd:boolean" />
+    <xsd:attribute name="tlsCAFile" type="xsd:string" />
+    <xsd:attribute name="tlsCertificateKeyFile" type="xsd:string" />
+    <xsd:attribute name="tlsCertificateKeyFilePassword" type="xsd:string" />
+    <xsd:attribute name="tlsDisableCertificateRevocationCheck" type="xsd:boolean" />
+    <xsd:attribute name="tlsDisableOCSPEndpointCheck" type="xsd:boolean" />
+    <xsd:attribute name="tlsInsecure" type="xsd:boolean" />
     <xsd:attribute name="socketTimeoutMS" type="xsd:integer" />
     <xsd:attribute name="username" type="xsd:string" />
     <xsd:attribute name="w" type="xsd:string" />
