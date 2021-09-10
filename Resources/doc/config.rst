@@ -598,6 +598,8 @@ Full Default Configuration
                         tlsDisableOCSPEndpointCheck:            ~
                         tlsInsecure:                            ~
                         username:                               ~
+                        retryReads:                             ~
+                        retryWrites:                            ~
                         w:                                      ~
                         wTimeoutMS:                             ~
                     driver_options:

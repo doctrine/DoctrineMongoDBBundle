@@ -317,6 +317,8 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('username')
                                         ->validate()->ifNull()->thenUnset()->end()
                                     ->end()
+                                    ->booleanNode('retryReads')->end()
+                                    ->booleanNode('retryWrites')->end()
                                     ->scalarNode('w')->end()
                                     ->integerNode('wTimeoutMS')->end()
                                     // Deprecated options

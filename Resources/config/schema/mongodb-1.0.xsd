@@ -79,6 +79,8 @@
     <xsd:attribute name="tlsInsecure" type="xsd:boolean" />
     <xsd:attribute name="socketTimeoutMS" type="xsd:integer" />
     <xsd:attribute name="username" type="xsd:string" />
+    <xsd:attribute name="retryReads" type="xsd:boolean" />
+    <xsd:attribute name="retryWrites" type="xsd:boolean" />
     <xsd:attribute name="w" type="xsd:string" />
     <xsd:attribute name="wTimeoutMS" type="xsd:integer" />
     <!-- deprecated options -->

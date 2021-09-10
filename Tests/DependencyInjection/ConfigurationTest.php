@@ -115,6 +115,8 @@ class ConfigurationTest extends TestCase
                         'authMechanism'                        => 'MONGODB-X509',
                         'authSource'                           => 'some_db',
                         'username'                             => 'username_val',
+                        'retryReads'                           => false,
+                        'retryWrites'                          => false,
                         'w'                                    => 'majority',
                         'wTimeoutMS'                           => 1000,
                     ],
