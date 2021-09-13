@@ -576,21 +576,32 @@ Full Default Configuration
                 id:
                     server:               ~
                     options:
-                        authMechanism:        ~
-                        connect:              ~
-                        connectTimeoutMS:     ~
-                        db:                   ~
-                        authSource:           ~
-                        journal:              ~
-                        password:             ~
-                        readPreference:       ~
-                        readPreferenceTags:   ~
-                        replicaSet:           ~ # replica set name
-                        socketTimeoutMS:      ~
-                        ssl:                  ~
-                        username:             ~
-                        w:                    ~
-                        wTimeoutMS:           ~
+                        authMechanism:                          ~
+                        connect:                                ~
+                        connectTimeoutMS:                       ~
+                        db:                                     ~
+                        authSource:                             ~
+                        journal:                                ~
+                        password:                               ~
+                        readPreference:                         ~
+                        readPreferenceTags:                     ~
+                        replicaSet:                             ~ # replica set name
+                        socketTimeoutMS:                        ~
+                        ssl:                                    ~
+                        tls:                                    ~
+                        tlsAllowInvalidCertificates:            ~
+                        tlsAllowInvalidHostnames:               ~
+                        tlsCAFile:                              ~
+                        tlsCertificateKeyFile:                  ~
+                        tlsCertificateKeyFilePassword:          ~
+                        tlsDisableCertificateRevocationCheck:   ~
+                        tlsDisableOCSPEndpointCheck:            ~
+                        tlsInsecure:                            ~
+                        username:                               ~
+                        retryReads:                             ~
+                        retryWrites:                            ~
+                        w:                                      ~
+                        wTimeoutMS:                             ~
                     driver_options:
                         context:              ~ # stream context to use for connection
 

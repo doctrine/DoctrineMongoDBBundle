@@ -38,14 +38,25 @@ doctrine_mongodb:
                   - { dc: east, use: reporting }
                   - { dc: west }
                   - {  }
-                replicaSet:       foo
-                slaveOkay:        true
-                socketTimeoutMS:  1000
-                ssl:              true
-                authMechanism:    MONGODB-X509
-                username:         username_val
-                w:                majority
-                wTimeoutMS:       1000
+                replicaSet:                           foo
+                slaveOkay:                            true
+                socketTimeoutMS:                      1000
+                ssl:                                  true
+                tls:                                  true
+                tlsAllowInvalidCertificates:          false
+                tlsAllowInvalidHostnames:             false
+                tlsCAFile:                            '/path/to/cert.pem'
+                tlsCertificateKeyFile:                '/path/to/key.crt'
+                tlsCertificateKeyFilePassword:        'secret'
+                tlsDisableCertificateRevocationCheck: false
+                tlsDisableOCSPEndpointCheck:          false
+                tlsInsecure:                          false
+                authMechanism:                        MONGODB-X509
+                username:                             username_val
+                retryReads:                           false
+                retryWrites:                          false
+                w:                                    majority
+                wTimeoutMS:                           1000
             driver_options:
                 context:          conn1_context_service
         conn2:
