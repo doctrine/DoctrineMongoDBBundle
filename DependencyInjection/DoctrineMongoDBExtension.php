@@ -14,6 +14,7 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
+use Symfony\Component\Config\Definition\BaseNode;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -29,6 +30,7 @@ use function class_exists;
 use function class_implements;
 use function in_array;
 use function interface_exists;
+use function method_exists;
 use function reset;
 use function sprintf;
 
@@ -230,16 +232,25 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $methods['setPersistentCollectionFactory'] = new Reference($documentManager['persistent_collection_factory']);
         }
 
+        $container->getAlias('doctrine_mongodb.odm.command_logger')
+            ->setDeprecated(...$this->buildDeprecationArgs(
+                '4.4',
+                'The service %alias_id% is deprecated and will be dropped in DoctrineMongoDBBundle 5.0. Use "doctrine_mongodb.odm.psr_command_logger" instead.'
+            ));
+
         // logging
         if ($container->getParameterBag()->resolveValue($documentManager['logging'])) {
-            $logger = $container->getDefinition('doctrine_mongodb.odm.command_logger');
-            $logger->addTag('doctrine_mongodb.odm.command_logger');
+            $container->getDefinition('doctrine_mongodb.odm.psr_command_logger')
+                ->addTag('doctrine_mongodb.odm.command_logger');
         }
 
         // profiler
         if ($container->getParameterBag()->resolveValue($documentManager['profiler']['enabled'])) {
-            $logger = $container->getDefinition('doctrine_mongodb.odm.data_collector.command_logger');
-            $logger->addTag('doctrine_mongodb.odm.command_logger');
+            $container->getDefinition('doctrine_mongodb.odm.data_collector.command_logger')
+                ->addTag('doctrine_mongodb.odm.command_logger');
+
+            $container->getDefinition('doctrine_mongodb.odm.stopwatch_command_logger')
+                ->addTag('doctrine_mongodb.odm.command_logger');
 
             $container
                 ->getDefinition('doctrine_mongodb.odm.data_collector')
@@ -495,5 +506,12 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     public function getXsdValidationBasePath()
     {
         return __DIR__ . '/../Resources/config/schema';
+    }
+
+    private function buildDeprecationArgs(string $version, string $message): array
+    {
+        return method_exists(BaseNode::class, 'getDeprecation')
+            ? ['doctrine/mongodb-odm-bundle', $version, $message]
+            : [$message];
     }
 }
