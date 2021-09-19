@@ -577,7 +577,6 @@ Full Default Configuration
                     server:               ~
                     options:
                         authMechanism:                          ~
-                        connect:                                ~
                         connectTimeoutMS:                       ~
                         db:                                     ~
                         authSource:                             ~
@@ -669,7 +668,6 @@ Full Default Configuration
                 <doctrine:connection id="conn1" server="mongodb://localhost">
                     <doctrine:options
                             authMechanism=""
-                            connect=""
                             connectTimeoutMS=""
                             db=""
                             authSource=""
