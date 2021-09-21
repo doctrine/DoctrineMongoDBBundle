@@ -11,3 +11,5 @@ UPGRADE FROM 4.x to 4.4
   deprecated without replacement.
 * The `Doctrine\Bundle\MongoDBBundle\Command\DoctrineODMCommand` class has
   been marked as `@internal`, you should not extend from this class.
+* The `doctrine_mongodb.odm.command_logger` service has been deprecated. You should use
+  `doctrine_mongodb.odm.psr_command_logger` instead.

@@ -136,7 +136,13 @@
             <argument type="tagged" tag="doctrine_mongodb.odm.command_logger" />
         </service>
 
-        <service id="doctrine_mongodb.odm.command_logger" class="Doctrine\Bundle\MongoDBBundle\APM\PSRCommandLogger" public="false">
+        <service id="doctrine_mongodb.odm.stopwatch_command_logger" class="Doctrine\Bundle\MongoDBBundle\APM\StopwatchCommandLogger" public="false">
+            <argument type="service" id="debug.stopwatch" on-invalid="null" />
+        </service>
+
+        <service id="doctrine_mongodb.odm.command_logger" alias="doctrine_mongodb.odm.psr_command_logger" />
+
+        <service id="doctrine_mongodb.odm.psr_command_logger" class="Doctrine\Bundle\MongoDBBundle\APM\PSRCommandLogger" public="false">
             <argument type="service" id="logger" on-invalid="null" />
 
             <tag name="monolog.logger" channel="doctrine" />
