@@ -48,16 +48,16 @@
     },
     "autoload": {
         "psr-4": {
-            "Doctrine\\Bundle\\MongoDBBundle\\": ""
+            "Doctrine\\Bundle\\MongoDBBundle\\": "src"
         },
         "exclude-from-classmap": [
-            "/Tests/"
+            "/tests/"
         ]
     },
     "autoload-dev": {
         "psr-4": {
-            "": "Tests/DependencyInjection",
-            "Doctrine\\Bundle\\MongoDBBundle\\Tests\\": "Tests"
+            "": "tests/DependencyInjection",
+            "Doctrine\\Bundle\\MongoDBBundle\\Tests\\": "tests"
         }
     },
     "config": {
