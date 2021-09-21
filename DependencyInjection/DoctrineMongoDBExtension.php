@@ -510,6 +510,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
     private function buildDeprecationArgs(string $version, string $message): array
     {
+        // @todo Remove when support for Symfony 5.1 and older is dropped
         return method_exists(BaseNode::class, 'getDeprecation')
             ? ['doctrine/mongodb-odm-bundle', $version, $message]
             : [$message];
