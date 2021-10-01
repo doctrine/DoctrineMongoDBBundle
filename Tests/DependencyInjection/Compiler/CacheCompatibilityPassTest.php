@@ -19,11 +19,15 @@ class CacheCompatibilityPassTest extends TestCase
 
     /**
      * @group legacy
-     * @doesNotPerformAssertions
      */
     public function testMetadataCacheConfigUsingPsr6ServiceDefinedByApplication(): void
     {
-        (new class (false) extends TestKernel {
+        $kernel = (new class (false) extends TestKernel {
+            public function isBooted(): bool
+            {
+                return $this->booted;
+            }
+
             public function registerContainerConfiguration(LoaderInterface $loader): void
             {
                 parent::registerContainerConfiguration($loader);
@@ -38,7 +42,10 @@ class CacheCompatibilityPassTest extends TestCase
                     );
                 });
             }
-        })->boot();
+        });
+
+        $kernel->boot();
+        self::assertTrue($kernel->isBooted());
     }
 
     /**
