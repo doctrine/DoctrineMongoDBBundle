@@ -8,6 +8,7 @@ use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepository
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Doctrine\Persistence\ObjectRepository;
 use Psr\Container\ContainerInterface;
@@ -94,6 +95,7 @@ final class ContainerRepositoryFactory implements RepositoryFactory
         if ($metadata->customRepositoryClassName) {
             $repositoryClassName = $metadata->customRepositoryClassName;
         } elseif ($metadata->isFile) {
+            /** @psalm-var class-string<GridFSRepository<T>> $repositoryClassName */
             $repositoryClassName = $documentManager->getConfiguration()->getDefaultGridFSRepositoryClassName();
         } else {
             $repositoryClassName = $documentManager->getConfiguration()->getDefaultDocumentRepositoryClassName();
