@@ -25,9 +25,9 @@ use Symfony\Component\Routing\RouteCollectionBuilder;
 use function array_map;
 use function assert;
 use function get_class;
-use function rand;
 use function sprintf;
 use function sys_get_temp_dir;
+use function uniqid;
 
 class FixtureIntegrationTest extends TestCase
 {
@@ -283,13 +283,12 @@ class IntegrationTestKernel extends Kernel
     /** @var callable */
     private $servicesCallback;
 
-    /** @var int */
+    /** @var string */
     private $randomKey;
 
     public function __construct(string $environment, bool $debug)
     {
-        $this->randomKey = rand(100, 999);
-
+        $this->randomKey = uniqid('');
         parent::__construct($environment, $debug);
     }
 
