@@ -54,21 +54,6 @@ in a number of different formats including XML or directly inside the
 
 .. configuration-block::
 
-    .. code-block:: xml
-
-        <!-- src/Resources/config/doctrine/Product.mongodb.xml -->
-        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-                            https://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
-
-            <document name="App\Document\Product">
-                <id />
-                <field field-name="name" type="string" />
-                <field field-name="price" type="float" />
-            </document>
-        </doctrine-mongo-mapping>
-
     .. code-block:: php-annotations
 
         // src/Document/Product.php
@@ -116,6 +101,21 @@ in a number of different formats including XML or directly inside the
             #[MongoDB\Field(type: 'float')]
             protected float $price;
         }
+
+    .. code-block:: xml
+
+        <!-- src/Resources/config/doctrine/Product.mongodb.xml -->
+        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                            https://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+
+            <document name="App\Document\Product">
+                <id />
+                <field field-name="name" type="string" />
+                <field field-name="price" type="float" />
+            </document>
+        </doctrine-mongo-mapping>
 
 .. seealso::
 
