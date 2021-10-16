@@ -53,7 +53,7 @@ class MongoDBQueryBuilderLoader implements EntityLoaderInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @return object[]
      */
     public function getEntities()
     {
@@ -61,7 +61,9 @@ class MongoDBQueryBuilderLoader implements EntityLoaderInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $identifier
+     *
+     * @return object[]
      */
     public function getEntitiesByIds($identifier, array $values)
     {

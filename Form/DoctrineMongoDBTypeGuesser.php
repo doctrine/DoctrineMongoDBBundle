@@ -38,7 +38,10 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
     }
 
     /**
-     * @inheritDoc
+     * @param string $class
+     * @param string $property
+     *
+     * @return TypeGuess|null
      */
     public function guessType($class, $property)
     {
@@ -118,7 +121,10 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
     }
 
     /**
-     * @inheritDoc
+     * @param string $class
+     * @param string $property
+     *
+     * @return ValueGuess|null
      */
     public function guessRequired($class, $property)
     {
@@ -139,7 +145,10 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
     }
 
     /**
-     * @inheritDoc
+     * @param string $class
+     * @param string $property
+     *
+     * @return ValueGuess|null
      */
     public function guessMaxLength($class, $property)
     {
@@ -167,7 +176,10 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
     }
 
     /**
-     * @inheritDoc
+     * @param string $class
+     * @param string $property
+     *
+     * @return ValueGuess|null
      */
     public function guessPattern($class, $property)
     {

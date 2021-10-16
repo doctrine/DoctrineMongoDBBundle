@@ -8,6 +8,7 @@ use Doctrine\Bundle\MongoDBBundle\Form\ChoiceList\MongoDBQueryBuilderLoader;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ObjectManager;
 use InvalidArgumentException;
+use Symfony\Bridge\Doctrine\Form\ChoiceList\EntityLoaderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\DoctrineType;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -20,7 +21,10 @@ use function interface_exists;
 class DocumentType extends DoctrineType
 {
     /**
-     * {@inheritDoc}
+     * @param object $queryBuilder
+     * @param string $class
+     *
+     * @return EntityLoaderInterface
      */
     public function getLoader(ObjectManager $manager, $queryBuilder, $class)
     {

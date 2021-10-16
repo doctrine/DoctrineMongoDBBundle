@@ -18,6 +18,7 @@ use Symfony\Bridge\Doctrine\DependencyInjection\Security\UserProvider\EntityFact
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 use function assert;
@@ -56,7 +57,7 @@ class DoctrineMongoDBBundle extends Bundle
     }
 
     /**
-     * {@inheritDoc}
+     * @return ExtensionInterface|null
      */
     public function getContainerExtension()
     {
