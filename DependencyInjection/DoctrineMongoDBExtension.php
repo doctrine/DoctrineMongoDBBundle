@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 
+use Doctrine\Bundle\MongoDBBundle\CacheWarmer\MetadataCacheWarmer;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\EventSubscriber\EventSubscriberInterface;
@@ -20,6 +21,7 @@ use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\MemcachedAdapter;
+use Symfony\Component\Cache\Adapter\PhpArrayAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Config\Definition\BaseNode;
 use Symfony\Component\Config\FileLocator;
@@ -215,7 +217,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         );
 
         $this->loadDocumentManagerBundlesMappingInformation($documentManager, $odmConfigDef, $container);
-        $this->loadObjectManagerCacheDriver($documentManager, $container, 'metadata_cache');
+        $this->loadMetadataCacheDriver($documentManager, $container);
 
         $methods = [
             'setMetadataCache' => new Reference(sprintf('doctrine_mongodb.odm.%s_metadata_cache', $documentManager['name'])),
@@ -530,7 +532,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      *
      * @throws InvalidArgumentException
      *
-     * @psalm-suppress UndefinedClass this won't be necessary when removing metadata cache configuration
+     * @psalm-suppress UndefinedClass
      */
     protected function loadCacheDriver($cacheName, $objectManagerName, array $cacheDriver, ContainerBuilder $container)
     {
@@ -610,5 +612,36 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         return method_exists(BaseNode::class, 'getDeprecation')
             ? ['doctrine/mongodb-odm-bundle', $version, $message]
             : [$message];
+    }
+
+    private function loadMetadataCacheDriver(array $documentManager, ContainerBuilder $container): void
+    {
+        if (isset($documentManager['metadata_cache_driver'])) {
+            $this->loadObjectManagerCacheDriver($documentManager, $container, 'metadata_cache');
+        } else {
+            $this->createMetadataCache($documentManager['name'], $container);
+        }
+    }
+
+    private function createMetadataCache(string $documentManagerName, ContainerBuilder $container): void
+    {
+        $aliasId = $this->getObjectManagerElementName(sprintf('%s_%s', $documentManagerName, 'metadata_cache'));
+        $cacheId = sprintf('cache.doctrine_mongodb.odm.%s.%s', $documentManagerName, 'metadata');
+
+        $cache = new Definition(ArrayAdapter::class);
+
+        if (! $container->getParameter('kernel.debug')) {
+            $phpArrayFile         = '%kernel.cache_dir%' . sprintf('/doctrine/odm/mongodb/%s_metadata.php', $documentManagerName);
+            $cacheWarmerServiceId = $this->getObjectManagerElementName(sprintf('%s_%s', $documentManagerName, 'metadata_cache_warmer'));
+
+            $container->register($cacheWarmerServiceId, MetadataCacheWarmer::class)
+                ->setArguments([new Reference(sprintf('doctrine_mongodb.odm.%s_document_manager', $documentManagerName)), $phpArrayFile])
+                ->addTag('kernel.cache_warmer', ['priority' => 1000]); // priority should be higher than ProxyCacheWarmer
+
+            $cache = new Definition(PhpArrayAdapter::class, [$phpArrayFile, $cache]);
+        }
+
+        $container->setDefinition($cacheId, $cache);
+        $container->setAlias($aliasId, $cacheId);
     }
 }

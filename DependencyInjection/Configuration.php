@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use LogicException;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
+use Symfony\Component\Config\Definition\BaseNode;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -19,6 +20,7 @@ use function in_array;
 use function is_array;
 use function is_string;
 use function json_decode;
+use function method_exists;
 use function preg_match;
 use function sprintf;
 
@@ -191,7 +193,10 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                             ->arrayNode('metadata_cache_driver')
-                                ->addDefaultsIfNotSet()
+                                ->setDeprecated(...$this->getDeprecationMsg(
+                                    'The "metadata_cache_driver" configuration key is deprecated. Remove the configuration to have the cache created automatically.',
+                                    '2.3'
+                                ))
                                 ->beforeNormalization()
                                     ->ifString()
                                     ->then(static function ($v) {
@@ -390,5 +395,28 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
             ->end();
+    }
+
+    /**
+     * Returns the correct deprecation param's as an array for setDeprecated.
+     *
+     * Symfony/Config v5.1 introduces a deprecation notice when calling
+     * setDeprecation() with less than 3 args and the getDeprecation method was
+     * introduced at the same time. By checking if getDeprecation() exists,
+     * we can determine the correct param count to use when calling setDeprecated.
+     *
+     * @return list<string>|array{0:string, 1: numeric-string, string}
+     */
+    private function getDeprecationMsg(string $message, string $version): array
+    {
+        if (method_exists(BaseNode::class, 'getDeprecation')) {
+            return [
+                'doctrine/mongodb-odm-bundle',
+                $version,
+                $message,
+            ];
+        }
+
+        return [$message];
     }
 }

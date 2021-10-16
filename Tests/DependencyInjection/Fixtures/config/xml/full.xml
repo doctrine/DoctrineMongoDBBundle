@@ -78,14 +78,9 @@
         <doctrine:document-manager
             id="dm1"
             repository-factory="doctrine_mongodb.odm.container_repository_factory"
+            metadata-cache-driver="array"
         >
             <doctrine:mapping name="FooBundle" type="annotation" />
-            <doctrine:metadata-cache-driver type="memcached">
-                <doctrine:class>fooClass</doctrine:class>
-                <doctrine:host>host_val</doctrine:host>
-                <doctrine:port>1234</doctrine:port>
-                <doctrine:instance-class>instance_val</doctrine:instance-class>
-            </doctrine:metadata-cache-driver>
             <doctrine:profiler enabled="true" pretty="false" />
             <doctrine:filter name="disabled_filter" enabled="false" class="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\DisabledFilter" />
             <doctrine:filter name="basic_filter" enabled="true" class="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\BasicFilter" />
@@ -101,7 +96,7 @@
             id="dm2"
             connection="dm2_connection"
             database="db1"
-            metadata-cache-driver="apc"
+            metadata-cache-driver="array"
             logging="true"
             repository-factory="doctrine_mongodb.odm.container_repository_factory"
             default-document-repository-class="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Repository\CustomRepository"

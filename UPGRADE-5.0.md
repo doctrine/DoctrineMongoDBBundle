@@ -11,3 +11,6 @@ UPGRADE FROM 4.x to 5.0
   removed without replacement.
 * The `Doctrine\Bundle\MongoDBBundle\Command\DoctrineODMCommand` class is now
   `@internal`, you should not extend from this class.
+* The `metadata_cache_driver` configuration was dropped. The bundle
+  automatically registers an `ArrayAdapter` or a `PhpArrayAdapter` based on the
+  `kernel.debug` flag.
