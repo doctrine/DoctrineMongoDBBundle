@@ -177,8 +177,9 @@ The following configuration shows a bunch of mapping examples:
                         MyBundle1: ~
                         MyBundle2: xml
                         MyBundle3: { type: attribute, dir: Documents/ }
-                        MyBundle4: { type: xml, dir: Resources/config/doctrine/mapping }
-                        MyBundle5:
+                        MyBundle4: { type: annotation, dir: Documents/Legacy/ }
+                        MyBundle5: { type: xml, dir: Resources/config/doctrine/mapping }
+                        MyBundle6:
                             type: xml
                             dir: my-bundle-mappings-dir
                             alias: BundleAlias
@@ -203,8 +204,9 @@ The following configuration shows a bunch of mapping examples:
                     <doctrine_mongodb:mapping name="MyBundle1" />
                     <doctrine_mongodb:mapping name="MyBundle2" type="yml" />
                     <doctrine_mongodb:mapping name="MyBundle3" type="attribute" dir="Documents/" />
-                    <doctrine_mongodb:mapping name="MyNundle4" type="xml" dir="Resources/config/doctrine/mapping" />
-                    <doctrine_mongodb:mapping name="MyBundle5" type="xml" dir="my-bundle-mappings-dir" alias="BundleAlias" />
+                    <doctrine_mongodb:mapping name="MyBundle4" type="annotation" dir="Documents/Legacy/" />
+                    <doctrine_mongodb:mapping name="MyBundle5" type="xml" dir="Resources/config/doctrine/mapping" />
+                    <doctrine_mongodb:mapping name="MyBundle6" type="xml" dir="my-bundle-mappings-dir" alias="BundleAlias" />
                     <doctrine_mongodb:mapping name="doctrine_extensions"
                                               type="xml"
                                               dir="%kernel.project_dir%/src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents"
