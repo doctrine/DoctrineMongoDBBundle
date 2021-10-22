@@ -51,7 +51,9 @@ class PersistentCollectionCacheWarmer implements CacheWarmerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $cacheDir
+     *
+     * @return string[]
      */
     public function warmUp($cacheDir)
     {

@@ -6,6 +6,8 @@ namespace Doctrine\Bundle\MongoDBBundle\Form;
 
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Form\AbstractExtension;
+use Symfony\Component\Form\FormTypeGuesserInterface;
+use Symfony\Component\Form\FormTypeInterface;
 
 /**
  * Form extension.
@@ -21,7 +23,7 @@ class DoctrineMongoDBExtension extends AbstractExtension
     }
 
     /**
-     * {@inheritDoc}
+     * @return FormTypeInterface[]
      */
     protected function loadTypes()
     {
@@ -31,7 +33,7 @@ class DoctrineMongoDBExtension extends AbstractExtension
     }
 
     /**
-     * {@inheritDoc}
+     * @return FormTypeGuesserInterface|null
      */
     protected function loadTypeGuesser()
     {

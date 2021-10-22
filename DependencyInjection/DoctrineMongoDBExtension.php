@@ -457,7 +457,9 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $name
+     *
+     * @return string
      */
     protected function getObjectManagerElementName($name)
     {
@@ -465,7 +467,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     }
 
     /**
-     * {@inheritDoc}
+     * @return string
      */
     protected function getMappingObjectDefaultName()
     {
@@ -473,7 +475,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     }
 
     /**
-     * {@inheritDoc}
+     * @return string
      */
     protected function getMappingResourceConfigDirectory()
     {
@@ -481,7 +483,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     }
 
     /**
-     * {@inheritDoc}
+     * @return string
      */
     protected function getMappingResourceExtension()
     {
@@ -494,7 +496,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     }
 
     /**
-     * {@inheritDoc}
+     * @return string
      */
     public function getAlias()
     {
