@@ -166,6 +166,10 @@ class ConfigurationTest extends TestCase
                             'type'    => 'annotation',
                             'mapping' => true,
                         ],
+                        'BarBundle' => [
+                            'type'    => 'attribute',
+                            'mapping' => true,
+                        ],
                     ],
                     'profiler' => [
                         'enabled' => true,

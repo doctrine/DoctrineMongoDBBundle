@@ -68,6 +68,7 @@ doctrine_mongodb:
             persistent_collection_factory: ~
             mappings:
                 FooBundle:   annotation
+                BarBundle:   attribute
             metadata_cache_driver:
                 type:                  memcached
                 class:                 fooClass

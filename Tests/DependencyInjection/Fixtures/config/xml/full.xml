@@ -80,6 +80,7 @@
             repository-factory="doctrine_mongodb.odm.container_repository_factory"
         >
             <doctrine:mapping name="FooBundle" type="annotation" />
+            <doctrine:mapping name="BarBundle" type="attribute" />
             <doctrine:metadata-cache-driver type="memcached">
                 <doctrine:class>fooClass</doctrine:class>
                 <doctrine:host>host_val</doctrine:host>

@@ -19,6 +19,7 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use MongoDB\Client;
 use PHPUnit\Framework\AssertionFailedError;
@@ -32,6 +33,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 use function array_map;
 use function array_search;
+use function class_exists;
 use function class_implements;
 use function in_array;
 use function reset;
@@ -64,6 +66,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertEquals(XcacheCache::class, $container->getParameter('doctrine_mongodb.odm.cache.xcache.class'));
         $this->assertEquals(MappingDriverChain::class, $container->getParameter('doctrine_mongodb.odm.metadata.driver_chain.class'));
         $this->assertEquals(AnnotationDriver::class, $container->getParameter('doctrine_mongodb.odm.metadata.annotation.class'));
+        $this->assertEquals(AttributeDriver::class, $container->getParameter('doctrine_mongodb.odm.metadata.attribute.class'));
         $this->assertEquals(XmlDriver::class, $container->getParameter('doctrine_mongodb.odm.metadata.xml.class'));
 
         $this->assertEquals(UniqueEntityValidator::class, $container->getParameter('doctrine_odm.mongodb.validator.unique.class'));
@@ -318,6 +321,27 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $calls = $container->getDefinition('doctrine_mongodb.odm.default_metadata_driver')->getMethodCalls();
         $this->assertEquals('doctrine_mongodb.odm.default_annotation_metadata_driver', (string) $calls[0][1][0]);
         $this->assertEquals('DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\AnnotationsBundle\Document', $calls[0][1][1]);
+    }
+
+    /**
+     * @requires PHP 8.0
+     */
+    public function testAttributesBundleMappingDetection(): void
+    {
+        if (! class_exists(AttributeDriver::class)) {
+            self::markTestSkipped('This test requires MongoDB ODM 2.3 with attribute driver.');
+        }
+
+        $container = $this->getContainer('AttributesBundle');
+        $loader    = new DoctrineMongoDBExtension();
+        $config    = DoctrineMongoDBExtensionTest::buildConfiguration(
+            ['document_managers' => ['default' => ['mappings' => ['AttributesBundle' => 'attribute']]]]
+        );
+        $loader->load($config, $container);
+
+        $calls = $container->getDefinition('doctrine_mongodb.odm.default_metadata_driver')->getMethodCalls();
+        $this->assertEquals('doctrine_mongodb.odm.default_attribute_metadata_driver', (string) $calls[0][1][0]);
+        $this->assertEquals('DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\AttributesBundle\Document', $calls[0][1][1]);
     }
 
     public function testDocumentManagerMetadataCacheDriverConfiguration(): void

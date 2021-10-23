@@ -5,7 +5,7 @@
     "keywords": ["persistence", "mongodb", "symfony"],
     "homepage": "http://www.doctrine-project.org",
     "license": "MIT",
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "authors": [
         {"name": "Bulat Shakirzyanov", "email": "mallluhuct@gmail.com"},
         {"name": "Kris Wallsmith", "email": "kris@symfony.com"},
