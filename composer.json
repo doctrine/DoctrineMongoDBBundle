@@ -1,7 +1,7 @@
 {
     "name": "doctrine/mongodb-odm-bundle",
     "type": "symfony-bundle",
-    "description": "Symfony2 Doctrine MongoDB Bundle",
+    "description": "Symfony Doctrine MongoDB Bundle",
     "keywords": ["persistence", "mongodb", "symfony"],
     "homepage": "http://www.doctrine-project.org",
     "license": "MIT",
