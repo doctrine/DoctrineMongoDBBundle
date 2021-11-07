@@ -48,6 +48,12 @@ jobs:
             php-version: "8.0"
             stability: "dev"
             symfony-version: "5.4.*"
+          - dependencies: "highest"
+            os: "ubuntu-20.04"
+            driver-version: "stable"
+            php-version: "8.0"
+            stability: "dev"
+            symfony-version: "6.0.*"
 
     services:
       mongodb:

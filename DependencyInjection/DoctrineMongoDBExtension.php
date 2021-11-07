@@ -459,26 +459,18 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
     /**
      * @param string $name
-     *
-     * @return string
      */
-    protected function getObjectManagerElementName($name)
+    protected function getObjectManagerElementName($name): string
     {
         return 'doctrine_mongodb.odm.' . $name;
     }
 
-    /**
-     * @return string
-     */
-    protected function getMappingObjectDefaultName()
+    protected function getMappingObjectDefaultName(): string
     {
         return 'Document';
     }
 
-    /**
-     * @return string
-     */
-    protected function getMappingResourceConfigDirectory(?string $bundleDir = null)
+    protected function getMappingResourceConfigDirectory(?string $bundleDir = null): string
     {
         if ($bundleDir !== null && is_dir($bundleDir . '/config/doctrine')) {
             return 'config/doctrine';
@@ -487,10 +479,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         return 'Resources/config/doctrine';
     }
 
-    /**
-     * @return string
-     */
-    protected function getMappingResourceExtension()
+    protected function getMappingResourceExtension(): string
     {
         return 'mongodb';
     }
@@ -500,10 +489,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         return '%' . $this->getObjectManagerElementName('metadata.' . $driverType . '.class') . '%';
     }
 
-    /**
-     * @return string
-     */
-    public function getAlias()
+    public function getAlias(): string
     {
         return 'doctrine_mongodb';
     }
@@ -533,13 +519,11 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      * @param string $objectManagerName The object manager name
      * @param array  $cacheDriver       The cache driver mapping
      *
-     * @return string
-     *
      * @throws InvalidArgumentException
      *
      * @psalm-suppress UndefinedClass this won't be necessary when removing metadata cache configuration
      */
-    protected function loadCacheDriver($cacheName, $objectManagerName, array $cacheDriver, ContainerBuilder $container)
+    protected function loadCacheDriver($cacheName, $objectManagerName, array $cacheDriver, ContainerBuilder $container): string
     {
         if (isset($cacheDriver['namespace'])) {
             return parent::loadCacheDriver($cacheName, $objectManagerName, $cacheDriver, $container);

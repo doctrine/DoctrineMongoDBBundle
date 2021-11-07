@@ -56,10 +56,7 @@ class DoctrineMongoDBBundle extends Bundle
         $security->addUserProviderFactory(new EntityFactory('mongodb', 'doctrine_mongodb.odm.security.user.provider'));
     }
 
-    /**
-     * @return ExtensionInterface|null
-     */
-    public function getContainerExtension()
+    public function getContainerExtension(): ?ExtensionInterface
     {
         return new DoctrineMongoDBExtension();
     }
