@@ -37,6 +37,7 @@ use function class_exists;
 use function class_implements;
 use function in_array;
 use function interface_exists;
+use function is_dir;
 use function method_exists;
 use function reset;
 use function sprintf;
@@ -477,8 +478,12 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     /**
      * @return string
      */
-    protected function getMappingResourceConfigDirectory()
+    protected function getMappingResourceConfigDirectory(?string $bundleDir = null)
     {
+        if ($bundleDir !== null && is_dir($bundleDir . '/config/doctrine')) {
+            return 'config/doctrine';
+        }
+
         return 'Resources/config/doctrine';
     }
 

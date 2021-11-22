@@ -23,6 +23,7 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use MongoDB\Client;
 use PHPUnit\Framework\AssertionFailedError;
+use Symfony\Bridge\Doctrine\SchemaListener\DoctrineDbalCacheAdapterSchemaSubscriber;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -36,6 +37,7 @@ use function array_search;
 use function class_exists;
 use function class_implements;
 use function in_array;
+use function is_dir;
 use function reset;
 
 abstract class AbstractMongoDBExtensionTest extends TestCase
@@ -309,6 +311,24 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertEquals('DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\XmlBundle\Document', $calls[0][1][1]);
     }
 
+    public function testNewBundleStructureXmlBundleMappingDetection(): void
+    {
+        if (! class_exists(DoctrineDbalCacheAdapterSchemaSubscriber::class)) {
+            $this->markTestSkipped('Test requires symfony/doctrine-bridge >=5.4');
+        }
+
+        $container = $this->getContainer('NewXmlBundle');
+        $loader    = new DoctrineMongoDBExtension();
+        $config    = DoctrineMongoDBExtensionTest::buildConfiguration(
+            ['document_managers' => ['default' => ['mappings' => ['NewXmlBundle' => []]]]]
+        );
+        $loader->load($config, $container);
+
+        $calls = $container->getDefinition('doctrine_mongodb.odm.default_metadata_driver')->getMethodCalls();
+        $this->assertEquals('doctrine_mongodb.odm.default_xml_metadata_driver', (string) $calls[0][1][0]);
+        $this->assertEquals('DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\NewXmlBundle\Document', $calls[0][1][1]);
+    }
+
     public function testAnnotationsBundleMappingDetection(): void
     {
         $container = $this->getContainer('AnnotationsBundle');
@@ -557,10 +577,17 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
     protected function getContainer(string $bundle = 'XmlBundle'): ContainerBuilder
     {
-        require_once __DIR__ . '/Fixtures/Bundles/' . $bundle . '/' . $bundle . '.php';
+        $bundleDir = __DIR__ . '/Fixtures/Bundles/' . $bundle;
+
+        if (is_dir($bundleDir . '/src')) {
+            require_once $bundleDir . '/src/' . $bundle . '.php';
+        } else {
+            require_once $bundleDir . '/' . $bundle . '.php';
+        }
 
         return new ContainerBuilder(new ParameterBag([
             'kernel.bundles'          => [$bundle => 'DoctrineMongoDBBundle\\Tests\\DependencyInjection\\Fixtures\\Bundles\\' . $bundle . '\\' . $bundle],
+            'kernel.bundles_metadata' => [$bundle => ['path' => $bundleDir, 'namespace' => 'DoctrineMongoDBBundle\\Tests\\DependencyInjection\\Fixtures\\Bundles\\' . $bundle]],
             'kernel.cache_dir'        => __DIR__,
             'kernel.compiled_classes' => [],
             'kernel.debug'            => false,

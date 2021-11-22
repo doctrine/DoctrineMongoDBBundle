@@ -17,6 +17,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use function array_merge;
 use function class_exists;
 use function interface_exists;
+use function is_dir;
 use function sys_get_temp_dir;
 
 class DoctrineMongoDBExtensionTest extends TestCase
@@ -37,13 +38,14 @@ class DoctrineMongoDBExtensionTest extends TestCase
     public function buildMinimalContainer(): ContainerBuilder
     {
         return new ContainerBuilder(new ParameterBag([
-            'kernel.root_dir'        => __DIR__,
-            'kernel.project_dir'     => __DIR__,
-            'kernel.name'            => 'kernel',
-            'kernel.environment'     => 'test',
-            'kernel.debug'           => 'true',
-            'kernel.bundles'         => [],
-            'kernel.container_class' => Container::class,
+            'kernel.root_dir'         => __DIR__,
+            'kernel.project_dir'      => __DIR__,
+            'kernel.name'             => 'kernel',
+            'kernel.environment'      => 'test',
+            'kernel.debug'            => 'true',
+            'kernel.bundles'          => [],
+            'kernel.bundles_metadata' => [],
+            'kernel.container_class'  => Container::class,
         ]));
     }
 
@@ -55,6 +57,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $container = $this->buildMinimalContainer();
         $container->setParameter('kernel.debug', false);
         $container->setParameter('kernel.bundles', []);
+        $container->setParameter('kernel.bundles_metadata', []);
         $loader = new DoctrineMongoDBExtension();
         $loader->load(self::buildConfiguration([$option => $value]), $container);
 
@@ -68,22 +71,35 @@ class DoctrineMongoDBExtensionTest extends TestCase
     {
         $bundles = (array) $bundles;
 
-        $map = [];
+        $map         = [];
+        $metadataMap = [];
         foreach ($bundles as $bundle) {
-            require_once __DIR__ . '/Fixtures/Bundles/' . $bundle . '/' . $bundle . '.php';
+            $bundleDir = __DIR__ . '/Fixtures/Bundles/' . $bundle;
+
+            if (is_dir($bundleDir . '/src')) {
+                require_once $bundleDir . '/src/' . $bundle . '.php';
+            } else {
+                require_once $bundleDir . '/' . $bundle . '.php';
+            }
 
             $map[$bundle] = 'DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\\' . $bundle . '\\' . $bundle;
+
+            $metadataMap[$bundle] = [
+                'path' => $bundleDir,
+                'namespace' => 'DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\\' . $bundle,
+            ];
         }
 
         return new ContainerBuilder(new ParameterBag([
-            'kernel.debug'           => false,
-            'kernel.bundles'         => $map,
-            'kernel.cache_dir'       => sys_get_temp_dir(),
-            'kernel.environment'     => 'test',
-            'kernel.name'            => 'kernel',
-            'kernel.root_dir'        => __DIR__ . '/../../',
-            'kernel.project_dir'     => __DIR__ . '/../../',
-            'kernel.container_class' => Container::class,
+            'kernel.debug'            => false,
+            'kernel.bundles'          => $map,
+            'kernel.bundles_metadata' => $metadataMap,
+            'kernel.cache_dir'        => sys_get_temp_dir(),
+            'kernel.environment'      => 'test',
+            'kernel.name'             => 'kernel',
+            'kernel.root_dir'         => __DIR__ . '/../../',
+            'kernel.project_dir'      => __DIR__ . '/../../',
+            'kernel.container_class'  => Container::class,
         ]));
     }
 
@@ -108,6 +124,10 @@ class DoctrineMongoDBExtensionTest extends TestCase
                         'connection' => 'cn2',
                         'mappings' => ['XmlBundle' => null],
                     ],
+                    'dm3' => [
+                        'connection' => 'cn3',
+                        'mappings' => ['NewXmlBundle' => null],
+                    ],
                 ],
             ],
             [
@@ -119,6 +139,10 @@ class DoctrineMongoDBExtensionTest extends TestCase
                     'dm2' => [
                         'connection' => 'cn2',
                         'mappings' => ['XmlBundle' => null],
+                    ],
+                    'dm3' => [
+                        'connection' => 'cn2',
+                        'mappings' => ['NewXmlBundle' => null],
                     ],
                 ],
             ],
@@ -133,6 +157,10 @@ class DoctrineMongoDBExtensionTest extends TestCase
                         'connection' => 'cn2',
                         'mappings' => ['XmlBundle' => null],
                     ],
+                    'dm3' => [
+                        'connection' => 'cn2',
+                        'mappings' => ['NewXmlBundle' => null],
+                    ],
                 ],
             ],
         ];
@@ -146,6 +174,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $container = $this->getContainer([
             'OtherXmlBundle',
             'XmlBundle',
+            'NewXmlBundle',
         ]);
 
         $loader = new DoctrineMongoDBExtension();
@@ -157,6 +186,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                     'connections' => [
                         'cn1' => [],
                         'cn2' => [],
+                        'cn3' => [],
                     ],
                     'document_managers' => $documentManagers,
                 ],
@@ -166,6 +196,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
         $configDm1 = $container->getDefinition('doctrine_mongodb.odm.dm1_configuration');
         $configDm2 = $container->getDefinition('doctrine_mongodb.odm.dm2_configuration');
+        $configDm3 = $container->getDefinition('doctrine_mongodb.odm.dm3_configuration');
 
         $this->assertContains(
             [
@@ -185,6 +216,16 @@ class DoctrineMongoDBExtensionTest extends TestCase
                 ],
             ],
             $configDm2->getMethodCalls()
+        );
+
+        $this->assertContains(
+            [
+                'setDocumentNamespaces',
+                [
+                    ['NewXmlBundle' => 'DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\NewXmlBundle\Document'],
+                ],
+            ],
+            $configDm3->getMethodCalls()
         );
     }
 

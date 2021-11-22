@@ -158,11 +158,12 @@ follow these conventions:
    example ``src/Document/``.
 
 2. If you are using xml, yml or php mapping put all your configuration files
-   into the ``Resources/config/doctrine/`` directory
+   into either the ``config/doctrine/`` directory (requires Symfony 5.4 or
+   later) or the ``Resources/config/doctrine/`` directory
    suffixed with mongodb.xml, mongodb.yml or mongodb.php respectively.
 
 3. Annotations are assumed if a ``Document/`` but no
-   ``Resources/config/doctrine/`` directory is found.
+   ``config/doctrine/`` or ``Resources/config/doctrine/`` directory is found.
 
 The following configuration shows a bunch of mapping examples:
 
