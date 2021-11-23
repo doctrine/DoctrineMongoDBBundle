@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
+use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\DocumentListenerBundle\EventListener\TestAttributeListener;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
+use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -18,6 +20,7 @@ use function array_merge;
 use function class_exists;
 use function interface_exists;
 use function is_dir;
+use function method_exists;
 use function sys_get_temp_dir;
 
 class DoctrineMongoDBExtensionTest extends TestCase
@@ -49,9 +52,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         ]));
     }
 
-    /**
-     * @dataProvider parameterProvider
-     */
+    /** @dataProvider parameterProvider */
     public function testParameterOverride(string $option, string $parameter, string $value): void
     {
         $container = $this->buildMinimalContainer();
@@ -64,9 +65,48 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $this->assertEquals($value, $container->getParameter('doctrine_mongodb.odm.' . $parameter));
     }
 
-    /**
-     * @param string|string[] $bundles
-     */
+    /** @requires PHP 8 */
+    public function testAsDocumentListenerAttribute()
+    {
+        if (! method_exists(ContainerBuilder::class, 'getAutoconfiguredAttributes')) {
+            $this->markTestSkipped('symfony/dependency-injection 5.3.0 needed');
+        }
+
+        $container = $this->getContainer('DocumentListenerBundle');
+        $extension = new DoctrineMongoDBExtension();
+        $container->registerExtension($extension);
+
+        $extension->load([
+            [
+                'connections' => ['default' => []],
+                'document_managers' => [
+                    'default' => [
+                        'mappings' => ['DocumentListenerBundle' => 'attribute'],
+                    ],
+                ],
+            ],
+        ], $container);
+
+        $container->register(TestAttributeListener::class, TestAttributeListener::class)
+            ->setAutowired(true)
+            ->setAutoconfigured(true)
+            ->setPublic(false);
+        $container->setAlias('test_alias__' . TestAttributeListener::class, new Alias(TestAttributeListener::class, true));
+        $container->compile();
+
+        $listenerDefinition = $container->getDefinition('test_alias__' . TestAttributeListener::class);
+
+        self::assertSame([
+            [
+                'event' => 'prePersist',
+                'method' => 'onPrePersist',
+                'lazy' => true,
+                'connection' => 'test',
+            ],
+        ], $listenerDefinition->getTag('doctrine_mongodb.odm.event_listener'));
+    }
+
+    /** @param string|string[] $bundles */
     private function getContainer($bundles = 'OtherXmlBundle'): ContainerBuilder
     {
         $bundles = (array) $bundles;
@@ -166,9 +206,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getAutomappingConfigurations
-     */
+    /** @dataProvider getAutomappingConfigurations */
     public function testAutomapping(array $documentManagers): void
     {
         $container = $this->getContainer([
