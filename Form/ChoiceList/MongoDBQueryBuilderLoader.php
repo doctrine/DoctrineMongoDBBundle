@@ -55,7 +55,7 @@ class MongoDBQueryBuilderLoader implements EntityLoaderInterface
     /**
      * @return object[]
      */
-    public function getEntities()
+    public function getEntities(): array
     {
         return array_values($this->queryBuilder->getQuery()->execute()->toArray());
     }
@@ -65,7 +65,7 @@ class MongoDBQueryBuilderLoader implements EntityLoaderInterface
      *
      * @return object[]
      */
-    public function getEntitiesByIds($identifier, array $values)
+    public function getEntitiesByIds($identifier, array $values): array
     {
         $qb = clone $this->queryBuilder;
 

@@ -23,10 +23,8 @@ class DocumentType extends DoctrineType
     /**
      * @param object $queryBuilder
      * @param string $class
-     *
-     * @return EntityLoaderInterface
      */
-    public function getLoader(ObjectManager $manager, $queryBuilder, $class)
+    public function getLoader(ObjectManager $manager, $queryBuilder, $class): EntityLoaderInterface
     {
         return new MongoDBQueryBuilderLoader(
             $queryBuilder,
