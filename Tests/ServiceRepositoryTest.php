@@ -6,21 +6,21 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
+use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Document\TestCustomClassRepoDocument;
+use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Document\TestCustomServiceRepoDocument;
+use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Document\TestCustomServiceRepoFile;
+use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Document\TestDefaultRepoDocument;
+use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Document\TestDefaultRepoFile;
+use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Document\TestUnmappedDocument;
+use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Repository\TestCustomClassRepoRepository;
+use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Repository\TestCustomServiceRepoDocumentRepository;
+use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Repository\TestCustomServiceRepoGridFSRepository;
+use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Repository\TestUnmappedDocumentRepository;
+use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\RepositoryServiceBundle;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
-use Fixtures\Bundles\RepositoryServiceBundle\Document\TestCustomClassRepoDocument;
-use Fixtures\Bundles\RepositoryServiceBundle\Document\TestCustomServiceRepoDocument;
-use Fixtures\Bundles\RepositoryServiceBundle\Document\TestCustomServiceRepoFile;
-use Fixtures\Bundles\RepositoryServiceBundle\Document\TestDefaultRepoDocument;
-use Fixtures\Bundles\RepositoryServiceBundle\Document\TestDefaultRepoFile;
-use Fixtures\Bundles\RepositoryServiceBundle\Document\TestUnmappedDocument;
-use Fixtures\Bundles\RepositoryServiceBundle\Repository\TestCustomClassRepoRepository;
-use Fixtures\Bundles\RepositoryServiceBundle\Repository\TestCustomServiceRepoDocumentRepository;
-use Fixtures\Bundles\RepositoryServiceBundle\Repository\TestCustomServiceRepoGridFSRepository;
-use Fixtures\Bundles\RepositoryServiceBundle\Repository\TestUnmappedDocumentRepository;
-use Fixtures\Bundles\RepositoryServiceBundle\RepositoryServiceBundle;
 use LogicException;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\Container;
@@ -63,7 +63,7 @@ class ServiceRepositoryTest extends TestCase
                             'RepositoryServiceBundle' => [
                                 'type' => 'annotation',
                                 'dir' => __DIR__ . '/DependencyInjection/Fixtures/Bundles/RepositoryServiceBundle/Document',
-                                'prefix' => 'Fixtures\Bundles\RepositoryServiceBundle\Document',
+                                'prefix' => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Document',
                             ],
                         ],
                     ],
