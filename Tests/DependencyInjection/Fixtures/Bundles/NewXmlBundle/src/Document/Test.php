@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\NewXmlBundle\Document;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\NewXmlBundle\Document;
 
 class Test
 {

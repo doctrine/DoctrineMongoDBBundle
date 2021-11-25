@@ -82,11 +82,11 @@ class DoctrineMongoDBExtensionTest extends TestCase
                 require_once $bundleDir . '/' . $bundle . '.php';
             }
 
-            $map[$bundle] = 'DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\\' . $bundle . '\\' . $bundle;
+            $map[$bundle] = 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\\' . $bundle . '\\' . $bundle;
 
             $metadataMap[$bundle] = [
                 'path' => $bundleDir,
-                'namespace' => 'DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\\' . $bundle,
+                'namespace' => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\\' . $bundle,
             ];
         }
 
@@ -202,7 +202,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
             [
                 'setDocumentNamespaces',
                 [
-                    ['OtherXmlBundle' => 'DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\OtherXmlBundle\Document'],
+                    ['OtherXmlBundle' => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\OtherXmlBundle\Document'],
                 ],
             ],
             $configDm1->getMethodCalls()
@@ -212,7 +212,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
             [
                 'setDocumentNamespaces',
                 [
-                    ['XmlBundle' => 'DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\XmlBundle\Document'],
+                    ['XmlBundle' => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\XmlBundle\Document'],
                 ],
             ],
             $configDm2->getMethodCalls()
@@ -222,7 +222,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
             [
                 'setDocumentNamespaces',
                 [
-                    ['NewXmlBundle' => 'DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\NewXmlBundle\Document'],
+                    ['NewXmlBundle' => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\NewXmlBundle\Document'],
                 ],
             ],
             $configDm3->getMethodCalls()

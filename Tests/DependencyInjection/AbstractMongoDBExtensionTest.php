@@ -294,7 +294,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_configuration');
         $calls      = $definition->getMethodCalls();
         $this->assertTrue(isset($calls[0][1][0]['XmlBundle']));
-        $this->assertEquals('DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\XmlBundle\Document', $calls[0][1][0]['XmlBundle']);
+        $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\XmlBundle\Document', $calls[0][1][0]['XmlBundle']);
     }
 
     public function testXmlBundleMappingDetection(): void
@@ -308,7 +308,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $calls = $container->getDefinition('doctrine_mongodb.odm.default_metadata_driver')->getMethodCalls();
         $this->assertEquals('doctrine_mongodb.odm.default_xml_metadata_driver', (string) $calls[0][1][0]);
-        $this->assertEquals('DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\XmlBundle\Document', $calls[0][1][1]);
+        $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\XmlBundle\Document', $calls[0][1][1]);
     }
 
     public function testNewBundleStructureXmlBundleMappingDetection(): void
@@ -326,7 +326,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $calls = $container->getDefinition('doctrine_mongodb.odm.default_metadata_driver')->getMethodCalls();
         $this->assertEquals('doctrine_mongodb.odm.default_xml_metadata_driver', (string) $calls[0][1][0]);
-        $this->assertEquals('DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\NewXmlBundle\Document', $calls[0][1][1]);
+        $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\NewXmlBundle\Document', $calls[0][1][1]);
     }
 
     public function testAnnotationsBundleMappingDetection(): void
@@ -340,7 +340,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $calls = $container->getDefinition('doctrine_mongodb.odm.default_metadata_driver')->getMethodCalls();
         $this->assertEquals('doctrine_mongodb.odm.default_annotation_metadata_driver', (string) $calls[0][1][0]);
-        $this->assertEquals('DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\AnnotationsBundle\Document', $calls[0][1][1]);
+        $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\AnnotationsBundle\Document', $calls[0][1][1]);
     }
 
     /**
@@ -361,7 +361,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $calls = $container->getDefinition('doctrine_mongodb.odm.default_metadata_driver')->getMethodCalls();
         $this->assertEquals('doctrine_mongodb.odm.default_attribute_metadata_driver', (string) $calls[0][1][0]);
-        $this->assertEquals('DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\AttributesBundle\Document', $calls[0][1][1]);
+        $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\AttributesBundle\Document', $calls[0][1][1]);
     }
 
     public function testDocumentManagerMetadataCacheDriverConfiguration(): void
@@ -586,8 +586,8 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         }
 
         return new ContainerBuilder(new ParameterBag([
-            'kernel.bundles'          => [$bundle => 'DoctrineMongoDBBundle\\Tests\\DependencyInjection\\Fixtures\\Bundles\\' . $bundle . '\\' . $bundle],
-            'kernel.bundles_metadata' => [$bundle => ['path' => $bundleDir, 'namespace' => 'DoctrineMongoDBBundle\\Tests\\DependencyInjection\\Fixtures\\Bundles\\' . $bundle]],
+            'kernel.bundles'          => [$bundle => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\\' . $bundle . '\\' . $bundle],
+            'kernel.bundles_metadata' => [$bundle => ['path' => $bundleDir, 'namespace' => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\\' . $bundle]],
             'kernel.cache_dir'        => __DIR__,
             'kernel.compiled_classes' => [],
             'kernel.debug'            => false,

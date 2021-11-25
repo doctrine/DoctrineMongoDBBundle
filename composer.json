@@ -57,7 +57,6 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "": "Tests/DependencyInjection",
             "Doctrine\\Bundle\\MongoDBBundle\\Tests\\": "Tests"
         }
     },
