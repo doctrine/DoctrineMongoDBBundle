@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 
+use Doctrine\Bundle\MongoDBBundle\Attribute\AsDocumentListener;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\EventSubscriber\EventSubscriberInterface;
@@ -128,6 +129,17 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
         $container->registerForAutoconfiguration(EventSubscriberInterface::class)
             ->addTag('doctrine_mongodb.odm.event_subscriber');
+
+        if (method_exists($container, 'registerAttributeForAutoconfiguration')) {
+            $container->registerAttributeForAutoconfiguration(AsDocumentListener::class, static function (ChildDefinition $definition, AsDocumentListener $attribute) {
+                $definition->addTag('doctrine_mongodb.odm.event_listener', [
+                    'event'      => $attribute->event,
+                    'method'     => $attribute->method,
+                    'lazy'       => $attribute->lazy,
+                    'connection' => $attribute->connection,
+                ]);
+            });
+        }
 
         $this->loadMessengerServices($container);
     }
