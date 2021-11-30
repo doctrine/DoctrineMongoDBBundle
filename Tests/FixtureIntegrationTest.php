@@ -20,6 +20,7 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Routing\Loader\Configurator\RouteConfigurator;
 use Symfony\Component\Routing\RouteCollectionBuilder;
 
 use function array_map;
@@ -322,7 +323,10 @@ class IntegrationTestKernel extends Kernel
         $this->servicesCallback = $callback;
     }
 
-    protected function configureRoutes(RouteCollectionBuilder $routes): void
+    /**
+     * @param RouteConfigurator|RouteCollectionBuilder $routes
+     */
+    protected function configureRoutes($routes): void
     {
     }
 

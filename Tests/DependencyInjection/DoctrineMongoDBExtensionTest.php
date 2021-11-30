@@ -327,7 +327,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $loader = new DoctrineMongoDBExtension();
         $loader->load(self::buildConfiguration(), $container = $this->buildMinimalContainer());
 
-        $this->assertNotNull($subscriber = $container->getDefinition('doctrine_mongodb.messenger.event_subscriber.doctrine_clear_document_manager'));
+        $subscriber = $container->getDefinition('doctrine_mongodb.messenger.event_subscriber.doctrine_clear_document_manager');
         $this->assertCount(1, $subscriber->getArguments());
     }
 

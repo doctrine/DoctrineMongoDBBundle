@@ -31,8 +31,9 @@ class User implements UserInterface
         $this->name = $name;
     }
 
-    public function getRoles(): void
+    public function getRoles(): array
     {
+        return [];
     }
 
     public function getPassword(): void
@@ -43,9 +44,14 @@ class User implements UserInterface
     {
     }
 
-    public function getUsername(): string
+    public function getUserIdentifier(): string
     {
         return $this->name;
+    }
+
+    public function getUsername(): string
+    {
+        return $this->getUserIdentifier();
     }
 
     public function eraseCredentials(): void

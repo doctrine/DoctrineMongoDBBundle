@@ -31,4 +31,12 @@
             <directory name="vendor"/>
         </ignoreFiles>
     </projectFiles>
+
+    <issueHandlers>
+        <UndefinedDocblockClass>
+            <errorLevel type="info">
+                <referencedClass name="Symfony\Component\Routing\RouteCollectionBuilder" /> <!-- for backwards compatibility with symfony/routing ^4.4 -->
+            </errorLevel>
+        </UndefinedDocblockClass>
+    </issueHandlers>
 </psalm>
