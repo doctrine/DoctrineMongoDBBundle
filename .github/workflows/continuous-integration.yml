@@ -43,6 +43,12 @@ jobs:
             driver-version: "1.5.0"
             stability: "stable"
             symfony-version: "4.4.*"
+          - dependencies: "highest"
+            os: "ubuntu-20.04"
+            php-version: "8.1"
+            driver-version: "stable"
+            stability: "dev" # change to stable when laminas/laminas-code 4.5 is released
+            symfony-version: "6.0.*"
 
     services:
       mongodb:
