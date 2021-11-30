@@ -126,7 +126,7 @@ Explicit definition of all the mapped documents is the only necessary
 configuration for the ODM and there are several configuration options that you
 can control. The following configuration options exist for a mapping:
 
-- ``type`` One of ``annotation``, ``xml``, ``yml``, ``php`` or ``staticphp``.
+- ``type`` One of ``annotation``, ``attribute``, ``xml``, ``php`` or ``staticphp``.
   This specifies which type of metadata type your mapping uses.
 
 - ``dir`` Path to the mapping or document files (depending on the driver). If
@@ -158,11 +158,12 @@ follow these conventions:
    example ``src/Document/``.
 
 2. If you are using xml, yml or php mapping put all your configuration files
-   into the ``Resources/config/doctrine/`` directory
+   into either the ``config/doctrine/`` directory (requires Symfony 5.4 or
+   later) or the ``Resources/config/doctrine/`` directory
    suffixed with mongodb.xml, mongodb.yml or mongodb.php respectively.
 
 3. Annotations are assumed if a ``Document/`` but no
-   ``Resources/config/doctrine/`` directory is found.
+   ``config/doctrine/`` or ``Resources/config/doctrine/`` directory is found.
 
 The following configuration shows a bunch of mapping examples:
 
@@ -176,9 +177,10 @@ The following configuration shows a bunch of mapping examples:
                     mappings:
                         MyBundle1: ~
                         MyBundle2: xml
-                        MyBundle3: { type: annotation, dir: Documents/ }
-                        MyBundle4: { type: xml, dir: Resources/config/doctrine/mapping }
-                        MyBundle5:
+                        MyBundle3: { type: attribute, dir: Documents/ }
+                        MyBundle4: { type: annotation, dir: Documents/Legacy/ }
+                        MyBundle5: { type: xml, dir: Resources/config/doctrine/mapping }
+                        MyBundle6:
                             type: xml
                             dir: my-bundle-mappings-dir
                             alias: BundleAlias
@@ -202,9 +204,10 @@ The following configuration shows a bunch of mapping examples:
                 <doctrine_mongodb:document-manager id="default">
                     <doctrine_mongodb:mapping name="MyBundle1" />
                     <doctrine_mongodb:mapping name="MyBundle2" type="yml" />
-                    <doctrine_mongodb:mapping name="MyBundle3" type="annotation" dir="Documents/" />
-                    <doctrine_mongodb:mapping name="MyNundle4" type="xml" dir="Resources/config/doctrine/mapping" />
-                    <doctrine_mongodb:mapping name="MyBundle5" type="xml" dir="my-bundle-mappings-dir" alias="BundleAlias" />
+                    <doctrine_mongodb:mapping name="MyBundle3" type="attribute" dir="Documents/" />
+                    <doctrine_mongodb:mapping name="MyBundle4" type="annotation" dir="Documents/Legacy/" />
+                    <doctrine_mongodb:mapping name="MyBundle5" type="xml" dir="Resources/config/doctrine/mapping" />
+                    <doctrine_mongodb:mapping name="MyBundle6" type="xml" dir="my-bundle-mappings-dir" alias="BundleAlias" />
                     <doctrine_mongodb:mapping name="doctrine_extensions"
                                               type="xml"
                                               dir="%kernel.project_dir%/src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents"
@@ -576,21 +579,31 @@ Full Default Configuration
                 id:
                     server:               ~
                     options:
-                        authMechanism:        ~
-                        connect:              ~
-                        connectTimeoutMS:     ~
-                        db:                   ~
-                        authSource:           ~
-                        journal:              ~
-                        password:             ~
-                        readPreference:       ~
-                        readPreferenceTags:   ~
-                        replicaSet:           ~ # replica set name
-                        socketTimeoutMS:      ~
-                        ssl:                  ~
-                        username:             ~
-                        w:                    ~
-                        wTimeoutMS:           ~
+                        authMechanism:                          ~
+                        connectTimeoutMS:                       ~
+                        db:                                     ~
+                        authSource:                             ~
+                        journal:                                ~
+                        password:                               ~
+                        readPreference:                         ~
+                        readPreferenceTags:                     ~
+                        replicaSet:                             ~ # replica set name
+                        socketTimeoutMS:                        ~
+                        ssl:                                    ~
+                        tls:                                    ~
+                        tlsAllowInvalidCertificates:            ~
+                        tlsAllowInvalidHostnames:               ~
+                        tlsCAFile:                              ~
+                        tlsCertificateKeyFile:                  ~
+                        tlsCertificateKeyFilePassword:          ~
+                        tlsDisableCertificateRevocationCheck:   ~
+                        tlsDisableOCSPEndpointCheck:            ~
+                        tlsInsecure:                            ~
+                        username:                               ~
+                        retryReads:                             ~
+                        retryWrites:                            ~
+                        w:                                      ~
+                        wTimeoutMS:                             ~
                     driver_options:
                         context:              ~ # stream context to use for connection
 
@@ -658,7 +671,6 @@ Full Default Configuration
                 <doctrine:connection id="conn1" server="mongodb://localhost">
                     <doctrine:options
                             authMechanism=""
-                            connect=""
                             connectTimeoutMS=""
                             db=""
                             authSource=""

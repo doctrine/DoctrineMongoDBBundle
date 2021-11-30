@@ -28,7 +28,7 @@ class CreateProxyDirectoryPass implements CompilerPassInterface
         }
 
         // Create document proxy directory
-        $proxyCacheDir = $container->getParameter('doctrine_mongodb.odm.proxy_dir');
+        $proxyCacheDir = (string) $container->getParameter('doctrine_mongodb.odm.proxy_dir');
         if (! is_dir($proxyCacheDir)) {
             if (@mkdir($proxyCacheDir, 0775, true) === false) {
                 throw new RuntimeException(

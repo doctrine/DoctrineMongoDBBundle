@@ -30,10 +30,8 @@
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming" />
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming" />
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousTraitNaming" />
-    </rule>
 
-    <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedProperty">
-        <exclude-pattern>Tests/DependencyInjection/Fixtures/*</exclude-pattern>
+        <exclude name="SlevomatCodingStandard.Classes.ModernClassNameReference" /> <!-- PHP 8.0 required-->
     </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
@@ -41,10 +39,6 @@
     </rule>
 
     <rule ref="Squiz.Classes.ClassFileName.NoMatch">
-        <exclude-pattern>Tests/*</exclude-pattern>
-    </rule>
-
-    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint">
         <exclude-pattern>Tests/*</exclude-pattern>
     </rule>
 </ruleset>

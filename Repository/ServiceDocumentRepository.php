@@ -25,8 +25,12 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
  *         parent::__construct($registry, YourDocument::class);
  *     }
  * }
+ *
+ * @template T of object
+ * @template-extends DocumentRepository<T>
  */
 class ServiceDocumentRepository extends DocumentRepository implements ServiceDocumentRepositoryInterface
 {
+    /** @use ServiceRepositoryTrait<T> */
     use ServiceRepositoryTrait;
 }

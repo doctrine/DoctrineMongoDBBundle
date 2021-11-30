@@ -36,10 +36,8 @@ class ManagerConfigurator
 
     /**
      * Enable filters for an given document manager
-     *
-     * @return null
      */
-    private function enableFilters(DocumentManager $documentManager)
+    private function enableFilters(DocumentManager $documentManager): void
     {
         if (empty($this->enabledFilters)) {
             return;

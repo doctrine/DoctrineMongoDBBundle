@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\Mapping\MappingException;
-use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -20,7 +20,6 @@ use Symfony\Component\Form\Guess\TypeGuess;
 use Symfony\Component\Form\Guess\ValueGuess;
 
 use function array_key_exists;
-use function method_exists;
 
 /**
  * Tries to guess form types according to ODM mappings
@@ -33,17 +32,16 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
     /** @var array */
     private $cache = [];
 
-    /** @var bool */
-    private $typeFQCN;
-
     public function __construct(ManagerRegistry $registry)
     {
         $this->registry = $registry;
-        $this->typeFQCN = method_exists(AbstractType::class, 'getBlockPrefix');
     }
 
     /**
-     * @inheritDoc
+     * @param string $class
+     * @param string $property
+     *
+     * @return TypeGuess|null
      */
     public function guessType($class, $property)
     {
@@ -63,7 +61,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
             $mapping  = $metadata->getFieldMapping($property);
 
             return new TypeGuess(
-                $this->typeFQCN ? DocumentType::class : 'document',
+                DocumentType::class,
                 [
                     'class' => $mapping['targetDocument'],
                     'multiple' => $multiple,
@@ -77,7 +75,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
         switch ($fieldMapping['type']) {
             case 'collection':
                 return new TypeGuess(
-                    $this->typeFQCN ? CollectionType::class : 'collection',
+                    CollectionType::class,
                     [],
                     Guess::MEDIUM_CONFIDENCE
                 );
@@ -85,7 +83,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
             case 'bool':
             case 'boolean':
                 return new TypeGuess(
-                    $this->typeFQCN ? CheckboxType::class : 'checkbox',
+                    CheckboxType::class,
                     [],
                     Guess::HIGH_CONFIDENCE
                 );
@@ -93,14 +91,14 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
             case 'date':
             case 'timestamp':
                 return new TypeGuess(
-                    $this->typeFQCN ? DateTimeType::class : 'datetime',
+                    DateTimeType::class,
                     [],
                     Guess::HIGH_CONFIDENCE
                 );
 
             case 'float':
                 return new TypeGuess(
-                    $this->typeFQCN ? NumberType::class : 'number',
+                    NumberType::class,
                     [],
                     Guess::MEDIUM_CONFIDENCE
                 );
@@ -108,14 +106,14 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
             case 'int':
             case 'integer':
                 return new TypeGuess(
-                    $this->typeFQCN ? IntegerType::class : 'integer',
+                    IntegerType::class,
                     [],
                     Guess::MEDIUM_CONFIDENCE
                 );
 
             case 'string':
                 return new TypeGuess(
-                    $this->typeFQCN ? TextType::class : 'text',
+                    TextType::class,
                     [],
                     Guess::MEDIUM_CONFIDENCE
                 );
@@ -123,7 +121,10 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
     }
 
     /**
-     * @inheritDoc
+     * @param string $class
+     * @param string $property
+     *
+     * @return ValueGuess|null
      */
     public function guessRequired($class, $property)
     {
@@ -144,7 +145,10 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
     }
 
     /**
-     * @inheritDoc
+     * @param string $class
+     * @param string $property
+     *
+     * @return ValueGuess|null
      */
     public function guessMaxLength($class, $property)
     {
@@ -172,7 +176,10 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
     }
 
     /**
-     * @inheritDoc
+     * @param string $class
+     * @param string $property
+     *
+     * @return ValueGuess|null
      */
     public function guessPattern($class, $property)
     {

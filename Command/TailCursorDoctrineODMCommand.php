@@ -19,9 +19,12 @@ use Throwable;
 
 use function sleep;
 use function sprintf;
+use function trigger_deprecation;
 
 /**
  * Command helping to configure a daemon listening to a tailable cursor. Works only with capped collections.
+ *
+ * @deprecated since version 4.4
  */
 class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInterface
 {
@@ -38,7 +41,7 @@ class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInte
             ->addArgument('finder', InputArgument::REQUIRED, 'The repository finder method which returns the cursor to tail.')
             ->addArgument('processor', InputArgument::REQUIRED, 'The service id to use to process the documents.')
             ->addOption('no-flush', null, InputOption::VALUE_NONE, 'If set, the document manager won\'t be flushed after each document processing')
-            ->addOption('sleep-time', null, InputOption::VALUE_REQUIRED, 'The number of seconds to wait between two checks.', 10);
+            ->addOption('sleep-time', null, InputOption::VALUE_REQUIRED, 'The number of seconds to wait between two checks.', '10');
     }
 
     /**
@@ -46,12 +49,19 @@ class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInte
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        trigger_deprecation(
+            'doctrine/mongodb-odm-bundle',
+            '4.4',
+            'The "%s" command is deprecated and will be dropped in DoctrineMongoDBBundle 5.0. You should consider using https://docs.mongodb.com/manual/changeStreams/ instead.',
+            $this->getName()
+        );
+
         $dm                   = $this->getContainer()->get('doctrine_mongodb.odm.document_manager');
         $repository           = $dm->getRepository($input->getArgument('document'));
         $repositoryReflection = new ReflectionClass($repository);
         $documentReflection   = $repository->getDocumentManager()->getMetadataFactory()->getMetadataFor($input->getArgument('document'))->getReflectionClass();
         $processor            = $this->getContainer()->get($input->getArgument('processor'));
-        $sleepTime            = $input->getOption('sleep-time');
+        $sleepTime            = (int) $input->getOption('sleep-time');
 
         if (! $processor instanceof TailableCursorProcessorInterface) {
             throw new InvalidArgumentException('A tailable cursor processor must implement the ProcessorInterface.');
@@ -87,6 +97,7 @@ class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInte
                 $processor->process($document);
             } catch (Throwable $e) {
                 $output->writeln(sprintf('Error occurred while processing document: <error>%s</error>', $e->getMessage()));
+
                 continue;
             }
 

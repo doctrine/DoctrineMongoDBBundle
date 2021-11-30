@@ -14,29 +14,23 @@ use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use PHPUnit\Framework\MockObject\MockObject;
-use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormExtensionInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\Test\TypeTestCase;
 
 use function array_merge;
-use function method_exists;
 
 class DocumentTypeTest extends TypeTestCase
 {
     /** @var DocumentManager */
     private $dm;
 
-    /** @var MockObject */
+    /** @var MockObject&ManagerRegistry */
     private $dmRegistry;
-
-    private $typeFQCN;
 
     protected function setUp(): void
     {
-        $this->typeFQCN = method_exists(AbstractType::class, 'getBlockPrefix');
-
         $this->dm         = TestCase::createTestDocumentManager([
             __DIR__ . '/../../Fixtures/Form/Document',
         ]);
@@ -61,7 +55,7 @@ class DocumentTypeTest extends TypeTestCase
 
     public function testDocumentManagerOptionSetsEmOption(): void
     {
-        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::class : 'document', null, [
+        $field = $this->factory->createNamed('name', DocumentType::class, null, [
             'class' => Document::class,
             'document_manager' => 'default',
         ]);
@@ -71,7 +65,7 @@ class DocumentTypeTest extends TypeTestCase
 
     public function testDocumentManagerInstancePassedAsOption(): void
     {
-        $field = $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::class : 'document', null, [
+        $field = $this->factory->createNamed('name', DocumentType::class, null, [
             'class' => Document::class,
             'document_manager' => $this->dm,
         ]);
@@ -82,7 +76,7 @@ class DocumentTypeTest extends TypeTestCase
     public function testSettingDocumentManagerAndEmOptionShouldThrowException(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->factory->createNamed('name', $this->typeFQCN ? DocumentType::class : 'document', null, [
+        $this->factory->createNamed('name', DocumentType::class, null, [
             'document_manager' => 'default',
             'em' => 'default',
         ]);
@@ -101,10 +95,10 @@ class DocumentTypeTest extends TypeTestCase
 
         $this->dm->flush();
 
-        $form = $this->factory->create($this->typeFQCN ? FormType::class : 'form', $document)
+        $form = $this->factory->create(FormType::class, $document)
             ->add(
                 'categories',
-                $this->typeFQCN ? DocumentType::class : 'document',
+                DocumentType::class,
                 [
                     'class' => Category::class,
                     'multiple' => true,
@@ -118,8 +112,8 @@ class DocumentTypeTest extends TypeTestCase
         $this->assertInstanceOf(FormView::class, $categoryView);
 
         $this->assertCount(2, $categoryView->children);
-        $this->assertTrue($categoryView->children[0]->vars['checked']);
-        $this->assertFalse($categoryView->children[1]->vars['checked']);
+        $this->assertTrue($form->get('categories')->get('0')->createView()->vars['checked']);
+        $this->assertFalse($form->get('categories')->get('1')->createView()->vars['checked']);
     }
 
     /**

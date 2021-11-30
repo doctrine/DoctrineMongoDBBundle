@@ -32,11 +32,11 @@ class InfoDoctrineODMCommand extends DoctrineODMCommand
 The <info>doctrine:mongodb:mapping:info</info> shows basic information about which
 documents exist and possibly if their mapping information contains errors or not.
 
-  <info>./app/console doctrine:mongodb:mapping:info</info>
+  <info>./bin/console doctrine:mongodb:mapping:info</info>
 
 If you are using multiple document managers you can pick your choice with the <info>--dm</info> option:
 
-  <info>./app/console doctrine:mongodb:mapping:info --dm=default</info>
+  <info>./bin/console doctrine:mongodb:mapping:info --dm=default</info>
 EOT
         );
     }

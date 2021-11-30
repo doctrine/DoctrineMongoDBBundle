@@ -19,9 +19,11 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use MongoDB\Client;
 use PHPUnit\Framework\AssertionFailedError;
+use Symfony\Bridge\Doctrine\SchemaListener\DoctrineDbalCacheAdapterSchemaSubscriber;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -32,14 +34,19 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 use function array_map;
 use function array_search;
+use function class_exists;
 use function class_implements;
 use function in_array;
+use function is_dir;
 use function reset;
 
 abstract class AbstractMongoDBExtensionTest extends TestCase
 {
     abstract protected function loadFromFile(ContainerBuilder $container, string $file): void;
 
+    /**
+     * @psalm-suppress UndefinedClass this won't be necessary when removing metadata cache configuration
+     */
     public function testDependencyInjectionConfigurationDefaults(): void
     {
         $container = $this->getContainer();
@@ -61,6 +68,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertEquals(XcacheCache::class, $container->getParameter('doctrine_mongodb.odm.cache.xcache.class'));
         $this->assertEquals(MappingDriverChain::class, $container->getParameter('doctrine_mongodb.odm.metadata.driver_chain.class'));
         $this->assertEquals(AnnotationDriver::class, $container->getParameter('doctrine_mongodb.odm.metadata.annotation.class'));
+        $this->assertEquals(AttributeDriver::class, $container->getParameter('doctrine_mongodb.odm.metadata.attribute.class'));
         $this->assertEquals(XmlDriver::class, $container->getParameter('doctrine_mongodb.odm.metadata.xml.class'));
 
         $this->assertEquals(UniqueEntityValidator::class, $container->getParameter('doctrine_odm.mongodb.validator.unique.class'));
@@ -286,7 +294,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_configuration');
         $calls      = $definition->getMethodCalls();
         $this->assertTrue(isset($calls[0][1][0]['XmlBundle']));
-        $this->assertEquals('DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\XmlBundle\Document', $calls[0][1][0]['XmlBundle']);
+        $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\XmlBundle\Document', $calls[0][1][0]['XmlBundle']);
     }
 
     public function testXmlBundleMappingDetection(): void
@@ -300,7 +308,25 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $calls = $container->getDefinition('doctrine_mongodb.odm.default_metadata_driver')->getMethodCalls();
         $this->assertEquals('doctrine_mongodb.odm.default_xml_metadata_driver', (string) $calls[0][1][0]);
-        $this->assertEquals('DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\XmlBundle\Document', $calls[0][1][1]);
+        $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\XmlBundle\Document', $calls[0][1][1]);
+    }
+
+    public function testNewBundleStructureXmlBundleMappingDetection(): void
+    {
+        if (! class_exists(DoctrineDbalCacheAdapterSchemaSubscriber::class)) {
+            $this->markTestSkipped('Test requires symfony/doctrine-bridge >=5.4');
+        }
+
+        $container = $this->getContainer('NewXmlBundle');
+        $loader    = new DoctrineMongoDBExtension();
+        $config    = DoctrineMongoDBExtensionTest::buildConfiguration(
+            ['document_managers' => ['default' => ['mappings' => ['NewXmlBundle' => []]]]]
+        );
+        $loader->load($config, $container);
+
+        $calls = $container->getDefinition('doctrine_mongodb.odm.default_metadata_driver')->getMethodCalls();
+        $this->assertEquals('doctrine_mongodb.odm.default_xml_metadata_driver', (string) $calls[0][1][0]);
+        $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\NewXmlBundle\Document', $calls[0][1][1]);
     }
 
     public function testAnnotationsBundleMappingDetection(): void
@@ -314,7 +340,28 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $calls = $container->getDefinition('doctrine_mongodb.odm.default_metadata_driver')->getMethodCalls();
         $this->assertEquals('doctrine_mongodb.odm.default_annotation_metadata_driver', (string) $calls[0][1][0]);
-        $this->assertEquals('DoctrineMongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\AnnotationsBundle\Document', $calls[0][1][1]);
+        $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\AnnotationsBundle\Document', $calls[0][1][1]);
+    }
+
+    /**
+     * @requires PHP 8.0
+     */
+    public function testAttributesBundleMappingDetection(): void
+    {
+        if (! class_exists(AttributeDriver::class)) {
+            self::markTestSkipped('This test requires MongoDB ODM 2.3 with attribute driver.');
+        }
+
+        $container = $this->getContainer('AttributesBundle');
+        $loader    = new DoctrineMongoDBExtension();
+        $config    = DoctrineMongoDBExtensionTest::buildConfiguration(
+            ['document_managers' => ['default' => ['mappings' => ['AttributesBundle' => 'attribute']]]]
+        );
+        $loader->load($config, $container);
+
+        $calls = $container->getDefinition('doctrine_mongodb.odm.default_metadata_driver')->getMethodCalls();
+        $this->assertEquals('doctrine_mongodb.odm.default_attribute_metadata_driver', (string) $calls[0][1][0]);
+        $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\AttributesBundle\Document', $calls[0][1][1]);
     }
 
     public function testDocumentManagerMetadataCacheDriverConfiguration(): void
@@ -336,6 +383,9 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertEquals('%doctrine_mongodb.odm.cache.apc.class%', $definition->getClass());
     }
 
+    /**
+     * @psalm-suppress UndefinedClass this won't be necessary when removing metadata cache configuration
+     */
     public function testDocumentManagerMemcachedMetadataCacheDriverConfiguration(): void
     {
         $container = $this->getContainer();
@@ -527,10 +577,17 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
     protected function getContainer(string $bundle = 'XmlBundle'): ContainerBuilder
     {
-        require_once __DIR__ . '/Fixtures/Bundles/' . $bundle . '/' . $bundle . '.php';
+        $bundleDir = __DIR__ . '/Fixtures/Bundles/' . $bundle;
+
+        if (is_dir($bundleDir . '/src')) {
+            require_once $bundleDir . '/src/' . $bundle . '.php';
+        } else {
+            require_once $bundleDir . '/' . $bundle . '.php';
+        }
 
         return new ContainerBuilder(new ParameterBag([
-            'kernel.bundles'          => [$bundle => 'DoctrineMongoDBBundle\\Tests\\DependencyInjection\\Fixtures\\Bundles\\' . $bundle . '\\' . $bundle],
+            'kernel.bundles'          => [$bundle => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\\' . $bundle . '\\' . $bundle],
+            'kernel.bundles_metadata' => [$bundle => ['path' => $bundleDir, 'namespace' => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\\' . $bundle]],
             'kernel.cache_dir'        => __DIR__,
             'kernel.compiled_classes' => [],
             'kernel.debug'            => false,

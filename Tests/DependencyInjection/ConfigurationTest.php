@@ -29,7 +29,7 @@ class ConfigurationTest extends TestCase
     public function testDefaults(): void
     {
         $processor     = new Processor();
-        $configuration = new Configuration(false);
+        $configuration = new Configuration();
         $options       = $processor->processConfiguration($configuration, []);
 
         $defaults = [
@@ -60,7 +60,7 @@ class ConfigurationTest extends TestCase
     public function testFullConfiguration(array $config): void
     {
         $processor     = new Processor();
-        $configuration = new Configuration(false);
+        $configuration = new Configuration();
         $options       = $processor->processConfiguration($configuration, [$config]);
 
         $expected = [
@@ -99,15 +99,26 @@ class ConfigurationTest extends TestCase
                             ['dc' => 'west'],
                             [],
                         ],
-                        'replicaSet'        => 'foo',
-                        'slaveOkay'         => true,
-                        'socketTimeoutMS'   => 1000,
-                        'ssl'               => true,
-                        'authMechanism'     => 'MONGODB-X509',
-                        'authSource'        => 'some_db',
-                        'username'          => 'username_val',
-                        'w'                 => 'majority',
-                        'wTimeoutMS'        => 1000,
+                        'replicaSet'                           => 'foo',
+                        'slaveOkay'                            => true,
+                        'socketTimeoutMS'                      => 1000,
+                        'ssl'                                  => true,
+                        'tls'                                  => true,
+                        'tlsAllowInvalidCertificates'          => false,
+                        'tlsAllowInvalidHostnames'             => false,
+                        'tlsCAFile'                            => '/path/to/cert.pem',
+                        'tlsCertificateKeyFile'                => '/path/to/key.crt',
+                        'tlsCertificateKeyFilePassword'        => 'secret',
+                        'tlsDisableCertificateRevocationCheck' => false,
+                        'tlsDisableOCSPEndpointCheck'          => false,
+                        'tlsInsecure'                          => false,
+                        'authMechanism'                        => 'MONGODB-X509',
+                        'authSource'                           => 'some_db',
+                        'username'                             => 'username_val',
+                        'retryReads'                           => false,
+                        'retryWrites'                          => false,
+                        'w'                                    => 'majority',
+                        'wTimeoutMS'                           => 1000,
                     ],
                     'driver_options' => ['context' => 'conn1_context_service'],
                 ],
@@ -153,6 +164,10 @@ class ConfigurationTest extends TestCase
                     'mappings' => [
                         'FooBundle' => [
                             'type'    => 'annotation',
+                            'mapping' => true,
+                        ],
+                        'BarBundle' => [
+                            'type'    => 'attribute',
                             'mapping' => true,
                         ],
                     ],
@@ -221,7 +236,7 @@ class ConfigurationTest extends TestCase
     public function testMergeOptions(array $configs, array $expected): void
     {
         $processor     = new Processor();
-        $configuration = new Configuration(false);
+        $configuration = new Configuration();
         $options       = $processor->processConfiguration($configuration, $configs);
 
         foreach ($expected as $key => $value) {
@@ -345,7 +360,7 @@ class ConfigurationTest extends TestCase
     public function testNormalizeOptions(array $config, array $expected): void
     {
         $processor     = new Processor();
-        $configuration = new Configuration(false);
+        $configuration = new Configuration();
         $options       = $processor->processConfiguration($configuration, [$config]);
 
         foreach ($expected as $key => $value) {
@@ -457,7 +472,7 @@ class ConfigurationTest extends TestCase
         ];
 
         $processor     = new Processor();
-        $configuration = new Configuration(false);
+        $configuration = new Configuration();
         $options       = $processor->processConfiguration($configuration, [$config]);
 
         $this->assertEquals(['password' => 'bar'], $options['connections']['conn1']['options']);
@@ -477,7 +492,7 @@ class ConfigurationTest extends TestCase
         ];
 
         $processor     = new Processor();
-        $configuration = new Configuration(false);
+        $configuration = new Configuration();
 
         $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage('The replicaSet option must be a string');
@@ -497,7 +512,7 @@ class ConfigurationTest extends TestCase
         ];
 
         $processor       = new Processor();
-        $configuration   = new Configuration(false);
+        $configuration   = new Configuration();
         $processedConfig = $processor->processConfiguration($configuration, [$config]);
         $this->assertFalse(array_key_exists('replicaSet', $processedConfig['connections']['conn1']['options']));
     }
@@ -508,7 +523,7 @@ class ConfigurationTest extends TestCase
     public function testFixtureLoaderValidation(array $config): void
     {
         $processor     = new Processor();
-        $configuration = new Configuration(false);
+        $configuration = new Configuration();
         $this->expectException(LogicException::class);
         $processor->processConfiguration($configuration, [$config]);
     }

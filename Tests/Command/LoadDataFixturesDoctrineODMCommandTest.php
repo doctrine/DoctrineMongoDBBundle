@@ -5,24 +5,63 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Command;
 
 use Doctrine\Bundle\MongoDBBundle\Command\LoadDataFixturesDoctrineODMCommand;
-use Doctrine\Bundle\MongoDBBundle\Loader\SymfonyFixturesLoaderInterface;
-use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Console\Tester\CommandTester;
 
-class LoadDataFixturesDoctrineODMCommandTest extends TestCase
+class LoadDataFixturesDoctrineODMCommandTest extends KernelTestCase
 {
+    /** @var LoadDataFixturesDoctrineODMCommand */
+    private $command;
+
     protected function setUp(): void
     {
-        $registry = $this->createMock(ManagerRegistry::class);
-        $kernel   = $this->createMock(KernelInterface::class);
-        $loader   = $this->createMock(SymfonyFixturesLoaderInterface::class);
+        $kernel      = new CommandTestKernel('test', false);
+        $application = new Application($kernel);
 
-        $this->command = new LoadDataFixturesDoctrineODMCommand($registry, $kernel, $loader);
+        $this->command = $application->find('doctrine:mongodb:fixtures:load');
     }
 
-    public function testCommandIsEnabledWithDependency(): void
+    public function testIsInteractiveByDefault(): void
     {
-        $this->assertTrue($this->command->isEnabled());
+        $commandTester = new CommandTester($this->command);
+        $commandTester->execute([]);
+
+        $output = $commandTester->getDisplay();
+        $this->assertStringContainsString('Careful, database will be purged. Do you want to continue (y/N) ?', $output);
+    }
+
+    public function testGroup(): void
+    {
+        $commandTester = new CommandTester($this->command);
+        $commandTester->execute([
+            '--group' => ['test_group'],
+        ], ['interactive' => false]);
+
+        $output = $commandTester->getDisplay();
+        $this->assertStringContainsString('loading Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\CommandBundle\DataFixtures\UserFixtures', $output);
+        $this->assertStringNotContainsString('loading Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\CommandBundle\DataFixtures\OtherFixtures', $output);
+    }
+
+    public function testNonExistingGroup(): void
+    {
+        $commandTester = new CommandTester($this->command);
+        $commandTester->execute([
+            '--group' => ['non_existing_group'],
+        ], ['interactive' => false]);
+
+        $output = $commandTester->getDisplay();
+        $this->assertStringContainsString('Could not find any fixture services to load in the groups', $output);
+        $this->assertStringContainsString('(non_existing_group)', $output);
+    }
+
+    public function testExecute(): void
+    {
+        $commandTester = new CommandTester($this->command);
+        $commandTester->execute([], ['interactive' => false]);
+
+        $output = $commandTester->getDisplay();
+        $this->assertStringContainsString('loading Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\CommandBundle\DataFixtures\UserFixtures', $output);
+        $this->assertStringContainsString('loading Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\CommandBundle\DataFixtures\OtherFixtures', $output);
     }
 }

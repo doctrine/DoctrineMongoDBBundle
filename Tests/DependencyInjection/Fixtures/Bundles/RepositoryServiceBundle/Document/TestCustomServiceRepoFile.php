@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Fixtures\Bundles\RepositoryServiceBundle\Document;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Document;
 
+use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Repository\TestCustomServiceRepoGridFSRepository;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Fixtures\Bundles\RepositoryServiceBundle\Repository\TestCustomServiceRepoGridFSRepository;
 
 /**
  * @ODM\File(repositoryClass=TestCustomServiceRepoGridFSRepository::class)

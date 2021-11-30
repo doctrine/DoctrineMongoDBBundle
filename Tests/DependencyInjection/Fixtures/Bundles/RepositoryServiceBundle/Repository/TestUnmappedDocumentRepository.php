@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Fixtures\Bundles\RepositoryServiceBundle\Repository;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Repository;
 
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepository;
-use Fixtures\Bundles\RepositoryServiceBundle\Document\TestUnmappedDocument;
+use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Document\TestUnmappedDocument;
 
 class TestUnmappedDocumentRepository extends ServiceDocumentRepository
 {

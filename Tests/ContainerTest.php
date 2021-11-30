@@ -46,7 +46,7 @@ class ContainerTest extends TestCase
         $this->container->setParameter('kernel.debug', $debug);
         $this->extension->load([$config], $this->container);
 
-        $definition = $this->container->getDefinition('doctrine_mongodb.odm.command_logger');
+        $definition = $this->container->getDefinition('doctrine_mongodb.odm.psr_command_logger');
         $this->assertSame($expected, $definition->hasTag('doctrine_mongodb.odm.command_logger'));
 
         $this->container->compile();
@@ -98,8 +98,14 @@ class ContainerTest extends TestCase
         $this->container->setParameter('kernel.debug', $debug);
         $this->extension->load([$config], $this->container);
 
+        $deprecatedLoggerDefinition = $this->container->getAlias('doctrine_mongodb.odm.command_logger');
+        $this->assertTrue($deprecatedLoggerDefinition->isDeprecated());
+
         $loggerDefinition = $this->container->getDefinition('doctrine_mongodb.odm.data_collector.command_logger');
         $this->assertSame($expected, $loggerDefinition->hasTag('doctrine_mongodb.odm.command_logger'));
+
+        $stopwatchLoggerDefinition = $this->container->getDefinition('doctrine_mongodb.odm.stopwatch_command_logger');
+        $this->assertSame($expected, $stopwatchLoggerDefinition->hasTag('doctrine_mongodb.odm.command_logger'));
 
         $dataCollectorDefinition = $this->container->getDefinition('doctrine_mongodb.odm.data_collector');
         $this->assertSame($expected, $dataCollectorDefinition->hasTag('data_collector'));

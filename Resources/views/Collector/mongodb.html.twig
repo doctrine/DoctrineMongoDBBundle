@@ -2,21 +2,23 @@
 
 {% block toolbar %}
     {% if collector.commandCount > 0 %}
-        {% set profiler_markup_version = profiler_markup_version|default(1) %}
-
         {% set icon %}
-            {% if profiler_markup_version == 1 %}
-                <img width="20" height="28" alt="Mongo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAcCAYAAABh2p9gAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAQRJREFUeNpi/P//PwM1ARMDlcGogZQDlpMnT7pxc3NbA9nhQKxOpL5rQLwJiPeBsI6Ozl+YBOOOHTv+AOllQNwtLS39F2owKYZ/gRq8G4i3ggxEToggWzvc3d2Pk+1lNL4fFAs6ODi8JzdS7mMRVyDVoAMHDsANdAPiOCC+jCQvQKqBQB/BDbwBxK5AHA3E/kB8nKJkA8TMQBwLxaBIKQbi70AvTADSBiSadwFXpCikpKQU8PDwkGTaly9fHFigkaKIJid4584dkiMFFI6jkTJII0WVmpHCAixZQEXWYhDeuXMnyLsVlEQKI45qFBQZ8eRECi4DBaAlDqle/8A48ip6gAADANdQY88Uc0oGAAAAAElFTkSuQmCC"/>
-                <span class="sf-toolbar-status">{{ collector.commandCount }}</span>
-            {% else %}
-                {{ include('@DoctrineMongoDB/Collector/icon.svg') }}
-                <span class="sf-toolbar-value">{{ collector.commandCount }}</span>
-            {% endif %}
+            {{ include('@DoctrineMongoDB/Collector/icon.svg') }}
+            <span class="sf-toolbar-value">{{ collector.commandCount }}</span>
+            <span class="sf-toolbar-info-piece-additional-detail">
+                <span class="sf-toolbar-label">in</span>
+                <span class="sf-toolbar-value">{{ '%0.2f'|format(collector.time / 1000) }}</span>
+                <span class="sf-toolbar-label">ms</span>
+            </span>
         {% endset %}
         {% set text %}
             <div class="sf-toolbar-info-piece">
-                <b>Database Commands</b>
+                <b>Database commands</b>
                 <span class="sf-toolbar-status">{{ collector.commandCount }}</span>
+            </div>
+            <div class="sf-toolbar-info-piece">
+                <b>Command time</b>
+                <span>{{ '%0.2f'|format(collector.time / 1000) }} ms</span>
             </div>
         {% endset %}
         {% include '@WebProfiler/Profiler/toolbar_item.html.twig' with { 'link': profiler_url } %}
@@ -34,21 +36,51 @@
 {% endblock %}
 
 {% block panel %}
-    <h2>Commands</h2>
+    <h2>Command metrics</h2>
+    <div class="metrics">
+        <div class="metric">
+            <span class="value">{{ collector.commandCount }}</span>
+            <span class="label">Database commands</span>
+        </div>
 
+        <div class="metric">
+            <span class="value">{{ '%0.3f'|format(collector.time / 1000) }} <span class="unit">ms</span></span>
+            <span class="label">Command time</span>
+        </div>
+    </div>
+
+    <h2>Commands</h2>
     {% if collector.commands is empty %}
-        <p>
-            <em>No commands.</em>
-        </p>
-    {% else %}
-        <ul class="alt">
-            {% for command in collector.commands %}
-                <li class="{{ cycle(['odd', 'even'], loop.index) }}">
-                    <div>
-                        <code>{{ command }}</code>
-                    </div>
-                </li>
-            {% endfor %}
-        </ul>
+        <div class="empty">
+            <em>No commands were performed.</em>
+        </div>
     {% endif %}
+    <table class="queries-table">
+        <thead>
+        <tr>
+            <th class="nowrap">#</th>
+            <th class="nowrap">Time</th>
+            <th class="nowrap">Database</th>
+            <th style="width: 100%;">Info</th>
+        </tr>
+        </thead>
+        <tbody id="commands">
+        {% for command in collector.commands %}
+            <tr>
+                <td class="nowrap">{{ loop.index }}</td>
+                <td class="nowrap">{{ '%0.3f'|format(command.durationMicros / 1000) }} ms</td>
+                <td class="nowrap">{{ command.database }}</td>
+                <td>
+                    {{ command.command|json_encode() }}
+                    <div class="text-small font-normal">
+                        <a href="#" class="sf-toggle link-inverse" data-toggle-selector="#formatted-query-{{ loop.index }}" data-toggle-alt-content="Hide formatted query">View formatted query</a>
+                    </div>
+                    <div id="formatted-query-{{ loop.index }}" class="sql-runnable hidden">
+                        <pre>{{ command.command|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

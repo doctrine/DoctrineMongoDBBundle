@@ -31,7 +31,7 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader implements Symfon
      *
      * @param array $fixtures
      */
-    public function addFixtures(array $fixtures)
+    public function addFixtures(array $fixtures): void
     {
         // Because parent::addFixture may call $this->createFixture
         // we cannot call $this->addFixture in this loop
@@ -48,7 +48,7 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader implements Symfon
         }
     }
 
-    public function addFixture(FixtureInterface $fixture)
+    public function addFixture(FixtureInterface $fixture): void
     {
         $class                        = get_class($fixture);
         $this->loadedFixtures[$class] = $fixture;
@@ -109,6 +109,7 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader implements Symfon
                 $fixtureClass = get_class($fixture);
                 if (isset($this->groupsFixtureMapping[$group][$fixtureClass])) {
                     $filteredFixtures[$fixtureClass] = $fixture;
+
                     continue 2;
                 }
             }

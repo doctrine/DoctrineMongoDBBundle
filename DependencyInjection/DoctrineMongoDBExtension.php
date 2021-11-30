@@ -4,22 +4,30 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 
+use Doctrine\Bundle\MongoDBBundle\Attribute\AsDocumentListener;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\EventSubscriber\EventSubscriberInterface;
 use Doctrine\Bundle\MongoDBBundle\Fixture\ODMFixtureInterface;
 use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepositoryInterface;
+use Doctrine\Common\Cache\MemcacheCache;
+use Doctrine\Common\Cache\RedisCache;
 use Doctrine\Common\DataFixtures\Loader as DataFixturesLoader;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use InvalidArgumentException;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
+use Symfony\Component\Cache\Adapter\ApcuAdapter;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\MemcachedAdapter;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
+use Symfony\Component\Config\Definition\BaseNode;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -30,6 +38,8 @@ use function class_exists;
 use function class_implements;
 use function in_array;
 use function interface_exists;
+use function is_dir;
+use function method_exists;
 use function reset;
 use function sprintf;
 
@@ -38,6 +48,9 @@ use function sprintf;
  */
 class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 {
+    /** @internal */
+    public const CONFIGURATION_TAG = 'doctrine.odm.configuration';
+
     /**
      * Responds to the doctrine_mongodb configuration parameter.
      */
@@ -116,6 +129,17 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
         $container->registerForAutoconfiguration(EventSubscriberInterface::class)
             ->addTag('doctrine_mongodb.odm.event_subscriber');
+
+        if (method_exists($container, 'registerAttributeForAutoconfiguration')) {
+            $container->registerAttributeForAutoconfiguration(AsDocumentListener::class, static function (ChildDefinition $definition, AsDocumentListener $attribute) {
+                $definition->addTag('doctrine_mongodb.odm.event_listener', [
+                    'event'      => $attribute->event,
+                    'method'     => $attribute->method,
+                    'lazy'       => $attribute->lazy,
+                    'connection' => $attribute->connection,
+                ]);
+            });
+        }
 
         $this->loadMessengerServices($container);
     }
@@ -197,6 +221,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $defaultDatabase = $documentManager['database'] ?? $defaultDB;
 
         $odmConfigDef = new Definition('%doctrine_mongodb.odm.configuration.class%');
+        $odmConfigDef->addTag(self::CONFIGURATION_TAG);
         $container->setDefinition(
             $configurationId,
             $odmConfigDef
@@ -206,7 +231,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $this->loadObjectManagerCacheDriver($documentManager, $container, 'metadata_cache');
 
         $methods = [
-            'setMetadataCacheImpl' => new Reference(sprintf('doctrine_mongodb.odm.%s_metadata_cache', $documentManager['name'])),
+            'setMetadataCache' => new Reference(sprintf('doctrine_mongodb.odm.%s_metadata_cache', $documentManager['name'])),
             'setMetadataDriverImpl' => new Reference(sprintf('doctrine_mongodb.odm.%s_metadata_driver', $documentManager['name'])),
             'setProxyDir' => '%doctrine_mongodb.odm.proxy_dir%',
             'setProxyNamespace' => '%doctrine_mongodb.odm.proxy_namespace%',
@@ -231,16 +256,25 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $methods['setPersistentCollectionFactory'] = new Reference($documentManager['persistent_collection_factory']);
         }
 
+        $container->getAlias('doctrine_mongodb.odm.command_logger')
+            ->setDeprecated(...$this->buildDeprecationArgs(
+                '4.4',
+                'The service %alias_id% is deprecated and will be dropped in DoctrineMongoDBBundle 5.0. Use "doctrine_mongodb.odm.psr_command_logger" instead.'
+            ));
+
         // logging
         if ($container->getParameterBag()->resolveValue($documentManager['logging'])) {
-            $logger = $container->getDefinition('doctrine_mongodb.odm.command_logger');
-            $logger->addTag('doctrine_mongodb.odm.command_logger');
+            $container->getDefinition('doctrine_mongodb.odm.psr_command_logger')
+                ->addTag('doctrine_mongodb.odm.command_logger');
         }
 
         // profiler
         if ($container->getParameterBag()->resolveValue($documentManager['profiler']['enabled'])) {
-            $logger = $container->getDefinition('doctrine_mongodb.odm.data_collector.command_logger');
-            $logger->addTag('doctrine_mongodb.odm.command_logger');
+            $container->getDefinition('doctrine_mongodb.odm.data_collector.command_logger')
+                ->addTag('doctrine_mongodb.odm.command_logger');
+
+            $container->getDefinition('doctrine_mongodb.odm.stopwatch_command_logger')
+                ->addTag('doctrine_mongodb.odm.command_logger');
 
             $container
                 ->getDefinition('doctrine_mongodb.odm.data_collector')
@@ -263,7 +297,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $container
             ->setDefinition(
                 $managerConfiguratorName,
-                $this->getChildDefinitionOrDefinitionDecorator('doctrine_mongodb.odm.manager_configurator.abstract')
+                new ChildDefinition('doctrine_mongodb.odm.manager_configurator.abstract')
             )
             ->replaceArgument(0, $enabledFilters);
 
@@ -320,7 +354,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $eventManagerId = sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $name);
             $container->setDefinition(
                 $eventManagerId,
-                $this->getChildDefinitionOrDefinitionDecorator('doctrine_mongodb.odm.connection.event_manager')
+                new ChildDefinition('doctrine_mongodb.odm.connection.event_manager')
             );
 
             $configurationId = sprintf('doctrine_mongodb.odm.%s_configuration', $name);
@@ -348,6 +382,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
     private function loadMessengerServices(ContainerBuilder $container)
     {
+        /** @psalm-suppress UndefinedClass Optional dependency */
         if (! interface_exists(MessageBusInterface::class) || ! class_exists(DoctrineClearEntityManagerWorkerSubscriber::class)) {
             return;
         }
@@ -435,33 +470,28 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $name
      */
-    protected function getObjectManagerElementName($name)
+    protected function getObjectManagerElementName($name): string
     {
         return 'doctrine_mongodb.odm.' . $name;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function getMappingObjectDefaultName()
+    protected function getMappingObjectDefaultName(): string
     {
         return 'Document';
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function getMappingResourceConfigDirectory()
+    protected function getMappingResourceConfigDirectory(?string $bundleDir = null): string
     {
+        if ($bundleDir !== null && is_dir($bundleDir . '/config/doctrine')) {
+            return 'config/doctrine';
+        }
+
         return 'Resources/config/doctrine';
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function getMappingResourceExtension()
+    protected function getMappingResourceExtension(): string
     {
         return 'mongodb';
     }
@@ -471,10 +501,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         return '%' . $this->getObjectManagerElementName('metadata.' . $driverType . '.class') . '%';
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getAlias()
+    public function getAlias(): string
     {
         return 'doctrine_mongodb';
     }
@@ -498,14 +525,93 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     }
 
     /**
-     * Instantiate new ChildDefinition if available, otherwise fall back to deprecated DefinitionDecorator
+     * Loads a cache driver.
      *
-     * @param string $id service ID passed to ctor
+     * @param string $cacheName         The cache driver name
+     * @param string $objectManagerName The object manager name
+     * @param array  $cacheDriver       The cache driver mapping
      *
-     * @return ChildDefinition|DefinitionDecorator
+     * @throws InvalidArgumentException
+     *
+     * @psalm-suppress UndefinedClass this won't be necessary when removing metadata cache configuration
      */
-    private function getChildDefinitionOrDefinitionDecorator($id)
+    protected function loadCacheDriver($cacheName, $objectManagerName, array $cacheDriver, ContainerBuilder $container): string
     {
-        return class_exists(ChildDefinition::class) ? new ChildDefinition($id) : new DefinitionDecorator($id);
+        if (isset($cacheDriver['namespace'])) {
+            return parent::loadCacheDriver($cacheName, $objectManagerName, $cacheDriver, $container);
+        }
+
+        $cacheDriverServiceId = $this->getObjectManagerElementName($objectManagerName . '_' . $cacheName);
+
+        switch ($cacheDriver['type']) {
+            case 'service':
+                $container->setAlias($cacheDriverServiceId, new Alias($cacheDriver['id'], false));
+
+                return $cacheDriverServiceId;
+
+            case 'memcached':
+                if (! empty($cacheDriver['class']) && $cacheDriver['class'] !== MemcacheCache::class) {
+                    return parent::loadCacheDriver($cacheName, $objectManagerName, $cacheDriver, $container);
+                }
+
+                $memcachedInstanceClass = ! empty($cacheDriver['instance_class']) ? $cacheDriver['instance_class'] : '%' . $this->getObjectManagerElementName('cache.memcached_instance.class') . '%';
+                $memcachedHost          = ! empty($cacheDriver['host']) ? $cacheDriver['host'] : '%' . $this->getObjectManagerElementName('cache.memcached_host') . '%';
+                $memcachedPort          = ! empty($cacheDriver['port']) ? $cacheDriver['port'] : '%' . $this->getObjectManagerElementName('cache.memcached_port') . '%';
+                $memcachedInstance      = new Definition($memcachedInstanceClass);
+                $memcachedInstance->addMethodCall('addServer', [
+                    $memcachedHost,
+                    $memcachedPort,
+                ]);
+                $container->setDefinition($this->getObjectManagerElementName(sprintf('%s_memcached_instance', $objectManagerName)), $memcachedInstance);
+
+                $cacheDef = new Definition(MemcachedAdapter::class, [new Reference($this->getObjectManagerElementName(sprintf('%s_memcached_instance', $objectManagerName)))]);
+
+                break;
+
+            case 'redis':
+                if (! empty($cacheDriver['class']) && $cacheDriver['class'] !== RedisCache::class) {
+                    return parent::loadCacheDriver($cacheName, $objectManagerName, $cacheDriver, $container);
+                }
+
+                $redisInstanceClass = ! empty($cacheDriver['instance_class']) ? $cacheDriver['instance_class'] : '%' . $this->getObjectManagerElementName('cache.redis_instance.class') . '%';
+                $redisHost          = ! empty($cacheDriver['host']) ? $cacheDriver['host'] : '%' . $this->getObjectManagerElementName('cache.redis_host') . '%';
+                $redisPort          = ! empty($cacheDriver['port']) ? $cacheDriver['port'] : '%' . $this->getObjectManagerElementName('cache.redis_port') . '%';
+                $redisInstance      = new Definition($redisInstanceClass);
+                $redisInstance->addMethodCall('connect', [
+                    $redisHost,
+                    $redisPort,
+                ]);
+                $container->setDefinition($this->getObjectManagerElementName(sprintf('%s_redis_instance', $objectManagerName)), $redisInstance);
+
+                $cacheDef = new Definition(RedisAdapter::class, [new Reference($this->getObjectManagerElementName(sprintf('%s_redis_instance', $objectManagerName)))]);
+
+                break;
+
+            case 'apcu':
+                $cacheDef = new Definition(ApcuAdapter::class);
+
+                break;
+
+            case 'array':
+                $cacheDef = new Definition(ArrayAdapter::class);
+
+                break;
+
+            default:
+                return parent::loadCacheDriver($cacheName, $objectManagerName, $cacheDriver, $container);
+        }
+
+        $cacheDef->setPublic(false);
+        $container->setDefinition($cacheDriverServiceId, $cacheDef);
+
+        return $cacheDriverServiceId;
+    }
+
+    private function buildDeprecationArgs(string $version, string $message): array
+    {
+        // @todo Remove when support for Symfony 5.1 and older is dropped
+        return method_exists(BaseNode::class, 'getDeprecation')
+            ? ['doctrine/mongodb-odm-bundle', $version, $message]
+            : [$message];
     }
 }

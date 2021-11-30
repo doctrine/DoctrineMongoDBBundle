@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fixtures\Bundles\RepositoryServiceBundle\Repository;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Repository;
 
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 

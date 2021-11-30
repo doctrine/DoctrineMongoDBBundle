@@ -20,9 +20,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use function class_exists;
 use function implode;
 use function sprintf;
-use function trigger_error;
-
-use const E_USER_DEPRECATED;
+use function trigger_deprecation;
 
 /**
  * Load data fixtures from bundles.
@@ -87,8 +85,13 @@ EOT
         $dm = $this->getManagerRegistry()->getManager($input->getOption('dm'));
         $ui = new SymfonyStyle($input, $output);
 
-        if ((bool) $input->getOption('services')) {
-            @trigger_error(sprintf('The "services" option to the "%s" command is deprecated and will be dropped in DoctrineMongoDBBundle 5.0.', $this->getName()), E_USER_DEPRECATED);
+        if ($input->getOption('services')) {
+            trigger_deprecation(
+                'doctrine/mongodb-odm-bundle',
+                '4.0',
+                'The "services" option to the "%s" command is deprecated and will be dropped in DoctrineMongoDBBundle 5.0.',
+                $this->getName()
+            );
         }
 
         if ($input->isInteractive() && ! $input->getOption('append')) {

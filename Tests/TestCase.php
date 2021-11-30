@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Tests;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use PHPUnit\Framework\TestCase as BaseTestCase;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function sys_get_temp_dir;
 
@@ -27,7 +27,7 @@ class TestCase extends BaseTestCase
         $config->setProxyNamespace('SymfonyTests\Doctrine');
         $config->setHydratorNamespace('SymfonyTests\Doctrine');
         $config->setMetadataDriverImpl(new AnnotationDriver(new AnnotationReader(), $paths));
-        $config->setMetadataCacheImpl(new ArrayCache());
+        $config->setMetadataCache(new ArrayAdapter());
 
         return DocumentManager::create(null, $config);
     }

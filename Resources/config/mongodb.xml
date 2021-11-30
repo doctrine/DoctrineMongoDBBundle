@@ -32,6 +32,8 @@
         <!-- metadata -->
         <parameter key="doctrine_mongodb.odm.metadata.driver_chain.class">Doctrine\Persistence\Mapping\Driver\MappingDriverChain</parameter>
         <parameter key="doctrine_mongodb.odm.metadata.annotation.class">Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver</parameter>
+        <parameter key="doctrine_mongodb.odm.metadata.attribute.class">Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver</parameter>
+        <parameter key="doctrine_mongodb.odm.metadata.attribute_reader.class">Doctrine\ODM\MongoDB\Mapping\Driver\AttributeReader</parameter>
         <parameter key="doctrine_mongodb.odm.metadata.xml.class">Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver</parameter>
 
         <!-- directories -->
@@ -115,6 +117,11 @@
             <argument>%doctrine_mongodb.odm.document_dirs%</argument>
         </service>
         <service id="doctrine_mongodb.odm.metadata.annotation_reader" alias="annotation_reader" />
+        <service id="doctrine_mongodb.odm.metadata.attribute" class="%doctrine_mongodb.odm.metadata.attribute.class%">
+            <argument>%doctrine_mongodb.odm.document_dirs%</argument>
+            <argument type="service" id="doctrine_mongodb.odm.metadata.attribute_reader" />
+        </service>
+        <service id="doctrine_mongodb.odm.metadata.attribute_reader" class="%doctrine_mongodb.odm.metadata.attribute_reader.class%" />
         <service id="doctrine_mongodb.odm.metadata.xml" class="%doctrine_mongodb.odm.metadata.xml.class%">
             <argument>%doctrine_mongodb.odm.xml_mapping_dirs%</argument>
         </service>
@@ -136,7 +143,13 @@
             <argument type="tagged" tag="doctrine_mongodb.odm.command_logger" />
         </service>
 
-        <service id="doctrine_mongodb.odm.command_logger" class="Doctrine\Bundle\MongoDBBundle\APM\PSRCommandLogger" public="false">
+        <service id="doctrine_mongodb.odm.stopwatch_command_logger" class="Doctrine\Bundle\MongoDBBundle\APM\StopwatchCommandLogger" public="false">
+            <argument type="service" id="debug.stopwatch" on-invalid="null" />
+        </service>
+
+        <service id="doctrine_mongodb.odm.command_logger" alias="doctrine_mongodb.odm.psr_command_logger" />
+
+        <service id="doctrine_mongodb.odm.psr_command_logger" class="Doctrine\Bundle\MongoDBBundle\APM\PSRCommandLogger" public="false">
             <argument type="service" id="logger" on-invalid="null" />
 
             <tag name="monolog.logger" channel="doctrine" />

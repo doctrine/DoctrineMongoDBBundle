@@ -6,14 +6,18 @@ namespace Doctrine\Bundle\MongoDBBundle\DataCollector;
 
 use Doctrine\ODM\MongoDB\APM\Command;
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
+use stdClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 use Throwable;
 
 use function array_map;
+use function array_reduce;
 use function count;
-use function json_encode;
+use function json_decode;
+use function MongoDB\BSON\fromPHP;
+use function MongoDB\BSON\toCanonicalExtendedJSON;
 
 class CommandDataCollector extends DataCollector
 {
@@ -30,10 +34,23 @@ class CommandDataCollector extends DataCollector
         $this->data = [
             'num_commands' => count($this->commandLogger),
             'commands' => array_map(
-                static function (Command $command): string {
-                    return json_encode($command->getCommand());
+                static function (Command $command): array {
+                    $dbProperty = '$db';
+
+                    return [
+                        'database' => $command->getCommand()->$dbProperty ?? '',
+                        'command' => json_decode(toCanonicalExtendedJSON(fromPHP($command->getCommand()))),
+                        'durationMicros' => $command->getDurationMicros(),
+                    ];
                 },
                 $this->commandLogger->getAll()
+            ),
+            'time' => array_reduce(
+                $this->commandLogger->getAll(),
+                static function (int $total, Command $command): int {
+                    return $total + $command->getDurationMicros();
+                },
+                0
             ),
         ];
     }
@@ -52,8 +69,13 @@ class CommandDataCollector extends DataCollector
         return $this->data['num_commands'];
     }
 
+    public function getTime(): int
+    {
+        return $this->data['time'];
+    }
+
     /**
-     * @return string[]
+     * @return array<array{database: string, command: stdClass, durationMicros: int}>
      */
     public function getCommands(): array
     {

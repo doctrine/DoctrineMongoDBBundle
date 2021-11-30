@@ -11,65 +11,122 @@ The User Model
 
 We begin this tutorial with the model for a ``User`` document:
 
-.. code-block:: php
+.. configuration-block::
 
-    // src/Document/User.php
-    namespace App\Document;
+    .. code-block:: php-annotations
 
-    use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
-    use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-    use Symfony\Component\Validator\Constraints as Assert;
+        // src/Document/User.php
+        namespace App\Document;
 
-    /**
-     * @MongoDB\Document(collection="users")
-     * @MongoDBUnique(fields="email")
-     */
-    class User
-    {
-        /**
-         * @MongoDB\Id
-         */
-        protected $id;
+        use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+        use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+        use Symfony\Component\Validator\Constraints as Assert;
 
         /**
-         * @MongoDB\Field(type="string")
-         * @Assert\NotBlank()
-         * @Assert\Email()
+         * @MongoDB\Document(collection="users")
+         * @MongoDB\Unique(fields="email")
          */
-        protected $email;
-
-        /**
-         * @MongoDB\Field(type="string")
-         * @Assert\NotBlank()
-         */
-        protected $password;
-
-        public function getId()
+        class User
         {
-            return $this->id;
+            /**
+             * @MongoDB\Id
+             */
+            protected $id;
+
+            /**
+             * @MongoDB\Field(type="string")
+             * @Assert\NotBlank()
+             * @Assert\Email()
+             */
+            protected $email;
+
+            /**
+             * @MongoDB\Field(type="string")
+             * @Assert\NotBlank()
+             */
+            protected $password;
+
+            public function getId()
+            {
+                return $this->id;
+            }
+
+            public function getEmail()
+            {
+                return $this->email;
+            }
+
+            public function setEmail($email)
+            {
+                $this->email = $email;
+            }
+
+            public function getPassword()
+            {
+                return $this->password;
+            }
+
+            // stupid simple encryption (please don't copy it!)
+            public function setPassword($password)
+            {
+                $this->password = sha1($password);
+            }
         }
 
-        public function getEmail()
-        {
-            return $this->email;
-        }
+    .. code-block:: php-attributes
 
-        public function setEmail($email)
-        {
-            $this->email = $email;
-        }
+        // src/Document/User.php
+        namespace App\Document;
 
-        public function getPassword()
-        {
-            return $this->password;
-        }
+        use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+        use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+        use Symfony\Component\Validator\Constraints as Assert;
 
-        // stupid simple encryption (please don't copy it!)
-        public function setPassword($password)
+        #[MongoDB\Document(collection: 'users')]
+        #[MongoDB\Unique(fields: 'email')]
+        class User
         {
-            $this->password = sha1($password);
+            /**
+             * @MongoDB\Id
+             */
+            #[MongoDB\Id]
+            protected string $id;
+
+            #[MongoDB\Field(type: 'string')]
+            #[Assert\NotBlank]
+            #[Assert\Email]
+            protected ?string $email = null;
+
+            #[MongoDB\Field(type: 'string')]
+            #[Assert\NotBlank]
+            protected ?string $password = null;
+
+            public function getId(): string
+            {
+                return $this->id;
+            }
+
+            public function getEmail(): ?string
+            {
+                return $this->email;
+            }
+
+            public function setEmail(?string $email): void
+            {
+                $this->email = $email;
+            }
+
+            public function getPassword(): ?string
+            {
+                return $this->password;
+            }
+
+            // stupid simple encryption (please don't copy it!)
+            public function setPassword(?string $password): void
+            {
+                $this->password = sha1($password);
+            }
         }
-    }
 
 This ``User`` document contains three fields and two of them (email and
 password) should be displayed in the form. The email property must be unique

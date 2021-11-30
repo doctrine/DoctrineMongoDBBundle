@@ -6,6 +6,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
+use Doctrine\Bundle\MongoDBBundle\Loader\SymfonyFixturesLoaderInterface;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\DependentOnRequiredConstructorArgsFixtures;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\OtherFixtures;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures;
@@ -13,7 +14,6 @@ use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDepe
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\FooBundle;
 use LogicException;
 use RuntimeException;
-use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -25,9 +25,9 @@ use Symfony\Component\Routing\RouteCollectionBuilder;
 use function array_map;
 use function assert;
 use function get_class;
-use function rand;
 use function sprintf;
 use function sys_get_temp_dir;
+use function uniqid;
 
 class FixtureIntegrationTest extends TestCase
 {
@@ -47,7 +47,7 @@ class FixtureIntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
-        assert($loader instanceof ContainerAwareLoader);
+        assert($loader instanceof SymfonyFixturesLoaderInterface);
 
         $actualFixtures = $loader->getFixtures();
         $this->assertCount(2, $actualFixtures);
@@ -80,7 +80,7 @@ class FixtureIntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
-        assert($loader instanceof ContainerAwareLoader);
+        assert($loader instanceof SymfonyFixturesLoaderInterface);
 
         $actualFixtures = $loader->getFixtures();
         $this->assertCount(2, $actualFixtures);
@@ -115,7 +115,7 @@ class FixtureIntegrationTest extends TestCase
         ));
 
         $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
-        assert($loader instanceof ContainerAwareLoader);
+        assert($loader instanceof SymfonyFixturesLoaderInterface);
 
         $loader->getFixtures();
     }
@@ -138,7 +138,7 @@ class FixtureIntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
-        assert($loader instanceof ContainerAwareLoader);
+        assert($loader instanceof SymfonyFixturesLoaderInterface);
 
         $actualFixtures = $loader->getFixtures(['staging']);
         $this->assertCount(1, $actualFixtures);
@@ -171,7 +171,7 @@ class FixtureIntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
-        assert($loader instanceof ContainerAwareLoader);
+        assert($loader instanceof SymfonyFixturesLoaderInterface);
 
         $this->assertCount(1, $loader->getFixtures(['staging']));
         $this->assertCount(1, $loader->getFixtures(['group1']));
@@ -197,7 +197,7 @@ class FixtureIntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
-        assert($loader instanceof ContainerAwareLoader);
+        assert($loader instanceof SymfonyFixturesLoaderInterface);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage(sprintf(
@@ -228,7 +228,7 @@ class FixtureIntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
-        assert($loader instanceof ContainerAwareLoader);
+        assert($loader instanceof SymfonyFixturesLoaderInterface);
 
         $actualFixtures = $loader->getFixtures(['fulfilledDependencyGroup']);
 
@@ -261,7 +261,7 @@ class FixtureIntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
-        assert($loader instanceof ContainerAwareLoader);
+        assert($loader instanceof SymfonyFixturesLoaderInterface);
 
         $actualFixtures = $loader->getFixtures(['OtherFixtures']);
 
@@ -283,13 +283,12 @@ class IntegrationTestKernel extends Kernel
     /** @var callable */
     private $servicesCallback;
 
-    /** @var int */
+    /** @var string */
     private $randomKey;
 
     public function __construct(string $environment, bool $debug)
     {
-        $this->randomKey = rand(100, 999);
-
+        $this->randomKey = uniqid('');
         parent::__construct($environment, $debug);
     }
 

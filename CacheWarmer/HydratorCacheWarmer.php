@@ -23,6 +23,10 @@ use function sprintf;
  *
  * In the process of generating hydrators the cache for all the metadata is primed also,
  * since this information is necessary to build the hydrators in the first place.
+ *
+ * @internal since version 4.4
+ *
+ * @psalm-suppress ContainerDependency
  */
 class HydratorCacheWarmer implements CacheWarmerInterface
 {
@@ -45,12 +49,14 @@ class HydratorCacheWarmer implements CacheWarmerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $cacheDir
+     *
+     * @return string[]
      */
     public function warmUp($cacheDir)
     {
         // we need the directory no matter the hydrator cache generation strategy.
-        $hydratorCacheDir = $this->container->getParameter('doctrine_mongodb.odm.hydrator_dir');
+        $hydratorCacheDir = (string) $this->container->getParameter('doctrine_mongodb.odm.hydrator_dir');
         if (! file_exists($hydratorCacheDir)) {
             if (@mkdir($hydratorCacheDir, 0775, true) === false) {
                 throw new RuntimeException(sprintf('Unable to create the Doctrine Hydrator directory (%s)', dirname($hydratorCacheDir)));
@@ -60,7 +66,7 @@ class HydratorCacheWarmer implements CacheWarmerInterface
         }
 
         if ($this->container->getParameter('doctrine_mongodb.odm.auto_generate_hydrator_classes') !== Configuration::AUTOGENERATE_NEVER) {
-            return;
+            return [];
         }
 
         $registry = $this->container->get('doctrine_mongodb');
@@ -70,5 +76,7 @@ class HydratorCacheWarmer implements CacheWarmerInterface
             $classes = $dm->getMetadataFactory()->getAllMetadata();
             $dm->getHydratorFactory()->generateHydratorClasses($classes);
         }
+
+        return [];
     }
 }

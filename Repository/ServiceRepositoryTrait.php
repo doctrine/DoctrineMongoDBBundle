@@ -11,10 +11,14 @@ use LogicException;
 use function assert;
 use function sprintf;
 
+/**
+ * @template T of object
+ */
 trait ServiceRepositoryTrait
 {
     /**
      * @param string $documentClass The class name of the entity this repository manages
+     * @psalm-param class-string<T> $documentClass
      */
     public function __construct(ManagerRegistry $registry, $documentClass)
     {
