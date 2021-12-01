@@ -30,7 +30,8 @@ jobs:
           - "stable"
         symfony-version:
           - "4.4.x"
-          - "5.3.x"
+          - "5.4.x"
+          - "6.0.x"
         driver-version:
           - "stable"
         dependencies:
@@ -44,15 +45,9 @@ jobs:
             symfony-version: "4.4.*"
           - dependencies: "highest"
             os: "ubuntu-20.04"
+            php-version: "8.1"
             driver-version: "stable"
-            php-version: "8.0"
-            stability: "dev"
-            symfony-version: "5.4.*"
-          - dependencies: "highest"
-            os: "ubuntu-20.04"
-            driver-version: "stable"
-            php-version: "8.0"
-            stability: "dev"
+            stability: "dev" # change to stable when laminas/laminas-code 4.5 is released
             symfony-version: "6.0.*"
 
     services:
