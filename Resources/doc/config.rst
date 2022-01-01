@@ -324,7 +324,6 @@ following syntax:
             default_database: hello_%kernel.environment%
             default_connection: conn2
             default_document_manager: dm2
-            metadata_cache_driver: apc
             connections:
                 conn1:
                     server: mongodb://localhost:27017
