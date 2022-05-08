@@ -98,6 +98,7 @@ final class ContainerRepositoryFactory implements RepositoryFactory
             /** @psalm-var class-string<GridFSRepository<T>> $repositoryClassName */
             $repositoryClassName = $documentManager->getConfiguration()->getDefaultGridFSRepositoryClassName();
         } else {
+            /** @psalm-var class-string<ObjectRepository<T>> $repositoryClassName */
             $repositoryClassName = $documentManager->getConfiguration()->getDefaultDocumentRepositoryClassName();
         }
 
