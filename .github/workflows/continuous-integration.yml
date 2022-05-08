@@ -99,20 +99,14 @@ jobs:
         with:
           dependency-versions: "${{ matrix.dependencies }}"
 
-      - name: "Run PHPUnit with coverage"
+      - name: "Run PHPUnit"
         run: "vendor/bin/phpunit --coverage-clover=coverage.xml"
-        if: "${{ matrix.php-version != '8.0' }}"
-
-      - name: "Run PHPUnit without coverage"
-        run: "vendor/bin/phpunit"
-        if: "${{ matrix.php-version == '8.0' }}"
 
       - name: "Upload coverage file"
         uses: "actions/upload-artifact@v2"
         with:
           name: "phpunit-${{ matrix.php-version }}.coverage"
           path: "coverage.xml"
-        if: "${{ matrix.php-version != '8.0' }}"
 
   upload_coverage:
     name: "Upload coverage to Codecov"
