@@ -26,6 +26,7 @@ jobs:
           - "7.3"
           - "7.4"
           - "8.0"
+          - "8.1"
         stability:
           - "stable"
         symfony-version:
@@ -43,12 +44,13 @@ jobs:
             driver-version: "1.5.0"
             stability: "stable"
             symfony-version: "4.4.*"
-          - dependencies: "highest"
-            os: "ubuntu-20.04"
-            php-version: "8.1"
-            driver-version: "stable"
-            stability: "dev" # change to stable when laminas/laminas-code 4.5 is released
-            symfony-version: "6.0.*"
+        exclude:
+          - php-version: "7.2"
+            symfony-version: "6.0.x"
+          - php-version: "7.3"
+            symfony-version: "6.0.x"
+          - php-version: "7.4"
+            symfony-version: "6.0.x"
 
     services:
       mongodb:
@@ -97,20 +99,14 @@ jobs:
         with:
           dependency-versions: "${{ matrix.dependencies }}"
 
-      - name: "Run PHPUnit with coverage"
+      - name: "Run PHPUnit"
         run: "vendor/bin/phpunit --coverage-clover=coverage.xml"
-        if: "${{ matrix.php-version != '8.0' }}"
-
-      - name: "Run PHPUnit without coverage"
-        run: "vendor/bin/phpunit"
-        if: "${{ matrix.php-version == '8.0' }}"
 
       - name: "Upload coverage file"
         uses: "actions/upload-artifact@v2"
         with:
           name: "phpunit-${{ matrix.php-version }}.coverage"
           path: "coverage.xml"
-        if: "${{ matrix.php-version != '8.0' }}"
 
   upload_coverage:
     name: "Upload coverage to Codecov"
