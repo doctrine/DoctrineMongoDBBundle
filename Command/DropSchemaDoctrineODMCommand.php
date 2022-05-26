@@ -15,14 +15,12 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class DropSchemaDoctrineODMCommand extends DropCommand
 {
-    /** @var string */
-    protected static $defaultName = 'doctrine:mongodb:schema:drop';
-
     protected function configure()
     {
         parent::configure();
 
         $this
+            ->setName('doctrine:mongodb:schema:drop')
             ->addOption('dm', null, InputOption::VALUE_REQUIRED, 'The document manager to use for this command.')
             ->setHelp(<<<EOT
 The <info>doctrine:mongodb:schema:drop</info> command drops the default document manager's schema:

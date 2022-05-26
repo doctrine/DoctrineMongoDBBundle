@@ -14,14 +14,12 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ClearMetadataCacheDoctrineODMCommand extends MetadataCommand
 {
-    /** @var string */
-    protected static $defaultName = 'doctrine:mongodb:cache:clear-metadata';
-
     protected function configure()
     {
         parent::configure();
 
         $this
+            ->setName('doctrine:mongodb:cache:clear-metadata')
             ->setDescription('Clear all metadata cache for a document manager.')
             ->addOption('dm', null, InputOption::VALUE_OPTIONAL, 'The document manager to use for this command.')
             ->setHelp(<<<EOT
