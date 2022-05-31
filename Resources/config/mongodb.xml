@@ -56,43 +56,43 @@
         <service id="%doctrine_mongodb.odm.class%" alias="doctrine_mongodb" public="false" />
 
         <service id="Doctrine\Bundle\MongoDBBundle\Command\ClearMetadataCacheDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\ClearMetadataCacheDoctrineODMCommand">
-            <tag name="console.command"/>
+            <tag name="console.command" command="doctrine:mongodb:cache:clear-metadata"/>
         </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\CreateSchemaDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\CreateSchemaDoctrineODMCommand">
-            <tag name="console.command"/>
+            <tag name="console.command" command="doctrine:mongodb:schema:create"/>
         </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\DropSchemaDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\DropSchemaDoctrineODMCommand">
-            <tag name="console.command"/>
+            <tag name="console.command" command="doctrine:mongodb:schema:drop"/>
         </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\GenerateHydratorsDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\GenerateHydratorsDoctrineODMCommand">
-            <tag name="console.command"/>
+            <tag name="console.command" command="doctrine:mongodb:generate:hydrators"/>
         </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\GenerateProxiesDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\GenerateProxiesDoctrineODMCommand">
-            <tag name="console.command"/>
+            <tag name="console.command" command="doctrine:mongodb:generate:proxies"/>
         </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\InfoDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\InfoDoctrineODMCommand">
             <argument type="service" id="doctrine_mongodb"/>
 
-            <tag name="console.command"/>
+            <tag name="console.command" command="doctrine:mongodb:mapping:info"/>
         </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\LoadDataFixturesDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\LoadDataFixturesDoctrineODMCommand">
             <argument type="service" id="doctrine_mongodb"/>
             <argument type="service" id="kernel" on-invalid="null"/>
             <argument type="service" id="doctrine_mongodb.odm.symfony.fixtures.loader" on-invalid="null" />
 
-            <tag name="console.command"/>
+            <tag name="console.command" command="doctrine:mongodb:fixtures:load"/>
         </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\QueryDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\QueryDoctrineODMCommand">
-            <tag name="console.command"/>
+            <tag name="console.command" command="doctrine:mongodb:query"/>
         </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\ShardDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\ShardDoctrineODMCommand">
-            <tag name="console.command"/>
+            <tag name="console.command" command="doctrine:mongodb:schema:shard"/>
         </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\TailCursorDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\TailCursorDoctrineODMCommand">
-            <tag name="console.command"/>
+            <tag name="console.command" command="doctrine:mongodb:tail-cursor"/>
         </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\UpdateSchemaDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\UpdateSchemaDoctrineODMCommand">
-            <tag name="console.command"/>
+            <tag name="console.command" command="doctrine:mongodb:schema:update"/>
         </service>
 
         <!-- events -->

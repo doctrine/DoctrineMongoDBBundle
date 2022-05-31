@@ -30,12 +30,10 @@ class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInte
 {
     use ContainerAwareTrait;
 
-    /** @var string */
-    protected static $defaultName = 'doctrine:mongodb:tail-cursor';
-
     protected function configure()
     {
         $this
+            ->setName('doctrine:mongodb:tail-cursor')
             ->setDescription('Tails a mongodb cursor and processes the documents that come through')
             ->addArgument('document', InputArgument::REQUIRED, 'The document we are going to tail the cursor for.')
             ->addArgument('finder', InputArgument::REQUIRED, 'The repository finder method which returns the cursor to tail.')

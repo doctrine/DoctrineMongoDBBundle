@@ -14,14 +14,12 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GenerateProxiesDoctrineODMCommand extends GenerateProxiesCommand
 {
-    /** @var string */
-    protected static $defaultName = 'doctrine:mongodb:generate:proxies';
-
     protected function configure()
     {
         parent::configure();
 
         $this
+            ->setName('doctrine:mongodb:generate:proxies')
             ->addOption('dm', null, InputOption::VALUE_OPTIONAL, 'The document manager to use for this command.')
             ->setHelp(<<<EOT
 The <info>doctrine:mongodb:generate:proxies</info> command generates proxy classes for your default document manager:
