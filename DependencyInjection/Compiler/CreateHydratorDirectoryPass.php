@@ -30,7 +30,7 @@ class CreateHydratorDirectoryPass implements CompilerPassInterface
         // Create document proxy directory
         $hydratorCacheDir = (string) $container->getParameter('doctrine_mongodb.odm.hydrator_dir');
         if (! is_dir($hydratorCacheDir)) {
-            if (@mkdir($hydratorCacheDir, 0775, true) === false) {
+            if (@mkdir($hydratorCacheDir, 0775, true) === false && ! is_dir($hydratorCacheDir)) {
                 throw new RuntimeException(
                     sprintf('Unable to create the Doctrine Hydrator directory (%s)', dirname($hydratorCacheDir))
                 );
