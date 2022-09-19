@@ -16,6 +16,7 @@ use function array_filter;
 use function assert;
 use function dirname;
 use function file_exists;
+use function is_dir;
 use function is_writable;
 use function mkdir;
 use function sprintf;
@@ -60,7 +61,7 @@ class ProxyCacheWarmer implements CacheWarmerInterface
         // we need the directory no matter the proxy cache generation strategy.
         $proxyCacheDir = (string) $this->container->getParameter('doctrine_mongodb.odm.proxy_dir');
         if (! file_exists($proxyCacheDir)) {
-            if (@mkdir($proxyCacheDir, 0775, true) === false) {
+            if (@mkdir($proxyCacheDir, 0775, true) === false && ! is_dir($proxyCacheDir)) {
                 throw new RuntimeException(sprintf('Unable to create the Doctrine Proxy directory (%s)', dirname($proxyCacheDir)));
             }
         } elseif (! is_writable($proxyCacheDir)) {

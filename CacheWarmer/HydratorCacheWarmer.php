@@ -14,6 +14,7 @@ use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 use function assert;
 use function dirname;
 use function file_exists;
+use function is_dir;
 use function is_writable;
 use function mkdir;
 use function sprintf;
@@ -58,7 +59,7 @@ class HydratorCacheWarmer implements CacheWarmerInterface
         // we need the directory no matter the hydrator cache generation strategy.
         $hydratorCacheDir = (string) $this->container->getParameter('doctrine_mongodb.odm.hydrator_dir');
         if (! file_exists($hydratorCacheDir)) {
-            if (@mkdir($hydratorCacheDir, 0775, true) === false) {
+            if (@mkdir($hydratorCacheDir, 0775, true) === false && ! is_dir($hydratorCacheDir)) {
                 throw new RuntimeException(sprintf('Unable to create the Doctrine Hydrator directory (%s)', dirname($hydratorCacheDir)));
             }
         } elseif (! is_writable($hydratorCacheDir)) {

@@ -16,6 +16,7 @@ use function assert;
 use function dirname;
 use function file_exists;
 use function in_array;
+use function is_dir;
 use function is_writable;
 use function mkdir;
 use function sprintf;
@@ -60,7 +61,7 @@ class PersistentCollectionCacheWarmer implements CacheWarmerInterface
         // we need the directory no matter the hydrator cache generation strategy.
         $collCacheDir = (string) $this->container->getParameter('doctrine_mongodb.odm.persistent_collection_dir');
         if (! file_exists($collCacheDir)) {
-            if (@mkdir($collCacheDir, 0775, true) === false) {
+            if (@mkdir($collCacheDir, 0775, true) === false && ! is_dir($collCacheDir)) {
                 throw new RuntimeException(sprintf('Unable to create the Doctrine persistent collection directory (%s)', dirname($collCacheDir)));
             }
         } elseif (! is_writable($collCacheDir)) {
