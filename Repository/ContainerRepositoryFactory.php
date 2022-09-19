@@ -24,7 +24,7 @@ use function sprintf;
  */
 final class ContainerRepositoryFactory implements RepositoryFactory
 {
-    /** @var array<string, ObjectRepository> */
+    /** @var ObjectRepository[] */
     private $managedRepositories = [];
 
     /** @var ContainerInterface|null */
@@ -89,7 +89,6 @@ final class ContainerRepositoryFactory implements RepositoryFactory
     {
         $repositoryHash = $metadata->getName() . spl_object_hash($documentManager);
         if (isset($this->managedRepositories[$repositoryHash])) {
-            /** @psalm-var ObjectRepository<T> */
             return $this->managedRepositories[$repositoryHash];
         }
 
