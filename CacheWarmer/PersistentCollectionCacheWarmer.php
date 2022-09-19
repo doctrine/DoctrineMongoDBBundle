@@ -19,6 +19,7 @@ use function in_array;
 use function is_writable;
 use function mkdir;
 use function sprintf;
+use function is_dir;
 
 /**
  * The persistent collections generator cache warmer generates all custom persistent collections.

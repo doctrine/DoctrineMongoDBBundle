@@ -17,6 +17,7 @@ use function file_exists;
 use function is_writable;
 use function mkdir;
 use function sprintf;
+use function is_dir;
 
 /**
  * The hydrator generator cache warmer generates all document hydrators.
