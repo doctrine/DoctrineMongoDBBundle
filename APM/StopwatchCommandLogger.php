@@ -47,7 +47,7 @@ final class StopwatchCommandLogger implements CommandLoggerInterface
         $this->registered = false;
     }
 
-    public function commandStarted(CommandStartedEvent $event)
+    public function commandStarted(CommandStartedEvent $event): void
     {
         if (! $this->stopwatch) {
             return;
@@ -56,7 +56,7 @@ final class StopwatchCommandLogger implements CommandLoggerInterface
         $this->stopwatch->start(sprintf('mongodb_%s', $event->getRequestId()), 'doctrine_mongodb');
     }
 
-    public function commandSucceeded(CommandSucceededEvent $event)
+    public function commandSucceeded(CommandSucceededEvent $event): void
     {
         if (! $this->stopwatch) {
             return;
@@ -65,7 +65,7 @@ final class StopwatchCommandLogger implements CommandLoggerInterface
         $this->stopwatch->stop(sprintf('mongodb_%s', $event->getRequestId()));
     }
 
-    public function commandFailed(CommandFailedEvent $event)
+    public function commandFailed(CommandFailedEvent $event): void
     {
         if (! $this->stopwatch) {
             return;
