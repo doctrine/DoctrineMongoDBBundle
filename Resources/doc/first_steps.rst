@@ -46,7 +46,8 @@ For Doctrine to be able to do this, you have to create "metadata", or
 configuration that tells Doctrine exactly how the ``Product`` class and its
 properties should be *mapped* to MongoDB. This metadata can be specified
 in a number of different formats including XML or directly inside the
-``Product`` class via annotations or PHP 8 attributes:
+``Product`` class via annotations or PHP 8 attributes (if using attributes,
+you need to change type: annotation to type: attribute in doctrine_mongodb.yaml): 
 
 .. versionadded:: 4.4
 
