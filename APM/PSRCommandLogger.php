@@ -51,7 +51,7 @@ final class PSRCommandLogger implements CommandLoggerInterface
         $this->registered = false;
     }
 
-    public function commandStarted(CommandStartedEvent $event)
+    public function commandStarted(CommandStartedEvent $event): void
     {
         if (! $this->logger) {
             return;
@@ -60,11 +60,11 @@ final class PSRCommandLogger implements CommandLoggerInterface
         $this->logger->debug($this->prefix . json_encode($event->getCommand()));
     }
 
-    public function commandSucceeded(CommandSucceededEvent $event)
+    public function commandSucceeded(CommandSucceededEvent $event): void
     {
     }
 
-    public function commandFailed(CommandFailedEvent $event)
+    public function commandFailed(CommandFailedEvent $event): void
     {
     }
 }
