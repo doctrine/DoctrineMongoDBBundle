@@ -7,6 +7,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\DocumentListenerBundle\EventListener\TestAttributeListener;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\Container;
@@ -346,5 +347,30 @@ class DoctrineMongoDBExtensionTest extends TestCase
         }
 
         $this->fail("Method '" . $methodName . "' is expected to be called once, definition does not contain a call though.");
+    }
+
+    /** @requires function \Symfony\Bridge\Doctrine\ArgumentResolver\EntityValueResolver::__construct */
+    public function testControllerResolver(): void
+    {
+        $container = $this->getContainer();
+        $extension = new DoctrineMongoDBExtension();
+        $extension->load(self::buildConfiguration(), $container);
+
+        $controllerResolver = $container->getDefinition('doctrine_mongodb.odm.entity_value_resolver');
+
+        $this->assertEquals([new Reference('doctrine_mongodb'), new Reference('doctrine_mongodb.odm.entity_value_resolver.expression_language', $container::IGNORE_ON_INVALID_REFERENCE)], $controllerResolver->getArguments());
+
+        $container = $this->getContainer();
+
+        $extension->load(self::buildConfiguration([
+            'controller_resolver' => [
+                'enabled' => false,
+                'auto_mapping' => false,
+            ],
+        ]), $container);
+
+        $container->setDefinition('controller_resolver_defaults', $container->getDefinition('doctrine_mongodb.odm.entity_value_resolver')->getArgument(2))->setPublic(true);
+        $container->compile();
+        $this->assertEquals(new MapEntity(null, null, null, [], null, null, null, null, true), $container->get('controller_resolver_defaults'));
     }
 }

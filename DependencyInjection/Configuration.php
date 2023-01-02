@@ -109,6 +109,15 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('safe')->info('Deprecated. Please use the "w" option instead.')->end()
                     ->end()
                 ->end()
+                ->arrayNode('controller_resolver')
+                    ->canBeDisabled()
+                    ->children()
+                        ->booleanNode('auto_mapping')
+                            ->defaultTrue()
+                            ->info('Set to false to disable using route placeholders as lookup criteria when the object id doesn\'t match the argument name')
+                        ->end()
+                    ->end()
+                ->end()
             ->end();
 
         return $treeBuilder;
