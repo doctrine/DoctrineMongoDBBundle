@@ -16,6 +16,8 @@ use Doctrine\Common\DataFixtures\Loader as DataFixturesLoader;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use InvalidArgumentException;
+use Symfony\Bridge\Doctrine\ArgumentResolver\EntityValueResolver;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
@@ -30,6 +32,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 use function array_keys;
@@ -144,6 +147,40 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         }
 
         $this->loadMessengerServices($container);
+
+        // available in Symfony 6.2 and higher
+        if (! class_exists(EntityValueResolver::class)) {
+            $container->removeDefinition('doctrine_mongodb.odm.entity_value_resolver');
+            $container->removeDefinition('doctrine_mongodb.odm.entity_value_resolver.expression_language');
+        } else {
+            if (! class_exists(ExpressionLanguage::class)) {
+                $container->removeDefinition('doctrine_mongodb.odm.entity_value_resolver.expression_language');
+            }
+
+            $controllerResolverDefaults = [];
+
+            if (! $config['controller_resolver']['enabled']) {
+                $controllerResolverDefaults['disabled'] = true;
+            }
+
+            if (! $config['controller_resolver']['auto_mapping']) {
+                $controllerResolverDefaults['mapping'] = [];
+            }
+
+            if ($controllerResolverDefaults) {
+                $container->getDefinition('doctrine_mongodb.odm.entity_value_resolver')->setArgument(2, (new Definition(MapEntity::class))->setArguments([
+                    null,
+                    null,
+                    null,
+                    $controllerResolverDefaults['mapping'] ?? null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    $controllerResolverDefaults['disabled'] ?? false,
+                ]));
+            }
+        }
     }
 
     /**

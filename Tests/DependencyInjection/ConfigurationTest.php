@@ -49,6 +49,10 @@ class ConfigurationTest extends TestCase
             'persistent_collection_dir'      => '%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections',
             'persistent_collection_namespace' => 'PersistentCollections',
             'types'                          => [],
+            'controller_resolver'            => [
+                'enabled'      => true,
+                'auto_mapping' => true,
+            ],
         ];
 
         $this->assertEquals($defaults, $options);
@@ -203,6 +207,10 @@ class ConfigurationTest extends TestCase
             ],
             'resolve_target_documents' => ['Foo\BarInterface' => 'Bar\FooClass'],
             'types' => [],
+            'controller_resolver' => [
+                'enabled'      => true,
+                'auto_mapping' => true,
+            ],
         ];
 
         $this->assertEquals($expected, $options);
