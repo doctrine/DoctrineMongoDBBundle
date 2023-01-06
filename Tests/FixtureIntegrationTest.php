@@ -335,6 +335,7 @@ class IntegrationTestKernel extends Kernel
         $c->loadFromExtension('framework', [
             'secret' => 'foo',
             'router' => ['utf8' => false],
+            'http_method_override' => false,
         ]);
 
         $callback = $this->servicesCallback;
