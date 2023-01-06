@@ -8,6 +8,7 @@ use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepository;
 use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Document\TestCustomServiceRepoDocument;
 
+/** @template-extends ServiceDocumentRepository<TestCustomServiceRepoDocument> */
 class TestCustomServiceRepoDocumentRepository extends ServiceDocumentRepository
 {
     public function __construct(ManagerRegistry $registry)
