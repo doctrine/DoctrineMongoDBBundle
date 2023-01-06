@@ -48,13 +48,13 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
     {
         $ret = $this->getMetadata($class);
         if (! $ret) {
-            return;
+            return null;
         }
 
         [$metadata, $name] = $ret;
 
         if (! $metadata->hasField($property)) {
-            return;
+            return null;
         }
 
         if ($metadata->hasAssociation($property)) {
@@ -143,6 +143,8 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
                 Guess::MEDIUM_CONFIDENCE
             );
         }
+
+        return null;
     }
 
     /**
@@ -155,7 +157,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
     {
         $ret = $this->getMetadata($class);
         if (! $ret || ! $ret[0]->hasField($property) || $ret[0]->hasAssociation($property)) {
-            return;
+            return null;
         }
 
         $mapping = $ret[0]->getFieldMapping($property);
@@ -167,6 +169,8 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
         if ($mapping['type'] === Type::FLOAT) {
             return new ValueGuess(null, Guess::MEDIUM_CONFIDENCE);
         }
+
+        return null;
     }
 
     /**
@@ -186,7 +190,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
     {
         $ret = $this->getMetadata($class);
         if (! $ret || ! $ret[0]->hasField($property) || $ret[0]->hasAssociation($property)) {
-            return;
+            return null;
         }
 
         $mapping = $ret[0]->getFieldMapping($property);
@@ -194,6 +198,8 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
         if ($mapping['type'] === Type::FLOAT) {
             return new ValueGuess(null, Guess::MEDIUM_CONFIDENCE);
         }
+
+        return null;
     }
 
     /**
@@ -215,5 +221,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
                 // not an entity or mapped super class
             }
         }
+
+        return null;
     }
 }
