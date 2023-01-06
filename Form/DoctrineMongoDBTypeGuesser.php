@@ -155,21 +155,6 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
      */
     public function guessMaxLength($class, $property)
     {
-        $ret = $this->getMetadata($class);
-        if (! $ret || ! $ret[0]->hasField($property) || $ret[0]->hasAssociation($property)) {
-            return null;
-        }
-
-        $mapping = $ret[0]->getFieldMapping($property);
-
-        if (isset($mapping['length'])) {
-            return new ValueGuess($mapping['length'], Guess::HIGH_CONFIDENCE);
-        }
-
-        if ($mapping['type'] === Type::FLOAT) {
-            return new ValueGuess(null, Guess::MEDIUM_CONFIDENCE);
-        }
-
         return null;
     }
 
