@@ -42,7 +42,7 @@
         "symfony/stopwatch": "^4.4|^5.3|^6.0",
         "symfony/validator": "^4.4|^5.3|^6.0",
         "symfony/yaml": "^4.3.3|^5.3|^6.0",
-        "vimeo/psalm": "^4.8"
+        "vimeo/psalm": "^4.30"
     },
     "suggest": {
         "doctrine/data-fixtures": "Load data fixtures"
