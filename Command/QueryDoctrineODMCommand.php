@@ -23,9 +23,7 @@ class QueryDoctrineODMCommand extends QueryCommand
             ->addOption('dm', null, InputOption::VALUE_OPTIONAL, 'The document manager to use for this command.');
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         DoctrineODMCommand::setApplicationDocumentManager($this->getApplication(), $input->getOption('dm'));

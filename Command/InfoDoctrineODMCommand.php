@@ -26,7 +26,7 @@ class InfoDoctrineODMCommand extends DoctrineODMCommand
             ->setName('doctrine:mongodb:mapping:info')
             ->addOption('dm', null, InputOption::VALUE_OPTIONAL, 'The document manager to use for this command.')
             ->setDescription('Show basic information about all mapped documents.')
-            ->setHelp(<<<EOT
+            ->setHelp(<<<'EOT'
 The <info>doctrine:mongodb:mapping:info</info> shows basic information about which
 documents exist and possibly if their mapping information contains errors or not.
 
@@ -39,9 +39,7 @@ EOT
         );
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $documentManagerName = $input->getOption('dm') ?

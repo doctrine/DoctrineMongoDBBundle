@@ -22,9 +22,7 @@ class DoctrineMongoDBExtension extends AbstractExtension
         $this->registry = $registry;
     }
 
-    /**
-     * @return FormTypeInterface[]
-     */
+    /** @return FormTypeInterface[] */
     protected function loadTypes()
     {
         return [
@@ -32,9 +30,7 @@ class DoctrineMongoDBExtension extends AbstractExtension
         ];
     }
 
-    /**
-     * @return FormTypeGuesserInterface|null
-     */
+    /** @return FormTypeGuesserInterface|null */
     protected function loadTypeGuesser()
     {
         return new DoctrineMongoDBTypeGuesser($this->registry);

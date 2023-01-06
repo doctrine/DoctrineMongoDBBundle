@@ -38,9 +38,7 @@ class ContainerTest extends TestCase
         $this->extension = new DoctrineMongoDBExtension();
     }
 
-    /**
-     * @dataProvider provideLoggerConfigs
-     */
+    /** @dataProvider provideLoggerConfigs */
     public function testLoggerConfig(bool $expected, array $config, bool $debug): void
     {
         $this->container->setParameter('kernel.debug', $debug);
@@ -55,9 +53,7 @@ class ContainerTest extends TestCase
         $this->container->get('doctrine_mongodb.odm.command_logger_registry');
     }
 
-    /**
-     * @return array<string, array{expected: bool, config: array, debug: bool}>
-     */
+    /** @return array<string, array{expected: bool, config: array, debug: bool}> */
     public function provideLoggerConfigs(): array
     {
         $config = ['connections' => ['default' => []]];
@@ -90,9 +86,7 @@ class ContainerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider provideDataCollectorConfigs
-     */
+    /** @dataProvider provideDataCollectorConfigs */
     public function testDataCollectorConfig(bool $expected, array $config, bool $debug): void
     {
         $this->container->setParameter('kernel.debug', $debug);
@@ -116,9 +110,7 @@ class ContainerTest extends TestCase
         $this->container->get('doctrine_mongodb.odm.command_logger_registry');
     }
 
-    /**
-     * @return array<string, array{expected: bool, config: array, debug: bool}>
-     */
+    /** @return array<string, array{expected: bool, config: array, debug: bool}> */
     public function provideDataCollectorConfigs(): array
     {
         $config = ['connections' => ['default' => []]];

@@ -11,9 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class GuesserTestType extends AbstractType
 {
-    /**
-     * @return void
-     */
+    /** @return void */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -28,9 +26,7 @@ class GuesserTestType extends AbstractType
             ->add('nonMappedField');
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([

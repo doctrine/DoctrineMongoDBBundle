@@ -32,9 +32,7 @@ final class CommandTestKernel extends Kernel
         ];
     }
 
-    /**
-     * @param RouteConfigurator|RouteCollectionBuilder $routes
-     */
+    /** @param RouteConfigurator|RouteCollectionBuilder $routes */
     public function configureRoutes($routes): void
     {
     }

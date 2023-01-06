@@ -51,9 +51,7 @@ class TypeGuesserTest extends TypeTestCase
         parent::tearDown();
     }
 
-    /**
-     * @group legacy
-     */
+    /** @group legacy */
     public function testTypesShouldBeGuessedCorrectly(): void
     {
         $form = $this->factory->create(GuesserTestType::class, null, ['dm' => $this->dm]);
@@ -73,9 +71,7 @@ class TypeGuesserTest extends TypeTestCase
         $this->assertEquals($type, $form->getConfig()->getType()->getBlockPrefix());
     }
 
-    /**
-     * @return MockObject&ManagerRegistry
-     */
+    /** @return MockObject&ManagerRegistry */
     protected function createRegistryMock(string $name, DocumentManager $dm): MockObject
     {
         $registry = $this->createMock(ManagerRegistry::class);
@@ -90,9 +86,7 @@ class TypeGuesserTest extends TypeTestCase
         return $registry;
     }
 
-    /**
-     * @return FormExtensionInterface[]
-     */
+    /** @return FormExtensionInterface[] */
     protected function getExtensions()
     {
         return array_merge(parent::getExtensions(), [

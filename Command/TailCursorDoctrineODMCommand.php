@@ -42,9 +42,7 @@ class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInte
             ->addOption('sleep-time', null, InputOption::VALUE_REQUIRED, 'The number of seconds to wait between two checks.', '10');
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         trigger_deprecation(
@@ -109,9 +107,7 @@ class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInte
         return 0;
     }
 
-    /**
-     * @return ContainerInterface
-     */
+    /** @return ContainerInterface */
     protected function getContainer()
     {
         return $this->container;

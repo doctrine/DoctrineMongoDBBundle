@@ -44,9 +44,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 {
     abstract protected function loadFromFile(ContainerBuilder $container, string $file): void;
 
-    /**
-     * @psalm-suppress UndefinedClass this won't be necessary when removing metadata cache configuration
-     */
+    /** @psalm-suppress UndefinedClass this won't be necessary when removing metadata cache configuration */
     public function testDependencyInjectionConfigurationDefaults(): void
     {
         $container = $this->getContainer();
@@ -343,9 +341,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\AnnotationsBundle\Document', $calls[0][1][1]);
     }
 
-    /**
-     * @requires PHP 8.0
-     */
+    /** @requires PHP 8.0 */
     public function testAttributesBundleMappingDetection(): void
     {
         if (! class_exists(AttributeDriver::class)) {
@@ -383,9 +379,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $this->assertEquals('%doctrine_mongodb.odm.cache.apc.class%', $definition->getClass());
     }
 
-    /**
-     * @psalm-suppress UndefinedClass this won't be necessary when removing metadata cache configuration
-     */
+    /** @psalm-suppress UndefinedClass this won't be necessary when removing metadata cache configuration */
     public function testDocumentManagerMemcachedMetadataCacheDriverConfiguration(): void
     {
         $container = $this->getContainer();
