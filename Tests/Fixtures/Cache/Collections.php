@@ -40,10 +40,12 @@ class Collections
     public $another;
 }
 
+/** @template-extends ArrayCollection<array-key, mixed> */
 class SomeCollection extends ArrayCollection
 {
 }
 
+/** @template-extends ArrayCollection<array-key, mixed> */
 class AnotherCollection extends ArrayCollection
 {
 }

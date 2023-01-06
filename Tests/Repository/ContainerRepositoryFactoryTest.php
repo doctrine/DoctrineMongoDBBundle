@@ -171,10 +171,12 @@ class ContainerRepositoryFactoryTest extends TestCase
     }
 }
 
+/** @template-extends DocumentRepository<object> */
 class StubRepository extends DocumentRepository
 {
 }
 
+/** @template-extends DocumentRepository<object> */
 class StubServiceRepository extends DocumentRepository implements ServiceDocumentRepositoryInterface
 {
 }
