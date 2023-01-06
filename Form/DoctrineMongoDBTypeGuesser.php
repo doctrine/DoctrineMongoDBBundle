@@ -6,6 +6,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -73,45 +74,45 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
 
         $fieldMapping = $metadata->getFieldMapping($property);
         switch ($fieldMapping['type']) {
-            case 'collection':
+            case Type::COLLECTION:
                 return new TypeGuess(
                     CollectionType::class,
                     [],
                     Guess::MEDIUM_CONFIDENCE
                 );
 
-            case 'bool':
-            case 'boolean':
+            case Type::BOOL:
+            case Type::BOOLEAN:
                 return new TypeGuess(
                     CheckboxType::class,
                     [],
                     Guess::HIGH_CONFIDENCE
                 );
 
-            case 'date':
-            case 'timestamp':
+            case Type::DATE:
+            case Type::TIMESTAMP:
                 return new TypeGuess(
                     DateTimeType::class,
                     [],
                     Guess::HIGH_CONFIDENCE
                 );
 
-            case 'float':
+            case Type::FLOAT:
                 return new TypeGuess(
                     NumberType::class,
                     [],
                     Guess::MEDIUM_CONFIDENCE
                 );
 
-            case 'int':
-            case 'integer':
+            case Type::INT:
+            case Type::INTEGER:
                 return new TypeGuess(
                     IntegerType::class,
                     [],
                     Guess::MEDIUM_CONFIDENCE
                 );
 
-            case 'string':
+            case Type::STRING:
                 return new TypeGuess(
                     TextType::class,
                     [],
@@ -163,7 +164,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
             return new ValueGuess($mapping['length'], Guess::HIGH_CONFIDENCE);
         }
 
-        if ($mapping['type'] === 'float') {
+        if ($mapping['type'] === Type::FLOAT) {
             return new ValueGuess(null, Guess::MEDIUM_CONFIDENCE);
         }
     }
@@ -190,7 +191,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
 
         $mapping = $ret[0]->getFieldMapping($property);
 
-        if ($mapping['type'] === 'float') {
+        if ($mapping['type'] === Type::FLOAT) {
             return new ValueGuess(null, Guess::MEDIUM_CONFIDENCE);
         }
     }
