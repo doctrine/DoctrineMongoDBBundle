@@ -17,9 +17,7 @@ class CacheCompatibilityPassTest extends TestCase
 {
     use ExpectDeprecationTrait;
 
-    /**
-     * @group legacy
-     */
+    /** @group legacy */
     public function testMetadataCacheConfigUsingPsr6ServiceDefinedByApplication(): void
     {
         $kernel = (new class (false) extends TestKernel {
@@ -48,9 +46,7 @@ class CacheCompatibilityPassTest extends TestCase
         self::assertTrue($kernel->isBooted());
     }
 
-    /**
-     * @group legacy
-     */
+    /** @group legacy */
     public function testMetadataCacheConfigUsingNonPsr6ServiceDefinedByApplication(): void
     {
         $this->expectDeprecation('Since doctrine/mongodb-odm-bundle 4.4: Configuring doctrine/cache is deprecated. Please update the cache service "custom_cache_service" to use a PSR-6 cache.');

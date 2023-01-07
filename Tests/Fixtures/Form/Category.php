@@ -42,12 +42,7 @@ class Category
         $this->documents = new ArrayCollection();
     }
 
-    /**
-     * Converts to string
-     *
-     * @return string
-     **/
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name;
     }

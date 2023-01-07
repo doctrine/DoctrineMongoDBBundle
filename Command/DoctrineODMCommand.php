@@ -43,9 +43,7 @@ abstract class DoctrineODMCommand extends Command
         $this->managerRegistry = $registry;
     }
 
-    /**
-     * @deprecated since version 4.4
-     */
+    /** @deprecated since version 4.4 */
     public function setContainer(?ContainerInterface $container = null)
     {
         trigger_deprecation(
@@ -88,9 +86,7 @@ abstract class DoctrineODMCommand extends Command
         return $this->container;
     }
 
-    /**
-     * @param string $dmName
-     */
+    /** @param string $dmName */
     public static function setApplicationDocumentManager(Application $application, $dmName)
     {
         $dm        = $application->getKernel()->getContainer()->get('doctrine_mongodb')->getManager($dmName);

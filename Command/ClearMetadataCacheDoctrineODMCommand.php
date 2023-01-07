@@ -22,7 +22,7 @@ class ClearMetadataCacheDoctrineODMCommand extends MetadataCommand
             ->setName('doctrine:mongodb:cache:clear-metadata')
             ->setDescription('Clear all metadata cache for a document manager.')
             ->addOption('dm', null, InputOption::VALUE_OPTIONAL, 'The document manager to use for this command.')
-            ->setHelp(<<<EOT
+            ->setHelp(<<<'EOT'
 The <info>doctrine:mongodb:cache:clear-metadata</info> command clears all metadata cache for the default document manager:
 
   <info>./app/console doctrine:mongodb:cache:clear-metadata</info>
@@ -34,9 +34,7 @@ EOT
         );
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         DoctrineODMCommand::setApplicationDocumentManager($this->getApplication(), $input->getOption('dm'));

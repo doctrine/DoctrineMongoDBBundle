@@ -116,9 +116,7 @@ class DocumentTypeTest extends TypeTestCase
         $this->assertFalse($form->get('categories')->get('1')->createView()->vars['checked']);
     }
 
-    /**
-     * @return MockObject&ManagerRegistry
-     */
+    /** @return MockObject&ManagerRegistry */
     protected function createRegistryMock(string $name, DocumentManager $dm): MockObject
     {
         $registry = $this->createMock(ManagerRegistry::class);
@@ -130,9 +128,7 @@ class DocumentTypeTest extends TypeTestCase
         return $registry;
     }
 
-    /**
-     * @return FormExtensionInterface[]
-     */
+    /** @return FormExtensionInterface[] */
     protected function getExtensions()
     {
         return array_merge(parent::getExtensions(), [

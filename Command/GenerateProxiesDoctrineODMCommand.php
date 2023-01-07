@@ -21,7 +21,7 @@ class GenerateProxiesDoctrineODMCommand extends GenerateProxiesCommand
         $this
             ->setName('doctrine:mongodb:generate:proxies')
             ->addOption('dm', null, InputOption::VALUE_OPTIONAL, 'The document manager to use for this command.')
-            ->setHelp(<<<EOT
+            ->setHelp(<<<'EOT'
 The <info>doctrine:mongodb:generate:proxies</info> command generates proxy classes for your default document manager:
 
   <info>./app/console doctrine:mongodb:generate:proxies</info>
@@ -33,9 +33,7 @@ EOT
         );
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         DoctrineODMCommand::setApplicationDocumentManager($this->getApplication(), $input->getOption('dm'));

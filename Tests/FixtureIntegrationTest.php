@@ -290,6 +290,7 @@ class IntegrationTestKernel extends Kernel
     public function __construct(string $environment, bool $debug)
     {
         $this->randomKey = uniqid('');
+
         parent::__construct($environment, $debug);
     }
 
@@ -307,9 +308,7 @@ class IntegrationTestKernel extends Kernel
         ];
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     protected function build(ContainerBuilder $container)
     {
         $container->prependExtensionConfig('doctrine_mongodb', [
@@ -323,9 +322,7 @@ class IntegrationTestKernel extends Kernel
         $this->servicesCallback = $callback;
     }
 
-    /**
-     * @param RouteConfigurator|RouteCollectionBuilder $routes
-     */
+    /** @param RouteConfigurator|RouteCollectionBuilder $routes */
     protected function configureRoutes($routes): void
     {
     }
@@ -335,6 +332,7 @@ class IntegrationTestKernel extends Kernel
         $c->loadFromExtension('framework', [
             'secret' => 'foo',
             'router' => ['utf8' => false],
+            'http_method_override' => false,
         ]);
 
         $callback = $this->servicesCallback;

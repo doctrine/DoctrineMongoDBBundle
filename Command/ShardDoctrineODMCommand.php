@@ -22,7 +22,7 @@ class ShardDoctrineODMCommand extends ShardCommand
         $this
             ->setName('doctrine:mongodb:schema:shard')
             ->addOption('dm', null, InputOption::VALUE_REQUIRED, 'The document manager to use for this command.')
-            ->setHelp(<<<EOT
+            ->setHelp(<<<'EOT'
 The <info>doctrine:mongodb:schema:shard</info> command shards collections based on their metadata:
 
   <info>./app/console doctrine:mongodb:schema:shard</info>
@@ -34,9 +34,7 @@ EOT
         );
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         DoctrineODMCommand::setApplicationDocumentManager($this->getApplication(), $input->getOption('dm'));

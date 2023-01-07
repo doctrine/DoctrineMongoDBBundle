@@ -6,6 +6,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundl
 
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 
+/** @template-extends DocumentRepository<object> */
 class TestCustomClassRepoRepository extends DocumentRepository
 {
 }

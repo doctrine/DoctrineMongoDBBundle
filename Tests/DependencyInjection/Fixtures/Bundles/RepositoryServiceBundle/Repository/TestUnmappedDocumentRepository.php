@@ -8,6 +8,7 @@ use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepository;
 use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Document\TestUnmappedDocument;
 
+/** @template-extends ServiceDocumentRepository<TestUnmappedDocument> */
 class TestUnmappedDocumentRepository extends ServiceDocumentRepository
 {
     public function __construct(ManagerRegistry $registry)

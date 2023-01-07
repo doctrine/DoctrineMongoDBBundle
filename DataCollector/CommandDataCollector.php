@@ -74,9 +74,7 @@ class CommandDataCollector extends DataCollector
         return $this->data['time'];
     }
 
-    /**
-     * @return array<array{database: string, command: stdClass, durationMicros: int}>
-     */
+    /** @return array<array{database: string, command: stdClass, durationMicros: int}> */
     public function getCommands(): array
     {
         return $this->data['commands'];

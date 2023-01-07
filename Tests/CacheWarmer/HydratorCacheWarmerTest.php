@@ -57,9 +57,7 @@ class HydratorCacheWarmerTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider provideWarmerNotExecuted
-     */
+    /** @dataProvider provideWarmerNotExecuted */
     public function testWarmerNotExecuted(int $autoGenerate): void
     {
         $this->container->setParameter('doctrine_mongodb.odm.auto_generate_hydrator_classes', $autoGenerate);
@@ -85,9 +83,7 @@ class HydratorCacheWarmerTest extends TestCase
         $this->assertFileDoesNotExist($filename);
     }
 
-    /**
-     * @return array<array{int}>
-     */
+    /** @return array<array{int}> */
     public function provideWarmerNotExecuted(): array
     {
         return [
