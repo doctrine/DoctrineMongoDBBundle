@@ -11,8 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class GuesserTestType extends AbstractType
 {
-    /** @return void */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('name')
@@ -26,18 +25,14 @@ class GuesserTestType extends AbstractType
             ->add('nonMappedField');
     }
 
-    /** @return void */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Guesser::class,
         ])->setRequired('dm');
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'guesser_test';
     }
