@@ -52,9 +52,7 @@ class MongoDBQueryBuilderLoader implements EntityLoaderInterface
         $this->queryBuilder = $queryBuilder;
     }
 
-    /**
-     * @return object[]
-     */
+    /** @return object[] */
     public function getEntities(): array
     {
         return array_values($this->queryBuilder->getQuery()->execute()->toArray());

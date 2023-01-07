@@ -36,6 +36,7 @@ class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
     public function __construct($driver, array $namespaces, array $managerParameters, $enabledParameter = false, array $aliasMap = [])
     {
         $managerParameters[] = 'doctrine_mongodb.odm.default_document_manager';
+
         parent::__construct(
             $driver,
             $namespaces,

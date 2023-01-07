@@ -11,8 +11,6 @@ namespace Doctrine\Bundle\MongoDBBundle\Cursor;
  */
 interface TailableCursorProcessorInterface
 {
-    /**
-     * @param mixed $document
-     */
+    /** @param mixed $document */
     public function process($document);
 }

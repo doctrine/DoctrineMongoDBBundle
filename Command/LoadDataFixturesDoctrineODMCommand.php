@@ -37,9 +37,7 @@ class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
         $this->fixturesLoader = $fixturesLoader;
     }
 
-    /**
-     * @return bool
-     */
+    /** @return bool */
     public function isEnabled()
     {
         return parent::isEnabled() && class_exists(Loader::class);
@@ -54,7 +52,7 @@ class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
             ->addOption('group', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Only load fixtures that belong to this group (use with --services)')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of flushing the database first.')
             ->addOption('dm', null, InputOption::VALUE_REQUIRED, 'The document manager to use for this command.')
-            ->setHelp(<<<EOT
+            ->setHelp(<<<'EOT'
 The <info>doctrine:mongodb:fixtures:load</info> command loads data fixtures from your application:
 
   <info>php %command.full_name%</info>
@@ -75,9 +73,7 @@ EOT
         );
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dm = $this->getManagerRegistry()->getManager($input->getOption('dm'));

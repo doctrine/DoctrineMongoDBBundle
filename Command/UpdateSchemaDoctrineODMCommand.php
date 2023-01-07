@@ -22,7 +22,7 @@ class UpdateSchemaDoctrineODMCommand extends UpdateCommand
         $this
             ->setName('doctrine:mongodb:schema:update')
             ->addOption('dm', null, InputOption::VALUE_REQUIRED, 'The document manager to use for this command.')
-            ->setHelp(<<<EOT
+            ->setHelp(<<<'EOT'
 The <info>doctrine:mongodb:schema:update</info> command updates the default document manager's schema:
 
   <info>./app/console doctrine:mongodb:schema:update</info>
@@ -34,9 +34,7 @@ EOT
         );
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         DoctrineODMCommand::setApplicationDocumentManager($this->getApplication(), $input->getOption('dm'));

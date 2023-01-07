@@ -469,9 +469,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $odmConfigDef->addMethodCall('setDocumentNamespaces', [$this->aliasMap]);
     }
 
-    /**
-     * @param string $name
-     */
+    /** @param string $name */
     protected function getObjectManagerElementName($name): string
     {
         return 'doctrine_mongodb.odm.' . $name;
@@ -516,9 +514,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         return 'http://symfony.com/schema/dic/doctrine/odm/mongodb';
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function getXsdValidationBasePath()
     {
         return __DIR__ . '/../Resources/config/schema';

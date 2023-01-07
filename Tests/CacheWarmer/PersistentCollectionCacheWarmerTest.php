@@ -55,9 +55,7 @@ class PersistentCollectionCacheWarmerTest extends TestCase
         $this->warmer->warmUp('meh');
     }
 
-    /**
-     * @dataProvider provideWarmerNotExecuted
-     */
+    /** @dataProvider provideWarmerNotExecuted */
     public function testWarmerNotExecuted(int $autoGenerate): void
     {
         $this->container->setParameter('doctrine_mongodb.odm.auto_generate_persistent_collection_classes', $autoGenerate);

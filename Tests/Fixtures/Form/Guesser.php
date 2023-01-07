@@ -9,9 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MongoDB\BSON\ObjectId;
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class Guesser
 {
     /**

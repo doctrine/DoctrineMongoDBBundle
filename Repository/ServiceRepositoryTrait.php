@@ -11,9 +11,7 @@ use LogicException;
 use function assert;
 use function sprintf;
 
-/**
- * @template T of object
- */
+/** @template T of object */
 trait ServiceRepositoryTrait
 {
     /**

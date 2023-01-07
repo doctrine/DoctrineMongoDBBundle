@@ -15,9 +15,7 @@ use function sys_get_temp_dir;
 
 class TestCase extends BaseTestCase
 {
-    /**
-     * @param string[] $paths
-     */
+    /** @param string[] $paths */
     public static function createTestDocumentManager(array $paths = []): DocumentManager
     {
         $config = new Configuration();

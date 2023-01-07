@@ -9,9 +9,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class RequiredConstructorArgsFixtures implements ODMFixtureInterface
 {
-    /**
-     * @param mixed $fooRequiredArg
-     */
+    /** @param mixed $fooRequiredArg */
     public function __construct($fooRequiredArg)
     {
     }

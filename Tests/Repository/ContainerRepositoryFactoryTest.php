@@ -116,9 +116,7 @@ class ContainerRepositoryFactoryTest extends TestCase
         $factory->getRepository($dm, CoolDocument::class);
     }
 
-    /**
-     * @return MockObject|ContainerInterface
-     */
+    /** @return MockObject|ContainerInterface */
     private function createContainer(array $services)
     {
         $container = $this->getMockBuilder(ContainerInterface::class)->getMock();
@@ -136,9 +134,7 @@ class ContainerRepositoryFactoryTest extends TestCase
         return $container;
     }
 
-    /**
-     * @return MockObject|DocumentManager
-     */
+    /** @return MockObject|DocumentManager */
     private function createDocumentManager(array $documentRepositoryClasses)
     {
         $classMetadatas = [];
