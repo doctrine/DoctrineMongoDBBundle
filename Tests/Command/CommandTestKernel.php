@@ -44,6 +44,7 @@ final class CommandTestKernel extends Kernel
         $container->loadFromExtension('framework', [
             'secret' => 'foo',
             'router' => ['utf8' => false],
+            'http_method_override' => false,
         ]);
 
         $container->loadFromExtension('doctrine_mongodb', [
