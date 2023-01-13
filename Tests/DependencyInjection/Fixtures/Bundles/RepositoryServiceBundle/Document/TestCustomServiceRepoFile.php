@@ -12,8 +12,6 @@ class TestCustomServiceRepoFile
 {
     /**
      * @ODM\Id
-     *
-     * @var string
      */
-    private $id;
+    private string $id;
 }

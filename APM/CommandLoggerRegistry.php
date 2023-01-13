@@ -11,7 +11,7 @@ use function array_map;
 final class CommandLoggerRegistry
 {
     /** @var CommandLoggerInterface[] */
-    private $commandLoggers = [];
+    private array $commandLoggers = [];
 
     public function __construct(iterable $commandLoggers)
     {

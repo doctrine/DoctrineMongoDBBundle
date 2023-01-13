@@ -14,7 +14,7 @@ use Doctrine\ODM\MongoDB\Types\Type;
 class ManagerConfigurator
 {
     /** @var array */
-    private $enabledFilters = [];
+    private array $enabledFilters = [];
 
     /**
      * Construct.

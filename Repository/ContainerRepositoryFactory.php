@@ -25,10 +25,9 @@ use function sprintf;
 final class ContainerRepositoryFactory implements RepositoryFactory
 {
     /** @var array<string, ObjectRepository> */
-    private $managedRepositories = [];
+    private array $managedRepositories = [];
 
-    /** @var ContainerInterface|null */
-    private $container;
+    private ContainerInterface $container;
 
     /** @param ContainerInterface $container A service locator containing the repositories */
     public function __construct(ContainerInterface $container)
@@ -50,7 +49,7 @@ final class ContainerRepositoryFactory implements RepositoryFactory
 
         if ($customRepositoryName !== null) {
             // fetch from the container
-            if ($this->container && $this->container->has($customRepositoryName)) {
+            if ($this->container->has($customRepositoryName)) {
                 /** @var ObjectRepository<T> $repository */
                 $repository = $this->container->get($customRepositoryName);
 

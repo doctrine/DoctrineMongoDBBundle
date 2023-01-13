@@ -17,14 +17,12 @@ use function sys_get_temp_dir;
 
 class PersistentCollectionCacheWarmerTest extends TestCase
 {
-    /** @var ContainerInterface */
-    private $container;
+    private ContainerInterface $container;
 
     /** @var PersistentCollectionGenerator&MockObject  */
-    private $generatorMock;
+    private PersistentCollectionGenerator $generatorMock;
 
-    /** @var PersistentCollectionCacheWarmer */
-    private $warmer;
+    private PersistentCollectionCacheWarmer $warmer;
 
     protected function setUp(): void
     {

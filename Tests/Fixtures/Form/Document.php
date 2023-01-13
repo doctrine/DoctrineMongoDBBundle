@@ -12,19 +12,11 @@ use MongoDB\BSON\ObjectId;
 /** @ODM\Document */
 class Document
 {
-    /**
-     * @ODM\Id(strategy="none")
-     *
-     * @var ObjectId
-     */
-    protected $id;
+    /** @ODM\Id(strategy="none") */
+    protected ObjectId $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
-    public $name;
+    /** @ODM\Field(type="string") */
+    public string $name;
 
     /**
      * @ODM\ReferenceMany(
@@ -35,7 +27,7 @@ class Document
      *
      * @var Collection<int, Category>
      */
-    public $categories;
+    public Collection $categories;
 
     public function __construct(ObjectId $id, string $name)
     {

@@ -10,19 +10,11 @@ use MongoDB\BSON\ObjectId;
 /** @ODM\Document */
 class Category
 {
-    /**
-     * @ODM\Id
-     *
-     * @var ObjectId|null
-     */
-    protected $id;
+    /** @ODM\Id */
+    protected ?ObjectId $id = null;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
-    public $name;
+    /** @ODM\Field(type="string") */
+    public string $name;
 
     public function __construct(string $name)
     {

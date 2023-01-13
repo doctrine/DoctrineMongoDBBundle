@@ -21,10 +21,10 @@ use function sprintf;
 final class SymfonyFixturesLoader extends ContainerAwareLoader implements SymfonyFixturesLoaderInterface
 {
     /** @var FixtureInterface[] */
-    private $loadedFixtures = [];
+    private array $loadedFixtures = [];
 
     /** @var array<string, array<string, bool>> */
-    private $groupsFixtureMapping = [];
+    private array $groupsFixtureMapping = [];
 
     /**
      * @internal

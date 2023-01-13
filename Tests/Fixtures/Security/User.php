@@ -11,19 +11,11 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /** @ODM\Document */
 class User implements UserInterface
 {
-    /**
-     * @ODM\Id(strategy="none")
-     *
-     * @var ObjectId
-     */
-    protected $id;
+    /** @ODM\Id(strategy="none") */
+    protected ObjectId $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
-    public $name;
+    /** @ODM\Field(type="string") */
+    public string $name;
 
     public function __construct(ObjectId $id, string $name)
     {

@@ -30,8 +30,8 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
     /** @var ManagerRegistry */
     protected $registry;
 
-    /** @var array */
-    private $cache = [];
+    /** @var array<class-string, array{ClassMetadata, string}|null> */
+    private array $cache = [];
 
     public function __construct(ManagerRegistry $registry)
     {
