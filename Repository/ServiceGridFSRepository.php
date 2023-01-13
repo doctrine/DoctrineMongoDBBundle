@@ -19,8 +19,12 @@ use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
  *         parent::__construct($registry, YourDocument::class);
  *     }
  * }
+ *
+ * @template TDocument of object
+ * @template-extends DefaultGridFSRepository<TDocument>
  */
 class ServiceGridFSRepository extends DefaultGridFSRepository implements ServiceDocumentRepositoryInterface
 {
+    /** @use ServiceRepositoryTrait<TDocument> */
     use ServiceRepositoryTrait;
 }

@@ -6,7 +6,6 @@ namespace Doctrine\Bundle\MongoDBBundle\CacheWarmer;
 
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -81,7 +80,6 @@ class PersistentCollectionCacheWarmer implements CacheWarmerInterface
             $collectionGenerator = $dm->getConfiguration()->getPersistentCollectionGenerator();
             $classes             = $dm->getMetadataFactory()->getAllMetadata();
             foreach ($classes as $metadata) {
-                assert($metadata instanceof ClassMetadata);
                 foreach ($metadata->getAssociationNames() as $fieldName) {
                     $mapping = $metadata->getFieldMapping($fieldName);
                     if (empty($mapping['collectionClass']) || in_array($mapping['collectionClass'], $generated)) {
