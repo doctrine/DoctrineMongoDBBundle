@@ -20,11 +20,10 @@ use function array_merge;
 
 class TypeGuesserTest extends TypeTestCase
 {
-    /** @var DocumentManager */
-    private $dm;
+    private DocumentManager $dm;
 
     /** @var MockObject&ManagerRegistry */
-    private $dmRegistry;
+    private ManagerRegistry $dmRegistry;
 
     protected function setUp(): void
     {

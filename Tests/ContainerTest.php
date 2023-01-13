@@ -15,11 +15,9 @@ use function sys_get_temp_dir;
 
 class ContainerTest extends TestCase
 {
-    /** @var ContainerBuilder */
-    private $container;
+    private ContainerBuilder $container;
 
-    /** @var DoctrineMongoDBExtension */
-    private $extension;
+    private DoctrineMongoDBExtension $extension;
 
     protected function setUp(): void
     {

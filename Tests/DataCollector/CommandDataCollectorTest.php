@@ -14,10 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CommandDataCollectorTest extends TestCase
 {
-    /** @var CommandLogger */
-    private $commandLogger;
-    /** @var DocumentManager */
-    private $dm;
+    private CommandLogger $commandLogger;
+    private DocumentManager $dm;
 
     protected function setUp(): void
     {

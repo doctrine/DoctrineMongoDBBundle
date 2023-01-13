@@ -13,8 +13,6 @@ class User
 {
     /**
      * @ODM\Id
-     *
-     * @var string|null
      */
-    private $id;
+    private ?string $id = null;
 }

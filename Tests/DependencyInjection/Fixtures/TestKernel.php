@@ -18,8 +18,7 @@ use function sys_get_temp_dir;
 
 class TestKernel extends Kernel
 {
-    /** @var string|null */
-    private $projectDir;
+    private ?string $projectDir = null;
 
     public function __construct(bool $debug = true)
     {

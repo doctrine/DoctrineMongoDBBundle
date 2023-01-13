@@ -21,8 +21,7 @@ use function MongoDB\BSON\toCanonicalExtendedJSON;
 
 class CommandDataCollector extends DataCollector
 {
-    /** @var CommandLogger */
-    private $commandLogger;
+    private CommandLogger $commandLogger;
 
     public function __construct(CommandLogger $commandLogger)
     {

@@ -16,14 +16,11 @@ use function MongoDB\Driver\Monitoring\removeSubscriber;
 
 final class PSRCommandLogger implements CommandLoggerInterface
 {
-    /** @var bool */
-    private $registered = false;
+    private bool $registered = false;
 
-    /** @var LoggerInterface|null */
-    private $logger;
+    private ?LoggerInterface $logger;
 
-    /** @var string */
-    private $prefix;
+    private string $prefix;
 
     public function __construct(?LoggerInterface $logger, string $prefix = 'MongoDB command: ')
     {

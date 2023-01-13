@@ -274,8 +274,7 @@ class IntegrationTestKernel extends Kernel
     /** @var callable */
     private $servicesCallback;
 
-    /** @var string */
-    private $randomKey;
+    private string $randomKey;
 
     public function __construct(string $environment, bool $debug)
     {

@@ -33,8 +33,7 @@ abstract class DoctrineODMCommand extends Command
     /** @var ContainerInterface|null */
     protected $container;
 
-    /** @var ManagerRegistry|null */
-    private $managerRegistry;
+    private ?ManagerRegistry $managerRegistry;
 
     public function __construct(?ManagerRegistry $registry = null)
     {

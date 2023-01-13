@@ -33,8 +33,7 @@ use function sys_get_temp_dir;
 
 class ServiceRepositoryTest extends TestCase
 {
-    /** @var ContainerBuilder */
-    private $container;
+    private ContainerBuilder $container;
 
     protected function setUp(): void
     {

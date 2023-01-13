@@ -10,54 +10,38 @@ use MongoDB\BSON\ObjectId;
 /** @ODM\Document(collection="DoctrineMongoDBBundle_Tests_Validator_Document") */
 class Document
 {
-    /**
-     * @ODM\Id(strategy="none")
-     *
-     * @var ObjectId
-     */
-    protected $id;
+    /** @ODM\Id(strategy="none") */
+    protected ObjectId $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
-    public $name;
+    /** @ODM\Field(type="string") */
+    public string $name;
 
     /**
      * @ODM\Field(type="hash")
      *
      * @var array
      */
-    public $hash;
+    public array $hash;
 
     /**
      * @ODM\Field(type="collection")
      *
      * @var array
      */
-    public $collection;
+    public array $collection;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator\Document")
-     *
-     * @var Document|null
-     */
-    public $referenceOne;
+    /** @ODM\ReferenceOne(targetDocument="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator\Document") */
+    public ?Document $referenceOne = null;
 
-    /**
-     * @ODM\EmbedOne(targetDocument="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument")
-     *
-     * @var EmbeddedDocument|null
-     */
-    public $embedOne;
+    /** @ODM\EmbedOne(targetDocument="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument") */
+    public ?EmbeddedDocument $embedOne = null;
 
     /**
      * @ODM\EmbedMany(targetDocument="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Validator\EmbeddedDocument")
      *
      * @var EmbeddedDocument[]
      */
-    public $embedMany = [];
+    public array $embedMany = [];
 
     public function __construct(ObjectId $id)
     {
@@ -68,10 +52,6 @@ class Document
 /** @ODM\EmbeddedDocument */
 class EmbeddedDocument
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
-    public $name;
+    /** @ODM\Field(type="string") */
+    public string $name;
 }

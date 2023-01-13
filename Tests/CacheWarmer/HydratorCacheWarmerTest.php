@@ -19,11 +19,9 @@ use const DIRECTORY_SEPARATOR;
 
 class HydratorCacheWarmerTest extends TestCase
 {
-    /** @var ContainerInterface */
-    private $container;
+    private ContainerInterface $container;
 
-    /** @var HydratorCacheWarmer */
-    private $warmer;
+    private HydratorCacheWarmer $warmer;
 
     protected function setUp(): void
     {

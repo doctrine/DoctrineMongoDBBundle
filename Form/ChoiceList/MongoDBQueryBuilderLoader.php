@@ -22,10 +22,8 @@ class MongoDBQueryBuilderLoader implements EntityLoaderInterface
      * entities
      *
      * This property should only be accessed through queryBuilder.
-     *
-     * @var Builder
      */
-    private $queryBuilder;
+    private Builder $queryBuilder;
 
     /**
      * Construct an ORM Query Builder Loader

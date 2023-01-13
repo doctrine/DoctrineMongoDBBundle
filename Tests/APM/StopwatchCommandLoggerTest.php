@@ -14,12 +14,9 @@ use function method_exists;
 
 class StopwatchCommandLoggerTest extends TestCase
 {
-    /** @var StopwatchCommandLogger */
-    private $commandLogger;
-    /** @var Stopwatch */
-    private $stopwatch;
-    /** @var DocumentManager */
-    private $dm;
+    private StopwatchCommandLogger $commandLogger;
+    private Stopwatch $stopwatch;
+    private DocumentManager $dm;
 
     protected function setUp(): void
     {
