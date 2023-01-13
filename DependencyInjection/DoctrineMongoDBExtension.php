@@ -135,16 +135,14 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $container->registerForAutoconfiguration(EventSubscriberInterface::class)
             ->addTag('doctrine_mongodb.odm.event_subscriber');
 
-        if (method_exists($container, 'registerAttributeForAutoconfiguration')) {
-            $container->registerAttributeForAutoconfiguration(AsDocumentListener::class, static function (ChildDefinition $definition, AsDocumentListener $attribute) {
-                $definition->addTag('doctrine_mongodb.odm.event_listener', [
-                    'event'      => $attribute->event,
-                    'method'     => $attribute->method,
-                    'lazy'       => $attribute->lazy,
-                    'connection' => $attribute->connection,
-                ]);
-            });
-        }
+        $container->registerAttributeForAutoconfiguration(AsDocumentListener::class, static function (ChildDefinition $definition, AsDocumentListener $attribute) {
+            $definition->addTag('doctrine_mongodb.odm.event_listener', [
+                'event'      => $attribute->event,
+                'method'     => $attribute->method,
+                'lazy'       => $attribute->lazy,
+                'connection' => $attribute->connection,
+            ]);
+        });
 
         $this->loadMessengerServices($container);
 
@@ -296,10 +294,11 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         }
 
         $container->getAlias('doctrine_mongodb.odm.command_logger')
-            ->setDeprecated(...$this->buildDeprecationArgs(
+            ->setDeprecated(
+                'doctrine/mongodb-odm-bundle',
                 '4.4',
                 'The service %alias_id% is deprecated and will be dropped in DoctrineMongoDBBundle 5.0. Use "doctrine_mongodb.odm.psr_command_logger" instead.',
-            ));
+            );
 
         // logging
         if ($container->getParameterBag()->resolveValue($documentManager['logging'])) {
@@ -640,13 +639,5 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $container->setDefinition($cacheDriverServiceId, $cacheDef);
 
         return $cacheDriverServiceId;
-    }
-
-    private function buildDeprecationArgs(string $version, string $message): array
-    {
-        // @todo Remove when support for Symfony 5.1 and older is dropped
-        return method_exists(BaseNode::class, 'getDeprecation')
-            ? ['doctrine/mongodb-odm-bundle', $version, $message]
-            : [$message];
     }
 }

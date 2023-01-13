@@ -69,10 +69,6 @@ class DoctrineMongoDBExtensionTest extends TestCase
     /** @requires PHP 8 */
     public function testAsDocumentListenerAttribute()
     {
-        if (! method_exists(ContainerBuilder::class, 'getAutoconfiguredAttributes')) {
-            $this->markTestSkipped('symfony/dependency-injection 5.3.0 needed');
-        }
-
         $container = $this->getContainer('DocumentListenerBundle');
         $extension = new DoctrineMongoDBExtension();
         $container->registerExtension($extension);
