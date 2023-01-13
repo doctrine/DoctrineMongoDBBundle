@@ -1,4 +1,4 @@
-UPGRADE FROM 4.x to 4.4
+UPGRADE FROM 4.0 to 4.4
 =======================
 
 * The `doctrine:mongodb:tail-cursor` command and

@@ -22,8 +22,6 @@ jobs:
         os:
           - "ubuntu-20.04"
         php-version:
-          - "7.2"
-          - "7.3"
           - "7.4"
           - "8.0"
           - "8.1"
@@ -41,15 +39,11 @@ jobs:
         include:
           - dependencies: "lowest"
             os: "ubuntu-20.04"
-            php-version: "7.2"
+            php-version: "7.4"
             driver-version: "1.5.0"
             stability: "stable"
             symfony-version: "4.4.*"
         exclude:
-          - php-version: "7.2"
-            symfony-version: "6.0.x"
-          - php-version: "7.3"
-            symfony-version: "6.0.x"
           - php-version: "7.4"
             symfony-version: "6.0.x"
 
