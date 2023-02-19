@@ -53,6 +53,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
     /**
      * Responds to the doctrine_mongodb configuration parameter.
+     *
+     * @return void
      */
     public function load(array $configs, ContainerBuilder $container)
     {

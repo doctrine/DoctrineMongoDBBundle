@@ -14,6 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GenerateProxiesDoctrineODMCommand extends GenerateProxiesCommand
 {
+    /** @return void */
     protected function configure()
     {
         parent::configure();

@@ -15,6 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class CreateSchemaDoctrineODMCommand extends CreateCommand
 {
+    /** @return void */
     protected function configure()
     {
         parent::configure();
