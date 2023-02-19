@@ -14,6 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GenerateHydratorsDoctrineODMCommand extends GenerateHydratorsCommand
 {
+    /** @return void */
     protected function configure()
     {
         parent::configure();

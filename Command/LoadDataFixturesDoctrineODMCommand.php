@@ -43,6 +43,7 @@ class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
         return parent::isEnabled() && class_exists(Loader::class);
     }
 
+    /** @return void */
     protected function configure()
     {
         $this

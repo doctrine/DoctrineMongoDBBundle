@@ -30,6 +30,7 @@ class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInte
 {
     use ContainerAwareTrait;
 
+    /** @return void */
     protected function configure()
     {
         $this

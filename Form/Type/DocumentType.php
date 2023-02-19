@@ -34,6 +34,7 @@ class DocumentType extends DoctrineType
         );
     }
 
+    /** @return void */
     public function configureOptions(OptionsResolver $resolver)
     {
         parent::configureOptions($resolver);

@@ -14,6 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ClearMetadataCacheDoctrineODMCommand extends MetadataCommand
 {
+    /** @return void */
     protected function configure()
     {
         parent::configure();

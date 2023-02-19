@@ -16,6 +16,7 @@ use function sprintf;
 
 class CreateProxyDirectoryPass implements CompilerPassInterface
 {
+    /** @return void */
     public function process(ContainerBuilder $container)
     {
         if (! $container->hasParameter('doctrine_mongodb.odm.proxy_dir')) {

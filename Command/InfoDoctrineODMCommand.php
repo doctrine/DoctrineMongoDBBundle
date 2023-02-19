@@ -20,6 +20,7 @@ use function sprintf;
  */
 class InfoDoctrineODMCommand extends DoctrineODMCommand
 {
+    /** @return void */
     protected function configure()
     {
         $this
