@@ -8,7 +8,3 @@ if (! file_exists($file)) {
 }
 
 require_once $file;
-
-use Doctrine\Common\Annotations\AnnotationRegistry;
-
-AnnotationRegistry::registerLoader('class_exists');

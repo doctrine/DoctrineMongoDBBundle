@@ -14,7 +14,7 @@
     "require": {
         "php": "^7.4 || ^8.0",
         "ext-mongodb": "^1.5",
-        "doctrine/annotations": "^1.13",
+        "doctrine/annotations": "^1.13 || ^2.0",
         "doctrine/mongodb-odm": "^2.3",
         "doctrine/persistence": "^2.2|^3.0",
         "psr/log": "^1.0|^2.0|^3.0",
