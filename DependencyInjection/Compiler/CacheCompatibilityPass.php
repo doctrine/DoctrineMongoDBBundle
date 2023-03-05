@@ -73,7 +73,7 @@ final class CacheCompatibilityPass implements CompilerPassInterface
                 'doctrine/mongodb-odm-bundle',
                 '4.4',
                 'Configuring doctrine/cache is deprecated. Please update the cache service "%s" to use a PSR-6 cache.',
-                $definitionId
+                $definitionId,
             );
         }
 
@@ -90,7 +90,7 @@ final class CacheCompatibilityPass implements CompilerPassInterface
             return;
         }
 
-        $aliasId = $aliasId ?? $definitionId;
+        $aliasId ??= $definitionId;
 
         $compatibilityLayerId = $definitionId . '.compatibility_layer';
         $container->setDefinition($compatibilityLayerId, $compatibilityLayer);

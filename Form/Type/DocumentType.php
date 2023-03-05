@@ -30,7 +30,7 @@ class DocumentType extends DoctrineType
         return new MongoDBQueryBuilderLoader(
             $queryBuilder,
             $manager,
-            $class
+            $class,
         );
     }
 

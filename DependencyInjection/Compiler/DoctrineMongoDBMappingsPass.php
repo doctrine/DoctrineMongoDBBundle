@@ -45,7 +45,7 @@ class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
             $enabledParameter,
             'doctrine_mongodb.odm.%s_configuration',
             'addDocumentNamespace',
-            $aliasMap
+            $aliasMap,
         );
     }
 

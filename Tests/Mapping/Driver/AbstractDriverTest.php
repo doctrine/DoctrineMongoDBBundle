@@ -23,7 +23,7 @@ abstract class AbstractDriverTest extends TestCase
 
         $this->assertEquals(
             $this->getFixtureDir() . '/Foo' . $this->getFileExtension(),
-            $locator->findMappingFile('MyNamespace\MyBundle\Document\Foo')
+            $locator->findMappingFile('MyNamespace\MyBundle\Document\Foo'),
         );
     }
 
@@ -35,7 +35,7 @@ abstract class AbstractDriverTest extends TestCase
 
         $this->assertEquals(
             $this->getFixtureDir() . '/Foo.Bar' . $this->getFileExtension(),
-            $locator->findMappingFile('MyNamespace\MyBundle\Document\Foo\Bar')
+            $locator->findMappingFile('MyNamespace\MyBundle\Document\Foo\Bar'),
         );
     }
 

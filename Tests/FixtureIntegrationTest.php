@@ -108,7 +108,7 @@ class FixtureIntegrationTest extends TestCase
         $this->expectExceptionMessage(sprintf(
             'The "%s" fixture class is trying to be loaded, but is not available.'
             . ' Make sure this class is defined as a service and tagged with "doctrine.fixture.odm.mongodb".',
-            RequiredConstructorArgsFixtures::class
+            RequiredConstructorArgsFixtures::class,
         ));
 
         $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
@@ -199,7 +199,7 @@ class FixtureIntegrationTest extends TestCase
             'Fixture "%s" was declared as a dependency for fixture "%s",'
             . ' but it was not included in any of the loaded fixture groups.',
             OtherFixtures::class,
-            WithDependenciesFixtures::class
+            WithDependenciesFixtures::class,
         ));
 
         $loader->getFixtures(['missingDependencyGroup']);
