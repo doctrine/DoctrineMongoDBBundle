@@ -47,9 +47,7 @@ class CommandDataCollector extends DataCollector
             ),
             'time' => array_reduce(
                 $this->commandLogger->getAll(),
-                static function (int $total, Command $command): int {
-                    return $total + $command->getDurationMicros();
-                },
+                static fn (int $total, Command $command): int => $total + $command->getDurationMicros(),
                 0
             ),
         ];

@@ -52,9 +52,7 @@ class FixtureIntegrationTest extends TestCase
 
         $actualFixtures = $loader->getFixtures();
         $this->assertCount(2, $actualFixtures);
-        $actualFixtureClasses = array_map(static function ($fixture) {
-            return get_class($fixture);
-        }, $actualFixtures);
+        $actualFixtureClasses = array_map(static fn ($fixture) => get_class($fixture), $actualFixtures);
 
         $this->assertSame([
             OtherFixtures::class,
@@ -85,9 +83,7 @@ class FixtureIntegrationTest extends TestCase
 
         $actualFixtures = $loader->getFixtures();
         $this->assertCount(2, $actualFixtures);
-        $actualFixtureClasses = array_map(static function ($fixture) {
-            return get_class($fixture);
-        }, $actualFixtures);
+        $actualFixtureClasses = array_map(static fn ($fixture) => get_class($fixture), $actualFixtures);
 
         $this->assertSame([
             OtherFixtures::class,
@@ -143,9 +139,7 @@ class FixtureIntegrationTest extends TestCase
 
         $actualFixtures = $loader->getFixtures(['staging']);
         $this->assertCount(1, $actualFixtures);
-        $actualFixtureClasses = array_map(static function ($fixture) {
-            return get_class($fixture);
-        }, $actualFixtures);
+        $actualFixtureClasses = array_map(static fn ($fixture) => get_class($fixture), $actualFixtures);
 
         $this->assertSame([
             OtherFixtures::class,
@@ -234,9 +228,7 @@ class FixtureIntegrationTest extends TestCase
         $actualFixtures = $loader->getFixtures(['fulfilledDependencyGroup']);
 
         $this->assertCount(2, $actualFixtures);
-        $actualFixtureClasses = array_map(static function ($fixture) {
-            return get_class($fixture);
-        }, $actualFixtures);
+        $actualFixtureClasses = array_map(static fn ($fixture) => get_class($fixture), $actualFixtures);
 
         $this->assertSame([
             OtherFixtures::class,
@@ -267,9 +259,7 @@ class FixtureIntegrationTest extends TestCase
         $actualFixtures = $loader->getFixtures(['OtherFixtures']);
 
         $this->assertCount(1, $actualFixtures);
-        $actualFixtureClasses = array_map(static function ($fixture) {
-            return get_class($fixture);
-        }, $actualFixtures);
+        $actualFixtureClasses = array_map(static fn ($fixture) => get_class($fixture), $actualFixtures);
 
         $this->assertSame([
             OtherFixtures::class,
