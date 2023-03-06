@@ -389,9 +389,7 @@ class Configuration implements ConfigurationInterface
                     ->prototype('array')
                         ->beforeNormalization()
                             ->ifString()
-                            ->then(static function ($v) {
-                                return ['class' => $v];
-                            })
+                            ->then(static fn ($v) => ['class' => $v])
                         ->end()
                         ->children()
                             ->scalarNode('class')->isRequired()->end()

@@ -122,14 +122,10 @@ class ContainerRepositoryFactoryTest extends TestCase
         $container = $this->getMockBuilder(ContainerInterface::class)->getMock();
         $container
             ->method('has')
-            ->willReturnCallback(static function ($id) use ($services) {
-                return isset($services[$id]);
-            });
+            ->willReturnCallback(static fn ($id) => isset($services[$id]));
         $container
             ->method('get')
-            ->willReturnCallback(static function ($id) use ($services) {
-                return $services[$id];
-            });
+            ->willReturnCallback(static fn ($id) => $services[$id]);
 
         return $container;
     }
@@ -148,9 +144,7 @@ class ContainerRepositoryFactoryTest extends TestCase
         $dm = $this->getMockBuilder(DocumentManager::class)->disableOriginalConstructor()->getMock();
         $dm
             ->method('getClassMetadata')
-            ->willReturnCallback(static function ($class) use ($classMetadatas) {
-                return $classMetadatas[$class];
-            });
+            ->willReturnCallback(static fn ($class) => $classMetadatas[$class]);
 
         $evm = $this->createMock(EventManager::class);
 

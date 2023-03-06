@@ -29,9 +29,7 @@ final class ServiceRepositoryCompilerPass implements CompilerPassInterface
 
         $repoServiceIds = array_keys($container->findTaggedServiceIds(self::REPOSITORY_SERVICE_TAG));
 
-        $repoReferences = array_map(static function ($id) {
-            return new Reference($id);
-        }, $repoServiceIds);
+        $repoReferences = array_map(static fn ($id) => new Reference($id), $repoServiceIds);
 
         $locatorDef->replaceArgument(0, ServiceLocatorTagPass::register($container, array_combine($repoServiceIds, $repoReferences)));
     }

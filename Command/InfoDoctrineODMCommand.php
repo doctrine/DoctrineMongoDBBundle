@@ -43,9 +43,7 @@ EOT
     /** @return int */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $documentManagerName = $input->getOption('dm') ?
-            $input->getOption('dm') :
-            $this->getManagerRegistry()->getDefaultManagerName();
+        $documentManagerName = $input->hasOption('dm') ? $input->getOption('dm') : $this->getManagerRegistry()->getDefaultManagerName();
 
         $documentManager = $this->getManagerRegistry()->getManager($documentManagerName);
         assert($documentManager instanceof DocumentManager);
