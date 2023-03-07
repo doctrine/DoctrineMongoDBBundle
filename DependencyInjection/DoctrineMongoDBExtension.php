@@ -25,6 +25,7 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\MemcachedAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Config\Loader\FileLoader;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -144,39 +145,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
         $this->loadMessengerServices($container);
 
-        // available in Symfony 6.2 and higher
-        if (! class_exists(EntityValueResolver::class)) {
-            $container->removeDefinition('doctrine_mongodb.odm.entity_value_resolver');
-            $container->removeDefinition('doctrine_mongodb.odm.entity_value_resolver.expression_language');
-        } else {
-            if (! class_exists(ExpressionLanguage::class)) {
-                $container->removeDefinition('doctrine_mongodb.odm.entity_value_resolver.expression_language');
-            }
-
-            $controllerResolverDefaults = [];
-
-            if (! $config['controller_resolver']['enabled']) {
-                $controllerResolverDefaults['disabled'] = true;
-            }
-
-            if (! $config['controller_resolver']['auto_mapping']) {
-                $controllerResolverDefaults['mapping'] = [];
-            }
-
-            if ($controllerResolverDefaults) {
-                $container->getDefinition('doctrine_mongodb.odm.entity_value_resolver')->setArgument(2, (new Definition(MapEntity::class))->setArguments([
-                    null,
-                    null,
-                    null,
-                    $controllerResolverDefaults['mapping'] ?? null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    $controllerResolverDefaults['disabled'] ?? false,
-                ]));
-            }
-        }
+        $this->loadEntityValueResolverServices($container, $loader, $config);
     }
 
     /**
@@ -425,6 +394,47 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('messenger.xml');
+    }
+
+    /** @param array<string, mixed> $config */
+    private function loadEntityValueResolverServices(ContainerBuilder $container, FileLoader $loader, array $config): void
+    {
+        // available in Symfony 6.2 and higher
+        if (! class_exists(EntityValueResolver::class)) {
+            return;
+        }
+
+        $loader->load('value_resolver.xml');
+
+        if (! class_exists(ExpressionLanguage::class)) {
+            $container->removeDefinition('doctrine_mongodb.odm.entity_value_resolver.expression_language');
+        }
+
+        $controllerResolverDefaults = [];
+
+        if (! $config['controller_resolver']['enabled']) {
+            $controllerResolverDefaults['disabled'] = true;
+        }
+
+        if (! $config['controller_resolver']['auto_mapping']) {
+            $controllerResolverDefaults['mapping'] = [];
+        }
+
+        if ($controllerResolverDefaults === []) {
+            return;
+        }
+
+        $container->getDefinition('doctrine_mongodb.odm.entity_value_resolver')->setArgument(2, (new Definition(MapEntity::class))->setArguments([
+            null,
+            null,
+            null,
+            $controllerResolverDefaults['mapping'] ?? null,
+            null,
+            null,
+            null,
+            null,
+            $controllerResolverDefaults['disabled'] ?? false,
+        ]));
     }
 
     /**

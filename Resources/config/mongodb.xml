@@ -208,13 +208,5 @@
         <service id="doctrine_mongodb.odm.symfony.fixtures.loader" class="Doctrine\Bundle\MongoDBBundle\Loader\SymfonyFixturesLoader" public="false">
             <argument type="service" id="service_container" />
         </service>
-
-        <service id="doctrine_mongodb.odm.entity_value_resolver" class="Symfony\Bridge\Doctrine\ArgumentResolver\EntityValueResolver">
-            <argument type="service" id="doctrine_mongodb" />
-            <argument type="service" id="doctrine_mongodb.odm.entity_value_resolver.expression_language" on-invalid="ignore" />
-            <tag name="controller.argument_value_resolver" priority="110" />
-        </service>
-
-        <service id="doctrine_mongodb.odm.entity_value_resolver.expression_language" class="Symfony\Component\ExpressionLanguage\ExpressionLanguage" />
     </services>
 </container>
