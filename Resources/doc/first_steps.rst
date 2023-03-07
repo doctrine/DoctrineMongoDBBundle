@@ -227,7 +227,7 @@ Once you have your repository, you have access to all sorts of helpful methods:
     // find *all* products
     $products = $repository->findAll();
 
-    // find a group of products based on an arbitrary column value
+    // find a group of products based on an arbitrary field value
     $products = $repository->findBy(['price' => 19.99]);
 
 .. note::
@@ -248,6 +248,222 @@ to easily fetch objects based on multiple conditions:
         ['name' => 'foo'],
         ['price' => 'ASC']
     );
+
+Automatically Fetching Objects (DocumentValueResolver)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. versionadded:: 4.6
+
+    The support of this feature was added in Doctrine MongoDB ODM Bundle 4.6.
+
+In many cases, you can use the ``DocumentValueResolver`` to do the query for
+you automatically! You can simplify the controller to:
+
+.. code-block:: php
+
+    // src/Controller/ProductController.php
+    namespace App\Controller;
+
+    use App\Document\Product;
+    use Symfony\Component\HttpFoundation\Response;
+    use Symfony\Component\Routing\Annotation\Route;
+    // ...
+
+    #[Route('/product/{id}')]
+    public function showAction(Product $product): Response
+    {
+        // use the Product!
+        // do something, like pass the $product object into a template
+    }
+
+That's it! The bundle uses the ``{id}`` from the route to query for the ``Product``
+by the ``id`` field. If it's not found, a 404 page is generated.
+
+This behavior is enabled by default on all your controllers. You can
+disable it by setting the ``doctrine_mongodb.controller_resolver.auto_mapping``
+config option to ``false``.
+
+When disabled, you can enable it individually on the desired controllers by
+using the ``MapDocument`` attribute:
+
+.. code-block:: php
+
+    // src/Controller/ProductController.php
+    namespace App\Controller;
+
+    use App\Document\Product;
+    use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
+    use Symfony\Component\HttpFoundation\Response;
+    use Symfony\Component\Routing\Annotation\Route;
+    // ...
+
+    class ProductController extends AbstractController
+    {
+        #[Route('/product/{id}')]
+        public function show(
+            #[MapDocument]
+            Product $product
+        ): Response {
+            // use the Product!
+            // ...
+        }
+    }
+
+.. tip::
+
+    When enabled globally, it's possible to disable the behavior on a specific
+    controller, by using the ``MapDocument`` set to ``disabled``:
+
+.. code-block:: php
+
+        public function show(
+            #[CurrentUser]
+            #[MapDocument(disabled: true)]
+            User $user
+        ): Response {
+            // User is not resolved by the DocumentValueResolver
+            // ...
+        }
+
+Fetch Automatically
+~~~~~~~~~~~~~~~~~~~
+
+If your route wildcards match properties in your document, then the resolver
+will automatically fetch them:
+
+.. code-block:: php
+
+    /**
+     * Fetch via identifier because {id} is in the route.
+     */
+    #[Route('/product/{id}')]
+    public function showByIdentifier(Post $post): Response
+    {
+    }
+
+    /**
+     * Perform a findOneBy() where the slug property matches {slug}.
+     */
+    #[Route('/product/{slug}')]
+    public function showBySlug(Post $post): Response
+    {
+    }
+
+Automatic fetching works in these situations:
+
+* If ``{id}`` is in your route, then this is used to fetch by
+  identifier via the ``find()`` method.
+
+* The resolver will attempt to do a ``findOneBy()`` fetch by using
+  *all* of the wildcards in your route that are actually properties
+  on your document (non-properties are ignored).
+
+You can control this behavior by actually *adding* the ``MapDocument``
+attribute and using the `MapDocument options`_.
+
+Fetch via an Expression
+~~~~~~~~~~~~~~~~~~~~~~~
+
+If automatic fetching doesn't work, you can write an expression using the
+`ExpressionLanguage component`_:
+
+.. code-block:: php
+
+    #[Route('/product/{product_id}')]
+    public function show(
+        #[MapDocument(expr: 'repository.find(product_id)')]
+        Product $product
+    ): Response {
+    }
+
+In the expression, the ``repository`` variable will be your document's
+Repository class and any route wildcards - like ``{product_id}`` are
+available as variables.
+
+This can also be used to help resolve multiple arguments:
+
+.. code-block:: php
+
+    #[Route('/product/{id}/comments/{comment_id}')]
+    public function show(
+        Product $product,
+        #[MapDocument(expr: 'repository.find(comment_id)')]
+        Comment $comment
+    ): Response {
+    }
+
+In the example above, the ``$product`` argument is handled automatically,
+but ``$comment`` is configured with the attribute since they cannot both follow
+the default convention.
+
+MapDocument Options
+~~~~~~~~~~~~~~~~~~~
+
+A number of options are available on the ``MapDocument`` attribute to
+control behavior:
+
+``id``
+    If an ``id`` option is configured and matches a route parameter, then
+    the resolver will find by the identifier:
+
+.. code-block:: php
+
+        #[Route('/product/{product_id}')]
+        public function show(
+            #[MapDocument(id: 'product_id')]
+            Product $product
+        ): Response {
+        }
+
+``mapping``
+    Configures the properties and values to use with the ``findOneBy()``
+    method: the key is the route placeholder name and the value is the Doctrine
+    property name:
+
+.. code-block:: php
+
+        #[Route('/product/{category}/{slug}/comments/{comment_slug}')]
+        public function show(
+            #[MapDocument(mapping: ['category' => 'category', 'slug' => 'slug'])]
+            Product $product,
+            #[MapDocument(mapping: ['comment_slug' => 'slug'])]
+            Comment $comment
+        ): Response {
+        }
+
+``exclude``
+    Configures the properties that should be used in the ``findOneBy()``
+    method by *excluding* one or more properties so that not *all* are used:
+
+.. code-block:: php
+
+        #[Route('/product/{slug}/{date}')]
+        public function show(
+            #[MapDocument(exclude: ['date'])]
+            Product $product,
+            \DateTime $date
+        ): Response {
+        }
+
+``stripNull``
+    If true, then when ``findOneBy()`` is used, any values that are
+    ``null`` will not be used for the query.
+
+``objectManager``
+    By default, the ``DocumentValueResolver`` will choose the document manager
+    that has the class registered for it, but you can configure this:
+
+.. code-block:: php
+
+        #[Route('/product/{id}')]
+        public function show(
+            #[MapDocument(objectManager: 'foo')]
+            Product $product
+        ): Response {
+        }
+
+``disabled``
+    If true, the ``DoctrineValueResolver`` will not try to replace the argument.
 
 Updating an Object
 ~~~~~~~~~~~~~~~~~~
@@ -487,6 +703,7 @@ repositories as services you can use the following service configuration:
         </container>
 
 .. _`Basic Mapping Documentation`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/basic-mapping.html
+.. _`ExpressionLanguage component`: https://symfony.com/doc/current/components/expression_language.html
 .. _`Conditional Operators`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html#conditional-operators
 .. _`DoctrineFixturesBundle`: https://symfony.com/doc/master/bundles/DoctrineFixturesBundle/index.html
 .. _`Query Builder`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html
