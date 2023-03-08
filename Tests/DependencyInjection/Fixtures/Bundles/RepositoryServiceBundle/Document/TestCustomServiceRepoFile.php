@@ -10,8 +10,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\File(repositoryClass=TestCustomServiceRepoGridFSRepository::class) */
 class TestCustomServiceRepoFile
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     private string $id;
 }

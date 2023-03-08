@@ -9,8 +9,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\Document */
 class User
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     private ?string $id = null;
 }
