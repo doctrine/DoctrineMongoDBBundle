@@ -71,7 +71,7 @@ class ContainerRepositoryFactoryTest extends TestCase
         $factory = new ContainerRepositoryFactory($container);
 
         $this->expectExceptionMessage(
-            'The service "my_repo" must extend DocumentRepository (or a base class, like ServiceDocumentRepository).'
+            'The service "my_repo" must extend DocumentRepository (or a base class, like ServiceDocumentRepository).',
         );
         $this->expectException(RuntimeException::class);
         $factory->getRepository($dm, CoolDocument::class);
@@ -91,7 +91,7 @@ class ContainerRepositoryFactoryTest extends TestCase
             'The "%s" document repository implements "%s", but its service could not be found.'
             . ' Make sure the service exists and is tagged with "doctrine_mongodb.odm.repository_service".',
             StubServiceRepository::class,
-            ServiceDocumentRepositoryInterface::class
+            ServiceDocumentRepositoryInterface::class,
         ));
         $this->expectException(RuntimeException::class);
 
@@ -111,7 +111,7 @@ class ContainerRepositoryFactoryTest extends TestCase
             'The "%s" document has a repositoryClass set to "not_a_real_class", but this is not a valid class.'
             . ' Check your class naming. If this is meant to be a service id, make sure this service exists and'
             . ' is tagged with "doctrine_mongodb.odm.repository_service".',
-            CoolDocument::class
+            CoolDocument::class,
         ));
         $factory->getRepository($dm, CoolDocument::class);
     }

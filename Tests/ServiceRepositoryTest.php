@@ -140,7 +140,7 @@ class ServiceRepositoryTest extends TestCase
         $this->expectExceptionMessage(sprintf(
             'Could not find the document manager for class "%s".'
             . ' Check your Doctrine configuration to make sure it is configured to load this document’s metadata.',
-            TestUnmappedDocument::class
+            TestUnmappedDocument::class,
         ));
         $this->expectException(LogicException::class);
         new TestUnmappedDocumentRepository($this->container->get('doctrine_mongodb'));

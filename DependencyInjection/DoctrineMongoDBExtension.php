@@ -112,7 +112,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $config['document_managers'],
             $config['default_document_manager'],
             $config['default_database'],
-            $container
+            $container,
         );
 
         if ($config['resolve_target_documents']) {
@@ -237,7 +237,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 $documentManager,
                 $defaultDM,
                 $defaultDB,
-                $container
+                $container,
             );
             $dms[$name] = sprintf('doctrine_mongodb.odm.%s_document_manager', $name);
         }
@@ -263,7 +263,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $odmConfigDef->addTag(self::CONFIGURATION_TAG);
         $container->setDefinition(
             $configurationId,
-            $odmConfigDef
+            $odmConfigDef,
         );
 
         $this->loadDocumentManagerBundlesMappingInformation($documentManager, $odmConfigDef, $container);
@@ -298,7 +298,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $container->getAlias('doctrine_mongodb.odm.command_logger')
             ->setDeprecated(...$this->buildDeprecationArgs(
                 '4.4',
-                'The service %alias_id% is deprecated and will be dropped in DoctrineMongoDBBundle 5.0. Use "doctrine_mongodb.odm.psr_command_logger" instead.'
+                'The service %alias_id% is deprecated and will be dropped in DoctrineMongoDBBundle 5.0. Use "doctrine_mongodb.odm.psr_command_logger" instead.',
             ));
 
         // logging
@@ -336,7 +336,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $container
             ->setDefinition(
                 $managerConfiguratorName,
-                new ChildDefinition('doctrine_mongodb.odm.manager_configurator.abstract')
+                new ChildDefinition('doctrine_mongodb.odm.manager_configurator.abstract'),
             )
             ->replaceArgument(0, $enabledFilters);
 
@@ -369,13 +369,13 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
         $container->setAlias(
             'doctrine_mongodb.odm.document_manager',
-            new Alias(sprintf('doctrine_mongodb.odm.%s_document_manager', $documentManager['name']))
+            new Alias(sprintf('doctrine_mongodb.odm.%s_document_manager', $documentManager['name'])),
         );
         $container->getAlias('doctrine_mongodb.odm.document_manager')->setPublic(true);
 
         $container->setAlias(
             'doctrine_mongodb.odm.event_manager',
-            new Alias(sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $connectionName))
+            new Alias(sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $connectionName)),
         );
     }
 
@@ -393,13 +393,13 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $eventManagerId = sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $name);
             $container->setDefinition(
                 $eventManagerId,
-                new ChildDefinition('doctrine_mongodb.odm.connection.event_manager')
+                new ChildDefinition('doctrine_mongodb.odm.connection.event_manager'),
             );
 
             $configurationId = sprintf('doctrine_mongodb.odm.%s_configuration', $name);
             $container->setDefinition(
                 $configurationId,
-                new Definition('%doctrine_mongodb.odm.configuration.class%')
+                new Definition('%doctrine_mongodb.odm.configuration.class%'),
             );
 
             $odmConnArgs = [

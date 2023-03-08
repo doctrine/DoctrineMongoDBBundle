@@ -42,12 +42,12 @@ class CommandDataCollector extends DataCollector
                         'durationMicros' => $command->getDurationMicros(),
                     ];
                 },
-                $this->commandLogger->getAll()
+                $this->commandLogger->getAll(),
             ),
             'time' => array_reduce(
                 $this->commandLogger->getAll(),
                 static fn (int $total, Command $command): int => $total + $command->getDurationMicros(),
-                0
+                0,
             ),
         ];
     }

@@ -34,7 +34,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                     'connections' => ['default' => []],
                     'document_managers' => ['default' => []],
                 ],
-                $settings
+                $settings,
             ),
         ];
     }
@@ -230,7 +230,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                     'document_managers' => $documentManagers,
                 ],
             ],
-            $container
+            $container,
         );
 
         $configDm1 = $container->getDefinition('doctrine_mongodb.odm.dm1_configuration');
@@ -244,7 +244,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                     ['OtherXmlBundle' => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\OtherXmlBundle\Document'],
                 ],
             ],
-            $configDm1->getMethodCalls()
+            $configDm1->getMethodCalls(),
         );
 
         $this->assertContains(
@@ -254,7 +254,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                     ['XmlBundle' => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\XmlBundle\Document'],
                 ],
             ],
-            $configDm2->getMethodCalls()
+            $configDm2->getMethodCalls(),
         );
 
         $this->assertContains(
@@ -264,7 +264,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                     ['NewXmlBundle' => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\NewXmlBundle\Document'],
                 ],
             ],
-            $configDm3->getMethodCalls()
+            $configDm3->getMethodCalls(),
         );
     }
 
@@ -290,7 +290,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                     ],
                 ],
             ],
-            $container
+            $container,
         );
 
         $configDm1 = $container->getDefinition('doctrine_mongodb.odm.dm1_configuration');

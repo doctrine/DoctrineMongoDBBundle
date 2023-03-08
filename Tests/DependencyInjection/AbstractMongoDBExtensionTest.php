@@ -283,7 +283,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $loader    = new DoctrineMongoDBExtension();
 
         $config = DoctrineMongoDBExtensionTest::buildConfiguration(
-            ['document_managers' => ['default' => ['mappings' => ['XmlBundle' => []]]]]
+            ['document_managers' => ['default' => ['mappings' => ['XmlBundle' => []]]]],
         );
         $loader->load($config, $container);
 
@@ -298,7 +298,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $container = $this->getContainer('XmlBundle');
         $loader    = new DoctrineMongoDBExtension();
         $config    = DoctrineMongoDBExtensionTest::buildConfiguration(
-            ['document_managers' => ['default' => ['mappings' => ['XmlBundle' => []]]]]
+            ['document_managers' => ['default' => ['mappings' => ['XmlBundle' => []]]]],
         );
         $loader->load($config, $container);
 
@@ -316,7 +316,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $container = $this->getContainer('NewXmlBundle');
         $loader    = new DoctrineMongoDBExtension();
         $config    = DoctrineMongoDBExtensionTest::buildConfiguration(
-            ['document_managers' => ['default' => ['mappings' => ['NewXmlBundle' => []]]]]
+            ['document_managers' => ['default' => ['mappings' => ['NewXmlBundle' => []]]]],
         );
         $loader->load($config, $container);
 
@@ -330,7 +330,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $container = $this->getContainer('AnnotationsBundle');
         $loader    = new DoctrineMongoDBExtension();
         $config    = DoctrineMongoDBExtensionTest::buildConfiguration(
-            ['document_managers' => ['default' => ['mappings' => ['AnnotationsBundle' => []]]]]
+            ['document_managers' => ['default' => ['mappings' => ['AnnotationsBundle' => []]]]],
         );
         $loader->load($config, $container);
 
@@ -349,7 +349,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $container = $this->getContainer('AttributesBundle');
         $loader    = new DoctrineMongoDBExtension();
         $config    = DoctrineMongoDBExtensionTest::buildConfiguration(
-            ['document_managers' => ['default' => ['mappings' => ['AttributesBundle' => 'attribute']]]]
+            ['document_managers' => ['default' => ['mappings' => ['AttributesBundle' => 'attribute']]]],
         );
         $loader->load($config, $container);
 

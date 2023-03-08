@@ -68,7 +68,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
                     'multiple' => $multiple,
                     'expanded' => $multiple,
                 ],
-                Guess::HIGH_CONFIDENCE
+                Guess::HIGH_CONFIDENCE,
             );
         }
 
@@ -78,7 +78,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
                 return new TypeGuess(
                     CollectionType::class,
                     [],
-                    Guess::MEDIUM_CONFIDENCE
+                    Guess::MEDIUM_CONFIDENCE,
                 );
 
             case Type::BOOL:
@@ -86,7 +86,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
                 return new TypeGuess(
                     CheckboxType::class,
                     [],
-                    Guess::HIGH_CONFIDENCE
+                    Guess::HIGH_CONFIDENCE,
                 );
 
             case Type::DATE:
@@ -94,14 +94,14 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
                 return new TypeGuess(
                     DateTimeType::class,
                     [],
-                    Guess::HIGH_CONFIDENCE
+                    Guess::HIGH_CONFIDENCE,
                 );
 
             case Type::FLOAT:
                 return new TypeGuess(
                     NumberType::class,
                     [],
-                    Guess::MEDIUM_CONFIDENCE
+                    Guess::MEDIUM_CONFIDENCE,
                 );
 
             case Type::INT:
@@ -109,14 +109,14 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
                 return new TypeGuess(
                     IntegerType::class,
                     [],
-                    Guess::MEDIUM_CONFIDENCE
+                    Guess::MEDIUM_CONFIDENCE,
                 );
 
             case Type::STRING:
                 return new TypeGuess(
                     TextType::class,
                     [],
-                    Guess::MEDIUM_CONFIDENCE
+                    Guess::MEDIUM_CONFIDENCE,
                 );
         }
     }
@@ -134,13 +134,13 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
             if (! $ret[0]->isNullable($property)) {
                 return new ValueGuess(
                     true,
-                    Guess::HIGH_CONFIDENCE
+                    Guess::HIGH_CONFIDENCE,
                 );
             }
 
             return new ValueGuess(
                 false,
-                Guess::MEDIUM_CONFIDENCE
+                Guess::MEDIUM_CONFIDENCE,
             );
         }
 

@@ -9,7 +9,7 @@
     <!-- Ignore warnings and show progress of the run -->
     <arg value="np"/>
 
-    <config name="php_version" value="70200"/>
+    <config name="php_version" value="70400"/>
 
     <file>.</file>
 
@@ -22,7 +22,6 @@
         <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification" />
 
         <!-- Will cause BC breaks to method signatures - disabled for now -->
-        <exclude name="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceEqualOperator.RequiredNullCoalesceEqualOperator"/> <!-- PHP 7.4 required-->
         <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint"/> <!-- PHP 7.4 required-->
         <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint"/> <!-- we can do it in doctrine-bundle 3.0-->
         <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint"/> <!-- we can do it in doctrine-bundle 3.0 -->
@@ -44,10 +43,8 @@
         <exclude-pattern>Tests/*</exclude-pattern>
     </rule>
 
-    <!-- Disabled to allow Symfony to detect mapping, see https://github.com/symfony/symfony/pull/48896 -->
-    <rule ref="SlevomatCodingStandard.Commenting.RequireOneLineDocComment">
-        <exclude-pattern>Tests/Fixtures/CommandBundle/Document/*</exclude-pattern>
-        <exclude-pattern>Tests/DependencyInjection/Fixtures/Bundles/RepositoryServiceBundle/Document/*</exclude-pattern>
-        <exclude-pattern>Tests/DependencyInjection/Fixtures/Bundles/AnnotationsBundle/Document/*</exclude-pattern>
+    <!-- It fails when using Nowdoc in method call -->
+    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInCall.MissingTrailingComma">
+        <exclude-pattern>Command/*</exclude-pattern>
     </rule>
 </ruleset>

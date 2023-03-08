@@ -103,7 +103,7 @@ class DocumentTypeTest extends TypeTestCase
                     'multiple' => true,
                     'expanded' => true,
                     'document_manager' => 'default',
-                ]
+                ],
             );
 
         $view         = $form->createView();

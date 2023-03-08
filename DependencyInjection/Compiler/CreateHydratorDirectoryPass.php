@@ -33,12 +33,12 @@ class CreateHydratorDirectoryPass implements CompilerPassInterface
         if (! is_dir($hydratorCacheDir)) {
             if (@mkdir($hydratorCacheDir, 0775, true) === false && ! is_dir($hydratorCacheDir)) {
                 throw new RuntimeException(
-                    sprintf('Unable to create the Doctrine Hydrator directory (%s)', dirname($hydratorCacheDir))
+                    sprintf('Unable to create the Doctrine Hydrator directory (%s)', dirname($hydratorCacheDir)),
                 );
             }
         } elseif (! is_writable($hydratorCacheDir)) {
             throw new RuntimeException(
-                sprintf('Unable to write in the Doctrine Hydrator directory (%s)', $hydratorCacheDir)
+                sprintf('Unable to write in the Doctrine Hydrator directory (%s)', $hydratorCacheDir),
             );
         }
     }

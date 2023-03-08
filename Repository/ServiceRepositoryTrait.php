@@ -26,7 +26,7 @@ trait ServiceRepositoryTrait
         if ($manager === null) {
             throw new LogicException(sprintf(
                 'Could not find the document manager for class "%s". Check your Doctrine configuration to make sure it is configured to load this document’s metadata.',
-                $documentClass
+                $documentClass,
             ));
         }
 
