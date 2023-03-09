@@ -38,13 +38,8 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
         $this->registry = $registry;
     }
 
-    /**
-     * @param string $class
-     * @param string $property
-     *
-     * @return TypeGuess|null
-     */
-    public function guessType($class, $property)
+    /** @return TypeGuess|null */
+    public function guessType(string $class, string $property)
     {
         $ret = $this->getMetadata($class);
         if (! $ret) {
@@ -121,13 +116,8 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
         }
     }
 
-    /**
-     * @param string $class
-     * @param string $property
-     *
-     * @return ValueGuess|null
-     */
-    public function guessRequired($class, $property)
+    /** @return ValueGuess|null */
+    public function guessRequired(string $class, string $property)
     {
         $ret = $this->getMetadata($class);
         if ($ret && $ret[0]->hasField($property)) {
@@ -147,13 +137,8 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
         return null;
     }
 
-    /**
-     * @param string $class
-     * @param string $property
-     *
-     * @return ValueGuess|null
-     */
-    public function guessMaxLength($class, $property)
+    /** @return ValueGuess|null */
+    public function guessMaxLength(string $class, string $property)
     {
         return null;
     }
@@ -165,13 +150,8 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
     {
     }
 
-    /**
-     * @param string $class
-     * @param string $property
-     *
-     * @return ValueGuess|null
-     */
-    public function guessPattern($class, $property)
+    /** @return ValueGuess|null */
+    public function guessPattern(string $class, string $property)
     {
         $ret = $this->getMetadata($class);
         if (! $ret || ! $ret[0]->hasField($property) || $ret[0]->hasAssociation($property)) {

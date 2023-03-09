@@ -21,7 +21,6 @@ use function array_merge;
 use function class_exists;
 use function interface_exists;
 use function is_dir;
-use function method_exists;
 use function sys_get_temp_dir;
 
 class DoctrineMongoDBExtensionTest extends TestCase
@@ -67,7 +66,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
     }
 
     /** @requires PHP 8 */
-    public function testAsDocumentListenerAttribute()
+    public function testAsDocumentListenerAttribute(): void
     {
         $container = $this->getContainer('DocumentListenerBundle');
         $extension = new DoctrineMongoDBExtension();

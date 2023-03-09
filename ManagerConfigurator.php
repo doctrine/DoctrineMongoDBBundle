@@ -28,6 +28,8 @@ class ManagerConfigurator
 
     /**
      * Create a connection by name.
+     *
+     * @return void
      */
     public function configure(DocumentManager $documentManager)
     {

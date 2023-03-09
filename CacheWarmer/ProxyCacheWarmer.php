@@ -50,12 +50,8 @@ class ProxyCacheWarmer implements CacheWarmerInterface
         return false;
     }
 
-    /**
-     * @param string $cacheDir
-     *
-     * @return string[]
-     */
-    public function warmUp($cacheDir)
+    /** @return string[] */
+    public function warmUp(string $cacheDir)
     {
         // we need the directory no matter the proxy cache generation strategy.
         $proxyCacheDir = (string) $this->container->getParameter('doctrine_mongodb.odm.proxy_dir');

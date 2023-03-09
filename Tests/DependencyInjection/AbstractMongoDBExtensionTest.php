@@ -500,10 +500,9 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
      * Asserts that the given definition contains a call to the method that uses
      * the specified parameters.
      *
-     * @param string $methodName
-     * @param array  $params
+     * @param mixed[] $params
      */
-    private function assertDefinitionMethodCallAny(Definition $definition, $methodName, array $params): void
+    private function assertDefinitionMethodCallAny(Definition $definition, string $methodName, array $params): void
     {
         $calls     = $definition->getMethodCalls();
         $called    = false;
@@ -538,10 +537,9 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
      * Asserts that the given definition contains exactly one call to the method
      * and that it uses the specified parameters.
      *
-     * @param string $methodName
-     * @param array  $params
+     * @param mixed[] $params
      */
-    private function assertDefinitionMethodCallOnce(Definition $definition, $methodName, array $params): void
+    private function assertDefinitionMethodCallOnce(Definition $definition, string $methodName, array $params): void
     {
         $calls  = $definition->getMethodCalls();
         $called = false;
