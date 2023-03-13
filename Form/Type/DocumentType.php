@@ -21,11 +21,7 @@ use function interface_exists;
  */
 class DocumentType extends DoctrineType
 {
-    /**
-     * @param object $queryBuilder
-     * @param string $class
-     */
-    public function getLoader(ObjectManager $manager, $queryBuilder, $class): EntityLoaderInterface
+    public function getLoader(ObjectManager $manager, object $queryBuilder, string $class): EntityLoaderInterface
     {
         return new MongoDBQueryBuilderLoader(
             $queryBuilder,
@@ -74,16 +70,6 @@ class DocumentType extends DoctrineType
     public function getBlockPrefix()
     {
         return 'document';
-    }
-
-    /**
-     * @internal Symfony 2.7 compatibility
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->getBlockPrefix();
     }
 }
 

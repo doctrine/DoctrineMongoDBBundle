@@ -127,7 +127,7 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader implements Symfon
      *
      * @param string[] $groups
      */
-    private function addGroupsFixtureMapping(string $className, array $groups)
+    private function addGroupsFixtureMapping(string $className, array $groups): void
     {
         foreach ($groups as $group) {
             $this->groupsFixtureMapping[$group][$className] = true;

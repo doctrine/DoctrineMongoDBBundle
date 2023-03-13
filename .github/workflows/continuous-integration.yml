@@ -29,7 +29,6 @@ jobs:
         stability:
           - "stable"
         symfony-version:
-          - "4.4.x"
           - "5.4.x"
           - "6.2.x"
         driver-version:
@@ -42,7 +41,7 @@ jobs:
             php-version: "7.4"
             driver-version: "1.5.0"
             stability: "stable"
-            symfony-version: "4.4.*"
+            symfony-version: "5.4.*"
         exclude:
           - php-version: "7.4"
             symfony-version: "6.2.x"

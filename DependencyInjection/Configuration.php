@@ -126,7 +126,7 @@ class Configuration implements ConfigurationInterface
     /**
      * Adds the "document_managers" config section.
      */
-    private function addDocumentManagersSection(ArrayNodeDefinition $rootNode)
+    private function addDocumentManagersSection(ArrayNodeDefinition $rootNode): void
     {
         $rootNode
             ->fixXmlConfig('document_manager')
@@ -251,7 +251,7 @@ class Configuration implements ConfigurationInterface
     /**
      * Adds the "connections" config section.
      */
-    private function addConnectionsSection(ArrayNodeDefinition $rootNode)
+    private function addConnectionsSection(ArrayNodeDefinition $rootNode): void
     {
         $rootNode
             ->fixXmlConfig('connection')
@@ -362,7 +362,7 @@ class Configuration implements ConfigurationInterface
     /**
      * Adds the "resolve_target_documents" config section.
      */
-    private function addResolveTargetDocumentsSection(ArrayNodeDefinition $rootNode)
+    private function addResolveTargetDocumentsSection(ArrayNodeDefinition $rootNode): void
     {
         $rootNode
             ->fixXmlConfig('resolve_target_document')
@@ -379,7 +379,7 @@ class Configuration implements ConfigurationInterface
     /**
      * Adds the "types" config section.
      */
-    private function addTypesSection(ArrayNodeDefinition $rootNode)
+    private function addTypesSection(ArrayNodeDefinition $rootNode): void
     {
         $rootNode
             ->fixXmlConfig('type')

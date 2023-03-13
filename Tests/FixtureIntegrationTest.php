@@ -297,8 +297,7 @@ class IntegrationTestKernel extends Kernel
         ];
     }
 
-    /** @return void */
-    protected function build(ContainerBuilder $container)
+    protected function build(ContainerBuilder $container): void
     {
         $container->prependExtensionConfig('doctrine_mongodb', [
             'connections' => ['default' => []],

@@ -21,7 +21,6 @@ use function array_merge;
 use function class_exists;
 use function interface_exists;
 use function is_dir;
-use function method_exists;
 use function sys_get_temp_dir;
 
 class DoctrineMongoDBExtensionTest extends TestCase
@@ -67,12 +66,8 @@ class DoctrineMongoDBExtensionTest extends TestCase
     }
 
     /** @requires PHP 8 */
-    public function testAsDocumentListenerAttribute()
+    public function testAsDocumentListenerAttribute(): void
     {
-        if (! method_exists(ContainerBuilder::class, 'getAutoconfiguredAttributes')) {
-            $this->markTestSkipped('symfony/dependency-injection 5.3.0 needed');
-        }
-
         $container = $this->getContainer('DocumentListenerBundle');
         $extension = new DoctrineMongoDBExtension();
         $container->registerExtension($extension);

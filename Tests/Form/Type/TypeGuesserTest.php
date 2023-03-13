@@ -86,7 +86,7 @@ class TypeGuesserTest extends TypeTestCase
     }
 
     /** @return FormExtensionInterface[] */
-    protected function getExtensions()
+    protected function getExtensions(): array
     {
         return array_merge(parent::getExtensions(), [
             new DoctrineMongoDBExtension($this->dmRegistry),

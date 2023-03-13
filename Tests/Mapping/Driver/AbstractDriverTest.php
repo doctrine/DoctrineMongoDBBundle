@@ -61,11 +61,11 @@ abstract class AbstractDriverTest extends TestCase
         $locator->findMappingFile('MyOtherNamespace\MyBundle\Document\Foo');
     }
 
-    abstract protected function getFileExtension();
+    abstract protected function getFileExtension(): string;
 
-    abstract protected function getFixtureDir();
+    abstract protected function getFixtureDir(): string;
 
-    abstract protected function getDriver(array $paths = []);
+    abstract protected function getDriver(array $paths = []): FileDriver;
 
     private function getDriverLocator(FileDriver $driver): FileLocator
     {

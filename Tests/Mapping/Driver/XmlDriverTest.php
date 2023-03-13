@@ -8,20 +8,17 @@ use Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver;
 
 class XmlDriverTest extends AbstractDriverTest
 {
-    /** @return string */
-    protected function getFileExtension()
+    protected function getFileExtension(): string
     {
         return '.mongodb.xml';
     }
 
-    /** @return string */
-    protected function getFixtureDir()
+    protected function getFixtureDir(): string
     {
         return __DIR__ . '/Fixtures/xml';
     }
 
-    /** @return XmlDriver */
-    protected function getDriver(array $paths = [])
+    protected function getDriver(array $paths = []): XmlDriver
     {
         return new XmlDriver($paths, $this->getFileExtension());
     }
