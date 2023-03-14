@@ -42,8 +42,6 @@ following line in the ``config/bundles.php`` file of your project:
 .. code-block:: php
 
     // config/bundles.php
-    <?php
-
     return [
         // ...
         Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle::class => ['all' => true],
