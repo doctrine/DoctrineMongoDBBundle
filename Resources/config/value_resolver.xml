@@ -8,11 +8,15 @@
         <service id="doctrine_mongodb.odm.entity_value_resolver" class="Symfony\Bridge\Doctrine\ArgumentResolver\EntityValueResolver">
             <argument type="service" id="doctrine_mongodb" />
             <argument type="service" id="doctrine_mongodb.odm.entity_value_resolver.expression_language" on-invalid="ignore" />
+            <argument type="service" id="doctrine_mongodb.odm.entity_value_resolver.map_entity" />
             <tag name="controller.argument_value_resolver" priority="110">
                 <attribute name="name">Symfony\Bridge\Doctrine\ArgumentResolver\EntityValueResolver</attribute>
             </tag>
         </service>
 
         <service id="doctrine_mongodb.odm.entity_value_resolver.expression_language" class="Symfony\Component\ExpressionLanguage\ExpressionLanguage" />
+
+        <service id="doctrine_mongodb.odm.entity_value_resolver.map_entity" class="Symfony\Bridge\Doctrine\Attribute\MapEntity">
+        </service>
     </services>
 </container>

@@ -353,7 +353,11 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
         $controllerResolver = $container->getDefinition('doctrine_mongodb.odm.entity_value_resolver');
 
-        $this->assertEquals([new Reference('doctrine_mongodb'), new Reference('doctrine_mongodb.odm.entity_value_resolver.expression_language', $container::IGNORE_ON_INVALID_REFERENCE)], $controllerResolver->getArguments());
+        $this->assertEquals([
+            new Reference('doctrine_mongodb'),
+            new Reference('doctrine_mongodb.odm.entity_value_resolver.expression_language', $container::IGNORE_ON_INVALID_REFERENCE),
+            new Reference('doctrine_mongodb.odm.entity_value_resolver.map_entity'),
+        ], $controllerResolver->getArguments());
 
         $container = $this->getContainer();
 
@@ -364,8 +368,8 @@ class DoctrineMongoDBExtensionTest extends TestCase
             ],
         ]), $container);
 
-        $container->setDefinition('controller_resolver_defaults', $container->getDefinition('doctrine_mongodb.odm.entity_value_resolver')->getArgument(2))->setPublic(true);
+        $container->getDefinition('doctrine_mongodb.odm.entity_value_resolver.map_entity')->setPublic(true);
         $container->compile();
-        $this->assertEquals(new MapEntity(null, null, null, [], null, null, null, null, true), $container->get('controller_resolver_defaults'));
+        $this->assertEquals(new MapEntity(null, null, null, [], null, null, null, null, true), $container->get('doctrine_mongodb.odm.entity_value_resolver.map_entity'));
     }
 }

@@ -17,7 +17,6 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use InvalidArgumentException;
 use Symfony\Bridge\Doctrine\ArgumentResolver\EntityValueResolver;
-use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
@@ -424,17 +423,10 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             return;
         }
 
-        $container->getDefinition('doctrine_mongodb.odm.entity_value_resolver')->setArgument(2, (new Definition(MapEntity::class))->setArguments([
-            null,
-            null,
-            null,
-            $controllerResolverDefaults['mapping'] ?? null,
-            null,
-            null,
-            null,
-            null,
-            $controllerResolverDefaults['disabled'] ?? false,
-        ]));
+        $mapEntityDefinition = $container->getDefinition('doctrine_mongodb.odm.entity_value_resolver.map_entity');
+
+        $mapEntityDefinition->setArgument('$mapping', $controllerResolverDefaults['mapping'] ?? null);
+        $mapEntityDefinition->setArgument('$disabled', $controllerResolverDefaults['disabled'] ?? false);
     }
 
     /**
