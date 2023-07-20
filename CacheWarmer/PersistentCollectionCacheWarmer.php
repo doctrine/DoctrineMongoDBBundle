@@ -6,7 +6,6 @@ namespace Doctrine\Bundle\MongoDBBundle\CacheWarmer;
 
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -33,8 +32,7 @@ use function sprintf;
  */
 class PersistentCollectionCacheWarmer implements CacheWarmerInterface
 {
-    /** @var ContainerInterface */
-    private $container;
+    private ContainerInterface $container;
 
     public function __construct(ContainerInterface $container)
     {
@@ -51,12 +49,8 @@ class PersistentCollectionCacheWarmer implements CacheWarmerInterface
         return false;
     }
 
-    /**
-     * @param string $cacheDir
-     *
-     * @return string[]
-     */
-    public function warmUp($cacheDir)
+    /** @return string[] */
+    public function warmUp(string $cacheDir)
     {
         // we need the directory no matter the hydrator cache generation strategy.
         $collCacheDir = (string) $this->container->getParameter('doctrine_mongodb.odm.persistent_collection_dir');
@@ -81,7 +75,6 @@ class PersistentCollectionCacheWarmer implements CacheWarmerInterface
             $collectionGenerator = $dm->getConfiguration()->getPersistentCollectionGenerator();
             $classes             = $dm->getMetadataFactory()->getAllMetadata();
             foreach ($classes as $metadata) {
-                assert($metadata instanceof ClassMetadata);
                 foreach ($metadata->getAssociationNames() as $fieldName) {
                     $mapping = $metadata->getFieldMapping($fieldName);
                     if (empty($mapping['collectionClass']) || in_array($mapping['collectionClass'], $generated)) {

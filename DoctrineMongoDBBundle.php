@@ -33,6 +33,7 @@ class DoctrineMongoDBBundle extends Bundle
     /** @var callable|null */
     private $autoloader;
 
+    /** @return void */
     public function build(ContainerBuilder $container)
     {
         $container->addCompilerPass(new CacheCompatibilityPass());
@@ -61,6 +62,7 @@ class DoctrineMongoDBBundle extends Bundle
         return new DoctrineMongoDBExtension();
     }
 
+    /** @return void */
     public function boot()
     {
         $registry = $this->container->get('doctrine_mongodb');
@@ -104,6 +106,7 @@ class DoctrineMongoDBBundle extends Bundle
         $commandLoggerRegistry->unregister();
     }
 
+    /** @return void */
     public function shutdown()
     {
         $this->unregisterAutoloader();

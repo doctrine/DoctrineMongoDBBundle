@@ -12,6 +12,7 @@ final class FixturesCompilerPass implements CompilerPassInterface
 {
     public const FIXTURE_TAG = 'doctrine.fixture.odm.mongodb';
 
+    /** @return void */
     public function process(ContainerBuilder $container)
     {
         if (! $container->hasDefinition('doctrine_mongodb.odm.symfony.fixtures.loader')) {

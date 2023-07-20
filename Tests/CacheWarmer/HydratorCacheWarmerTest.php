@@ -11,7 +11,6 @@ use Doctrine\ODM\MongoDB\Configuration;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-use function method_exists;
 use function sys_get_temp_dir;
 use function unlink;
 
@@ -19,11 +18,9 @@ use const DIRECTORY_SEPARATOR;
 
 class HydratorCacheWarmerTest extends TestCase
 {
-    /** @var ContainerInterface */
-    private $container;
+    private ContainerInterface $container;
 
-    /** @var HydratorCacheWarmer */
-    private $warmer;
+    private HydratorCacheWarmer $warmer;
 
     protected function setUp(): void
     {
@@ -65,22 +62,10 @@ class HydratorCacheWarmerTest extends TestCase
 
         try {
             $this->warmer->warmUp('meh');
-            // Replace by "assertFileDoesNotExist" when PHPUnit 9 is minimum
-            $this->assertFileDoesNotExistWithBC($hydratorFilename);
+            $this->assertFileDoesNotExist($hydratorFilename);
         } finally {
             @unlink($hydratorFilename);
         }
-    }
-
-    private function assertFileDoesNotExistWithBC(string $filename): void
-    {
-        if (! method_exists($this, 'assertFileDoesNotExist')) {
-            $this->assertFileNotExists($filename);
-
-            return;
-        }
-
-        $this->assertFileDoesNotExist($filename);
     }
 
     /** @return array<array{int}> */

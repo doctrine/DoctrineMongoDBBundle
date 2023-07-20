@@ -16,6 +16,7 @@ use function sprintf;
 
 class CreateProxyDirectoryPass implements CompilerPassInterface
 {
+    /** @return void */
     public function process(ContainerBuilder $container)
     {
         if (! $container->hasParameter('doctrine_mongodb.odm.proxy_dir')) {
@@ -32,12 +33,12 @@ class CreateProxyDirectoryPass implements CompilerPassInterface
         if (! is_dir($proxyCacheDir)) {
             if (@mkdir($proxyCacheDir, 0775, true) === false && ! is_dir($proxyCacheDir)) {
                 throw new RuntimeException(
-                    sprintf('Unable to create the Doctrine Proxy directory (%s)', dirname($proxyCacheDir))
+                    sprintf('Unable to create the Doctrine Proxy directory (%s)', dirname($proxyCacheDir)),
                 );
             }
         } elseif (! is_writable($proxyCacheDir)) {
             throw new RuntimeException(
-                sprintf('Unable to write in the Doctrine Proxy directory (%s)', $proxyCacheDir)
+                sprintf('Unable to write in the Doctrine Proxy directory (%s)', $proxyCacheDir),
             );
         }
     }

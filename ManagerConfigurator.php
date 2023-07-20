@@ -14,7 +14,7 @@ use Doctrine\ODM\MongoDB\Types\Type;
 class ManagerConfigurator
 {
     /** @var array */
-    private $enabledFilters = [];
+    private array $enabledFilters = [];
 
     /**
      * Construct.
@@ -28,6 +28,8 @@ class ManagerConfigurator
 
     /**
      * Create a connection by name.
+     *
+     * @return void
      */
     public function configure(DocumentManager $documentManager)
     {

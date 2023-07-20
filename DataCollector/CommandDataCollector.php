@@ -21,8 +21,7 @@ use function MongoDB\BSON\toCanonicalExtendedJSON;
 
 class CommandDataCollector extends DataCollector
 {
-    /** @var CommandLogger */
-    private $commandLogger;
+    private CommandLogger $commandLogger;
 
     public function __construct(CommandLogger $commandLogger)
     {
@@ -43,14 +42,12 @@ class CommandDataCollector extends DataCollector
                         'durationMicros' => $command->getDurationMicros(),
                     ];
                 },
-                $this->commandLogger->getAll()
+                $this->commandLogger->getAll(),
             ),
             'time' => array_reduce(
                 $this->commandLogger->getAll(),
-                static function (int $total, Command $command): int {
-                    return $total + $command->getDurationMicros();
-                },
-                0
+                static fn (int $total, Command $command): int => $total + $command->getDurationMicros(),
+                0,
             ),
         ];
     }

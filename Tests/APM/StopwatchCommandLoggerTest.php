@@ -10,16 +10,11 @@ use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Stopwatch\Stopwatch;
 
-use function method_exists;
-
 class StopwatchCommandLoggerTest extends TestCase
 {
-    /** @var StopwatchCommandLogger */
-    private $commandLogger;
-    /** @var Stopwatch */
-    private $stopwatch;
-    /** @var DocumentManager */
-    private $dm;
+    private StopwatchCommandLogger $commandLogger;
+    private Stopwatch $stopwatch;
+    private DocumentManager $dm;
 
     protected function setUp(): void
     {
@@ -57,13 +52,7 @@ class StopwatchCommandLoggerTest extends TestCase
         self::assertCount(3, $events);
 
         foreach ($events as $eventName => $stopwatchEvent) {
-            // @todo replace with assertMatchesRegularExpression() when PHP 7.2 is dropped
-            if (method_exists($this, 'assertMatchesRegularExpression')) {
-                self::assertMatchesRegularExpression('/mongodb_\d+/', $eventName);
-            } else {
-                self::assertRegExp('/mongodb_\d+/', $eventName);
-            }
-
+            self::assertMatchesRegularExpression('/mongodb_\d+/', $eventName);
             self::assertGreaterThan(0, $stopwatchEvent->getDuration());
             self::assertSame('doctrine_mongodb', $stopwatchEvent->getCategory());
         }

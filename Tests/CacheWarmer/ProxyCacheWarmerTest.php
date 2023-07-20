@@ -18,14 +18,12 @@ use function sys_get_temp_dir;
 
 class ProxyCacheWarmerTest extends TestCase
 {
-    /** @var ContainerInterface */
-    private $container;
+    private ContainerInterface $container;
 
-    /** @var ProxyFactory|MockObject */
-    private $proxyMock;
+    /** @var ProxyFactory&MockObject */
+    private ProxyFactory $proxyMock;
 
-    /** @var ProxyCacheWarmer */
-    private $warmer;
+    private ProxyCacheWarmer $warmer;
 
     protected function setUp(): void
     {

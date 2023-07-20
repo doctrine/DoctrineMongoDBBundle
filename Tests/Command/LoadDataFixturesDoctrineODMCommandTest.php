@@ -11,8 +11,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class LoadDataFixturesDoctrineODMCommandTest extends KernelTestCase
 {
-    /** @var LoadDataFixturesDoctrineODMCommand */
-    private $command;
+    private LoadDataFixturesDoctrineODMCommand $command;
 
     protected function setUp(): void
     {

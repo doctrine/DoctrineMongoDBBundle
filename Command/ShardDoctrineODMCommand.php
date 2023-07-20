@@ -15,6 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ShardDoctrineODMCommand extends ShardCommand
 {
+    /** @return void */
     protected function configure()
     {
         parent::configure();

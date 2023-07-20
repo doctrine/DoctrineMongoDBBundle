@@ -23,11 +23,10 @@ use function array_merge;
 
 class DocumentTypeTest extends TypeTestCase
 {
-    /** @var DocumentManager */
-    private $dm;
+    private DocumentManager $dm;
 
     /** @var MockObject&ManagerRegistry */
-    private $dmRegistry;
+    private ManagerRegistry $dmRegistry;
 
     protected function setUp(): void
     {
@@ -104,7 +103,7 @@ class DocumentTypeTest extends TypeTestCase
                     'multiple' => true,
                     'expanded' => true,
                     'document_manager' => 'default',
-                ]
+                ],
             );
 
         $view         = $form->createView();
@@ -129,7 +128,7 @@ class DocumentTypeTest extends TypeTestCase
     }
 
     /** @return FormExtensionInterface[] */
-    protected function getExtensions()
+    protected function getExtensions(): array
     {
         return array_merge(parent::getExtensions(), [
             new DoctrineMongoDBExtension($this->dmRegistry),

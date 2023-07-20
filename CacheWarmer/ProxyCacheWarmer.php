@@ -33,8 +33,7 @@ use function sprintf;
  */
 class ProxyCacheWarmer implements CacheWarmerInterface
 {
-    /** @var ContainerInterface */
-    private $container;
+    private ContainerInterface $container;
 
     public function __construct(ContainerInterface $container)
     {
@@ -51,12 +50,8 @@ class ProxyCacheWarmer implements CacheWarmerInterface
         return false;
     }
 
-    /**
-     * @param string $cacheDir
-     *
-     * @return string[]
-     */
-    public function warmUp($cacheDir)
+    /** @return string[] */
+    public function warmUp(string $cacheDir)
     {
         // we need the directory no matter the proxy cache generation strategy.
         $proxyCacheDir = (string) $this->container->getParameter('doctrine_mongodb.odm.proxy_dir');
@@ -86,8 +81,6 @@ class ProxyCacheWarmer implements CacheWarmerInterface
     /** @return ClassMetadata[] */
     private function getClassesForProxyGeneration(DocumentManager $dm)
     {
-        return array_filter($dm->getMetadataFactory()->getAllMetadata(), static function (ClassMetadata $metadata) {
-            return ! $metadata->isEmbeddedDocument && ! $metadata->isMappedSuperclass;
-        });
+        return array_filter($dm->getMetadataFactory()->getAllMetadata(), static fn (ClassMetadata $metadata) => ! $metadata->isEmbeddedDocument && ! $metadata->isMappedSuperclass);
     }
 }

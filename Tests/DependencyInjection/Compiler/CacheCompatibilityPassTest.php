@@ -32,11 +32,11 @@ class CacheCompatibilityPassTest extends TestCase
                 $loader->load(static function (ContainerBuilder $containerBuilder): void {
                     $containerBuilder->loadFromExtension(
                         'doctrine_mongodb',
-                        ['document_managers' => ['default' => ['metadata_cache_driver' => ['type' => 'service', 'id' => 'custom_cache_service']]]]
+                        ['document_managers' => ['default' => ['metadata_cache_driver' => ['type' => 'service', 'id' => 'custom_cache_service']]]],
                     );
                     $containerBuilder->setDefinition(
                         'custom_cache_service',
-                        new Definition(ArrayAdapter::class)
+                        new Definition(ArrayAdapter::class),
                     );
                 });
             }
@@ -57,13 +57,13 @@ class CacheCompatibilityPassTest extends TestCase
                 $loader->load(static function (ContainerBuilder $containerBuilder): void {
                     $containerBuilder->loadFromExtension(
                         'doctrine_mongodb',
-                        ['document_managers' => ['default' => ['metadata_cache_driver' => ['type' => 'service', 'id' => 'custom_cache_service']]]]
+                        ['document_managers' => ['default' => ['metadata_cache_driver' => ['type' => 'service', 'id' => 'custom_cache_service']]]],
                     );
                     $containerBuilder->setDefinition(
                         'custom_cache_service',
                         (new Definition(DoctrineProvider::class))
                             ->setArguments([new Definition(ArrayAdapter::class)])
-                            ->setFactory([DoctrineProvider::class, 'wrap'])
+                            ->setFactory([DoctrineProvider::class, 'wrap']),
                     );
                 });
             }

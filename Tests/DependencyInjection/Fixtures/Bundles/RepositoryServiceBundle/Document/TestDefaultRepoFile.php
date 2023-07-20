@@ -9,10 +9,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\File */
 class TestDefaultRepoFile
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string
-     */
-    private $id;
+    /** @ODM\Id */
+    private string $id;
 }

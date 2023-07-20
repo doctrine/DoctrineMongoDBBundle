@@ -12,33 +12,17 @@ use MongoDB\BSON\ObjectId;
 /** @ODM\Document */
 class Guesser
 {
-    /**
-     * @ODM\Id(strategy="none")
-     *
-     * @var ObjectId|null
-     */
-    protected $id;
+    /** @ODM\Id(strategy="none") */
+    protected ?ObjectId $id = null;
 
-    /**
-     * @ODM\Field()
-     *
-     * @var string|null
-     */
-    public $name;
+    /** @ODM\Field() */
+    public ?string $name = null;
 
-    /**
-     * @ODM\Field(type="date")
-     *
-     * @var DateTime|null
-     */
-    public $date;
+    /** @ODM\Field(type="date") */
+    public ?DateTime $date = null;
 
-    /**
-     * @ODM\Field(type="timestamp")
-     *
-     * @var DateTime
-     */
-    public $ts;
+    /** @ODM\Field(type="timestamp") */
+    public DateTime $ts;
 
     /**
      * @ODM\ReferenceMany(
@@ -49,35 +33,23 @@ class Guesser
      *
      * @var Collection<int, Category>
      */
-    public $categories;
+    public Collection $categories;
 
-    /**
-     * @ODM\Field(type="bool")
-     *
-     * @var bool|null
-     */
-    public $boolField;
+    /** @ODM\Field(type="bool") */
+    public ?bool $boolField = null;
 
-    /**
-     * @ODM\Field(type="float")
-     *
-     * @var float|null
-     */
-    public $floatField;
+    /** @ODM\Field(type="float") */
+    public ?float $floatField = null;
 
-    /**
-     * @ODM\Field(type="int")
-     *
-     * @var int|null
-     */
-    public $intField;
+    /** @ODM\Field(type="int") */
+    public ?int $intField = null;
 
     /**
      * @ODM\Field(type="collection")
      *
      * @var array
      */
-    public $collectionField;
+    public array $collectionField;
 
     /** @var mixed */
     public $nonMappedField;

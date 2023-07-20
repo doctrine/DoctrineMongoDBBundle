@@ -21,10 +21,10 @@ use function sprintf;
 final class SymfonyFixturesLoader extends ContainerAwareLoader implements SymfonyFixturesLoaderInterface
 {
     /** @var FixtureInterface[] */
-    private $loadedFixtures = [];
+    private array $loadedFixtures = [];
 
     /** @var array<string, array<string, bool>> */
-    private $groupsFixtureMapping = [];
+    private array $groupsFixtureMapping = [];
 
     /**
      * @internal
@@ -81,7 +81,7 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader implements Symfon
             throw new LogicException(sprintf(
                 'The "%s" fixture class is trying to be loaded, but is not available. Make sure this class is defined as a service and tagged with "%s".',
                 $class,
-                FixturesCompilerPass::FIXTURE_TAG
+                FixturesCompilerPass::FIXTURE_TAG,
             ));
         }
 
@@ -127,7 +127,7 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader implements Symfon
      *
      * @param string[] $groups
      */
-    private function addGroupsFixtureMapping(string $className, array $groups)
+    private function addGroupsFixtureMapping(string $className, array $groups): void
     {
         foreach ($groups as $group) {
             $this->groupsFixtureMapping[$group][$className] = true;

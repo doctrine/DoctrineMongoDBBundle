@@ -30,21 +30,16 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
     /** @var ManagerRegistry */
     protected $registry;
 
-    /** @var array */
-    private $cache = [];
+    /** @var array<class-string, array{ClassMetadata, string}|null> */
+    private array $cache = [];
 
     public function __construct(ManagerRegistry $registry)
     {
         $this->registry = $registry;
     }
 
-    /**
-     * @param string $class
-     * @param string $property
-     *
-     * @return TypeGuess|null
-     */
-    public function guessType($class, $property)
+    /** @return TypeGuess|null */
+    public function guessType(string $class, string $property)
     {
         $ret = $this->getMetadata($class);
         if (! $ret) {
@@ -68,7 +63,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
                     'multiple' => $multiple,
                     'expanded' => $multiple,
                 ],
-                Guess::HIGH_CONFIDENCE
+                Guess::HIGH_CONFIDENCE,
             );
         }
 
@@ -78,7 +73,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
                 return new TypeGuess(
                     CollectionType::class,
                     [],
-                    Guess::MEDIUM_CONFIDENCE
+                    Guess::MEDIUM_CONFIDENCE,
                 );
 
             case Type::BOOL:
@@ -86,7 +81,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
                 return new TypeGuess(
                     CheckboxType::class,
                     [],
-                    Guess::HIGH_CONFIDENCE
+                    Guess::HIGH_CONFIDENCE,
                 );
 
             case Type::DATE:
@@ -94,14 +89,14 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
                 return new TypeGuess(
                     DateTimeType::class,
                     [],
-                    Guess::HIGH_CONFIDENCE
+                    Guess::HIGH_CONFIDENCE,
                 );
 
             case Type::FLOAT:
                 return new TypeGuess(
                     NumberType::class,
                     [],
-                    Guess::MEDIUM_CONFIDENCE
+                    Guess::MEDIUM_CONFIDENCE,
                 );
 
             case Type::INT:
@@ -109,51 +104,41 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
                 return new TypeGuess(
                     IntegerType::class,
                     [],
-                    Guess::MEDIUM_CONFIDENCE
+                    Guess::MEDIUM_CONFIDENCE,
                 );
 
             case Type::STRING:
                 return new TypeGuess(
                     TextType::class,
                     [],
-                    Guess::MEDIUM_CONFIDENCE
+                    Guess::MEDIUM_CONFIDENCE,
                 );
         }
     }
 
-    /**
-     * @param string $class
-     * @param string $property
-     *
-     * @return ValueGuess|null
-     */
-    public function guessRequired($class, $property)
+    /** @return ValueGuess|null */
+    public function guessRequired(string $class, string $property)
     {
         $ret = $this->getMetadata($class);
         if ($ret && $ret[0]->hasField($property)) {
             if (! $ret[0]->isNullable($property)) {
                 return new ValueGuess(
                     true,
-                    Guess::HIGH_CONFIDENCE
+                    Guess::HIGH_CONFIDENCE,
                 );
             }
 
             return new ValueGuess(
                 false,
-                Guess::MEDIUM_CONFIDENCE
+                Guess::MEDIUM_CONFIDENCE,
             );
         }
 
         return null;
     }
 
-    /**
-     * @param string $class
-     * @param string $property
-     *
-     * @return ValueGuess|null
-     */
-    public function guessMaxLength($class, $property)
+    /** @return ValueGuess|null */
+    public function guessMaxLength(string $class, string $property)
     {
         return null;
     }
@@ -165,13 +150,8 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
     {
     }
 
-    /**
-     * @param string $class
-     * @param string $property
-     *
-     * @return ValueGuess|null
-     */
-    public function guessPattern($class, $property)
+    /** @return ValueGuess|null */
+    public function guessPattern(string $class, string $property)
     {
         $ret = $this->getMetadata($class);
         if (! $ret || ! $ret[0]->hasField($property) || $ret[0]->hasAssociation($property)) {

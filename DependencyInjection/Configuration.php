@@ -109,6 +109,15 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('safe')->info('Deprecated. Please use the "w" option instead.')->end()
                     ->end()
                 ->end()
+                ->arrayNode('controller_resolver')
+                    ->canBeDisabled()
+                    ->children()
+                        ->booleanNode('auto_mapping')
+                            ->defaultTrue()
+                            ->info('Set to false to disable using route placeholders as lookup criteria when the object id doesn\'t match the argument name')
+                        ->end()
+                    ->end()
+                ->end()
             ->end();
 
         return $treeBuilder;
@@ -117,7 +126,7 @@ class Configuration implements ConfigurationInterface
     /**
      * Adds the "document_managers" config section.
      */
-    private function addDocumentManagersSection(ArrayNodeDefinition $rootNode)
+    private function addDocumentManagersSection(ArrayNodeDefinition $rootNode): void
     {
         $rootNode
             ->fixXmlConfig('document_manager')
@@ -242,7 +251,7 @@ class Configuration implements ConfigurationInterface
     /**
      * Adds the "connections" config section.
      */
-    private function addConnectionsSection(ArrayNodeDefinition $rootNode)
+    private function addConnectionsSection(ArrayNodeDefinition $rootNode): void
     {
         $rootNode
             ->fixXmlConfig('connection')
@@ -353,7 +362,7 @@ class Configuration implements ConfigurationInterface
     /**
      * Adds the "resolve_target_documents" config section.
      */
-    private function addResolveTargetDocumentsSection(ArrayNodeDefinition $rootNode)
+    private function addResolveTargetDocumentsSection(ArrayNodeDefinition $rootNode): void
     {
         $rootNode
             ->fixXmlConfig('resolve_target_document')
@@ -370,7 +379,7 @@ class Configuration implements ConfigurationInterface
     /**
      * Adds the "types" config section.
      */
-    private function addTypesSection(ArrayNodeDefinition $rootNode)
+    private function addTypesSection(ArrayNodeDefinition $rootNode): void
     {
         $rootNode
             ->fixXmlConfig('type')
@@ -380,9 +389,7 @@ class Configuration implements ConfigurationInterface
                     ->prototype('array')
                         ->beforeNormalization()
                             ->ifString()
-                            ->then(static function ($v) {
-                                return ['class' => $v];
-                            })
+                            ->then(static fn ($v) => ['class' => $v])
                         ->end()
                         ->children()
                             ->scalarNode('class')->isRequired()->end()

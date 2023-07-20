@@ -20,11 +20,10 @@ use function array_merge;
 
 class TypeGuesserTest extends TypeTestCase
 {
-    /** @var DocumentManager */
-    private $dm;
+    private DocumentManager $dm;
 
     /** @var MockObject&ManagerRegistry */
-    private $dmRegistry;
+    private ManagerRegistry $dmRegistry;
 
     protected function setUp(): void
     {
@@ -87,7 +86,7 @@ class TypeGuesserTest extends TypeTestCase
     }
 
     /** @return FormExtensionInterface[] */
-    protected function getExtensions()
+    protected function getExtensions(): array
     {
         return array_merge(parent::getExtensions(), [
             new DoctrineMongoDBExtension($this->dmRegistry),

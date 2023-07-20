@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.30.0@d0bc6e25d89f649e4f36a534f330f8bb4643dd69">
+<files psalm-version="5.6.0@e784128902dfe01d489c4123d69918a9f3c1eac5">
   <file src="Command/LoadDataFixturesDoctrineODMCommand.php">
-    <UndefinedInterfaceMethod occurrences="1">
+    <UndefinedInterfaceMethod>
       <code>ask</code>
     </UndefinedInterfaceMethod>
+  </file>
+  <file src="Command/TailCursorDoctrineODMCommand.php">
+    <InvalidReturnType>
+      <code>int</code>
+    </InvalidReturnType>
+  </file>
+  <file src="Tests/Form/Type/GuesserTestType.php">
+    <MissingTemplateParam>
+      <code>GuesserTestType</code>
+    </MissingTemplateParam>
   </file>
 </files>

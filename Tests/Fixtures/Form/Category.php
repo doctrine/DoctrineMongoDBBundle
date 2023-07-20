@@ -15,16 +15,12 @@ class Category
     /**
      * @ODM\Id
      *
-     * @var ObjectId|null
+     * @var ObjectId|string|null
      */
     protected $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
-    public $name;
+    /** @ODM\Field(type="string") */
+    public string $name;
 
     /**
      * @ODM\ReferenceMany(
@@ -34,7 +30,7 @@ class Category
      *
      * @var Collection<int, Document>
      */
-    public $documents;
+    public Collection $documents;
 
     public function __construct(string $name)
     {

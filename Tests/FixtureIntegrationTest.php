@@ -52,9 +52,7 @@ class FixtureIntegrationTest extends TestCase
 
         $actualFixtures = $loader->getFixtures();
         $this->assertCount(2, $actualFixtures);
-        $actualFixtureClasses = array_map(static function ($fixture) {
-            return get_class($fixture);
-        }, $actualFixtures);
+        $actualFixtureClasses = array_map(static fn ($fixture) => get_class($fixture), $actualFixtures);
 
         $this->assertSame([
             OtherFixtures::class,
@@ -85,9 +83,7 @@ class FixtureIntegrationTest extends TestCase
 
         $actualFixtures = $loader->getFixtures();
         $this->assertCount(2, $actualFixtures);
-        $actualFixtureClasses = array_map(static function ($fixture) {
-            return get_class($fixture);
-        }, $actualFixtures);
+        $actualFixtureClasses = array_map(static fn ($fixture) => get_class($fixture), $actualFixtures);
 
         $this->assertSame([
             OtherFixtures::class,
@@ -112,7 +108,7 @@ class FixtureIntegrationTest extends TestCase
         $this->expectExceptionMessage(sprintf(
             'The "%s" fixture class is trying to be loaded, but is not available.'
             . ' Make sure this class is defined as a service and tagged with "doctrine.fixture.odm.mongodb".',
-            RequiredConstructorArgsFixtures::class
+            RequiredConstructorArgsFixtures::class,
         ));
 
         $loader = $container->get('test.doctrine_mongodb.odm.symfony.fixtures.loader');
@@ -143,9 +139,7 @@ class FixtureIntegrationTest extends TestCase
 
         $actualFixtures = $loader->getFixtures(['staging']);
         $this->assertCount(1, $actualFixtures);
-        $actualFixtureClasses = array_map(static function ($fixture) {
-            return get_class($fixture);
-        }, $actualFixtures);
+        $actualFixtureClasses = array_map(static fn ($fixture) => get_class($fixture), $actualFixtures);
 
         $this->assertSame([
             OtherFixtures::class,
@@ -205,7 +199,7 @@ class FixtureIntegrationTest extends TestCase
             'Fixture "%s" was declared as a dependency for fixture "%s",'
             . ' but it was not included in any of the loaded fixture groups.',
             OtherFixtures::class,
-            WithDependenciesFixtures::class
+            WithDependenciesFixtures::class,
         ));
 
         $loader->getFixtures(['missingDependencyGroup']);
@@ -234,9 +228,7 @@ class FixtureIntegrationTest extends TestCase
         $actualFixtures = $loader->getFixtures(['fulfilledDependencyGroup']);
 
         $this->assertCount(2, $actualFixtures);
-        $actualFixtureClasses = array_map(static function ($fixture) {
-            return get_class($fixture);
-        }, $actualFixtures);
+        $actualFixtureClasses = array_map(static fn ($fixture) => get_class($fixture), $actualFixtures);
 
         $this->assertSame([
             OtherFixtures::class,
@@ -267,9 +259,7 @@ class FixtureIntegrationTest extends TestCase
         $actualFixtures = $loader->getFixtures(['OtherFixtures']);
 
         $this->assertCount(1, $actualFixtures);
-        $actualFixtureClasses = array_map(static function ($fixture) {
-            return get_class($fixture);
-        }, $actualFixtures);
+        $actualFixtureClasses = array_map(static fn ($fixture) => get_class($fixture), $actualFixtures);
 
         $this->assertSame([
             OtherFixtures::class,
@@ -284,8 +274,7 @@ class IntegrationTestKernel extends Kernel
     /** @var callable */
     private $servicesCallback;
 
-    /** @var string */
-    private $randomKey;
+    private string $randomKey;
 
     public function __construct(string $environment, bool $debug)
     {
@@ -308,8 +297,7 @@ class IntegrationTestKernel extends Kernel
         ];
     }
 
-    /** @return void */
-    protected function build(ContainerBuilder $container)
+    protected function build(ContainerBuilder $container): void
     {
         $container->prependExtensionConfig('doctrine_mongodb', [
             'connections' => ['default' => []],

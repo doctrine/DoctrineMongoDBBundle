@@ -8,6 +8,7 @@ use Doctrine\Bundle\MongoDBBundle\Form\ChoiceList\MongoDBQueryBuilderLoader;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ObjectManager;
 use InvalidArgumentException;
+use ReturnTypeWillChange;
 use Symfony\Bridge\Doctrine\Form\ChoiceList\EntityLoaderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\DoctrineType;
 use Symfony\Component\OptionsResolver\Options;
@@ -20,19 +21,16 @@ use function interface_exists;
  */
 class DocumentType extends DoctrineType
 {
-    /**
-     * @param object $queryBuilder
-     * @param string $class
-     */
-    public function getLoader(ObjectManager $manager, $queryBuilder, $class): EntityLoaderInterface
+    public function getLoader(ObjectManager $manager, object $queryBuilder, string $class): EntityLoaderInterface
     {
         return new MongoDBQueryBuilderLoader(
             $queryBuilder,
             $manager,
-            $class
+            $class,
         );
     }
 
+    /** @return void */
     public function configureOptions(OptionsResolver $resolver)
     {
         parent::configureOptions($resolver);
@@ -67,24 +65,11 @@ class DocumentType extends DoctrineType
      * @internal Symfony 2.8 compatibility
      *
      * @return string
-     *
-     * @inheritdoc
      */
+    #[ReturnTypeWillChange]
     public function getBlockPrefix()
     {
         return 'document';
-    }
-
-    /**
-     * @internal Symfony 2.7 compatibility
-     *
-     * @return string
-     *
-     * @inheritdoc
-     */
-    public function getName()
-    {
-        return $this->getBlockPrefix();
     }
 }
 

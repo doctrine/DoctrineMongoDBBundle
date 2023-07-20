@@ -11,33 +11,17 @@ use MongoDB\BSON\ObjectId;
 /** @ODM\Document */
 class Collections
 {
-    /**
-     * @ODM\Id
-     *
-     * @var ObjectId|null
-     */
-    public $id;
+    /** @ODM\Id */
+    public ?ObjectId $id = null;
 
-    /**
-     * @ODM\EmbedMany(collectionClass=SomeCollection::class)
-     *
-     * @var SomeCollection
-     */
-    public $coll;
+    /** @ODM\EmbedMany(collectionClass=SomeCollection::class) */
+    public SomeCollection $coll;
 
-    /**
-     * @ODM\ReferenceMany(collectionClass=SomeCollection::class)
-     *
-     * @var SomeCollection
-     */
-    public $refs;
+    /** @ODM\ReferenceMany(collectionClass=SomeCollection::class) */
+    public SomeCollection $refs;
 
-    /**
-     * @ODM\EmbedMany(collectionClass=AnotherCollection::class)
-     *
-     * @var AnotherCollection
-     */
-    public $another;
+    /** @ODM\EmbedMany(collectionClass=AnotherCollection::class) */
+    public AnotherCollection $another;
 }
 
 /** @template-extends ArrayCollection<array-key, mixed> */

@@ -6,15 +6,9 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\CommandBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class User
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
-    private $id;
+    /** @ODM\Id */
+    private ?string $id = null;
 }

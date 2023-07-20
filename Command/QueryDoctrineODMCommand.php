@@ -14,6 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class QueryDoctrineODMCommand extends QueryCommand
 {
+    /** @return void */
     protected function configure()
     {
         parent::configure();

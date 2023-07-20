@@ -16,11 +16,9 @@ use function sprintf;
 
 final class StopwatchCommandLogger implements CommandLoggerInterface
 {
-    /** @var bool */
-    private $registered = false;
+    private bool $registered = false;
 
-    /** @var Stopwatch|null */
-    private $stopwatch;
+    private ?Stopwatch $stopwatch;
 
     public function __construct(?Stopwatch $stopwatch)
     {

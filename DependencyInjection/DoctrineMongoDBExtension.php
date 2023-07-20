@@ -17,13 +17,14 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use InvalidArgumentException;
 use Jean85\PrettyVersions;
+use Symfony\Bridge\Doctrine\ArgumentResolver\EntityValueResolver;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\MemcachedAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
-use Symfony\Component\Config\Definition\BaseNode;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -31,6 +32,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
 
@@ -41,7 +43,6 @@ use function class_implements;
 use function in_array;
 use function interface_exists;
 use function is_dir;
-use function method_exists;
 use function reset;
 use function sprintf;
 
@@ -58,6 +59,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
     /**
      * Responds to the doctrine_mongodb configuration parameter.
+     *
+     * @return void
      */
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -112,7 +115,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $config['document_managers'],
             $config['default_document_manager'],
             $config['default_database'],
-            $container
+            $container,
         );
 
         if ($config['resolve_target_documents']) {
@@ -135,18 +138,50 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $container->registerForAutoconfiguration(EventSubscriberInterface::class)
             ->addTag('doctrine_mongodb.odm.event_subscriber');
 
-        if (method_exists($container, 'registerAttributeForAutoconfiguration')) {
-            $container->registerAttributeForAutoconfiguration(AsDocumentListener::class, static function (ChildDefinition $definition, AsDocumentListener $attribute) {
-                $definition->addTag('doctrine_mongodb.odm.event_listener', [
-                    'event'      => $attribute->event,
-                    'method'     => $attribute->method,
-                    'lazy'       => $attribute->lazy,
-                    'connection' => $attribute->connection,
-                ]);
-            });
-        }
+        $container->registerAttributeForAutoconfiguration(AsDocumentListener::class, static function (ChildDefinition $definition, AsDocumentListener $attribute) {
+            $definition->addTag('doctrine_mongodb.odm.event_listener', [
+                'event'      => $attribute->event,
+                'method'     => $attribute->method,
+                'lazy'       => $attribute->lazy,
+                'connection' => $attribute->connection,
+            ]);
+        });
 
         $this->loadMessengerServices($container);
+
+        // available in Symfony 6.2 and higher
+        if (! class_exists(EntityValueResolver::class)) {
+            $container->removeDefinition('doctrine_mongodb.odm.entity_value_resolver');
+            $container->removeDefinition('doctrine_mongodb.odm.entity_value_resolver.expression_language');
+        } else {
+            if (! class_exists(ExpressionLanguage::class)) {
+                $container->removeDefinition('doctrine_mongodb.odm.entity_value_resolver.expression_language');
+            }
+
+            $controllerResolverDefaults = [];
+
+            if (! $config['controller_resolver']['enabled']) {
+                $controllerResolverDefaults['disabled'] = true;
+            }
+
+            if (! $config['controller_resolver']['auto_mapping']) {
+                $controllerResolverDefaults['mapping'] = [];
+            }
+
+            if ($controllerResolverDefaults) {
+                $container->getDefinition('doctrine_mongodb.odm.entity_value_resolver')->setArgument(2, (new Definition(MapEntity::class))->setArguments([
+                    null,
+                    null,
+                    null,
+                    $controllerResolverDefaults['mapping'] ?? null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    $controllerResolverDefaults['disabled'] ?? false,
+                ]));
+            }
+        }
     }
 
     /**
@@ -203,7 +238,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 $documentManager,
                 $defaultDM,
                 $defaultDB,
-                $container
+                $container,
             );
             $dms[$name] = sprintf('doctrine_mongodb.odm.%s_document_manager', $name);
         }
@@ -229,7 +264,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $odmConfigDef->addTag(self::CONFIGURATION_TAG);
         $container->setDefinition(
             $configurationId,
-            $odmConfigDef
+            $odmConfigDef,
         );
 
         $this->loadDocumentManagerBundlesMappingInformation($documentManager, $odmConfigDef, $container);
@@ -262,10 +297,11 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         }
 
         $container->getAlias('doctrine_mongodb.odm.command_logger')
-            ->setDeprecated(...$this->buildDeprecationArgs(
+            ->setDeprecated(
+                'doctrine/mongodb-odm-bundle',
                 '4.4',
-                'The service %alias_id% is deprecated and will be dropped in DoctrineMongoDBBundle 5.0. Use "doctrine_mongodb.odm.psr_command_logger" instead.'
-            ));
+                'The service %alias_id% is deprecated and will be dropped in DoctrineMongoDBBundle 5.0. Use "doctrine_mongodb.odm.psr_command_logger" instead.',
+            );
 
         // logging
         if ($container->getParameterBag()->resolveValue($documentManager['logging'])) {
@@ -302,7 +338,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $container
             ->setDefinition(
                 $managerConfiguratorName,
-                new ChildDefinition('doctrine_mongodb.odm.manager_configurator.abstract')
+                new ChildDefinition('doctrine_mongodb.odm.manager_configurator.abstract'),
             )
             ->replaceArgument(0, $enabledFilters);
 
@@ -335,13 +371,13 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
         $container->setAlias(
             'doctrine_mongodb.odm.document_manager',
-            new Alias(sprintf('doctrine_mongodb.odm.%s_document_manager', $documentManager['name']))
+            new Alias(sprintf('doctrine_mongodb.odm.%s_document_manager', $documentManager['name'])),
         );
         $container->getAlias('doctrine_mongodb.odm.document_manager')->setPublic(true);
 
         $container->setAlias(
             'doctrine_mongodb.odm.event_manager',
-            new Alias(sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $connectionName))
+            new Alias(sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $connectionName)),
         );
     }
 
@@ -359,13 +395,13 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $eventManagerId = sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $name);
             $container->setDefinition(
                 $eventManagerId,
-                new ChildDefinition('doctrine_mongodb.odm.connection.event_manager')
+                new ChildDefinition('doctrine_mongodb.odm.connection.event_manager'),
             );
 
             $configurationId = sprintf('doctrine_mongodb.odm.%s_configuration', $name);
             $container->setDefinition(
                 $configurationId,
-                new Definition('%doctrine_mongodb.odm.configuration.class%')
+                new Definition('%doctrine_mongodb.odm.configuration.class%'),
             );
 
             $odmConnArgs = [
@@ -385,7 +421,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $container->setParameter('doctrine_mongodb.odm.connections', $cons);
     }
 
-    private function loadMessengerServices(ContainerBuilder $container)
+    private function loadMessengerServices(ContainerBuilder $container): void
     {
         /** @psalm-suppress UndefinedClass Optional dependency */
         if (! interface_exists(MessageBusInterface::class) || ! class_exists(DoctrineClearEntityManagerWorkerSubscriber::class)) {
@@ -399,11 +435,11 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     /**
      * Normalizes the driver options array
      *
-     * @param array $connection
+     * @param array<string, mixed> $connection
      *
-     * @return array|null
+     * @return array<string, mixed>
      */
-    private function normalizeDriverOptions(array $connection)
+    private function normalizeDriverOptions(array $connection): array
     {
         $driverOptions            = $connection['driver_options'] ?? [];
         $driverOptions['typeMap'] = DocumentManager::CLIENT_TYPEMAP;
@@ -479,8 +515,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $odmConfigDef->addMethodCall('setDocumentNamespaces', [$this->aliasMap]);
     }
 
-    /** @param string $name */
-    protected function getObjectManagerElementName($name): string
+    protected function getObjectManagerElementName(string $name): string
     {
         return 'doctrine_mongodb.odm.' . $name;
     }
@@ -533,15 +568,11 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     /**
      * Loads a cache driver.
      *
-     * @param string $cacheName         The cache driver name
-     * @param string $objectManagerName The object manager name
-     * @param array  $cacheDriver       The cache driver mapping
-     *
      * @throws InvalidArgumentException
      *
      * @psalm-suppress UndefinedClass this won't be necessary when removing metadata cache configuration
      */
-    protected function loadCacheDriver($cacheName, $objectManagerName, array $cacheDriver, ContainerBuilder $container): string
+    protected function loadCacheDriver(string $cacheName, string $objectManagerName, array $cacheDriver, ContainerBuilder $container): string
     {
         if (isset($cacheDriver['namespace'])) {
             return parent::loadCacheDriver($cacheName, $objectManagerName, $cacheDriver, $container);
@@ -611,14 +642,6 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $container->setDefinition($cacheDriverServiceId, $cacheDef);
 
         return $cacheDriverServiceId;
-    }
-
-    private function buildDeprecationArgs(string $version, string $message): array
-    {
-        // @todo Remove when support for Symfony 5.1 and older is dropped
-        return method_exists(BaseNode::class, 'getDeprecation')
-            ? ['doctrine/mongodb-odm-bundle', $version, $message]
-            : [$message];
     }
 
     private static function getODMVersion(): string

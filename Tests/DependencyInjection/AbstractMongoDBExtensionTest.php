@@ -166,9 +166,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
         $definition  = $container->getDefinition('doctrine_mongodb.odm.default_configuration');
         $methodCalls = $definition->getMethodCalls();
-        $methodNames = array_map(static function ($call) {
-            return $call[0];
-        }, $methodCalls);
+        $methodNames = array_map(static fn ($call) => $call[0], $methodCalls);
         $this->assertIsInt($pos = array_search('setDefaultDB', $methodNames));
         $this->assertEquals('mydb', $methodCalls[$pos][1][0]);
 
@@ -285,7 +283,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $loader    = new DoctrineMongoDBExtension();
 
         $config = DoctrineMongoDBExtensionTest::buildConfiguration(
-            ['document_managers' => ['default' => ['mappings' => ['XmlBundle' => []]]]]
+            ['document_managers' => ['default' => ['mappings' => ['XmlBundle' => []]]]],
         );
         $loader->load($config, $container);
 
@@ -300,7 +298,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $container = $this->getContainer('XmlBundle');
         $loader    = new DoctrineMongoDBExtension();
         $config    = DoctrineMongoDBExtensionTest::buildConfiguration(
-            ['document_managers' => ['default' => ['mappings' => ['XmlBundle' => []]]]]
+            ['document_managers' => ['default' => ['mappings' => ['XmlBundle' => []]]]],
         );
         $loader->load($config, $container);
 
@@ -318,7 +316,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $container = $this->getContainer('NewXmlBundle');
         $loader    = new DoctrineMongoDBExtension();
         $config    = DoctrineMongoDBExtensionTest::buildConfiguration(
-            ['document_managers' => ['default' => ['mappings' => ['NewXmlBundle' => []]]]]
+            ['document_managers' => ['default' => ['mappings' => ['NewXmlBundle' => []]]]],
         );
         $loader->load($config, $container);
 
@@ -332,7 +330,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $container = $this->getContainer('AnnotationsBundle');
         $loader    = new DoctrineMongoDBExtension();
         $config    = DoctrineMongoDBExtensionTest::buildConfiguration(
-            ['document_managers' => ['default' => ['mappings' => ['AnnotationsBundle' => []]]]]
+            ['document_managers' => ['default' => ['mappings' => ['AnnotationsBundle' => []]]]],
         );
         $loader->load($config, $container);
 
@@ -351,7 +349,7 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
         $container = $this->getContainer('AttributesBundle');
         $loader    = new DoctrineMongoDBExtension();
         $config    = DoctrineMongoDBExtensionTest::buildConfiguration(
-            ['document_managers' => ['default' => ['mappings' => ['AttributesBundle' => 'attribute']]]]
+            ['document_managers' => ['default' => ['mappings' => ['AttributesBundle' => 'attribute']]]],
         );
         $loader->load($config, $container);
 
@@ -502,10 +500,9 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
      * Asserts that the given definition contains a call to the method that uses
      * the specified parameters.
      *
-     * @param string $methodName
-     * @param array  $params
+     * @param mixed[] $params
      */
-    private function assertDefinitionMethodCallAny(Definition $definition, $methodName, array $params): void
+    private function assertDefinitionMethodCallAny(Definition $definition, string $methodName, array $params): void
     {
         $calls     = $definition->getMethodCalls();
         $called    = false;
@@ -540,10 +537,9 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
      * Asserts that the given definition contains exactly one call to the method
      * and that it uses the specified parameters.
      *
-     * @param string $methodName
-     * @param array  $params
+     * @param mixed[] $params
      */
-    private function assertDefinitionMethodCallOnce(Definition $definition, $methodName, array $params): void
+    private function assertDefinitionMethodCallOnce(Definition $definition, string $methodName, array $params): void
     {
         $calls  = $definition->getMethodCalls();
         $called = false;

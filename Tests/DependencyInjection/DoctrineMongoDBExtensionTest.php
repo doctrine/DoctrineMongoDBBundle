@@ -7,6 +7,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\DocumentListenerBundle\EventListener\TestAttributeListener;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\Container;
@@ -20,7 +21,6 @@ use function array_merge;
 use function class_exists;
 use function interface_exists;
 use function is_dir;
-use function method_exists;
 use function sys_get_temp_dir;
 
 class DoctrineMongoDBExtensionTest extends TestCase
@@ -33,7 +33,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                     'connections' => ['default' => []],
                     'document_managers' => ['default' => []],
                 ],
-                $settings
+                $settings,
             ),
         ];
     }
@@ -66,12 +66,8 @@ class DoctrineMongoDBExtensionTest extends TestCase
     }
 
     /** @requires PHP 8 */
-    public function testAsDocumentListenerAttribute()
+    public function testAsDocumentListenerAttribute(): void
     {
-        if (! method_exists(ContainerBuilder::class, 'getAutoconfiguredAttributes')) {
-            $this->markTestSkipped('symfony/dependency-injection 5.3.0 needed');
-        }
-
         $container = $this->getContainer('DocumentListenerBundle');
         $extension = new DoctrineMongoDBExtension();
         $container->registerExtension($extension);
@@ -229,7 +225,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                     'document_managers' => $documentManagers,
                 ],
             ],
-            $container
+            $container,
         );
 
         $configDm1 = $container->getDefinition('doctrine_mongodb.odm.dm1_configuration');
@@ -243,7 +239,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                     ['OtherXmlBundle' => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\OtherXmlBundle\Document'],
                 ],
             ],
-            $configDm1->getMethodCalls()
+            $configDm1->getMethodCalls(),
         );
 
         $this->assertContains(
@@ -253,7 +249,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                     ['XmlBundle' => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\XmlBundle\Document'],
                 ],
             ],
-            $configDm2->getMethodCalls()
+            $configDm2->getMethodCalls(),
         );
 
         $this->assertContains(
@@ -263,7 +259,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                     ['NewXmlBundle' => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\NewXmlBundle\Document'],
                 ],
             ],
-            $configDm3->getMethodCalls()
+            $configDm3->getMethodCalls(),
         );
     }
 
@@ -289,7 +285,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                     ],
                 ],
             ],
-            $container
+            $container,
         );
 
         $configDm1 = $container->getDefinition('doctrine_mongodb.odm.dm1_configuration');
@@ -346,5 +342,30 @@ class DoctrineMongoDBExtensionTest extends TestCase
         }
 
         $this->fail("Method '" . $methodName . "' is expected to be called once, definition does not contain a call though.");
+    }
+
+    /** @requires function \Symfony\Bridge\Doctrine\ArgumentResolver\EntityValueResolver::__construct */
+    public function testControllerResolver(): void
+    {
+        $container = $this->getContainer();
+        $extension = new DoctrineMongoDBExtension();
+        $extension->load(self::buildConfiguration(), $container);
+
+        $controllerResolver = $container->getDefinition('doctrine_mongodb.odm.entity_value_resolver');
+
+        $this->assertEquals([new Reference('doctrine_mongodb'), new Reference('doctrine_mongodb.odm.entity_value_resolver.expression_language', $container::IGNORE_ON_INVALID_REFERENCE)], $controllerResolver->getArguments());
+
+        $container = $this->getContainer();
+
+        $extension->load(self::buildConfiguration([
+            'controller_resolver' => [
+                'enabled' => false,
+                'auto_mapping' => false,
+            ],
+        ]), $container);
+
+        $container->setDefinition('controller_resolver_defaults', $container->getDefinition('doctrine_mongodb.odm.entity_value_resolver')->getArgument(2))->setPublic(true);
+        $container->compile();
+        $this->assertEquals(new MapEntity(null, null, null, [], null, null, null, null, true), $container->get('controller_resolver_defaults'));
     }
 }
