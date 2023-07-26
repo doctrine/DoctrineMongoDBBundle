@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="doctrine_mongodb.odm.entity_value_resolver" class="Symfony\Bridge\Doctrine\ArgumentResolver\EntityValueResolver">
+            <argument type="service" id="doctrine_mongodb" />
+            <argument type="service" id="doctrine_mongodb.odm.document_value_resolver.expression_language" on-invalid="ignore" />
+        </service>
+
+        <service id="doctrine_mongodb.odm.document_value_resolver.expression_language" class="Symfony\Component\ExpressionLanguage\ExpressionLanguage" />
+
+        <service id="doctrine_mongodb.odm.document_value_resolver" class="Doctrine\Bundle\MongoDBBundle\ArgumentResolver\DocumentValueResolver">
+            <argument type="service" id="doctrine_mongodb.odm.entity_value_resolver" />
+            <tag name="Doctrine\Bundle\MongoDBBundle\ArgumentResolver\DocumentValueResolver" priority="110">controller.argument_value_resolver</tag>
+        </service>
+    </services>
+</container>

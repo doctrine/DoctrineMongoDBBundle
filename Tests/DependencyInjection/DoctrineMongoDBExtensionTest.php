@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
+use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\DocumentListenerBundle\EventListener\TestAttributeListener;
 use PHPUnit\Framework\TestCase;
-use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\Container;
@@ -353,7 +353,10 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
         $controllerResolver = $container->getDefinition('doctrine_mongodb.odm.entity_value_resolver');
 
-        $this->assertEquals([new Reference('doctrine_mongodb'), new Reference('doctrine_mongodb.odm.entity_value_resolver.expression_language', $container::IGNORE_ON_INVALID_REFERENCE)], $controllerResolver->getArguments());
+        $this->assertEquals([
+            new Reference('doctrine_mongodb'),
+            new Reference('doctrine_mongodb.odm.document_value_resolver.expression_language', $container::IGNORE_ON_INVALID_REFERENCE),
+        ], $controllerResolver->getArguments());
 
         $container = $this->getContainer();
 
@@ -366,6 +369,6 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
         $container->setDefinition('controller_resolver_defaults', $container->getDefinition('doctrine_mongodb.odm.entity_value_resolver')->getArgument(2))->setPublic(true);
         $container->compile();
-        $this->assertEquals(new MapEntity(null, null, null, [], null, null, null, null, true), $container->get('controller_resolver_defaults'));
+        $this->assertEquals(new MapDocument(null, null, null, [], null, null, null, true), $container->get('controller_resolver_defaults'));
     }
 }

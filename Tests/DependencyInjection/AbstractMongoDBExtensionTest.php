@@ -23,7 +23,6 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use MongoDB\Client;
 use PHPUnit\Framework\AssertionFailedError;
-use Symfony\Bridge\Doctrine\SchemaListener\DoctrineDbalCacheAdapterSchemaSubscriber;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -309,10 +308,6 @@ abstract class AbstractMongoDBExtensionTest extends TestCase
 
     public function testNewBundleStructureXmlBundleMappingDetection(): void
     {
-        if (! class_exists(DoctrineDbalCacheAdapterSchemaSubscriber::class)) {
-            $this->markTestSkipped('Test requires symfony/doctrine-bridge >=5.4');
-        }
-
         $container = $this->getContainer('NewXmlBundle');
         $loader    = new DoctrineMongoDBExtension();
         $config    = DoctrineMongoDBExtensionTest::buildConfiguration(
