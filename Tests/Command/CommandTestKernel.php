@@ -15,7 +15,6 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\Loader\Configurator\RouteConfigurator;
-use Symfony\Component\Routing\RouteCollectionBuilder;
 
 use function sys_get_temp_dir;
 
@@ -32,8 +31,7 @@ final class CommandTestKernel extends Kernel
         ];
     }
 
-    /** @param RouteConfigurator|RouteCollectionBuilder $routes */
-    public function configureRoutes($routes): void
+    public function configureRoutes(RouteConfigurator $routes): void
     {
     }
 
