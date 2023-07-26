@@ -16,6 +16,11 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 class Unique extends UniqueEntity
 {
-    /** @var string */
-    public $service = 'doctrine_odm.mongodb.unique';
+    /**
+     * The validator must be defined as a service with this name.
+     */
+    public function validatedBy(): string
+    {
+        return 'doctrine_odm.mongodb.unique';
+    }
 }
