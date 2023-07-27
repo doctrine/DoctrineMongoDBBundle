@@ -17,10 +17,34 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class Unique extends UniqueEntity
 {
     /**
-     * The validator must be defined as a service with this name.
+     * @param array|string      $fields     The combination of fields that must contain unique values or a set of options
+     * @param bool|array|string $ignoreNull The combination of fields that ignore null values
      */
-    public function validatedBy(): string
-    {
-        return 'doctrine_odm.mongodb.unique';
+    public function __construct(
+        $fields,
+        string $message = null,
+        string $service = null,
+        string $em = null,
+        string $entityClass = null,
+        string $repositoryMethod = null,
+        string $errorPath = null,
+        bool|string|array $ignoreNull = null,
+        array $groups = null,
+        $payload = null,
+        array $options = []
+    ) {
+        parent::__construct(
+            $fields,
+            $message,
+            'doctrine_odm.mongodb.unique',
+            $em,
+            $entityClass,
+            $repositoryMethod,
+            $errorPath,
+            $ignoreNull,
+            $groups,
+            $payload,
+            $options
+        );
     }
 }
