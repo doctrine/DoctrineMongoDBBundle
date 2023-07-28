@@ -23,7 +23,7 @@ class Unique extends UniqueEntity
     public function __construct(
         $fields,
         string $message = null,
-        string $service = null,
+        string $service = 'doctrine_odm.mongodb.unique',
         string $em = null,
         string $entityClass = null,
         string $repositoryMethod = null,
@@ -36,7 +36,7 @@ class Unique extends UniqueEntity
         parent::__construct(
             $fields,
             $message,
-            'doctrine_odm.mongodb.unique',
+            $service,
             $em,
             $entityClass,
             $repositoryMethod,
