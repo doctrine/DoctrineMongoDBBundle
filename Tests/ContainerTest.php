@@ -52,7 +52,7 @@ class ContainerTest extends TestCase
     }
 
     /** @return array<string, array{expected: bool, config: array, debug: bool}> */
-    public function provideLoggerConfigs(): array
+    public static function provideLoggerConfigs(): array
     {
         $config = ['connections' => ['default' => []]];
 
@@ -109,7 +109,7 @@ class ContainerTest extends TestCase
     }
 
     /** @return array<string, array{expected: bool, config: array, debug: bool}> */
-    public function provideDataCollectorConfigs(): array
+    public static function provideDataCollectorConfigs(): array
     {
         $config = ['connections' => ['default' => []]];
 

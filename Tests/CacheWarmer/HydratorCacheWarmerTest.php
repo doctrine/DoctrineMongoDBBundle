@@ -69,7 +69,7 @@ class HydratorCacheWarmerTest extends TestCase
     }
 
     /** @return array<array{int}> */
-    public function provideWarmerNotExecuted(): array
+    public static function provideWarmerNotExecuted(): array
     {
         return [
             [ Configuration::AUTOGENERATE_ALWAYS ],
