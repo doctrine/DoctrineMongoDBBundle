@@ -108,7 +108,7 @@ class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInte
         return 0;
     }
 
-    /** @return ContainerInterface */
+    /** @return ContainerInterface|null */
     protected function getContainer()
     {
         return $this->container;
