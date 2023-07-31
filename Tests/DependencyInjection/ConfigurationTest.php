@@ -217,7 +217,7 @@ class ConfigurationTest extends TestCase
     }
 
     /** @return array<mixed[]> */
-    public function provideFullConfiguration(): array
+    public static function provideFullConfiguration(): array
     {
         $yaml = Yaml::parse(file_get_contents(__DIR__ . '/Fixtures/config/yml/full.yml'));
         $yaml = $yaml['doctrine_mongodb'];
@@ -249,7 +249,7 @@ class ConfigurationTest extends TestCase
     }
 
     /** @return array<mixed[]> */
-    public function provideMergeOptions(): array
+    public static function provideMergeOptions(): array
     {
         $cases = [];
 
@@ -371,7 +371,7 @@ class ConfigurationTest extends TestCase
     }
 
     /** @return array<mixed[]> */
-    public function provideNormalizeOptions(): array
+    public static function provideNormalizeOptions(): array
     {
         $cases = [];
 
@@ -527,7 +527,7 @@ class ConfigurationTest extends TestCase
     }
 
     /** @return array<mixed[]> */
-    public function provideExceptionConfiguration(): array
+    public static function provideExceptionConfiguration(): array
     {
         $yaml = Yaml::parse(file_get_contents(__DIR__ . '/Fixtures/config/yml/exception.yml'));
         $yaml = $yaml['doctrine_mongodb'];

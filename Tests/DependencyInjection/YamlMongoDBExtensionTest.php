@@ -8,7 +8,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class YamlMongoDBExtensionTest extends AbstractMongoDBExtensionTest
+class YamlMongoDBExtensionTest extends AbstractMongoDBExtensionTestCase
 {
     protected function loadFromFile(ContainerBuilder $container, string $file): void
     {

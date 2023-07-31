@@ -39,7 +39,7 @@ use function in_array;
 use function is_dir;
 use function reset;
 
-abstract class AbstractMongoDBExtensionTest extends TestCase
+abstract class AbstractMongoDBExtensionTestCase extends TestCase
 {
     abstract protected function loadFromFile(ContainerBuilder $container, string $file): void;
 
