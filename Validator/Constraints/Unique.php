@@ -17,19 +17,20 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class Unique extends UniqueEntity
 {
     /**
-     * @param array|string      $fields     The combination of fields that must contain unique values or a set of options
-     * @param bool|array|string $ignoreNull The combination of fields that ignore null values
+     * @param string[]|string      $fields     The combination of fields that must contain unique values or a set of options
+     * @param bool|string[]|string $ignoreNull The combination of fields that ignore null values
+     * @param mixed                $payload
      */
     public function __construct(
         $fields,
-        string $message = null,
+        ?string $message = null,
         string $service = 'doctrine_odm.mongodb.unique',
-        string $em = null,
-        string $entityClass = null,
-        string $repositoryMethod = null,
-        string $errorPath = null,
-        bool|string|array $ignoreNull = null,
-        array $groups = null,
+        ?string $em = null,
+        ?string $entityClass = null,
+        ?string $repositoryMethod = null,
+        ?string $errorPath = null,
+        $ignoreNull = null,
+        ?array $groups = null,
         $payload = null,
         array $options = []
     ) {
@@ -44,7 +45,7 @@ class Unique extends UniqueEntity
             $ignoreNull,
             $groups,
             $payload,
-            $options
+            $options,
         );
     }
 }
