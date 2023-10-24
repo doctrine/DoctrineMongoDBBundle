@@ -7,6 +7,6 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundl
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 #[MongoDB\Document]
-class Test
+class TestDocument
 {
 }

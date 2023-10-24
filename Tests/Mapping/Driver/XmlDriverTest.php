@@ -6,7 +6,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\Mapping\Driver;
 
 use Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver;
 
-class XmlDriverTest extends AbstractDriverTest
+class XmlDriverTest extends AbstractDriverTestCase
 {
     protected function getFileExtension(): string
     {

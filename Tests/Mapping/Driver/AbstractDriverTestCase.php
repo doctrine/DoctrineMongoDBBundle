@@ -10,7 +10,7 @@ use Doctrine\Persistence\Mapping\MappingException;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
-abstract class AbstractDriverTest extends TestCase
+abstract class AbstractDriverTestCase extends TestCase
 {
     public function testFindMappingFile(): void
     {

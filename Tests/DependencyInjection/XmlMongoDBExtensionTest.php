@@ -8,7 +8,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
-class XmlMongoDBExtensionTest extends AbstractMongoDBExtensionTest
+class XmlMongoDBExtensionTest extends AbstractMongoDBExtensionTestCase
 {
     protected function loadFromFile(ContainerBuilder $container, string $file): void
     {

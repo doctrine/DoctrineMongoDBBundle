@@ -139,7 +139,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         ]));
     }
 
-    public function parameterProvider(): array
+    public static function parameterProvider(): array
     {
         return [
             ['proxy_namespace', 'proxy_namespace', 'foo'],
@@ -147,7 +147,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         ];
     }
 
-    public function getAutomappingConfigurations(): array
+    public static function getAutomappingConfigurations(): array
     {
         return [
             [

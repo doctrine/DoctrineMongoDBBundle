@@ -61,7 +61,7 @@ class PersistentCollectionCacheWarmerTest extends TestCase
         $this->warmer->warmUp('meh');
     }
 
-    public function provideWarmerNotExecuted(): array
+    public static function provideWarmerNotExecuted(): array
     {
         return [
             [ Configuration::AUTOGENERATE_ALWAYS ],
