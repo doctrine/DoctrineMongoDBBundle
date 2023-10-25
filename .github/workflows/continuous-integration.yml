@@ -30,6 +30,7 @@ jobs:
         symfony-version:
           - "5.4.*"
           - "6.4.*"
+          - "7.0.x"
         driver-version:
           - "stable"
         dependencies:
@@ -41,6 +42,9 @@ jobs:
             driver-version: "1.5.0"
             stability: "stable"
             symfony-version: "5.4.*"
+        exclude:
+          - php-version: "8.1"
+            symfony-version: "7.0.x"
 
     services:
       mongodb:
