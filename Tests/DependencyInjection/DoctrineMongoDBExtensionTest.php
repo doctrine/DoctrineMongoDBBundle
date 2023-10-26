@@ -65,7 +65,6 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $this->assertEquals($value, $container->getParameter('doctrine_mongodb.odm.' . $parameter));
     }
 
-    /** @requires PHP 8 */
     public function testAsDocumentListenerAttribute(): void
     {
         $container = $this->getContainer('DocumentListenerBundle');

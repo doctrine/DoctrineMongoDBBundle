@@ -13,7 +13,7 @@ Compatibility
 =============
 
 The current version of this bundle has the following requirements:
- * PHP 7.4 or newer is required
+ * PHP 8.1 or newer is required
  * `ext-mongodb` 1.5 or newer
  * Symfony 5.4 or newer is required
 
