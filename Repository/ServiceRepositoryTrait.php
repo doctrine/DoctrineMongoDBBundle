@@ -15,7 +15,8 @@ use function sprintf;
 trait ServiceRepositoryTrait
 {
     /**
-     * @param string $documentClass The class name of the entity this repository manages
+     * @param ManagerRegistry $registry      The ManagerRegistry to use
+     * @param string          $documentClass The class name of the entity this repository manages
      * @psalm-param class-string<T> $documentClass
      */
     public function __construct(ManagerRegistry $registry, $documentClass)

@@ -15,7 +15,7 @@ jobs:
     name: "PHPUnit"
     runs-on: "${{ matrix.os }}"
     env:
-      SYMFONY_REQUIRE: ${{matrix.symfony-require}}
+      SYMFONY_REQUIRE: ${{matrix.symfony-version}}
 
     strategy:
       matrix:
@@ -29,9 +29,9 @@ jobs:
         stability:
           - "stable"
         symfony-version:
-          - "5.4.x"
-          - "6.2.x"
-          - "6.3.x"
+          - "5.4.*"
+          - "6.2.*"
+          - "6.3.*"
         driver-version:
           - "stable"
         dependencies:
@@ -45,9 +45,13 @@ jobs:
             symfony-version: "5.4.*"
         exclude:
           - php-version: "7.4"
-            symfony-version: "6.2.x"
+            symfony-version: "6.2.*"
           - php-version: "7.4"
-            symfony-version: "6.3.x"
+            symfony-version: "6.3.*"
+          - php-version: "8.0"
+            symfony-version: "6.2.*"
+          - php-version: "8.0"
+            symfony-version: "6.3.*"
 
     services:
       mongodb:
@@ -80,13 +84,10 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php-version }}"
-          tools: "pecl"
+          tools: "pecl, flex"
           extensions: "mongodb-${{ matrix.driver-version }}"
           coverage: "pcov"
           ini-values: "zend.assertions=1"
-
-      - name: "Globally install symfony/flex"
-        run: "composer global require --no-progress --no-scripts --no-plugins symfony/flex && composer global config --no-plugins allow-plugins.symfony/flex true"
 
       - name: "Set minimum-stability to stable in Composer"
         run: "composer config minimum-stability ${{ matrix.stability }}"
