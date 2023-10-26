@@ -12,12 +12,8 @@ use MongoDB\BSON\ObjectId;
 /** @ODM\Document */
 class Category
 {
-    /**
-     * @ODM\Id
-     *
-     * @var ObjectId|string|null
-     */
-    protected $id;
+    /** @ODM\Id */
+    protected ObjectId|string|null $id;
 
     /** @ODM\Field(type="string") */
     public string $name;

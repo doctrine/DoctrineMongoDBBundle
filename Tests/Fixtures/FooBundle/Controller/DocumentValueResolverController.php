@@ -15,7 +15,7 @@ final class DocumentValueResolverController
 {
     #[Route(path: '/user/{id}', name: 'tv_user_show')]
     public function showUserByDefault(
-        User $user
+        User $user,
     ): Response {
         return new Response($user->getId());
     }
@@ -23,7 +23,7 @@ final class DocumentValueResolverController
     #[Route(path: '/user_with_identifier/{identifier}', name: 'tv_user_show_with_identifier')]
     public function showUserWithMapping(
         #[MapDocument(mapping: ['identifier' => 'id'])]
-        User $user
+        User $user,
     ): Response {
         return new Response($user->getId());
     }

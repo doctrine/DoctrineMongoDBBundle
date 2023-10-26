@@ -46,7 +46,7 @@ class ManagerRegistry extends BaseManagerRegistry
 
             try {
                 return $objectManager->getConfiguration()->getDocumentNamespace($alias);
-            } catch (MongoDBException $e) {
+            } catch (MongoDBException) {
             }
         }
 
