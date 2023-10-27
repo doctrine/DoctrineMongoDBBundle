@@ -182,7 +182,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
         foreach ($this->registry->getManagers() as $name => $dm) {
             try {
                 return $this->cache[$class] = [$dm->getClassMetadata($class), $name];
-            } catch (MappingException $e) {
+            } catch (MappingException) {
                 // not an entity or mapped super class
             }
         }

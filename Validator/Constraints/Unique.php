@@ -32,7 +32,7 @@ class Unique extends UniqueEntity
         $ignoreNull = null,
         ?array $groups = null,
         $payload = null,
-        array $options = []
+        array $options = [],
     ) {
         parent::__construct(
             $fields,

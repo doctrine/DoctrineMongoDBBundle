@@ -20,10 +20,7 @@ use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use function sys_get_temp_dir;
 use function uniqid;
 
-/**
- * @requires PHP 8.0
- * @requires function \Symfony\Bridge\Doctrine\Attribute\MapEntity::__construct
- */
+/** @requires function \Symfony\Bridge\Doctrine\Attribute\MapEntity::__construct */
 class DocumentValueResolverFunctionalTest extends WebTestCase
 {
     public function testWithoutConfiguration(): void

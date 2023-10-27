@@ -334,7 +334,6 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\AnnotationsBundle\Document', $calls[0][1][1]);
     }
 
-    /** @requires PHP 8.0 */
     public function testAttributesBundleMappingDetection(): void
     {
         if (! class_exists(AttributeDriver::class)) {

@@ -27,13 +27,9 @@ use function trigger_deprecation;
  */
 class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
 {
-    private ?SymfonyFixturesLoaderInterface $fixturesLoader;
-
-    public function __construct(?ManagerRegistry $registry = null, ?KernelInterface $kernel = null, ?SymfonyFixturesLoaderInterface $fixturesLoader = null)
+    public function __construct(?ManagerRegistry $registry = null, ?KernelInterface $kernel = null, private ?SymfonyFixturesLoaderInterface $fixturesLoader = null)
     {
         parent::__construct($registry);
-
-        $this->fixturesLoader = $fixturesLoader;
     }
 
     /** @return bool */

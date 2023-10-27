@@ -18,11 +18,8 @@ final class StopwatchCommandLogger implements CommandLoggerInterface
 {
     private bool $registered = false;
 
-    private ?Stopwatch $stopwatch;
-
-    public function __construct(?Stopwatch $stopwatch)
+    public function __construct(private ?Stopwatch $stopwatch)
     {
-        $this->stopwatch = $stopwatch;
     }
 
     public function register(): void

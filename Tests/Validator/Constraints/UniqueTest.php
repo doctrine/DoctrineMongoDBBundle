@@ -5,14 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Validator\Constraints;
 
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique;
-use Doctrine\Common\Annotations\AnnotationReader;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Symfony\Component\Validator\Mapping\Loader\AnnotationLoader;
 
 use function assert;
-
-use const PHP_VERSION_ID;
 
 final class UniqueTest extends TestCase
 {
@@ -20,11 +17,7 @@ final class UniqueTest extends TestCase
     {
         $metadata = new ClassMetadata(UniqueDocumentDummyOne::class);
 
-        if (PHP_VERSION_ID >= 80000) {
-            $loader = new AnnotationLoader();
-        } else {
-            $loader = new AnnotationLoader(new AnnotationReader());
-        }
+        $loader = new AnnotationLoader();
 
         self::assertTrue($loader->loadClassMetadata($metadata));
 

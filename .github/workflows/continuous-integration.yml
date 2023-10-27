@@ -22,10 +22,9 @@ jobs:
         os:
           - "ubuntu-20.04"
         php-version:
-          - "7.4"
-          - "8.0"
           - "8.1"
           - "8.2"
+          - "8.3"
         stability:
           - "stable"
         symfony-version:
@@ -39,19 +38,10 @@ jobs:
         include:
           - dependencies: "lowest"
             os: "ubuntu-20.04"
-            php-version: "7.4"
+            php-version: "8.1"
             driver-version: "1.5.0"
             stability: "stable"
             symfony-version: "5.4.*"
-        exclude:
-          - php-version: "7.4"
-            symfony-version: "6.2.*"
-          - php-version: "7.4"
-            symfony-version: "6.3.*"
-          - php-version: "8.0"
-            symfony-version: "6.2.*"
-          - php-version: "8.0"
-            symfony-version: "6.3.*"
 
     services:
       mongodb:

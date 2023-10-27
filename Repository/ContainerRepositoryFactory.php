@@ -27,12 +27,9 @@ final class ContainerRepositoryFactory implements RepositoryFactory
     /** @var array<string, ObjectRepository> */
     private array $managedRepositories = [];
 
-    private ContainerInterface $container;
-
     /** @param ContainerInterface $container A service locator containing the repositories */
-    public function __construct(ContainerInterface $container)
+    public function __construct(private ContainerInterface $container)
     {
-        $this->container = $container;
     }
 
     /**

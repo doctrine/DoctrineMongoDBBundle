@@ -32,11 +32,8 @@ use function sprintf;
  */
 class PersistentCollectionCacheWarmer implements CacheWarmerInterface
 {
-    private ContainerInterface $container;
-
-    public function __construct(ContainerInterface $container)
+    public function __construct(private ContainerInterface $container)
     {
-        $this->container = $container;
     }
 
     /**

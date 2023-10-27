@@ -52,8 +52,7 @@ use function sprintf;
  */
 class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 {
-    /** @var string */
-    private static $odmVersion;
+    private static ?string $odmVersion = null;
 
     /** @internal */
     public const CONFIGURATION_TAG = 'doctrine.odm.configuration';
@@ -658,7 +657,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         if (self::$odmVersion === null) {
             try {
                 self::$odmVersion = PrettyVersions::getVersion('doctrine/mongodb-odm')->getPrettyVersion();
-            } catch (Throwable $t) {
+            } catch (Throwable) {
                 return 'unknown';
             }
         }

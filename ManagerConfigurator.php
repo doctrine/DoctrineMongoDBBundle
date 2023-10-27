@@ -13,17 +13,13 @@ use Doctrine\ODM\MongoDB\Types\Type;
  */
 class ManagerConfigurator
 {
-    /** @var array */
-    private array $enabledFilters = [];
-
     /**
      * Construct.
      *
      * @param array $enabledFilters
      */
-    public function __construct(array $enabledFilters)
+    public function __construct(private array $enabledFilters = [])
     {
-        $this->enabledFilters = $enabledFilters;
     }
 
     /**

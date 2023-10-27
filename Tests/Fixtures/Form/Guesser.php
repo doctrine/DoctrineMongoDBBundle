@@ -51,6 +51,5 @@ class Guesser
      */
     public array $collectionField;
 
-    /** @var mixed */
-    public $nonMappedField;
+    public mixed $nonMappedField;
 }

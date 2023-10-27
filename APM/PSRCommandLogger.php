@@ -18,14 +18,8 @@ final class PSRCommandLogger implements CommandLoggerInterface
 {
     private bool $registered = false;
 
-    private ?LoggerInterface $logger;
-
-    private string $prefix;
-
-    public function __construct(?LoggerInterface $logger, string $prefix = 'MongoDB command: ')
+    public function __construct(private ?LoggerInterface $logger, private string $prefix = 'MongoDB command: ')
     {
-        $this->logger = $logger;
-        $this->prefix = $prefix;
     }
 
     public function register(): void

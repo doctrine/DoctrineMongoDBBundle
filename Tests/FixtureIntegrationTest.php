@@ -24,7 +24,6 @@ use Symfony\Component\Routing\Loader\Configurator\RouteConfigurator;
 
 use function array_map;
 use function assert;
-use function get_class;
 use function sprintf;
 use function sys_get_temp_dir;
 use function uniqid;
@@ -51,7 +50,7 @@ class FixtureIntegrationTest extends TestCase
 
         $actualFixtures = $loader->getFixtures();
         $this->assertCount(2, $actualFixtures);
-        $actualFixtureClasses = array_map(static fn ($fixture) => get_class($fixture), $actualFixtures);
+        $actualFixtureClasses = array_map(static fn ($fixture) => $fixture::class, $actualFixtures);
 
         $this->assertSame([
             OtherFixtures::class,
@@ -82,7 +81,7 @@ class FixtureIntegrationTest extends TestCase
 
         $actualFixtures = $loader->getFixtures();
         $this->assertCount(2, $actualFixtures);
-        $actualFixtureClasses = array_map(static fn ($fixture) => get_class($fixture), $actualFixtures);
+        $actualFixtureClasses = array_map(static fn ($fixture) => $fixture::class, $actualFixtures);
 
         $this->assertSame([
             OtherFixtures::class,
@@ -138,7 +137,7 @@ class FixtureIntegrationTest extends TestCase
 
         $actualFixtures = $loader->getFixtures(['staging']);
         $this->assertCount(1, $actualFixtures);
-        $actualFixtureClasses = array_map(static fn ($fixture) => get_class($fixture), $actualFixtures);
+        $actualFixtureClasses = array_map(static fn ($fixture) => $fixture::class, $actualFixtures);
 
         $this->assertSame([
             OtherFixtures::class,
@@ -227,7 +226,7 @@ class FixtureIntegrationTest extends TestCase
         $actualFixtures = $loader->getFixtures(['fulfilledDependencyGroup']);
 
         $this->assertCount(2, $actualFixtures);
-        $actualFixtureClasses = array_map(static fn ($fixture) => get_class($fixture), $actualFixtures);
+        $actualFixtureClasses = array_map(static fn ($fixture) => $fixture::class, $actualFixtures);
 
         $this->assertSame([
             OtherFixtures::class,
@@ -258,7 +257,7 @@ class FixtureIntegrationTest extends TestCase
         $actualFixtures = $loader->getFixtures(['OtherFixtures']);
 
         $this->assertCount(1, $actualFixtures);
-        $actualFixtureClasses = array_map(static fn ($fixture) => get_class($fixture), $actualFixtures);
+        $actualFixtureClasses = array_map(static fn ($fixture) => $fixture::class, $actualFixtures);
 
         $this->assertSame([
             OtherFixtures::class,
