@@ -46,7 +46,7 @@ class HydratorCacheWarmer implements CacheWarmerInterface
     }
 
     /** @return string[] */
-    public function warmUp(string $cacheDir)
+    public function warmUp(string $cacheDir, ?string $buildDir = null)
     {
         // we need the directory no matter the hydrator cache generation strategy.
         $hydratorCacheDir = (string) $this->container->getParameter('doctrine_mongodb.odm.hydrator_dir');
