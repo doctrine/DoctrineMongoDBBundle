@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Configuration;
+use Doctrine\Bundle\MongoDBBundle\Loader\SymfonyFixturesLoader;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\BasicFilter;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\ComplexFilter;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\DisabledFilter;
@@ -13,9 +14,8 @@ use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Repository\CustomRepository;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
-use LogicException;
 use PHPUnit\Framework\TestCase;
-use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
+use Symfony\Bridge\PhpUnit\ExpectDeprecationTrait;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\Util\XmlUtils;
@@ -26,6 +26,8 @@ use function file_get_contents;
 
 class ConfigurationTest extends TestCase
 {
+    use ExpectDeprecationTrait;
+
     public function testDefaults(): void
     {
         $processor     = new Processor();
@@ -33,7 +35,6 @@ class ConfigurationTest extends TestCase
         $options       = $processor->processConfiguration($configuration, []);
 
         $defaults = [
-            'fixture_loader'                 => ContainerAwareLoader::class,
             'auto_generate_hydrator_classes' => false,
             'auto_generate_proxy_classes'    => ODMConfiguration::AUTOGENERATE_EVAL,
             'auto_generate_persistent_collection_classes' => ODMConfiguration::AUTOGENERATE_NEVER,
@@ -66,7 +67,6 @@ class ConfigurationTest extends TestCase
         $options       = $processor->processConfiguration($configuration, [$config]);
 
         $expected = [
-            'fixture_loader'                 => ContainerAwareLoader::class,
             'auto_generate_hydrator_classes' => 1,
             'auto_generate_proxy_classes'    => ODMConfiguration::AUTOGENERATE_FILE_NOT_EXISTS,
             'auto_generate_persistent_collection_classes' => ODMConfiguration::AUTOGENERATE_EVAL,
@@ -517,27 +517,18 @@ class ConfigurationTest extends TestCase
         $this->assertFalse(array_key_exists('replicaSet', $processedConfig['connections']['conn1']['options']));
     }
 
-    /** @dataProvider provideExceptionConfiguration */
-    public function testFixtureLoaderValidation(array $config): void
+    /** @group legacy */
+    public function testFixtureLoaderDeprecated(): void
     {
+        $config = [
+            'fixture_loader' => SymfonyFixturesLoader::class,
+        ];
+
         $processor     = new Processor();
         $configuration = new Configuration();
-        $this->expectException(LogicException::class);
+
+        $this->expectDeprecation('Since doctrine/mongodb-odm-bundle 4.7: The "fixture_loader" option is deprecated and will be dropped in doctrine/mongodb-odm-bundle 5.0.');
+
         $processor->processConfiguration($configuration, [$config]);
-    }
-
-    /** @return array<mixed[]> */
-    public static function provideExceptionConfiguration(): array
-    {
-        $yaml = Yaml::parse(file_get_contents(__DIR__ . '/Fixtures/config/yml/exception.yml'));
-        $yaml = $yaml['doctrine_mongodb'];
-
-        $xml = XmlUtils::loadFile(__DIR__ . '/Fixtures/config/xml/exception.xml');
-        $xml = XmlUtils::convertDomElementToArray($xml->getElementsByTagName('config')->item(0));
-
-        return [
-            [$yaml],
-            [$xml],
-        ];
     }
 }

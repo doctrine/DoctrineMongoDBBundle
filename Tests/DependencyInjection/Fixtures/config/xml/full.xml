@@ -7,7 +7,6 @@
                         http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
 
     <doctrine:config
-        fixture_loader="Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader"
         auto-generate-hydrator-classes="true"
         auto-generate-proxy-classes="true"
         auto-generate-persistent-collection-classes="3"

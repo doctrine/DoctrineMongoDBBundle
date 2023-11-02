@@ -7,20 +7,15 @@ namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
-use LogicException;
-use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
-use function class_parents;
 use function count;
-use function in_array;
 use function is_array;
 use function is_string;
 use function json_decode;
 use function preg_match;
-use function sprintf;
 
 /**
  * FrameworkExtension configuration structure.
@@ -84,15 +79,11 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('persistent_collection_dir')->defaultValue('%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections')->end()
                 ->scalarNode('auto_generate_persistent_collection_classes')->defaultValue(ODMConfiguration::AUTOGENERATE_NEVER)->end()
                 ->scalarNode('fixture_loader')
-                    ->defaultValue(ContainerAwareLoader::class)
-                    ->beforeNormalization()
-                        ->ifTrue(static function ($v) {
-                            return ! ($v === ContainerAwareLoader::class || in_array(ContainerAwareLoader::class, class_parents($v)));
-                        })
-                        ->then(static function ($v) {
-                            throw new LogicException(sprintf('The %s class is not a subclass of the ContainerAwareLoader', $v));
-                        })
-                    ->end()
+                    ->setDeprecated(
+                        'doctrine/mongodb-odm-bundle',
+                        '4.7',
+                        'The "fixture_loader" option is deprecated and will be dropped in doctrine/mongodb-odm-bundle 5.0.',
+                    )
                 ->end()
                 ->scalarNode('default_document_manager')->end()
                 ->scalarNode('default_connection')->end()
