@@ -14,7 +14,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Throwable;
 
 use function sleep;
@@ -28,7 +27,8 @@ use function trigger_deprecation;
  */
 class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInterface
 {
-    use ContainerAwareTrait;
+    /** @var ContainerInterface|null */
+    protected $container;
 
     /** @return void */
     protected function configure()
@@ -106,6 +106,12 @@ class TailCursorDoctrineODMCommand extends Command implements ContainerAwareInte
         }
 
         return 0;
+    }
+
+    /** @return void */
+    public function setContainer(?ContainerInterface $container = null)
+    {
+        $this->container = $container;
     }
 
     /** @return ContainerInterface|null */
