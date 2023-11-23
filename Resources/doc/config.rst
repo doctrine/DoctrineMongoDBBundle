@@ -618,7 +618,6 @@ Full Default Configuration
             default_document_manager:  ~
             default_connection:   ~
             default_database:     default
-            fixture_loader:       Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader
 
     .. code-block:: xml
 
