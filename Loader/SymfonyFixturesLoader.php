@@ -8,23 +8,30 @@ use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerP
 use Doctrine\Bundle\MongoDBBundle\Fixture\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\DataFixtures\FixtureInterface;
+use Doctrine\Common\DataFixtures\Loader;
 use LogicException;
 use ReflectionClass;
 use RuntimeException;
-use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use function array_key_exists;
 use function array_values;
 use function get_class;
 use function sprintf;
 
-final class SymfonyFixturesLoader extends ContainerAwareLoader implements SymfonyFixturesLoaderInterface
+final class SymfonyFixturesLoader extends Loader implements SymfonyFixturesLoaderInterface
 {
     /** @var FixtureInterface[] */
     private array $loadedFixtures = [];
 
     /** @var array<string, array<string, bool>> */
     private array $groupsFixtureMapping = [];
+
+    public function __construct(
+        private ContainerInterface $container,
+    ) {
+    }
 
     /**
      * @internal
@@ -58,6 +65,10 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader implements Symfon
 
         if ($fixture instanceof FixtureGroupInterface) {
             $this->addGroupsFixtureMapping($class, $fixture::getGroups());
+        }
+
+        if ($fixture instanceof ContainerAwareInterface) {
+            $fixture->setContainer($this->container);
         }
 
         parent::addFixture($fixture);
