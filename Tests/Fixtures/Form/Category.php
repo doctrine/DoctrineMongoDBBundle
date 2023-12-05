@@ -10,26 +10,16 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Types\Type;
 use MongoDB\BSON\ObjectId;
 
-/** @ODM\Document */
 #[ODM\Document]
 class Category
 {
-    /** @ODM\Id */
     #[ODM\Id]
     protected ObjectId|string|null $id;
 
-    /** @ODM\Field(type="string") */
     #[ODM\Field(type: Type::STRING)]
     public string $name;
 
-    /**
-     * @ODM\ReferenceMany(
-     *     targetDocument="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Document",
-     *     mappedBy="categories"
-     * )
-     *
-     * @var Collection<int, Document>
-     */
+    /** @var Collection<int, Document> */
     #[ODM\ReferenceMany(
         targetDocument: Document::class,
         mappedBy: 'categories',

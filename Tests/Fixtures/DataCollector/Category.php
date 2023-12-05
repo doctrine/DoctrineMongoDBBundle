@@ -8,15 +8,12 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Types\Type;
 use MongoDB\BSON\ObjectId;
 
-/** @ODM\Document */
 #[ODM\Document]
 class Category
 {
-    /** @ODM\Id */
     #[ODM\Id]
     protected ?ObjectId $id = null;
 
-    /** @ODM\Field(type="string") */
     #[ODM\Field(type: Type::STRING)]
     public string $name;
 

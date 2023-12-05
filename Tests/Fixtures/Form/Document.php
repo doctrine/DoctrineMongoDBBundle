@@ -11,27 +11,16 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Types\Type;
 use MongoDB\BSON\ObjectId;
 
-/** @ODM\Document */
 #[ODM\Document]
 class Document
 {
-    /** @ODM\Id(strategy="none") */
     #[ODM\Id(strategy: 'none')]
     protected ObjectId $id;
 
-    /** @ODM\Field(type="string") */
     #[ODM\Field(type: Type::STRING)]
     public string $name;
 
-    /**
-     * @ODM\ReferenceMany(
-     *     targetDocument="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Form\Category",
-     *     inversedBy="documents",
-     *     strategy="atomicSetArray"
-     * )
-     *
-     * @var Collection<int, Category>
-     */
+    /** @var Collection<int, Category> */
     #[ODM\ReferenceMany(
         targetDocument: Category::class,
         inversedBy: 'documents',
