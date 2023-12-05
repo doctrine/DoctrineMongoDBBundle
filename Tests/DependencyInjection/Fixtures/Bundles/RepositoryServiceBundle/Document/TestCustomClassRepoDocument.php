@@ -8,8 +8,10 @@ use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\Rep
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /** @ODM\Document(repositoryClass=TestCustomClassRepoRepository::class) */
+#[ODM\Document(repositoryClass: TestCustomClassRepoRepository::class)]
 class TestCustomClassRepoDocument
 {
     /** @ODM\Id */
+    #[ODM\Id]
     private string $id;
 }

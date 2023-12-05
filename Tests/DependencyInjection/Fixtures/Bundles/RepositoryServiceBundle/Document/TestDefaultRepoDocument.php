@@ -7,8 +7,10 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundl
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /** @ODM\Document */
+#[ODM\Document]
 class TestDefaultRepoDocument
 {
     /** @ODM\Id */
+    #[ODM\Id]
     private string $id;
 }

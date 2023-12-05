@@ -60,7 +60,7 @@ class ServiceRepositoryTest extends TestCase
                     'default' => [
                         'mappings' => [
                             'RepositoryServiceBundle' => [
-                                'type' => 'annotation',
+                                'type' => 'attribute',
                                 'dir' => __DIR__ . '/DependencyInjection/Fixtures/Bundles/RepositoryServiceBundle/Document',
                                 'prefix' => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Document',
                             ],
