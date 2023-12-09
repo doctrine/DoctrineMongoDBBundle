@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler;
 
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use Doctrine\Persistence\Mapping\Driver\PHPDriver;
@@ -91,27 +90,6 @@ class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
         $driver    = new Definition(PHPDriver::class, [$locator]);
 
         return new DoctrineMongoDBMappingsPass($driver, $mappings, $managerParameters, $enabledParameter, $aliasMap);
-    }
-
-    /**
-     * @param array        $namespaces        List of namespaces that are handled with annotation mapping
-     * @param array        $directories       List of directories to look for annotation mapping files
-     * @param string[]     $managerParameters List of parameters that could which object manager name
-     *                                        your bundle uses. This compiler pass will automatically
-     *                                        append the parameter name for the default entity manager
-     *                                        to this list.
-     * @param string|false $enabledParameter  Service container parameter that must be present to
-     *                                        enable the mapping. Set to false to not do any check,
-     *                                        optional.
-     * @param string[]     $aliasMap          Map of alias to namespace.
-     *
-     * @return DoctrineMongoDBMappingsPass
-     */
-    public static function createAnnotationMappingDriver(array $namespaces, array $directories, array $managerParameters, $enabledParameter = false, array $aliasMap = [])
-    {
-        $driver = new Definition(AnnotationDriver::class, [new Reference('annotation_reader'), $directories]);
-
-        return new DoctrineMongoDBMappingsPass($driver, $namespaces, $managerParameters, $enabledParameter, $aliasMap);
     }
 
     /**

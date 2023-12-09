@@ -46,41 +46,13 @@ For Doctrine to be able to do this, you have to create "metadata", or
 configuration that tells Doctrine exactly how the ``Product`` class and its
 properties should be *mapped* to MongoDB. This metadata can be specified
 in a number of different formats including XML or directly inside the
-``Product`` class via annotations or PHP 8 attributes:
+``Product`` class via PHP 8 attributes:
 
 .. versionadded:: 4.4
 
     The attribute mapping support was added in Doctrine MongoDB ODM Bundle 4.4 and requires PHP 8.0 or newer.
 
 .. configuration-block::
-
-    .. code-block:: php-annotations
-
-        // src/Document/Product.php
-        namespace App\Document;
-
-        use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-
-        /**
-         * @MongoDB\Document
-         */
-        class Product
-        {
-            /**
-             * @MongoDB\Id
-             */
-            protected $id;
-
-            /**
-             * @MongoDB\Field(type="string")
-             */
-            protected $name;
-
-            /**
-             * @MongoDB\Field(type="float")
-             */
-            protected $price;
-        }
 
     .. code-block:: php-attributes
 
@@ -120,11 +92,11 @@ in a number of different formats including XML or directly inside the
 .. seealso::
 
     You can also check out Doctrine's `Basic Mapping Documentation`_ for
-    all details about mapping information. If you use annotations, you'll
-    need to prepend all annotations with ``MongoDB\`` (e.g. ``MongoDB\String``),
+    all details about mapping information. If you use attributes, you'll
+    need to prepend all attributes with ``MongoDB\`` (e.g. ``MongoDB\String``),
     which is not shown in Doctrine's documentation. You'll also need to include
     the ``use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;`` statement,
-    which *imports* the ``MongoDB`` annotations prefix.
+    which *imports* the ``MongoDB`` attributes prefix.
 
 Persisting Objects to MongoDB
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -558,22 +530,6 @@ add methods with your query logic there.
 To do this, add the name of the repository class to your mapping definition.
 
 .. configuration-block::
-
-    .. code-block:: php-annotations
-
-        // src/Document/Product.php
-        namespace App\Document;
-
-        use App\Repository\ProductRepository;
-        use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-
-        /**
-         * @MongoDB\Document(repositoryClass=ProductRepository::class)
-         */
-        class Product
-        {
-            // ...
-        }
 
     .. code-block:: php-attributes
 

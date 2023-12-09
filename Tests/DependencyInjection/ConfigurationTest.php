@@ -165,10 +165,6 @@ class ConfigurationTest extends TestCase
                     ],
                     'mappings' => [
                         'FooBundle' => [
-                            'type'    => 'annotation',
-                            'mapping' => true,
-                        ],
-                        'BarBundle' => [
                             'type'    => 'attribute',
                             'mapping' => true,
                         ],
@@ -191,7 +187,7 @@ class ConfigurationTest extends TestCase
                     'metadata_cache_driver' => ['type' => 'apc'],
                     'mappings' => [
                         'BarBundle' => [
-                            'type'      => 'yml',
+                            'type'      => 'xml',
                             'dir'       => '%kernel.cache_dir%',
                             'prefix'    => 'prefix_val',
                             'alias'     => 'alias_val',

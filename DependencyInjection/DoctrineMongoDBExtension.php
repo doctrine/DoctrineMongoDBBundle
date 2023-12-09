@@ -479,7 +479,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      *     mappings:
      *         MyBundle1: ~
      *         MyBundle2: xml
-     *         MyBundle3: { type: annotation, dir: Documents/ }
+     *         MyBundle3: { type: attribute }
      *         MyBundle4: { type: xml, dir: Resources/config/doctrine/mapping }
      *         MyBundle5:
      *             type: xml

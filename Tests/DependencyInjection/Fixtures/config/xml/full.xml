@@ -78,8 +78,7 @@
             id="dm1"
             repository-factory="doctrine_mongodb.odm.container_repository_factory"
         >
-            <doctrine:mapping name="FooBundle" type="annotation" />
-            <doctrine:mapping name="BarBundle" type="attribute" />
+            <doctrine:mapping name="FooBundle" type="attribute" />
             <doctrine:metadata-cache-driver type="memcached">
                 <doctrine:class>fooClass</doctrine:class>
                 <doctrine:host>host_val</doctrine:host>
@@ -109,7 +108,7 @@
         >
             <doctrine:mapping
                 name="BarBundle"
-                type="yml"
+                type="xml"
                 dir="%kernel.cache_dir%"
                 prefix="prefix_val"
                 alias="alias_val"
