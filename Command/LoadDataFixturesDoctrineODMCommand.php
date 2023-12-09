@@ -7,20 +7,15 @@ namespace Doctrine\Bundle\MongoDBBundle\Command;
 use Doctrine\Bundle\MongoDBBundle\Loader\SymfonyFixturesLoaderInterface;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\Common\DataFixtures\Executor\MongoDBExecutor;
-use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\MongoDBPurger;
-use RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\HttpKernel\KernelInterface;
 
-use function class_exists;
 use function implode;
 use function sprintf;
-use function trigger_deprecation;
 
 /**
  * Load data fixtures from bundles.
@@ -29,14 +24,9 @@ use function trigger_deprecation;
  */
 class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
 {
-    public function __construct(?ManagerRegistry $registry = null, ?KernelInterface $kernel = null, private ?SymfonyFixturesLoaderInterface $fixturesLoader = null)
+    public function __construct(ManagerRegistry $registry, private SymfonyFixturesLoaderInterface $fixturesLoader)
     {
         parent::__construct($registry);
-    }
-
-    public function isEnabled(): bool
-    {
-        return parent::isEnabled() && class_exists(Loader::class);
     }
 
     protected function configure(): void
@@ -44,7 +34,6 @@ class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
         $this
             ->setName('doctrine:mongodb:fixtures:load')
             ->setDescription('Load data fixtures to your database.')
-            ->addOption('services', null, InputOption::VALUE_NONE, 'Use services as fixtures')
             ->addOption('group', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Only load fixtures that belong to this group (use with --services)')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of flushing the database first.')
             ->addOption('dm', null, InputOption::VALUE_REQUIRED, 'The document manager to use for this command.')
@@ -57,14 +46,9 @@ If you want to append the fixtures instead of flushing the database first you ca
 
   <info>php %command.full_name%</info> --append</info>
 
+You can also choose to load only fixtures that live in a certain group:
 
-Alternatively, you can also load fixture services instead of files. Fixture services are tagged with `<comment>doctrine.fixture.odm.mongodb</comment>`.
-Using `<comment>--services</comment>` will be the default behaviour in 5.0.
-When loading fixture services, you can also choose to load only fixtures that live in a certain group:
-`<info>php %command.full_name%</info> <comment>--group=group1</comment> <comment>--services</comment>`
-
-
-
+    <info>php %command.full_name%</info> <comment>--group=group1</comment>
 EOT
         );
     }
@@ -74,15 +58,6 @@ EOT
         $dm = $this->getManagerRegistry()->getManager($input->getOption('dm'));
         $ui = new SymfonyStyle($input, $output);
 
-        if ($input->getOption('services')) {
-            trigger_deprecation(
-                'doctrine/mongodb-odm-bundle',
-                '4.0',
-                'The "services" option to the "%s" command is deprecated and will be dropped in DoctrineMongoDBBundle 5.0.',
-                $this->getName()
-            );
-        }
-
         if ($input->isInteractive() && ! $input->getOption('append')) {
             $helper   = $this->getHelper('question');
             $question = new ConfirmationQuestion('Careful, database will be purged. Do you want to continue (y/N) ?', false);
@@ -90,10 +65,6 @@ EOT
             if (! $helper->ask($input, $output, $question)) {
                 return 0;
             }
-        }
-
-        if (! $this->fixturesLoader) {
-            throw new RuntimeException('Cannot use fixture services without injecting a fixtures loader.');
         }
 
         $groups   = $input->getOption('group');

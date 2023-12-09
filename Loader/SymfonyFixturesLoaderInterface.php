@@ -9,11 +9,11 @@ use Doctrine\Common\DataFixtures\FixtureInterface;
 interface SymfonyFixturesLoaderInterface
 {
     /**
-     * Add multple fixtures
+     * Add multiple fixtures
      *
      * @internal
      *
-     * @param array $fixtures
+     * @param list<array{fixture: FixtureInterface, groups: string[]}> $fixtures
      */
     public function addFixtures(array $fixtures);
 
