@@ -32,7 +32,6 @@
         <!-- metadata -->
         <parameter key="doctrine_mongodb.odm.metadata.driver_chain.class">Doctrine\Persistence\Mapping\Driver\MappingDriverChain</parameter>
         <parameter key="doctrine_mongodb.odm.metadata.attribute.class">Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver</parameter>
-        <parameter key="doctrine_mongodb.odm.metadata.attribute_reader.class">Doctrine\ODM\MongoDB\Mapping\Driver\AttributeReader</parameter>
         <parameter key="doctrine_mongodb.odm.metadata.xml.class">Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver</parameter>
 
         <!-- directories -->
@@ -104,17 +103,6 @@
         <service id="form.type_guesser.doctrine.mongodb" class="Doctrine\Bundle\MongoDBBundle\Form\DoctrineMongoDBTypeGuesser">
             <tag name="form.type_guesser" />
             <argument type="service" id="doctrine_mongodb" />
-        </service>
-
-        <!-- metadata -->
-        <service id="doctrine_mongodb.odm.metadata.chain" class="%doctrine_mongodb.odm.metadata.driver_chain.class%" />
-        <service id="doctrine_mongodb.odm.metadata.attribute" class="%doctrine_mongodb.odm.metadata.attribute.class%">
-            <argument>%doctrine_mongodb.odm.document_dirs%</argument>
-            <argument type="service" id="doctrine_mongodb.odm.metadata.attribute_reader" />
-        </service>
-        <service id="doctrine_mongodb.odm.metadata.attribute_reader" class="%doctrine_mongodb.odm.metadata.attribute_reader.class%" />
-        <service id="doctrine_mongodb.odm.metadata.xml" class="%doctrine_mongodb.odm.metadata.xml.class%">
-            <argument>%doctrine_mongodb.odm.xml_mapping_dirs%</argument>
         </service>
 
         <service id="doctrine_mongodb.odm.container_repository_factory" class="Doctrine\Bundle\MongoDBBundle\Repository\ContainerRepositoryFactory" public="false">
