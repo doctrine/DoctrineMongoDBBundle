@@ -108,7 +108,7 @@ class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
      */
     public static function createAttributeMappingDriver(array $namespaces, array $directories, array $managerParameters, $enabledParameter = false, array $aliasMap = [])
     {
-        $driver = new Definition(AttributeDriver::class, [$directories, new Reference('doctrine_mongodb.odm.metadata.attribute_reader')]);
+        $driver = new Definition(AttributeDriver::class, [$directories]);
 
         return new DoctrineMongoDBMappingsPass($driver, $namespaces, $managerParameters, $enabledParameter, $aliasMap);
     }
