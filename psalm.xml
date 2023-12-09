@@ -16,7 +16,6 @@
         <directory name="APM"/>
         <directory name="CacheWarmer"/>
         <directory name="Command"/>
-        <directory name="Cursor"/>
         <directory name="DataCollector"/>
         <directory name="DependencyInjection"/>
         <directory name="EventSubscriber"/>

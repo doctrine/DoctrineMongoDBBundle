@@ -87,9 +87,6 @@
         <service id="Doctrine\Bundle\MongoDBBundle\Command\ShardDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\ShardDoctrineODMCommand">
             <tag name="console.command" command="doctrine:mongodb:schema:shard"/>
         </service>
-        <service id="Doctrine\Bundle\MongoDBBundle\Command\TailCursorDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\TailCursorDoctrineODMCommand">
-            <tag name="console.command" command="doctrine:mongodb:tail-cursor"/>
-        </service>
         <service id="Doctrine\Bundle\MongoDBBundle\Command\UpdateSchemaDoctrineODMCommand" class="Doctrine\Bundle\MongoDBBundle\Command\UpdateSchemaDoctrineODMCommand">
             <tag name="console.command" command="doctrine:mongodb:schema:update"/>
         </service>

@@ -40,11 +40,6 @@
       <code>protected function execute(InputInterface $input, OutputInterface $output)</code>
     </MethodSignatureMismatch>
   </file>
-  <file src="Command/TailCursorDoctrineODMCommand.php">
-    <InvalidReturnType>
-      <code>int</code>
-    </InvalidReturnType>
-  </file>
   <file src="Command/UpdateSchemaDoctrineODMCommand.php">
     <MethodSignatureMismatch>
       <code>protected function execute(InputInterface $input, OutputInterface $output)</code>
