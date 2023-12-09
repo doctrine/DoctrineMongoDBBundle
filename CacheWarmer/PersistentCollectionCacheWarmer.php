@@ -41,13 +41,13 @@ class PersistentCollectionCacheWarmer implements CacheWarmerInterface
      *
      * @return false
      */
-    public function isOptional()
+    public function isOptional(): bool
     {
         return false;
     }
 
     /** @return string[] */
-    public function warmUp(string $cacheDir, ?string $buildDir = null)
+    public function warmUp(string $cacheDir, ?string $buildDir = null): array
     {
         // we need the directory no matter the hydrator cache generation strategy.
         $collCacheDir = (string) $this->container->getParameter('doctrine_mongodb.odm.persistent_collection_dir');
