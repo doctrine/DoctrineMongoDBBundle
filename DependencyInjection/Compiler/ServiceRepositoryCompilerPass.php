@@ -17,8 +17,7 @@ final class ServiceRepositoryCompilerPass implements CompilerPassInterface
 {
     public const REPOSITORY_SERVICE_TAG = 'doctrine_mongodb.odm.repository_service';
 
-    /** @return void */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         // when ODM is not enabled
         if (! $container->hasDefinition('doctrine_mongodb.odm.container_repository_factory')) {

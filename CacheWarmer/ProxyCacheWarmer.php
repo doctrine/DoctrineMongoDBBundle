@@ -42,13 +42,13 @@ class ProxyCacheWarmer implements CacheWarmerInterface
      *
      * @return false
      */
-    public function isOptional()
+    public function isOptional(): bool
     {
         return false;
     }
 
     /** @return string[] */
-    public function warmUp(string $cacheDir, ?string $buildDir = null)
+    public function warmUp(string $cacheDir, ?string $buildDir = null): array
     {
         // we need the directory no matter the proxy cache generation strategy.
         $proxyCacheDir = (string) $this->container->getParameter('doctrine_mongodb.odm.proxy_dir');
@@ -76,7 +76,7 @@ class ProxyCacheWarmer implements CacheWarmerInterface
     }
 
     /** @return ClassMetadata[] */
-    private function getClassesForProxyGeneration(DocumentManager $dm)
+    private function getClassesForProxyGeneration(DocumentManager $dm): array
     {
         return array_filter($dm->getMetadataFactory()->getAllMetadata(), static fn (ClassMetadata $metadata) => ! $metadata->isEmbeddedDocument && ! $metadata->isMappedSuperclass);
     }

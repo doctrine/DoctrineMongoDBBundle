@@ -24,10 +24,8 @@ class Configuration implements ConfigurationInterface
 {
     /**
      * Generates the configuration tree builder.
-     *
-     * @return TreeBuilder
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('doctrine_mongodb');
         $rootNode    = $treeBuilder->getRootNode();
@@ -158,7 +156,7 @@ class Configuration implements ConfigurationInterface
                                     ->end()
                                     ->beforeNormalization()
                                         // The content of the XML node is returned as the "value" key so we need to rename it
-                                        ->ifTrue(static function ($v) {
+                                        ->ifTrue(static function ($v): bool {
                                             return is_array($v) && isset($v['value']);
                                         })
                                         ->then(static function ($v) {
@@ -177,7 +175,7 @@ class Configuration implements ConfigurationInterface
                                             ->prototype('variable')
                                                 ->beforeNormalization()
                                                     // Detect JSON object and array syntax (for XML)
-                                                    ->ifTrue(static function ($v) {
+                                                    ->ifTrue(static function ($v): bool {
                                                         return is_string($v) && (preg_match('/\[.*\]/', $v) || preg_match('/\{.*\}/', $v));
                                                     })
                                                     // Decode objects to associative arrays for consistency with YAML
@@ -277,7 +275,7 @@ class Configuration implements ConfigurationInterface
                                         ->prototype('array')
                                             ->beforeNormalization()
                                                 // Handle readPreferenceTag XML nodes
-                                                ->ifTrue(static function ($v) {
+                                                ->ifTrue(static function ($v): bool {
                                                     return isset($v['readPreferenceTag']);
                                                 })
                                                 ->then(static function ($v) {
@@ -298,7 +296,7 @@ class Configuration implements ConfigurationInterface
                                             ->ifNull()->thenUnset()
                                         ->end()
                                         ->validate()
-                                            ->ifTrue(static function ($v) {
+                                            ->ifTrue(static function ($v): bool {
                                                 return ! is_string($v) && $v !== null;
                                             })->thenInvalid('The replicaSet option must be a string or null.')
                                         ->end()
@@ -328,7 +326,7 @@ class Configuration implements ConfigurationInterface
                                     ->integerNode('wTimeout')->info('Deprecated. Please use the "wTimeoutMS" option instead.')->end()
                                 ->end()
                                 ->validate()
-                                    ->ifTrue(static function ($v) {
+                                    ->ifTrue(static function ($v): bool {
                                         return count($v['readPreferenceTags']) === 0;
                                     })
                                     ->then(static function ($v) {

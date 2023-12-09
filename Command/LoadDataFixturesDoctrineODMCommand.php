@@ -32,14 +32,12 @@ class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
         parent::__construct($registry);
     }
 
-    /** @return bool */
-    public function isEnabled()
+    public function isEnabled(): bool
     {
         return parent::isEnabled() && class_exists(Loader::class);
     }
 
-    /** @return void */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('doctrine:mongodb:fixtures:load')
@@ -69,8 +67,7 @@ EOT
         );
     }
 
-    /** @return int */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $dm = $this->getManagerRegistry()->getManager($input->getOption('dm'));
         $ui = new SymfonyStyle($input, $output);
