@@ -76,7 +76,7 @@ class ProxyCacheWarmer implements CacheWarmerInterface
     }
 
     /** @return ClassMetadata[] */
-    private function getClassesForProxyGeneration(DocumentManager $dm)
+    private function getClassesForProxyGeneration(DocumentManager $dm): array
     {
         return array_filter($dm->getMetadataFactory()->getAllMetadata(), static fn (ClassMetadata $metadata) => ! $metadata->isEmbeddedDocument && ! $metadata->isMappedSuperclass);
     }

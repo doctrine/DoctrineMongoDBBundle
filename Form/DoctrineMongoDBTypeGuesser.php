@@ -146,7 +146,7 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
     /**
      * {@inheritDoc}
      */
-    public function guessMinLength($class, $property)
+    public function guessMinLength($class, $property): void
     {
     }
 

@@ -59,10 +59,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
     /**
      * Responds to the doctrine_mongodb configuration parameter.
-     *
-     * @return void
      */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         // Load DoctrineMongoDBBundle/Resources/config/mongodb.xml
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
@@ -135,7 +133,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $container->registerForAutoconfiguration(EventSubscriberInterface::class)
             ->addTag('doctrine_mongodb.odm.event_subscriber');
 
-        $container->registerAttributeForAutoconfiguration(AsDocumentListener::class, static function (ChildDefinition $definition, AsDocumentListener $attribute) {
+        $container->registerAttributeForAutoconfiguration(AsDocumentListener::class, static function (ChildDefinition $definition, AsDocumentListener $attribute): void {
             $definition->addTag('doctrine_mongodb.odm.event_listener', [
                 'event'      => $attribute->event,
                 'method'     => $attribute->method,
