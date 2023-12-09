@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Tests;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
@@ -24,7 +23,7 @@ class TestCase extends BaseTestCase
         $config->setHydratorDir(sys_get_temp_dir());
         $config->setProxyNamespace('SymfonyTests\Doctrine');
         $config->setHydratorNamespace('SymfonyTests\Doctrine');
-        $config->setMetadataDriverImpl(new AnnotationDriver(new AnnotationReader(), $paths));
+        $config->setMetadataDriverImpl(new AttributeDriver($paths));
         $config->setMetadataCache(new ArrayAdapter());
 
         return DocumentManager::create(null, $config);

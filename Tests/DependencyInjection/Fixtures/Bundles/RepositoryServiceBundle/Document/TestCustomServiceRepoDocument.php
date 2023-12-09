@@ -7,9 +7,9 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundl
 use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Repository\TestCustomServiceRepoDocumentRepository;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document(repositoryClass=TestCustomServiceRepoDocumentRepository::class) */
+#[ODM\Document(repositoryClass: TestCustomServiceRepoDocumentRepository::class)]
 class TestCustomServiceRepoDocument
 {
-    /** @ODM\Id */
+    #[ODM\Id]
     private string $id;
 }

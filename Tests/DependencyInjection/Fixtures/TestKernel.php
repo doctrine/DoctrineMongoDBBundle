@@ -45,7 +45,7 @@ class TestKernel extends Kernel
                     'default' => [
                         'mappings' => [
                             'RepositoryServiceBundle' => [
-                                'type' => 'annotation',
+                                'type' => 'attribute',
                                 'dir' => __DIR__ . '/Bundles/RepositoryServiceBundle/Document',
                                 'prefix' => 'Fixtures\Bundles\RepositoryServiceBundle\Document',
                             ],

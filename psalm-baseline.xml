@@ -1,14 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.12.0@f90118cdeacd0088e7215e64c0c99ceca819e176">
+<files psalm-version="5.17.0@c620f6e80d0abfca532b00bda366062aaedf6e5d">
+  <file src="Command/ClearMetadataCacheDoctrineODMCommand.php">
+    <MethodSignatureMismatch>
+      <code>protected function execute(InputInterface $input, OutputInterface $output)</code>
+    </MethodSignatureMismatch>
+  </file>
+  <file src="Command/CreateSchemaDoctrineODMCommand.php">
+    <MethodSignatureMismatch>
+      <code>protected function execute(InputInterface $input, OutputInterface $output)</code>
+    </MethodSignatureMismatch>
+  </file>
+  <file src="Command/DropSchemaDoctrineODMCommand.php">
+    <MethodSignatureMismatch>
+      <code>protected function execute(InputInterface $input, OutputInterface $output)</code>
+    </MethodSignatureMismatch>
+  </file>
+  <file src="Command/GenerateHydratorsDoctrineODMCommand.php">
+    <MethodSignatureMismatch>
+      <code>protected function execute(InputInterface $input, OutputInterface $output)</code>
+    </MethodSignatureMismatch>
+  </file>
+  <file src="Command/GenerateProxiesDoctrineODMCommand.php">
+    <MethodSignatureMismatch>
+      <code>protected function execute(InputInterface $input, OutputInterface $output)</code>
+    </MethodSignatureMismatch>
+  </file>
   <file src="Command/LoadDataFixturesDoctrineODMCommand.php">
     <UndefinedInterfaceMethod>
       <code>ask</code>
     </UndefinedInterfaceMethod>
   </file>
+  <file src="Command/QueryDoctrineODMCommand.php">
+    <MethodSignatureMismatch>
+      <code>protected function execute(InputInterface $input, OutputInterface $output)</code>
+    </MethodSignatureMismatch>
+  </file>
+  <file src="Command/ShardDoctrineODMCommand.php">
+    <MethodSignatureMismatch>
+      <code>protected function execute(InputInterface $input, OutputInterface $output)</code>
+    </MethodSignatureMismatch>
+  </file>
   <file src="Command/TailCursorDoctrineODMCommand.php">
     <InvalidReturnType>
       <code>int</code>
     </InvalidReturnType>
+  </file>
+  <file src="Command/UpdateSchemaDoctrineODMCommand.php">
+    <MethodSignatureMismatch>
+      <code>protected function execute(InputInterface $input, OutputInterface $output)</code>
+    </MethodSignatureMismatch>
   </file>
   <file src="DependencyInjection/Configuration.php">
     <UndefinedInterfaceMethod>
@@ -21,10 +61,10 @@
       <code>children</code>
     </UndefinedMethod>
   </file>
-  <file src="Form/Type/DocumentType.php">
-    <MethodSignatureMustProvideReturnType>
-      <code>configureOptions</code>
-    </MethodSignatureMustProvideReturnType>
+  <file src="Loader/SymfonyFixturesLoader.php">
+    <ContainerDependency>
+      <code>private ContainerInterface $container</code>
+    </ContainerDependency>
   </file>
   <file src="Tests/Form/Type/GuesserTestType.php">
     <MissingTemplateParam>
