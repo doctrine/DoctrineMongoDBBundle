@@ -20,7 +20,7 @@ use function MongoDB\BSON\fromPHP;
 use function MongoDB\BSON\toCanonicalExtendedJSON;
 
 /** @internal since version 4.7.0 */
-class CommandDataCollector extends DataCollector
+final class CommandDataCollector extends DataCollector
 {
     public function __construct(private CommandLogger $commandLogger)
     {

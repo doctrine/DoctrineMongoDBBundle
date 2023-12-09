@@ -14,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @internal since version 4.7.0
  */
-class GenerateProxiesDoctrineODMCommand extends GenerateProxiesCommand
+final class GenerateProxiesDoctrineODMCommand extends GenerateProxiesCommand
 {
     protected function configure(): void
     {

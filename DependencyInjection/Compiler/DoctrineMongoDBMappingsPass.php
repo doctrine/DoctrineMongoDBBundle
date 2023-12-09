@@ -21,7 +21,7 @@ use Symfony\Component\DependencyInjection\Reference;
  *
  * @internal since version 4.7.0
  */
-class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
+final class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
 {
     /**
      * You should not directly instantiate this class but use one of the
