@@ -23,7 +23,7 @@
         <!-- <server name="DOCTRINE_MONGODB" value="/path/to/doctrine-mongodb/lib" /> -->
         <!-- <server name="DOCTRINE_COMMON" value="/path/to/doctrine-common/lib" /> -->
         <!-- Allow 1 direct deprecation until https://github.com/doctrine/DoctrineMongoDBBundle/pull/675 is merged -->
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[direct]=1"/>
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[direct]=1&amp;max[self]=3"/>
     </php>
 
     <coverage>
