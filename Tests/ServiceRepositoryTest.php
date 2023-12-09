@@ -17,7 +17,6 @@ use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\Rep
 use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Repository\TestCustomServiceRepoGridFSRepository;
 use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\Repository\TestUnmappedDocumentRepository;
 use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\RepositoryServiceBundle\RepositoryServiceBundle;
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
@@ -25,7 +24,6 @@ use LogicException;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
 use function sprintf;
@@ -49,8 +47,7 @@ class ServiceRepositoryTest extends TestCase
             'kernel.project_dir' => __DIR__ . '/../../../../',
             'kernel.container_class' => Container::class,
         ]));
-        $this->container->setDefinition('annotation_reader', new Definition(AnnotationReader::class));
-        $extension = new DoctrineMongoDBExtension();
+        $extension       = new DoctrineMongoDBExtension();
         $this->container->registerExtension($extension);
 
         $extension->load([

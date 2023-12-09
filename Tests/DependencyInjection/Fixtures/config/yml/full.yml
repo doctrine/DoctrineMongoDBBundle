@@ -66,8 +66,7 @@ doctrine_mongodb:
             repository_factory: doctrine_mongodb.odm.container_repository_factory
             persistent_collection_factory: ~
             mappings:
-                FooBundle:   annotation
-                BarBundle:   attribute
+                FooBundle:   attribute
             metadata_cache_driver:
                 type:                  memcached
                 class:                 fooClass
@@ -101,7 +100,7 @@ doctrine_mongodb:
             persistent_collection_factory: ~
             mappings:
                 BarBundle:
-                    type:   yml
+                    type:   xml
                     dir:    "%kernel.cache_dir%"
                     prefix: prefix_val
                     alias:  alias_val

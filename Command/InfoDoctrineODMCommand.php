@@ -56,7 +56,7 @@ EOT
             throw new Exception(
                 'You do not have any mapped Doctrine MongoDB ODM documents for any of your bundles. ' .
                 'Create a class inside the Document namespace of any of your bundles and provide ' .
-                'mapping information for it with Annotations directly in the classes doc blocks ' .
+                'mapping information for it with Attributes directly in the classes doc blocks ' .
                 'or with XML in your bundles Resources/config/doctrine/metadata/mongodb directory.'
             );
         }

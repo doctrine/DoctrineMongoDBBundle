@@ -18,7 +18,6 @@ use Doctrine\Common\Cache\XcacheCache;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use MongoDB\Client;
@@ -64,7 +63,6 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $this->assertEquals('Memcache', $container->getParameter('doctrine_mongodb.odm.cache.memcache_instance.class'));
         $this->assertEquals(XcacheCache::class, $container->getParameter('doctrine_mongodb.odm.cache.xcache.class'));
         $this->assertEquals(MappingDriverChain::class, $container->getParameter('doctrine_mongodb.odm.metadata.driver_chain.class'));
-        $this->assertEquals(AnnotationDriver::class, $container->getParameter('doctrine_mongodb.odm.metadata.annotation.class'));
         $this->assertEquals(AttributeDriver::class, $container->getParameter('doctrine_mongodb.odm.metadata.attribute.class'));
         $this->assertEquals(XmlDriver::class, $container->getParameter('doctrine_mongodb.odm.metadata.xml.class'));
 
@@ -318,20 +316,6 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $calls = $container->getDefinition('doctrine_mongodb.odm.default_metadata_driver')->getMethodCalls();
         $this->assertEquals('doctrine_mongodb.odm.default_xml_metadata_driver', (string) $calls[0][1][0]);
         $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\NewXmlBundle\Document', $calls[0][1][1]);
-    }
-
-    public function testAnnotationsBundleMappingDetection(): void
-    {
-        $container = $this->getContainer('AnnotationsBundle');
-        $loader    = new DoctrineMongoDBExtension();
-        $config    = DoctrineMongoDBExtensionTest::buildConfiguration(
-            ['document_managers' => ['default' => ['mappings' => ['AnnotationsBundle' => []]]]],
-        );
-        $loader->load($config, $container);
-
-        $calls = $container->getDefinition('doctrine_mongodb.odm.default_metadata_driver')->getMethodCalls();
-        $this->assertEquals('doctrine_mongodb.odm.default_annotation_metadata_driver', (string) $calls[0][1][0]);
-        $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\AnnotationsBundle\Document', $calls[0][1][1]);
     }
 
     public function testAttributesBundleMappingDetection(): void

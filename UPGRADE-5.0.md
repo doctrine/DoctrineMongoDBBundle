@@ -11,3 +11,4 @@ UPGRADE FROM 4.x to 5.0
   removed without replacement.
 * The `Doctrine\Bundle\MongoDBBundle\Command\DoctrineODMCommand` class is now
   `@internal`, you should not extend from this class.
+* Remove support of Annotation mapping, you should use Attributes or XML instead. 
