@@ -11,6 +11,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Generate the Doctrine ORM document hydrators to your cache directory.
+ *
+ * @internal since version 4.7.0
  */
 class GenerateHydratorsDoctrineODMCommand extends GenerateHydratorsCommand
 {

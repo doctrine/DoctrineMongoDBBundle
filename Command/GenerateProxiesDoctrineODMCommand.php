@@ -11,6 +11,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Generate the Doctrine ORM document proxies to your cache directory.
+ *
+ * @internal since version 4.7.0
  */
 class GenerateProxiesDoctrineODMCommand extends GenerateProxiesCommand
 {
