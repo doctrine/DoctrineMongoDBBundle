@@ -13,3 +13,5 @@ UPGRADE FROM 4.x to 5.0
   used directly or extended.
 * Remove support of Annotation mapping, you should use Attributes or XML instead.
 * Remove `--service` option from `doctrine:mongodb:fixtures:load` command
+* Remove automatic injection of the container in fixtures classes implementing
+  `ContainerAwareInterface`. You should use dependency injection instead.

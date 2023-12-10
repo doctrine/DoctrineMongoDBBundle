@@ -12,14 +12,11 @@ use Doctrine\Common\DataFixtures\Loader;
 use LogicException;
 use ReflectionClass;
 use RuntimeException;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use function array_key_exists;
 use function array_values;
 use function get_class;
 use function sprintf;
-use function trigger_deprecation;
 
 final class SymfonyFixturesLoader extends Loader implements SymfonyFixturesLoaderInterface
 {
@@ -28,11 +25,6 @@ final class SymfonyFixturesLoader extends Loader implements SymfonyFixturesLoade
 
     /** @var array<string, array<string, bool>> */
     private array $groupsFixtureMapping = [];
-
-    public function __construct(
-        private ContainerInterface $container,
-    ) {
-    }
 
     /**
      * @internal
@@ -66,12 +58,6 @@ final class SymfonyFixturesLoader extends Loader implements SymfonyFixturesLoade
 
         if ($fixture instanceof FixtureGroupInterface) {
             $this->addGroupsFixtureMapping($class, $fixture::getGroups());
-        }
-
-        if ($fixture instanceof ContainerAwareInterface) {
-            trigger_deprecation('doctrine/mongodb-odm-bundle', '4.7', 'Implementing "%s" with "%s" is deprecated, use dependency injection instead.', ContainerAwareInterface::class, FixtureInterface::class);
-
-            $fixture->setContainer($this->container);
         }
 
         parent::addFixture($fixture);

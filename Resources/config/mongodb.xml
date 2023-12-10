@@ -183,8 +183,6 @@
         <!-- listeners -->
         <service id="doctrine_mongodb.odm.listeners.resolve_target_document" class="%doctrine_mongodb.odm.listeners.resolve_target_document.class%" public="false" />
 
-        <service id="doctrine_mongodb.odm.symfony.fixtures.loader" class="Doctrine\Bundle\MongoDBBundle\Loader\SymfonyFixturesLoader" public="false">
-            <argument type="service" id="service_container" />
-        </service>
+        <service id="doctrine_mongodb.odm.symfony.fixtures.loader" class="Doctrine\Bundle\MongoDBBundle\Loader\SymfonyFixturesLoader" public="false" />
     </services>
 </container>

@@ -16,11 +16,6 @@
       <code>children</code>
     </UndefinedMethod>
   </file>
-  <file src="Loader/SymfonyFixturesLoader.php">
-    <ContainerDependency>
-      <code>private ContainerInterface $container</code>
-    </ContainerDependency>
-  </file>
   <file src="Tests/Form/Type/GuesserTestType.php">
     <MissingTemplateParam>
       <code>GuesserTestType</code>
