@@ -9,3 +9,5 @@ UPGRADE FROM 4.6 to 4.7
 * The `fixture_loader` configuration option was deprecated and will be removed
   in 5.0.
 * The `doctrine_mongodb.odm.fixture_loader` parameter has been removed.
+* Implementing `ContainerAwareInterface` on fixtures classes is deprecated,
+  use dependency injection instead.
