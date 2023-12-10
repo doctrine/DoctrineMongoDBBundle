@@ -1,6 +1,7 @@
 UPGRADE FROM 4.x to 5.0
 =======================
 
+* Add support for Symfony 7.0 and require at least Symfony 6.4
 * The `doctrine:mongodb:tail-cursor` command and
   `Doctrine\Bundle\MongoDBBundle\Cursor\TailableCursorProcessorInterface`
   interface have been dropped. You should use
