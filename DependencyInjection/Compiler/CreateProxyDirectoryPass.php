@@ -15,7 +15,7 @@ use function mkdir;
 use function sprintf;
 
 /** @internal since version 4.7.0 */
-class CreateProxyDirectoryPass implements CompilerPassInterface
+final class CreateProxyDirectoryPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {

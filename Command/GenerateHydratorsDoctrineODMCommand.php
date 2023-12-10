@@ -14,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @internal since version 4.7.0
  */
-class GenerateHydratorsDoctrineODMCommand extends GenerateHydratorsCommand
+final class GenerateHydratorsDoctrineODMCommand extends GenerateHydratorsCommand
 {
     protected function configure(): void
     {

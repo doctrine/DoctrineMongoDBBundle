@@ -22,7 +22,7 @@ use function sprintf;
  *
  * @internal since version 4.7.0
  */
-class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
+final class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
 {
     public function __construct(ManagerRegistry $registry, private SymfonyFixturesLoaderInterface $fixturesLoader)
     {

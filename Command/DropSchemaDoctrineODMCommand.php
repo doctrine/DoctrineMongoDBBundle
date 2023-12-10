@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @internal since version 4.7.0
  */
-class DropSchemaDoctrineODMCommand extends DropCommand
+final class DropSchemaDoctrineODMCommand extends DropCommand
 {
     protected function configure(): void
     {

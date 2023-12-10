@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @internal since version 4.7.0
  */
-class UpdateSchemaDoctrineODMCommand extends UpdateCommand
+final class UpdateSchemaDoctrineODMCommand extends UpdateCommand
 {
     protected function configure(): void
     {
