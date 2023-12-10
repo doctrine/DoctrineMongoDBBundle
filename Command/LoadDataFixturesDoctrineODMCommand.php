@@ -24,6 +24,8 @@ use function trigger_deprecation;
 
 /**
  * Load data fixtures from bundles.
+ *
+ * @internal since version 4.7.0
  */
 class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
 {
