@@ -6,6 +6,7 @@ namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 
 use Doctrine\Bundle\MongoDBBundle\Attribute\AsDocumentListener;
 use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
+use Doctrine\Bundle\MongoDBBundle\Command\LoadDataFixturesDoctrineODMCommand;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\EventSubscriber\EventSubscriberInterface;
@@ -98,6 +99,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
         } else {
             $container->removeDefinition('doctrine_mongodb.odm.symfony.fixtures.loader');
+            $container->removeDefinition(LoadDataFixturesDoctrineODMCommand::class);
         }
 
         // load the connections
