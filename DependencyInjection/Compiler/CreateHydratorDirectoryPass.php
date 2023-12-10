@@ -14,6 +14,7 @@ use function is_writable;
 use function mkdir;
 use function sprintf;
 
+/** @internal */
 class CreateHydratorDirectoryPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void

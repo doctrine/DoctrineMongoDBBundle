@@ -12,7 +12,7 @@ use Symfony\Component\Console\Command\Command;
 /**
  * Base class for Doctrine ODM console commands to extend.
  *
- * @internal since version 5.0
+ * @internal since version 4.4.0
  */
 abstract class DoctrineODMCommand extends Command
 {

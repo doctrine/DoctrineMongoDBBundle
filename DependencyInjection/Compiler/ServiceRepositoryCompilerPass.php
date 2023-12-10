@@ -13,6 +13,7 @@ use function array_combine;
 use function array_keys;
 use function array_map;
 
+/** @internal since version 4.7.0 */
 final class ServiceRepositoryCompilerPass implements CompilerPassInterface
 {
     public const REPOSITORY_SERVICE_TAG = 'doctrine_mongodb.odm.repository_service';
