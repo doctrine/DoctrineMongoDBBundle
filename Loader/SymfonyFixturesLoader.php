@@ -19,6 +19,7 @@ use function array_key_exists;
 use function array_values;
 use function get_class;
 use function sprintf;
+use function trigger_deprecation;
 
 final class SymfonyFixturesLoader extends Loader implements SymfonyFixturesLoaderInterface
 {
@@ -68,6 +69,8 @@ final class SymfonyFixturesLoader extends Loader implements SymfonyFixturesLoade
         }
 
         if ($fixture instanceof ContainerAwareInterface) {
+            trigger_deprecation('doctrine/mongodb-odm-bundle', '4.7', 'Implementing "%s" with "%s" is deprecated, use dependency injection instead.', ContainerAwareInterface::class, FixtureInterface::class);
+
             $fixture->setContainer($this->container);
         }
 
