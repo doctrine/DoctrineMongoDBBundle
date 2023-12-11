@@ -59,8 +59,7 @@
     "suggest": {
         "doctrine/data-fixtures": "Load data fixtures"
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
+    "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
             "Doctrine\\Bundle\\MongoDBBundle\\": ""
