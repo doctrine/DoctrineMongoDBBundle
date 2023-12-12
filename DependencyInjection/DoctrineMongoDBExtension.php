@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 
+use Composer\InstalledVersions;
 use Doctrine\Bundle\MongoDBBundle\Attribute\AsDocumentListener;
 use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
 use Doctrine\Bundle\MongoDBBundle\Command\LoadDataFixturesDoctrineODMCommand;
@@ -18,7 +19,6 @@ use Doctrine\Common\DataFixtures\Loader as DataFixturesLoader;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use InvalidArgumentException;
-use Jean85\PrettyVersions;
 use Symfony\Bridge\Doctrine\ArgumentResolver\EntityValueResolver;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
@@ -653,7 +653,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     {
         if (self::$odmVersion === null) {
             try {
-                self::$odmVersion = PrettyVersions::getVersion('doctrine/mongodb-odm')->getPrettyVersion();
+                self::$odmVersion = InstalledVersions::getPrettyVersion('doctrine/mongodb-odm') ?? 'no version';
             } catch (Throwable) {
                 return 'unknown';
             }
