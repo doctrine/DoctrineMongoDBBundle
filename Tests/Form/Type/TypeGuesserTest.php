@@ -50,7 +50,6 @@ class TypeGuesserTest extends TypeTestCase
         parent::tearDown();
     }
 
-    /** @group legacy */
     public function testTypesShouldBeGuessedCorrectly(): void
     {
         $form = $this->factory->create(GuesserTestType::class, null, ['dm' => $this->dm]);

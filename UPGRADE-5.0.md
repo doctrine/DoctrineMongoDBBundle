@@ -15,3 +15,4 @@ UPGRADE FROM 4.x to 5.0
 * Remove `--service` option from `doctrine:mongodb:fixtures:load` command
 * Remove automatic injection of the container in fixtures classes implementing
   `ContainerAwareInterface`. You should use dependency injection instead.
+* Remove the `fixture_loader` configuration

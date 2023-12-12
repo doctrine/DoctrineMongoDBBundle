@@ -15,8 +15,9 @@ class GuesserTestType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('date')
-            ->add('ts')
+            // Not setting "date_widget" is deprecated in Symfony 6.4
+            ->add('date', null, ['date_widget' => 'single_text'])
+            ->add('ts', null, ['date_widget' => 'single_text'])
             ->add('categories', null, ['document_manager' => $options['dm']])
             ->add('boolField')
             ->add('floatField')

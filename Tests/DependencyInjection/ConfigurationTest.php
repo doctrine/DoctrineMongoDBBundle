@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Configuration;
-use Doctrine\Bundle\MongoDBBundle\Loader\SymfonyFixturesLoader;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\BasicFilter;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\ComplexFilter;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\DisabledFilter;
@@ -511,20 +510,5 @@ class ConfigurationTest extends TestCase
         $configuration   = new Configuration();
         $processedConfig = $processor->processConfiguration($configuration, [$config]);
         $this->assertFalse(array_key_exists('replicaSet', $processedConfig['connections']['conn1']['options']));
-    }
-
-    /** @group legacy */
-    public function testFixtureLoaderDeprecated(): void
-    {
-        $config = [
-            'fixture_loader' => SymfonyFixturesLoader::class,
-        ];
-
-        $processor     = new Processor();
-        $configuration = new Configuration();
-
-        $this->expectDeprecation('Since doctrine/mongodb-odm-bundle 4.7: The "fixture_loader" option is deprecated and will be dropped in doctrine/mongodb-odm-bundle 5.0.');
-
-        $processor->processConfiguration($configuration, [$config]);
     }
 }
