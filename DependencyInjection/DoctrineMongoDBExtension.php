@@ -19,7 +19,6 @@ use Doctrine\Common\DataFixtures\Loader as DataFixturesLoader;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use InvalidArgumentException;
-use Symfony\Bridge\Doctrine\ArgumentResolver\EntityValueResolver;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
@@ -400,11 +399,6 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     /** @param array<string, mixed> $config */
     private function loadEntityValueResolverServices(ContainerBuilder $container, FileLoader $loader, array $config): void
     {
-        // available in Symfony 6.2 and higher
-        if (! class_exists(EntityValueResolver::class)) {
-            return;
-        }
-
         $loader->load('value_resolver.xml');
 
         if (! class_exists(ExpressionLanguage::class)) {

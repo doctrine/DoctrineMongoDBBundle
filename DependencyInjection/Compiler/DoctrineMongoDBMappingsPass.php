@@ -17,8 +17,6 @@ use Symfony\Component\DependencyInjection\Reference;
  * Class for Symfony bundles to configure mappings for model classes not in the
  * automapped folder.
  *
- * NOTE: alias is only supported by Symfony 2.6+ and will be ignored with older versions.
- *
  * @internal since version 4.7.0
  */
 final class DoctrineMongoDBMappingsPass extends RegisterMappingsPass

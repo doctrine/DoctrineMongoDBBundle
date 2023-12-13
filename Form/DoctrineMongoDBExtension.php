@@ -23,15 +23,14 @@ class DoctrineMongoDBExtension extends AbstractExtension
     }
 
     /** @return FormTypeInterface[] */
-    protected function loadTypes()
+    protected function loadTypes(): array
     {
         return [
             new Type\DocumentType($this->registry),
         ];
     }
 
-    /** @return FormTypeGuesserInterface|null */
-    protected function loadTypeGuesser()
+    protected function loadTypeGuesser(): ?FormTypeGuesserInterface
     {
         return new DoctrineMongoDBTypeGuesser($this->registry);
     }

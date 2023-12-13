@@ -7,9 +7,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\Validator\Constraints;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
-use Symfony\Component\Validator\Mapping\Loader\AnnotationLoader;
-
-use function assert;
+use Symfony\Component\Validator\Mapping\Loader\AttributeLoader;
 
 final class UniqueTest extends TestCase
 {
@@ -17,18 +15,17 @@ final class UniqueTest extends TestCase
     {
         $metadata = new ClassMetadata(UniqueDocumentDummyOne::class);
 
-        $loader = new AnnotationLoader();
+        $loader = new AttributeLoader();
 
         self::assertTrue($loader->loadClassMetadata($metadata));
 
         [$constraint] = $metadata->getConstraints();
-        assert($constraint instanceof Unique);
+        self::assertInstanceOf(Unique::class, $constraint);
         self::assertSame(['email'], $constraint->fields);
         self::assertSame('doctrine_odm.mongodb.unique', $constraint->validatedBy());
     }
 }
 
-/** @Unique(fields={"email"}) */
 #[Unique(['email'])]
 class UniqueDocumentDummyOne
 {
