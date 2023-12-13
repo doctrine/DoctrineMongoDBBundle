@@ -17,8 +17,10 @@ use Doctrine\Common\Cache\MemcacheCache;
 use Doctrine\Common\Cache\RedisCache;
 use Doctrine\Common\DataFixtures\Loader as DataFixturesLoader;
 use Doctrine\Common\EventSubscriber;
+use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use InvalidArgumentException;
+use MongoDB\Client;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
@@ -229,7 +231,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $configurationId = sprintf('doctrine_mongodb.odm.%s_configuration', $documentManager['name']);
         $defaultDatabase = $documentManager['database'] ?? $defaultDB;
 
-        $odmConfigDef = new Definition('%doctrine_mongodb.odm.configuration.class%');
+        $odmConfigDef = new Definition(ODMConfiguration::class);
         $odmConfigDef->addTag(self::CONFIGURATION_TAG);
         $container->setDefinition(
             $configurationId,
@@ -318,8 +320,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             // Document managers will share their connection's event manager
             new Reference(sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $connectionName)),
         ];
-        $odmDmDef  = new Definition('%doctrine_mongodb.odm.document_manager.class%', $odmDmArgs);
-        $odmDmDef->setFactory(['%doctrine_mongodb.odm.document_manager.class%', 'create']);
+        $odmDmDef  = new Definition(DocumentManager::class, $odmDmArgs);
+        $odmDmDef->setFactory([DocumentManager::class, 'create']);
         $odmDmDef->addTag('doctrine_mongodb.odm.document_manager');
         $odmDmDef->setPublic(true);
 
@@ -363,7 +365,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $configurationId = sprintf('doctrine_mongodb.odm.%s_configuration', $name);
             $container->setDefinition(
                 $configurationId,
-                new Definition('%doctrine_mongodb.odm.configuration.class%'),
+                new Definition(ODMConfiguration::class),
             );
 
             $odmConnArgs = [
@@ -373,7 +375,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 $this->normalizeDriverOptions($connection),
             ];
 
-            $odmConnDef = new Definition('%doctrine_mongodb.odm.connection.class%', $odmConnArgs);
+            $odmConnDef = new Definition(Client::class, $odmConnArgs);
             $odmConnDef->setPublic(true);
             $id = sprintf('doctrine_mongodb.odm.%s_connection', $name);
             $container->setDefinition($id, $odmConnDef);

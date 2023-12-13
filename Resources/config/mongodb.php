@@ -7,12 +7,10 @@ use Doctrine\Bundle\MongoDBBundle\ManagerConfigurator;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver;
 use Doctrine\Bundle\MongoDBBundle\Repository\ContainerRepositoryFactory;
-use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\ODM\MongoDB\Tools\ResolveTargetDocumentListener;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
-use MongoDB\Client;
 use ProxyManager\Proxy\GhostObjectInterface;
 use Symfony\Bridge\Doctrine\ContainerAwareEventManager;
 use Symfony\Bridge\Doctrine\Security\User\EntityUserProvider;
@@ -31,18 +29,9 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->set('doctrine_mongodb.odm.cache.memcache_port', 11211)
         ->set('doctrine_mongodb.odm.cache.memcache_instance.class', 'Memcache')
         ->set('doctrine_mongodb.odm.cache.xcache.class', 'Doctrine\Common\Cache\XcacheCache')
-        ->set('doctrine_mongodb.odm.connection.class', Client::class)
-        ->set('doctrine_mongodb.odm.configuration.class', Configuration::class)
-        ->set('doctrine_mongodb.odm.document_manager.class', DocumentManager::class)
-        ->set('doctrine_mongodb.odm.manager_configurator.class', ManagerConfigurator::class)
-        ->set('doctrine_mongodb.odm.class', ManagerRegistry::class)
         ->set('doctrine_mongodb.odm.metadata.driver_chain.class', MappingDriverChain::class)
         ->set('doctrine_mongodb.odm.metadata.attribute.class', AttributeDriver::class)
-        ->set('doctrine_mongodb.odm.metadata.xml.class', XmlDriver::class)
-        ->set('doctrine_mongodb.odm.mapping_dirs', [])
-        ->set('doctrine_mongodb.odm.xml_mapping_dirs', '%doctrine_mongodb.odm.mapping_dirs%')
-        ->set('doctrine_mongodb.odm.document_dirs', [])
-        ->set('doctrine_mongodb.odm.fixtures_dirs', []);
+        ->set('doctrine_mongodb.odm.metadata.xml.class', XmlDriver::class);
 
     $containerConfigurator->services()
 
@@ -73,7 +62,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
                 service('doctrine_mongodb'),
             ])
 
-        ->set('doctrine_mongodb', '%doctrine_mongodb.odm.class%')
+        ->set('doctrine_mongodb', ManagerRegistry::class)
             ->public()
             ->args([
                 'MongoDB',
