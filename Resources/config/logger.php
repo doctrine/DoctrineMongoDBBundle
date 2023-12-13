@@ -28,7 +28,5 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             ->tag('monolog.logger', ['channel' => 'doctrine'])
             ->args([
                 service('logger')->nullOnInvalid(),
-            ])
-
-        ->alias('doctrine_mongodb.odm.command_logger', 'doctrine_mongodb.odm.psr_command_logger');
+            ]);
 };

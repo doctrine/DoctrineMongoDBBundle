@@ -87,9 +87,6 @@ class ContainerTest extends TestCase
         $this->container->setParameter('kernel.debug', $debug);
         $this->extension->load([$config], $this->container);
 
-        $deprecatedLoggerDefinition = $this->container->getAlias('doctrine_mongodb.odm.command_logger');
-        $this->assertTrue($deprecatedLoggerDefinition->isDeprecated());
-
         $loggerDefinition = $this->container->getDefinition('doctrine_mongodb.odm.data_collector.command_logger');
         $this->assertSame($expected, $loggerDefinition->hasTag('doctrine_mongodb.odm.command_logger'));
 

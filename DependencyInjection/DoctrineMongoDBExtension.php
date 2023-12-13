@@ -265,13 +265,6 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $methods['setPersistentCollectionFactory'] = new Reference($documentManager['persistent_collection_factory']);
         }
 
-        $container->getAlias('doctrine_mongodb.odm.command_logger')
-            ->setDeprecated(
-                'doctrine/mongodb-odm-bundle',
-                '4.4',
-                'The service %alias_id% is deprecated and will be dropped in DoctrineMongoDBBundle 5.0. Use "doctrine_mongodb.odm.psr_command_logger" instead.',
-            );
-
         // logging
         if ($container->getParameterBag()->resolveValue($documentManager['logging'])) {
             $container->getDefinition('doctrine_mongodb.odm.psr_command_logger')
