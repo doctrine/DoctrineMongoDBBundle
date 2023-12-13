@@ -27,18 +27,9 @@ class MongoDBQueryBuilderLoader implements EntityLoaderInterface
 
     /**
      * Construct an ORM Query Builder Loader
-     *
-     * @param Builder|Closure $queryBuilder
-     * @param string          $class
      */
-    public function __construct($queryBuilder, ?ObjectManager $manager = null, $class = null)
+    public function __construct(Builder|Closure $queryBuilder, ?ObjectManager $manager = null, ?string $class = null)
     {
-        // If a query builder was passed, it must be a closure or QueryBuilder
-        // instance
-        if (! ($queryBuilder instanceof Builder || $queryBuilder instanceof Closure)) {
-            throw new UnexpectedTypeException($queryBuilder, Builder::class . '  or ' . Closure::class);
-        }
-
         if ($queryBuilder instanceof Closure) {
             $queryBuilder = $queryBuilder($manager->getRepository($class));
 

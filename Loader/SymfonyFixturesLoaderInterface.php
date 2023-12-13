@@ -15,14 +15,12 @@ interface SymfonyFixturesLoaderInterface
      *
      * @param list<array{fixture: FixtureInterface, groups: string[]}> $fixtures
      */
-    public function addFixtures(array $fixtures);
+    public function addFixtures(array $fixtures): void;
 
     /**
      * Add a single fixture
-     *
-     * @return mixed
      */
-    public function addFixture(FixtureInterface $fixture);
+    public function addFixture(FixtureInterface $fixture): void;
 
     /**
      * Returns the array of data fixtures to execute.
@@ -31,5 +29,5 @@ interface SymfonyFixturesLoaderInterface
      *
      * @return FixtureInterface[]
      */
-    public function getFixtures(array $groups = []);
+    public function getFixtures(array $groups = []): array;
 }

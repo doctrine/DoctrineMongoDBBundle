@@ -102,7 +102,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
     }
 
     /** @param string|string[] $bundles */
-    private function getContainer($bundles = 'OtherXmlBundle'): ContainerBuilder
+    private function getContainer(string|array $bundles = 'OtherXmlBundle'): ContainerBuilder
     {
         $bundles = (array) $bundles;
 

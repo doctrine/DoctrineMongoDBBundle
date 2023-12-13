@@ -19,7 +19,7 @@ trait ServiceRepositoryTrait
      * @param string          $documentClass The class name of the entity this repository manages
      * @psalm-param class-string<T> $documentClass
      */
-    public function __construct(ManagerRegistry $registry, $documentClass)
+    public function __construct(ManagerRegistry $registry, string $documentClass)
     {
         $manager = $registry->getManagerForClass($documentClass);
         assert($manager instanceof DocumentManager || $manager === null);
