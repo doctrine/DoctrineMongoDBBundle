@@ -6,21 +6,32 @@ namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 
 use Doctrine\Bundle\MongoDBBundle\Attribute\AsDocumentListener;
 use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
+use Doctrine\Bundle\MongoDBBundle\CacheWarmer\HydratorCacheWarmer;
+use Doctrine\Bundle\MongoDBBundle\CacheWarmer\PersistentCollectionCacheWarmer;
+use Doctrine\Bundle\MongoDBBundle\CacheWarmer\ProxyCacheWarmer;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\EventSubscriber\EventSubscriberInterface;
 use Doctrine\Bundle\MongoDBBundle\Fixture\ODMFixtureInterface;
+use Doctrine\Bundle\MongoDBBundle\ManagerConfigurator;
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepositoryInterface;
 use Doctrine\Common\Cache\MemcacheCache;
 use Doctrine\Common\Cache\RedisCache;
 use Doctrine\Common\DataFixtures\Loader as DataFixturesLoader;
 use Doctrine\Common\EventSubscriber;
+use Doctrine\ODM\MongoDB\Configuration as MongoDBConfiguration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use InvalidArgumentException;
 use Jean85\PrettyVersions;
+use MongoDB\Client;
 use Symfony\Bridge\Doctrine\ArgumentResolver\EntityValueResolver;
+use Symfony\Bridge\Doctrine\ContainerAwareEventManager;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
+use Symfony\Bridge\Doctrine\Security\User\EntityUserProvider;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator;
+use Symfony\Bridge\Doctrine\Validator\DoctrineInitializer;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\MemcachedAdapter;
@@ -44,6 +55,7 @@ use function class_implements;
 use function in_array;
 use function interface_exists;
 use function is_dir;
+use function method_exists;
 use function reset;
 use function sprintf;
 
@@ -147,6 +159,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $this->loadMessengerServices($container);
 
         $this->loadEntityValueResolverServices($container, $loader, $config);
+
+        $this->deprecateClassParameters($container);
     }
 
     /**
@@ -660,5 +674,40 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         }
 
         return self::$odmVersion;
+    }
+
+    private function deprecateClassParameters(ContainerBuilder $container): void
+    {
+        if (! method_exists($container, 'deprecateParameter')) {
+            return;
+        }
+
+        foreach (
+            [
+                'doctrine_mongodb.odm.connection.class' => Client::class,
+                'doctrine_mongodb.odm.configuration.class' => MongoDBConfiguration::class,
+                'doctrine_mongodb.odm.document_manager.class' => DocumentManager::class,
+                'doctrine_mongodb.odm.manager_configurator.class' => ManagerConfigurator::class,
+                'doctrine_mongodb.odm.event_manager.class' => ContainerAwareEventManager::class,
+                'doctrine_odm.mongodb.validator_initializer.class' => DoctrineInitializer::class,
+                'doctrine_odm.mongodb.validator.unique.class' => UniqueEntityValidator::class,
+                'doctrine_mongodb.odm.class' => ManagerRegistry::class,
+                'doctrine_mongodb.odm.security.user.provider.class' => EntityUserProvider::class,
+                'doctrine_mongodb.odm.proxy_cache_warmer.class' => ProxyCacheWarmer::class,
+                'doctrine_mongodb.odm.hydrator_cache_warmer.class' => HydratorCacheWarmer::class,
+                'doctrine_mongodb.odm.persistent_collection_cache_warmer.class' => PersistentCollectionCacheWarmer::class,
+            ] as $parameter => $class
+        ) {
+            if (! $container->hasParameter($parameter) || $container->getParameter($parameter) === $class) {
+                continue;
+            }
+
+            $container->deprecateParameter(
+                $parameter,
+                'doctrine/mongodb-odm-bundle',
+                '4.7',
+                '"%s" parameter is deprecated, you should use a compiler pass to update the service instead.',
+            );
+        }
     }
 }
