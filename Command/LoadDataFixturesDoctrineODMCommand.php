@@ -83,7 +83,7 @@ EOT
 
         $purger   = new MongoDBPurger($dm);
         $executor = new MongoDBExecutor($dm, $purger);
-        $executor->setLogger(static function ($message) use ($output) {
+        $executor->setLogger(static function ($message) use ($output): void {
             $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
         });
         $executor->execute($fixtures, $input->getOption('append'));

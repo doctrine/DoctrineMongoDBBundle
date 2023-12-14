@@ -27,15 +27,11 @@ use function array_key_exists;
  */
 class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
 {
-    /** @var ManagerRegistry */
-    protected $registry;
-
     /** @var array<class-string, array{ClassMetadata, string}|null> */
     private array $cache = [];
 
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(private ManagerRegistry $registry)
     {
-        $this->registry = $registry;
     }
 
     public function guessType(string $class, string $property): ?TypeGuess
@@ -165,12 +161,8 @@ class DoctrineMongoDBTypeGuesser implements FormTypeGuesserInterface
         return null;
     }
 
-    /**
-     * @param string $class
-     *
-     * @return array{ClassMetadata, string}|null
-     */
-    protected function getMetadata($class)
+    /** @return array{ClassMetadata, string}|null */
+    protected function getMetadata(string $class): ?array
     {
         if (array_key_exists($class, $this->cache)) {
             return $this->cache[$class];

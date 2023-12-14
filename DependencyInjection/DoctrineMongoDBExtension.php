@@ -37,14 +37,13 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
 
-use function array_keys;
+use function array_key_first;
 use function array_merge;
 use function class_exists;
 use function class_implements;
 use function in_array;
 use function interface_exists;
 use function is_dir;
-use function reset;
 use function sprintf;
 
 /**
@@ -71,15 +70,13 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $loader->load('mongodb.xml');
 
         if (empty($config['default_connection'])) {
-            $keys                         = array_keys($config['connections']);
-            $config['default_connection'] = reset($keys);
+            $config['default_connection'] = array_key_first($config['connections']);
         }
 
         $container->setParameter('doctrine_mongodb.odm.default_connection', $config['default_connection']);
 
         if (empty($config['default_document_manager'])) {
-            $keys                               = array_keys($config['document_managers']);
-            $config['default_document_manager'] = reset($keys);
+            $config['default_document_manager'] = array_key_first($config['document_managers']);
         }
 
         $container->setParameter('doctrine_mongodb.odm.default_document_manager', $config['default_document_manager']);
@@ -156,7 +153,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      *
      * @return array<string, mixed>
      */
-    protected function overrideParameters($options, ContainerBuilder $container)
+    protected function overrideParameters(array $options, ContainerBuilder $container): array
     {
         $overrides = [
             'proxy_namespace',
@@ -189,11 +186,11 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      * Loads the document managers configuration.
      *
      * @param array            $dmConfigs An array of document manager configs
-     * @param string           $defaultDM The default document manager name
+     * @param string|null      $defaultDM The default document manager name
      * @param string           $defaultDB The default db name
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
-    protected function loadDocumentManagers(array $dmConfigs, $defaultDM, $defaultDB, ContainerBuilder $container)
+    protected function loadDocumentManagers(array $dmConfigs, string|null $defaultDM, string $defaultDB, ContainerBuilder $container): void
     {
         $dms = [];
         foreach ($dmConfigs as $name => $documentManager) {
@@ -214,11 +211,11 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      * Loads a document manager configuration.
      *
      * @param array            $documentManager A document manager configuration array
-     * @param string           $defaultDM       The default document manager name
+     * @param string|null      $defaultDM       The default document manager name
      * @param string           $defaultDB       The default db name
      * @param ContainerBuilder $container       A ContainerBuilder instance
      */
-    protected function loadDocumentManager(array $documentManager, $defaultDM, $defaultDB, ContainerBuilder $container)
+    protected function loadDocumentManager(array $documentManager, string|null $defaultDM, string $defaultDB, ContainerBuilder $container): void
     {
         $connectionName  = $documentManager['connection'] ?? $documentManager['name'];
         $configurationId = sprintf('doctrine_mongodb.odm.%s_configuration', $documentManager['name']);
@@ -351,7 +348,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      * @param array            $config    An array of connections configurations
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
-    protected function loadConnections(array $connections, ContainerBuilder $container)
+    protected function loadConnections(array $connections, ContainerBuilder $container): void
     {
         $cons = [];
         foreach ($connections as $name => $connection) {
@@ -488,7 +485,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      * In the case of bundles everything is really optional (which leads to autodetection for this bundle) but
      * in the mappings key everything except alias is a required argument.
      */
-    protected function loadDocumentManagerBundlesMappingInformation(array $documentManager, Definition $odmConfigDef, ContainerBuilder $container)
+    protected function loadDocumentManagerBundlesMappingInformation(array $documentManager, Definition $odmConfigDef, ContainerBuilder $container): void
     {
         // reset state of drivers and alias map. They are only used by this methods and children.
         $this->drivers  = [];
@@ -553,13 +550,12 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      *
      * @return string The XML namespace
      */
-    public function getNamespace()
+    public function getNamespace(): string
     {
         return 'http://symfony.com/schema/dic/doctrine/odm/mongodb';
     }
 
-    /** @return string */
-    public function getXsdValidationBasePath()
+    public function getXsdValidationBasePath(): string
     {
         return __DIR__ . '/../Resources/config/schema';
     }

@@ -33,8 +33,7 @@ class DoctrineMongoDBBundle extends Bundle
     /** @var callable|null */
     private $autoloader;
 
-    /** @return void */
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new CacheCompatibilityPass());
         $container->addCompilerPass(new RegisterEventListenersAndSubscribersPass('doctrine_mongodb.odm.connections', 'doctrine_mongodb.odm.%s_connection.event_manager', 'doctrine_mongodb.odm'), PassConfig::TYPE_BEFORE_OPTIMIZATION);
@@ -62,8 +61,7 @@ class DoctrineMongoDBBundle extends Bundle
         return new DoctrineMongoDBExtension();
     }
 
-    /** @return void */
-    public function boot()
+    public function boot(): void
     {
         $registry = $this->container->get('doctrine_mongodb');
         assert($registry instanceof ManagerRegistry);
@@ -106,8 +104,7 @@ class DoctrineMongoDBBundle extends Bundle
         $commandLoggerRegistry->unregister();
     }
 
-    /** @return void */
-    public function shutdown()
+    public function shutdown(): void
     {
         $this->unregisterAutoloader();
         $this->unregisterCommandLoggers();

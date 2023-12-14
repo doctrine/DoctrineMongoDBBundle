@@ -66,11 +66,9 @@ final class SymfonyFixturesLoader extends Loader implements SymfonyFixturesLoade
     /**
      * Overridden to not allow new fixture classes to be instantiated.
      *
-     * @param string $class
-     *
-     * @return FixtureInterface
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint
      */
-    protected function createFixture($class)
+    protected function createFixture($class): FixtureInterface
     {
         /*
          * We don't actually need to create the fixture. We just
@@ -95,7 +93,7 @@ final class SymfonyFixturesLoader extends Loader implements SymfonyFixturesLoade
      *
      * @return FixtureInterface[]
      */
-    public function getFixtures(array $groups = [])
+    public function getFixtures(array $groups = []): array
     {
         $fixtures = parent::getFixtures();
 
@@ -135,7 +133,7 @@ final class SymfonyFixturesLoader extends Loader implements SymfonyFixturesLoade
     }
 
     /** @param array<class-string<FixtureInterface>, FixtureInterface> $fixtures An array of fixtures with class names as keys */
-    private function validateDependencies(array $fixtures, FixtureInterface $fixture)
+    private function validateDependencies(array $fixtures, FixtureInterface $fixture): void
     {
         if (! $fixture instanceof DependentFixtureInterface) {
             return;

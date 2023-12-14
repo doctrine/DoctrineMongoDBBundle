@@ -13,13 +13,7 @@ use function array_keys;
 
 class ManagerRegistry extends BaseManagerRegistry
 {
-    /**
-     * @param string $name
-     * @param string $defaultConnection
-     * @param string $defaultManager
-     * @param string $proxyInterfaceName
-     */
-    public function __construct($name, array $connections, array $managers, $defaultConnection, $defaultManager, $proxyInterfaceName, ?ContainerInterface $container = null)
+    public function __construct(string $name, array $connections, array $managers, string $defaultConnection, string $defaultManager, string $proxyInterfaceName, ?ContainerInterface $container = null)
     {
         $this->container = $container;
 
@@ -29,13 +23,9 @@ class ManagerRegistry extends BaseManagerRegistry
     /**
      * Resolves a registered namespace alias to the full namespace.
      *
-     * @param string $alias
-     *
-     * @return string
-     *
      * @throws MongoDBException
      */
-    public function getAliasNamespace($alias)
+    public function getAliasNamespace(string $alias): string
     {
         foreach (array_keys($this->getManagers()) as $name) {
             $objectManager = $this->getManager($name);

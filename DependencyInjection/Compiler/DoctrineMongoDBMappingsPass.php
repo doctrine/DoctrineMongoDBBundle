@@ -32,7 +32,7 @@ final class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
      *                                                executes if this parameter exists in the service container.
      * @param string[]             $aliasMap          Map of alias to namespace.
      */
-    public function __construct($driver, array $namespaces, array $managerParameters, $enabledParameter = false, array $aliasMap = [])
+    public function __construct(Definition|Reference $driver, array $namespaces, array $managerParameters, string|false $enabledParameter = false, array $aliasMap = [])
     {
         $managerParameters[] = 'doctrine_mongodb.odm.default_document_manager';
 
@@ -58,10 +58,8 @@ final class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
      *                                        enable the mapping. Set to false to not do any check,
      *                                        optional.
      * @param string[]     $aliasMap          Map of alias to namespace.
-     *
-     * @return DoctrineMongoDBMappingsPass
      */
-    public static function createXmlMappingDriver(array $mappings, array $managerParameters, $enabledParameter = false, array $aliasMap = [])
+    public static function createXmlMappingDriver(array $mappings, array $managerParameters, string|false $enabledParameter = false, array $aliasMap = []): DoctrineMongoDBMappingsPass
     {
         $arguments = [$mappings, '.mongodb.xml'];
         $locator   = new Definition(SymfonyFileLocator::class, $arguments);
@@ -80,10 +78,8 @@ final class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
      *                                        enable the mapping. Set to false to not do any check,
      *                                        optional.
      * @param string[]     $aliasMap          Map of alias to namespace.
-     *
-     * @return DoctrineMongoDBMappingsPass
      */
-    public static function createPhpMappingDriver(array $mappings, array $managerParameters = [], $enabledParameter = false, array $aliasMap = [])
+    public static function createPhpMappingDriver(array $mappings, array $managerParameters = [], string|false $enabledParameter = false, array $aliasMap = []): DoctrineMongoDBMappingsPass
     {
         $arguments = [$mappings, '.php'];
         $locator   = new Definition(SymfonyFileLocator::class, $arguments);
@@ -103,10 +99,8 @@ final class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
      *                                        enable the mapping. Set to false to not do any check,
      *                                        optional.
      * @param string[]     $aliasMap          Map of alias to namespace.
-     *
-     * @return DoctrineMongoDBMappingsPass
      */
-    public static function createAttributeMappingDriver(array $namespaces, array $directories, array $managerParameters, $enabledParameter = false, array $aliasMap = [])
+    public static function createAttributeMappingDriver(array $namespaces, array $directories, array $managerParameters, string|false $enabledParameter = false, array $aliasMap = []): DoctrineMongoDBMappingsPass
     {
         $driver = new Definition(AttributeDriver::class, [$directories]);
 
@@ -124,10 +118,8 @@ final class DoctrineMongoDBMappingsPass extends RegisterMappingsPass
      *                                        enable the mapping. Set to false to not do any check,
      *                                        optional.
      * @param string[]     $aliasMap          Map of alias to namespace.
-     *
-     * @return DoctrineMongoDBMappingsPass
      */
-    public static function createStaticPhpMappingDriver(array $namespaces, array $directories, array $managerParameters = [], $enabledParameter = false, array $aliasMap = [])
+    public static function createStaticPhpMappingDriver(array $namespaces, array $directories, array $managerParameters = [], string|false $enabledParameter = false, array $aliasMap = []): DoctrineMongoDBMappingsPass
     {
         $driver = new Definition(StaticPHPDriver::class, [$directories]);
 

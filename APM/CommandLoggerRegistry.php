@@ -22,14 +22,14 @@ final class CommandLoggerRegistry
 
     public function register(): void
     {
-        array_map(static function (CommandLoggerInterface $commandLogger) {
+        array_map(static function (CommandLoggerInterface $commandLogger): void {
             $commandLogger->register();
         }, $this->commandLoggers);
     }
 
     public function unregister(): void
     {
-        array_map(static function (CommandLoggerInterface $commandLogger) {
+        array_map(static function (CommandLoggerInterface $commandLogger): void {
             $commandLogger->unregister();
         }, $this->commandLoggers);
     }

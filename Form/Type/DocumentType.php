@@ -60,13 +60,9 @@ class DocumentType extends DoctrineType
         $resolver->setAllowedTypes('document_manager', ['null', 'string', DocumentManager::class]);
     }
 
-    /**
-     * @internal Symfony 2.8 compatibility
-     *
-     * @return string
-     */
+    /** @internal Symfony 2.8 compatibility */
     #[ReturnTypeWillChange]
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'document';
     }

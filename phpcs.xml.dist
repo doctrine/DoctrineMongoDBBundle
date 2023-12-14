@@ -21,11 +21,6 @@
         <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingTraversableTypeHintSpecification" />
         <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification" />
 
-        <!-- Will cause BC breaks to method signatures - disabled for now -->
-        <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint"/> <!-- PHP 7.4 required-->
-        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint"/> <!-- we can do it in doctrine-bundle 3.0-->
-        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint"/> <!-- we can do it in doctrine-bundle 3.0 -->
-
         <!-- Disabled to avoid class renaming - to be handled in a separate PR -->
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming" />
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming" />
