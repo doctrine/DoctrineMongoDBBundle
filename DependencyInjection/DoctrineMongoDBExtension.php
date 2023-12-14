@@ -698,10 +698,6 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 'doctrine_mongodb.odm.persistent_collection_cache_warmer.class' => PersistentCollectionCacheWarmer::class,
             ] as $parameter => $class
         ) {
-            if (! $container->hasParameter($parameter) || $container->getParameter($parameter) === $class) {
-                continue;
-            }
-
             $container->deprecateParameter(
                 $parameter,
                 'doctrine/mongodb-odm-bundle',
