@@ -249,6 +249,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             'setPersistentCollectionDir' => '%doctrine_mongodb.odm.persistent_collection_dir%',
             'setPersistentCollectionNamespace' => '%doctrine_mongodb.odm.persistent_collection_namespace%',
             'setAutoGeneratePersistentCollectionClasses' => '%doctrine_mongodb.odm.auto_generate_persistent_collection_classes%',
+            'setUseTransactionalFlush' => $documentManager['use_transactional_flush'],
         ];
 
         if ($documentManager['repository_factory']) {

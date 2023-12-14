@@ -369,4 +369,44 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $container->compile();
         $this->assertEquals(new MapDocument(null, null, null, [], null, null, null, true), $container->get('controller_resolver_defaults'));
     }
+
+    public function testDefaultTransactionalFlush(): void
+    {
+        $container = $this->buildMinimalContainer();
+        $container->setParameter('kernel.debug', false);
+        $container->setParameter('kernel.bundles', []);
+        $container->setParameter('kernel.bundles_metadata', []);
+        $loader = new DoctrineMongoDBExtension();
+        $loader->load(self::buildConfiguration(), $container);
+
+        $configuration = $container->getDefinition('doctrine_mongodb.odm.default_configuration');
+
+        $this->assertContains(
+            [
+                'setUseTransactionalFlush',
+                [false],
+            ],
+            $configuration->getMethodCalls(),
+        );
+    }
+
+    public function testUseTransactionalFlush(): void
+    {
+        $container = $this->buildMinimalContainer();
+        $container->setParameter('kernel.debug', false);
+        $container->setParameter('kernel.bundles', []);
+        $container->setParameter('kernel.bundles_metadata', []);
+        $loader = new DoctrineMongoDBExtension();
+        $loader->load(self::buildConfiguration(['document_managers' => ['default' => ['use_transactional_flush' => true]]]), $container);
+
+        $configuration = $container->getDefinition('doctrine_mongodb.odm.default_configuration');
+
+        $this->assertContains(
+            [
+                'setUseTransactionalFlush',
+                [true],
+            ],
+            $configuration->getMethodCalls(),
+        );
+    }
 }
