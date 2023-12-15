@@ -7,6 +7,7 @@ namespace Doctrine\Bundle\MongoDBBundle;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CacheCompatibilityPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CreateHydratorDirectoryPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CreateProxyDirectoryPass;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\DeprecateChangedClassParametersPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
@@ -43,6 +44,7 @@ class DoctrineMongoDBBundle extends Bundle
         $container->addCompilerPass(new DoctrineValidationPass('mongodb'));
         $container->addCompilerPass(new ServiceRepositoryCompilerPass());
         $container->addCompilerPass(new FixturesCompilerPass());
+        $container->addCompilerPass(new DeprecateChangedClassParametersPass());
 
         if (! $container->hasExtension('security')) {
             return;

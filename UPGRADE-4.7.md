@@ -24,3 +24,15 @@ UPGRADE FROM 4.6 to 4.7
   * `doctrine_mongodb.odm.proxy_cache_warmer.class`
   * `doctrine_mongodb.odm.hydrator_cache_warmer.class`
   * `doctrine_mongodb.odm.persistent_collection_cache_warmer.class`
+* Deprecated modifying the following parameters, they are used internally:
+  * `doctrine_mongodb.odm.cache.array.class`
+  * `doctrine_mongodb.odm.cache.apc.class`
+  * `doctrine_mongodb.odm.cache.apcu.class`
+  * `doctrine_mongodb.odm.cache.memcache.class`
+  * `doctrine_mongodb.odm.cache.memcache_host`
+  * `doctrine_mongodb.odm.cache.memcache_port`
+  * `doctrine_mongodb.odm.cache.memcache_instance.class`
+  * `doctrine_mongodb.odm.cache.xcache.class`
+  * `doctrine_mongodb.odm.metadata.driver_chain.class`
+  * `doctrine_mongodb.odm.metadata.attribute.class`
+  * `doctrine_mongodb.odm.metadata.xml.class`
