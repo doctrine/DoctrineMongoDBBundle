@@ -17,8 +17,10 @@ use Doctrine\Common\Cache\MemcacheCache;
 use Doctrine\Common\Cache\RedisCache;
 use Doctrine\Common\DataFixtures\Loader as DataFixturesLoader;
 use Doctrine\Common\EventSubscriber;
+use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use InvalidArgumentException;
+use MongoDB\Client;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
@@ -31,7 +33,7 @@ use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -61,13 +63,18 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
-        // Load DoctrineMongoDBBundle/Resources/config/mongodb.xml
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
 
         $configuration = new Configuration();
         $config        = $this->processConfiguration($configuration, $configs);
 
-        $loader->load('mongodb.xml');
+        $loader->load('mongodb.php');
+        $loader->load('cache_warmer.php');
+        $loader->load('command.php');
+        $loader->load('form.php');
+        $loader->load('logger.php');
+        $loader->load('profiler.php');
+        $loader->load('validator.php');
 
         if (empty($config['default_connection'])) {
             $config['default_connection'] = array_key_first($config['connections']);
@@ -140,7 +147,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             ]);
         });
 
-        $this->loadMessengerServices($container);
+        $this->loadMessengerServices($container, $loader);
 
         $this->loadEntityValueResolverServices($container, $loader, $config);
     }
@@ -221,7 +228,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $configurationId = sprintf('doctrine_mongodb.odm.%s_configuration', $documentManager['name']);
         $defaultDatabase = $documentManager['database'] ?? $defaultDB;
 
-        $odmConfigDef = new Definition('%doctrine_mongodb.odm.configuration.class%');
+        $odmConfigDef = new Definition(ODMConfiguration::class);
         $odmConfigDef->addTag(self::CONFIGURATION_TAG);
         $container->setDefinition(
             $configurationId,
@@ -256,13 +263,6 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         if ($documentManager['persistent_collection_factory']) {
             $methods['setPersistentCollectionFactory'] = new Reference($documentManager['persistent_collection_factory']);
         }
-
-        $container->getAlias('doctrine_mongodb.odm.command_logger')
-            ->setDeprecated(
-                'doctrine/mongodb-odm-bundle',
-                '4.4',
-                'The service %alias_id% is deprecated and will be dropped in DoctrineMongoDBBundle 5.0. Use "doctrine_mongodb.odm.psr_command_logger" instead.',
-            );
 
         // logging
         if ($container->getParameterBag()->resolveValue($documentManager['logging'])) {
@@ -317,8 +317,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             // Document managers will share their connection's event manager
             new Reference(sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $connectionName)),
         ];
-        $odmDmDef  = new Definition('%doctrine_mongodb.odm.document_manager.class%', $odmDmArgs);
-        $odmDmDef->setFactory(['%doctrine_mongodb.odm.document_manager.class%', 'create']);
+        $odmDmDef  = new Definition(DocumentManager::class, $odmDmArgs);
+        $odmDmDef->setFactory([DocumentManager::class, 'create']);
         $odmDmDef->addTag('doctrine_mongodb.odm.document_manager');
         $odmDmDef->setPublic(true);
 
@@ -362,7 +362,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $configurationId = sprintf('doctrine_mongodb.odm.%s_configuration', $name);
             $container->setDefinition(
                 $configurationId,
-                new Definition('%doctrine_mongodb.odm.configuration.class%'),
+                new Definition(ODMConfiguration::class),
             );
 
             $odmConnArgs = [
@@ -372,7 +372,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 $this->normalizeDriverOptions($connection),
             ];
 
-            $odmConnDef = new Definition('%doctrine_mongodb.odm.connection.class%', $odmConnArgs);
+            $odmConnDef = new Definition(Client::class, $odmConnArgs);
             $odmConnDef->setPublic(true);
             $id = sprintf('doctrine_mongodb.odm.%s_connection', $name);
             $container->setDefinition($id, $odmConnDef);
@@ -382,21 +382,20 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $container->setParameter('doctrine_mongodb.odm.connections', $cons);
     }
 
-    private function loadMessengerServices(ContainerBuilder $container): void
+    private function loadMessengerServices(ContainerBuilder $container, FileLoader $loader): void
     {
         /** @psalm-suppress UndefinedClass Optional dependency */
         if (! interface_exists(MessageBusInterface::class) || ! class_exists(DoctrineClearEntityManagerWorkerSubscriber::class)) {
             return;
         }
 
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('messenger.xml');
+        $loader->load('messenger.php');
     }
 
     /** @param array<string, mixed> $config */
     private function loadEntityValueResolverServices(ContainerBuilder $container, FileLoader $loader, array $config): void
     {
-        $loader->load('value_resolver.xml');
+        $loader->load('value_resolver.php');
 
         if (! class_exists(ExpressionLanguage::class)) {
             $container->removeDefinition('doctrine_mongodb.odm.document_value_resolver.expression_language');
