@@ -12,11 +12,14 @@ use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerP
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\EventSubscriber\EventSubscriberInterface;
 use Doctrine\Bundle\MongoDBBundle\Fixture\ODMFixtureInterface;
+use Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver;
 use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepositoryInterface;
 use Doctrine\Common\DataFixtures\Loader as DataFixturesLoader;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
+use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use InvalidArgumentException;
 use MongoDB\Client;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
@@ -534,7 +537,12 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
     protected function getMetadataDriverClass(string $driverType): string
     {
-        return '%' . $this->getObjectManagerElementName('metadata.' . $driverType . '.class') . '%';
+        return match ($driverType) {
+            'driver_chain' => MappingDriverChain::class,
+            'attribute' => AttributeDriver::class,
+            'xml' => XmlDriver::class,
+            default => throw new InvalidArgumentException(sprintf('Metadata driver not supported: "%s"', $driverType))
+        };
     }
 
     public function getAlias(): string
