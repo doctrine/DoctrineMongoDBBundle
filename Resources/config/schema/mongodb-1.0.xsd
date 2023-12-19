@@ -30,9 +30,7 @@
   </xsd:complexType>
 
   <xsd:complexType name="default-commit-options">
-    <xsd:attribute name="fsync" type="xsd:boolean" />
     <xsd:attribute name="j" type="xsd:boolean" />
-    <xsd:attribute name="safe" type="xsd:string" />
     <xsd:attribute name="timeout" type="xsd:integer" />
     <xsd:attribute name="w" type="xsd:string" />
     <xsd:attribute name="wtimeout" type="xsd:integer" />
@@ -83,11 +81,6 @@
     <xsd:attribute name="retryWrites" type="xsd:boolean" />
     <xsd:attribute name="w" type="xsd:string" />
     <xsd:attribute name="wTimeoutMS" type="xsd:integer" />
-    <!-- deprecated options -->
-    <xsd:attribute name="fsync" type="xsd:boolean" />
-    <xsd:attribute name="slaveOkay" type="xsd:boolean" />
-    <xsd:attribute name="timeout" type="xsd:integer" />
-    <xsd:attribute name="wTimeout" type="xsd:integer" />
   </xsd:complexType>
 
   <xsd:complexType name="connection-driver-options">

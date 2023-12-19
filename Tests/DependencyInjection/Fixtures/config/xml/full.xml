@@ -26,8 +26,6 @@
             timeout="10"
             w="majority"
             wtimeout="10"
-            fsync="false"
-            safe="2"
         />
 
         <doctrine:connection id="conn1" server="mongodb://localhost">
@@ -39,7 +37,6 @@
                 password="password_val"
                 readPreference="secondaryPreferred"
                 replicaSet="foo"
-                slaveOkay="true"
                 socketTimeoutMS="1000"
                 ssl="true"
                 tls="true"
