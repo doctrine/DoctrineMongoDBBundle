@@ -15,10 +15,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use MongoDB\Client;
 use PHPUnit\Framework\AssertionFailedError;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator;
-use Symfony\Component\Cache\Adapter\ApcuAdapter;
-use Symfony\Component\Cache\Adapter\ArrayAdapter;
-use Symfony\Component\Cache\Adapter\MemcachedAdapter;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -46,13 +42,8 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
 
         $loader->load(DoctrineMongoDBExtensionTest::buildConfiguration(), $container);
 
-        $this->assertEquals(Client::class, $container->getParameter('doctrine_mongodb.odm.connection.class'));
-        $this->assertEquals(Configuration::class, $container->getParameter('doctrine_mongodb.odm.configuration.class'));
-        $this->assertEquals(DocumentManager::class, $container->getParameter('doctrine_mongodb.odm.document_manager.class'));
         $this->assertEquals('MongoDBODMProxies', $container->getParameter('doctrine_mongodb.odm.proxy_namespace'));
         $this->assertEquals(Configuration::AUTOGENERATE_EVAL, $container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes'));
-
-        $this->assertEquals(UniqueEntityValidator::class, $container->getParameter('doctrine_odm.mongodb.validator.unique.class'));
 
         $config = DoctrineMongoDBExtensionTest::buildConfiguration([
             'proxy_namespace' => 'MyProxies',
@@ -66,7 +57,7 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $this->assertEquals(true, $container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes'));
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_connection');
-        $this->assertEquals('%doctrine_mongodb.odm.connection.class%', $definition->getClass());
+        $this->assertEquals(Client::class, $definition->getClass());
 
         $arguments = $definition->getArguments();
         $this->assertEquals(null, $arguments[0]);
@@ -75,8 +66,8 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $this->assertSame(['root' => 'array', 'document' => 'array'], $arguments[2]['typeMap']);
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_document_manager');
-        $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getClass());
-        $this->assertEquals(['%doctrine_mongodb.odm.document_manager.class%', 'create'], $definition->getFactory());
+        $this->assertEquals(DocumentManager::class, $definition->getClass());
+        $this->assertEquals([DocumentManager::class, 'create'], $definition->getFactory());
         $this->assertArrayHasKey('doctrine_mongodb.odm.document_manager', $definition->getTags());
 
         $arguments = $definition->getArguments();
@@ -104,7 +95,7 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $loader->load([$config], $container);
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_connection');
-        $this->assertEquals('%doctrine_mongodb.odm.connection.class%', $definition->getClass());
+        $this->assertEquals(Client::class, $definition->getClass());
 
         $arguments = $definition->getArguments();
         $this->assertEquals('mongodb://localhost:27017', $arguments[0]);
@@ -115,8 +106,8 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $this->assertEquals(new Reference('my_context'), $arguments[2]['context']);
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_document_manager');
-        $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getClass());
-        $this->assertEquals(['%doctrine_mongodb.odm.document_manager.class%', 'create'], $definition->getFactory());
+        $this->assertEquals(DocumentManager::class, $definition->getClass());
+        $this->assertEquals([DocumentManager::class, 'create'], $definition->getFactory());
         $this->assertArrayHasKey('doctrine_mongodb.odm.document_manager', $definition->getTags());
 
         $arguments = $definition->getArguments();
@@ -139,7 +130,7 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $container->compile();
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_connection');
-        $this->assertEquals('%doctrine_mongodb.odm.connection.class%', $definition->getClass());
+        $this->assertEquals(Client::class, $definition->getClass());
 
         $arguments = $definition->getArguments();
         $this->assertEquals('mongodb://localhost:27017', $arguments[0]);
@@ -154,8 +145,8 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $this->assertEquals('mydb', $methodCalls[$pos][1][0]);
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_document_manager');
-        $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getClass());
-        $this->assertEquals(['%doctrine_mongodb.odm.document_manager.class%', 'create'], $definition->getFactory());
+        $this->assertEquals(DocumentManager::class, $definition->getClass());
+        $this->assertEquals([DocumentManager::class, 'create'], $definition->getFactory());
         $this->assertArrayHasKey('doctrine_mongodb.odm.document_manager', $definition->getTags());
 
         $arguments = $definition->getArguments();
@@ -181,7 +172,7 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $container->compile();
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_connection');
-        $this->assertEquals('%doctrine_mongodb.odm.connection.class%', $definition->getClass());
+        $this->assertEquals(Client::class, $definition->getClass());
 
         $arguments = $definition->getArguments();
         $this->assertEquals('mongodb://localhost:27017', $arguments[0]);
@@ -190,8 +181,8 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $this->assertSame(['root' => 'array', 'document' => 'array'], $arguments[2]['typeMap']);
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_document_manager');
-        $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getClass());
-        $this->assertEquals(['%doctrine_mongodb.odm.document_manager.class%', 'create'], $definition->getFactory());
+        $this->assertEquals(DocumentManager::class, $definition->getClass());
+        $this->assertEquals([DocumentManager::class, 'create'], $definition->getFactory());
         $this->assertArrayHasKey('doctrine_mongodb.odm.document_manager', $definition->getTags());
 
         $arguments = $definition->getArguments();
@@ -217,7 +208,7 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $container->compile();
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.conn1_connection');
-        $this->assertEquals('%doctrine_mongodb.odm.connection.class%', $definition->getClass());
+        $this->assertEquals(Client::class, $definition->getClass());
 
         $arguments = $definition->getArguments();
         $this->assertEquals('mongodb://localhost:27017', $arguments[0]);
@@ -226,8 +217,8 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $this->assertSame(['root' => 'array', 'document' => 'array'], $arguments[2]['typeMap']);
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.dm1_document_manager');
-        $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getClass());
-        $this->assertEquals(['%doctrine_mongodb.odm.document_manager.class%', 'create'], $definition->getFactory());
+        $this->assertEquals(DocumentManager::class, $definition->getClass());
+        $this->assertEquals([DocumentManager::class, 'create'], $definition->getFactory());
         $this->assertArrayHasKey('doctrine_mongodb.odm.document_manager', $definition->getTags());
 
         $arguments = $definition->getArguments();
@@ -237,7 +228,7 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $this->assertEquals('doctrine_mongodb.odm.dm1_configuration', (string) $arguments[1]);
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.conn2_connection');
-        $this->assertEquals('%doctrine_mongodb.odm.connection.class%', $definition->getClass());
+        $this->assertEquals(Client::class, $definition->getClass());
 
         $arguments = $definition->getArguments();
         $this->assertEquals('mongodb://localhost:27017', $arguments[0]);
@@ -246,8 +237,8 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $this->assertSame(['root' => 'array', 'document' => 'array'], $arguments[2]['typeMap']);
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.dm2_document_manager');
-        $this->assertEquals('%doctrine_mongodb.odm.document_manager.class%', $definition->getClass());
-        $this->assertEquals(['%doctrine_mongodb.odm.document_manager.class%', 'create'], $definition->getFactory());
+        $this->assertEquals(DocumentManager::class, $definition->getClass());
+        $this->assertEquals([DocumentManager::class, 'create'], $definition->getFactory());
         $this->assertArrayHasKey('doctrine_mongodb.odm.document_manager', $definition->getTags());
 
         $arguments = $definition->getArguments();
