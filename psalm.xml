@@ -18,7 +18,6 @@
         <directory name="Command"/>
         <directory name="DataCollector"/>
         <directory name="DependencyInjection"/>
-        <directory name="EventSubscriber"/>
         <directory name="Fixture"/>
         <directory name="Form"/>
         <directory name="Loader"/>
