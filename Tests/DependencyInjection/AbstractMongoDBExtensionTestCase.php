@@ -359,7 +359,6 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
 
         $args = $definition->getArguments();
         $this->assertEquals('doctrine_mongodb.odm.default_memcached_instance', (string) $args[0]);
-        $this->assertEquals('', $args[1]);
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_memcached_instance');
         $this->assertEquals('Memcached', $definition->getClass());

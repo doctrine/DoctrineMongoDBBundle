@@ -26,18 +26,6 @@ UPGRADE FROM 4.x to 5.0
 The `Doctrine\Common\Cache\` providers are not supported anymore. The configuration
 uses `Symfony\Component\Cache\Adapter\` providers instead, for PSR-6 compatibility.
 
-The recommended configuration for production is `doctrine_mongodb.system_cache_pool`:
-
-```yaml
-when@prod:
-    doctrine_mongodb:
-        document_managers:
-            default:
-                metadata_cache_driver:
-                    type: service
-                    id: doctrine_mongodb.system_cache_pool
-```
-
-If you still want to use redis or memcached, the configuration of the host and port
+If you want to use redis or memcached, the configuration of `host`, `port` and `instance_class`
 must be done for each document manager. The parameters `doctrine_mongodb.odm.cache.memcached_*`
 and `doctrine_mongodb.odm.cache.redis_*` are not read anymore.

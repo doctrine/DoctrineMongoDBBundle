@@ -581,7 +581,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
             case 'memcached':
                 $memcachedClass         = $cacheDriver['class'] ?? MemcachedAdapter::class;
-                $memcachedInstanceClass = $cacheDriver['instance_class'] ?? 'Memcache';
+                $memcachedInstanceClass = $cacheDriver['instance_class'] ?? 'Memcached';
                 $memcachedHost          = $cacheDriver['host'] ?? 'localhost';
                 $memcachedPort          = $cacheDriver['port'] ?? '11211';
                 $memcachedInstance      = new Definition($memcachedInstanceClass);
@@ -591,10 +591,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 ]);
                 $container->setDefinition($this->getObjectManagerElementName(sprintf('%s_memcached_instance', $objectManagerName)), $memcachedInstance);
 
-                $cacheDef = new Definition($memcachedClass, [
-                    new Reference($this->getObjectManagerElementName(sprintf('%s_memcached_instance', $objectManagerName))),
-                    $cacheDriver['namespace'] ?? '',
-                ]);
+                $cacheDef = new Definition($memcachedClass, [new Reference($this->getObjectManagerElementName(sprintf('%s_memcached_instance', $objectManagerName)))]);
 
                 break;
 
@@ -610,22 +607,17 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 ]);
                 $container->setDefinition($this->getObjectManagerElementName(sprintf('%s_redis_instance', $objectManagerName)), $redisInstance);
 
-                $cacheDef = new Definition($redisClass, [
-                    new Reference($this->getObjectManagerElementName(sprintf('%s_redis_instance', $objectManagerName))),
-                    $cacheDriver['namespace'] ?? '',
-                ]);
+                $cacheDef = new Definition($redisClass, [new Reference($this->getObjectManagerElementName(sprintf('%s_redis_instance', $objectManagerName)))]);
 
                 break;
 
             case 'apcu':
-                $cacheDef = new Definition($cacheDriver['class'] ?? ApcuAdapter::class, [
-                    $cacheDriver['namespace'] ?? '',
-                ]);
+                $cacheDef = new Definition(ApcuAdapter::class);
 
                 break;
 
             case 'array':
-                $cacheDef = new Definition($cacheDriver['class'] ?? ArrayAdapter::class);
+                $cacheDef = new Definition(ArrayAdapter::class);
 
                 break;
 
