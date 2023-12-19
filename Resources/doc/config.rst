@@ -23,7 +23,7 @@ Sample Configuration
                         filter-name:
                             class: Class\Example\Filter\ODM\ExampleFilter
                             enabled: true
-                    metadata_cache_driver: array # array, apc, apcu, memcache, memcached, redis, wincache, zenddata, xcache
+                    metadata_cache_driver: array # array, service, apcu, memcached, redis
 
     .. code-block:: xml
 
@@ -86,7 +86,7 @@ If you wish to use memcache to cache your metadata, you need to configure the
                         AcmeDemoBundle: ~
                     metadata_cache_driver:
                         type: memcache
-                        class: Doctrine\Common\Cache\MemcacheCache
+                        class: Symfony\Component\Cache\Adapter\MemcachedAdapter
                         host: localhost
                         port: 11211
                         instance_class: Memcache

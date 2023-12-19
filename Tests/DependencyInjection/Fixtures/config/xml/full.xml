@@ -100,7 +100,7 @@
             id="dm2"
             connection="dm2_connection"
             database="db1"
-            metadata-cache-driver="apc"
+            metadata-cache-driver="apcu"
             logging="true"
             repository-factory="doctrine_mongodb.odm.container_repository_factory"
             default-document-repository-class="Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Repository\CustomRepository"

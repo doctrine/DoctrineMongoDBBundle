@@ -9,7 +9,7 @@ doctrine_mongodb:
   document_managers:
     dm1:
       connection: conn1
-      metadata_cache_driver: xcache
+      metadata_cache_driver: array
     dm2:
       connection: conn2
-      metadata_cache_driver: apc
+      metadata_cache_driver: apcu

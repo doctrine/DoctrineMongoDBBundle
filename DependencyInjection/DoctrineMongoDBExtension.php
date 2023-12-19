@@ -13,8 +13,6 @@ use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepository
 use Doctrine\Bundle\MongoDBBundle\EventSubscriber\EventSubscriberInterface;
 use Doctrine\Bundle\MongoDBBundle\Fixture\ODMFixtureInterface;
 use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepositoryInterface;
-use Doctrine\Common\Cache\MemcacheCache;
-use Doctrine\Common\Cache\RedisCache;
 use Doctrine\Common\DataFixtures\Loader as DataFixturesLoader;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -582,13 +580,10 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 return $cacheDriverServiceId;
 
             case 'memcached':
-                if (! empty($cacheDriver['class']) && $cacheDriver['class'] !== MemcacheCache::class) {
-                    return parent::loadCacheDriver($cacheName, $objectManagerName, $cacheDriver, $container);
-                }
-
-                $memcachedInstanceClass = ! empty($cacheDriver['instance_class']) ? $cacheDriver['instance_class'] : '%' . $this->getObjectManagerElementName('cache.memcached_instance.class') . '%';
-                $memcachedHost          = ! empty($cacheDriver['host']) ? $cacheDriver['host'] : '%' . $this->getObjectManagerElementName('cache.memcached_host') . '%';
-                $memcachedPort          = ! empty($cacheDriver['port']) ? $cacheDriver['port'] : '%' . $this->getObjectManagerElementName('cache.memcached_port') . '%';
+                $memcachedClass         = $cacheDriver['class'] ?? MemcachedAdapter::class;
+                $memcachedInstanceClass = $cacheDriver['instance_class'] ?? 'Memcache';
+                $memcachedHost          = $cacheDriver['host'] ?? 'localhost';
+                $memcachedPort          = $cacheDriver['port'] ?? '11211';
                 $memcachedInstance      = new Definition($memcachedInstanceClass);
                 $memcachedInstance->addMethodCall('addServer', [
                     $memcachedHost,
@@ -596,18 +591,18 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 ]);
                 $container->setDefinition($this->getObjectManagerElementName(sprintf('%s_memcached_instance', $objectManagerName)), $memcachedInstance);
 
-                $cacheDef = new Definition(MemcachedAdapter::class, [new Reference($this->getObjectManagerElementName(sprintf('%s_memcached_instance', $objectManagerName)))]);
+                $cacheDef = new Definition($memcachedClass, [
+                    new Reference($this->getObjectManagerElementName(sprintf('%s_memcached_instance', $objectManagerName))),
+                    $cacheDriver['namespace'] ?? '',
+                ]);
 
                 break;
 
             case 'redis':
-                if (! empty($cacheDriver['class']) && $cacheDriver['class'] !== RedisCache::class) {
-                    return parent::loadCacheDriver($cacheName, $objectManagerName, $cacheDriver, $container);
-                }
-
-                $redisInstanceClass = ! empty($cacheDriver['instance_class']) ? $cacheDriver['instance_class'] : '%' . $this->getObjectManagerElementName('cache.redis_instance.class') . '%';
-                $redisHost          = ! empty($cacheDriver['host']) ? $cacheDriver['host'] : '%' . $this->getObjectManagerElementName('cache.redis_host') . '%';
-                $redisPort          = ! empty($cacheDriver['port']) ? $cacheDriver['port'] : '%' . $this->getObjectManagerElementName('cache.redis_port') . '%';
+                $redisClass         = $cacheDriver['class'] ?? RedisAdapter::class;
+                $redisInstanceClass = $cacheDriver['instance_class'] ?? 'Redis';
+                $redisHost          = $cacheDriver['host'] ?? 'localhost';
+                $redisPort          = $cacheDriver['port'] ?? '6379';
                 $redisInstance      = new Definition($redisInstanceClass);
                 $redisInstance->addMethodCall('connect', [
                     $redisHost,
@@ -615,22 +610,27 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 ]);
                 $container->setDefinition($this->getObjectManagerElementName(sprintf('%s_redis_instance', $objectManagerName)), $redisInstance);
 
-                $cacheDef = new Definition(RedisAdapter::class, [new Reference($this->getObjectManagerElementName(sprintf('%s_redis_instance', $objectManagerName)))]);
+                $cacheDef = new Definition($redisClass, [
+                    new Reference($this->getObjectManagerElementName(sprintf('%s_redis_instance', $objectManagerName))),
+                    $cacheDriver['namespace'] ?? '',
+                ]);
 
                 break;
 
             case 'apcu':
-                $cacheDef = new Definition(ApcuAdapter::class);
+                $cacheDef = new Definition($cacheDriver['class'] ?? ApcuAdapter::class, [
+                    $cacheDriver['namespace'] ?? '',
+                ]);
 
                 break;
 
             case 'array':
-                $cacheDef = new Definition(ArrayAdapter::class);
+                $cacheDef = new Definition($cacheDriver['class'] ?? ArrayAdapter::class);
 
                 break;
 
             default:
-                return parent::loadCacheDriver($cacheName, $objectManagerName, $cacheDriver, $container);
+                throw new InvalidArgumentException(sprintf('"%s" is an unrecognized cache driver.', $cacheDriver['type']));
         }
 
         $cacheDef->setPublic(false);

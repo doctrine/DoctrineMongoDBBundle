@@ -105,5 +105,5 @@ doctrine_mongodb:
                     prefix: prefix_val
                     alias:  alias_val
                     is_bundle: false
-            metadata_cache_driver: apc
+            metadata_cache_driver: apcu
             logging: true

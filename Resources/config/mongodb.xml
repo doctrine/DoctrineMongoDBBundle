@@ -19,16 +19,6 @@
         <parameter key="doctrine_mongodb.odm.hydrator_cache_warmer.class">Doctrine\Bundle\MongoDBBundle\CacheWarmer\HydratorCacheWarmer</parameter>
         <parameter key="doctrine_mongodb.odm.persistent_collection_cache_warmer.class">Doctrine\Bundle\MongoDBBundle\CacheWarmer\PersistentCollectionCacheWarmer</parameter>
 
-        <!-- cache -->
-        <parameter key="doctrine_mongodb.odm.cache.array.class">Doctrine\Common\Cache\ArrayCache</parameter>
-        <parameter key="doctrine_mongodb.odm.cache.apc.class">Doctrine\Common\Cache\ApcCache</parameter>
-        <parameter key="doctrine_mongodb.odm.cache.apcu.class">Doctrine\Common\Cache\ApcuCache</parameter>
-        <parameter key="doctrine_mongodb.odm.cache.memcache.class">Doctrine\Common\Cache\MemcacheCache</parameter>
-        <parameter key="doctrine_mongodb.odm.cache.memcache_host">localhost</parameter>
-        <parameter key="doctrine_mongodb.odm.cache.memcache_port">11211</parameter>
-        <parameter key="doctrine_mongodb.odm.cache.memcache_instance.class">Memcache</parameter>
-        <parameter key="doctrine_mongodb.odm.cache.xcache.class">Doctrine\Common\Cache\XcacheCache</parameter>
-
         <!-- metadata -->
         <parameter key="doctrine_mongodb.odm.metadata.driver_chain.class">Doctrine\Persistence\Mapping\Driver\MappingDriverChain</parameter>
         <parameter key="doctrine_mongodb.odm.metadata.attribute.class">Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver</parameter>
@@ -49,7 +39,6 @@
 
     <services>
         <!-- defaults -->
-        <service id="doctrine_mongodb.odm.cache" alias="doctrine_mongodb.odm.cache.array" />
         <service id="%doctrine_mongodb.odm.document_manager.class%" alias="doctrine_mongodb.odm.document_manager" public="false" />
         <service id="%doctrine_mongodb.odm.class%" alias="doctrine_mongodb" public="false" />
 
@@ -112,9 +101,6 @@
         <service id="doctrine_mongodb.odm.manager_configurator.abstract" class="%doctrine_mongodb.odm.manager_configurator.class%" abstract="true">
             <argument type="collection" />
         </service>
-
-        <!-- cache -->
-        <service id="doctrine_mongodb.odm.cache.array" class="%doctrine_mongodb.odm.cache.array.class%" />
 
         <!-- logger -->
         <service id="doctrine_mongodb.odm.command_logger_registry" class="Doctrine\Bundle\MongoDBBundle\APM\CommandLoggerRegistry" public="true">
