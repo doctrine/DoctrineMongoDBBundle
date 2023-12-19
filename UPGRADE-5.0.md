@@ -13,7 +13,19 @@ UPGRADE FROM 4.x to 5.0
 * All command and compiler pass classes are internal and final. They cannot be
   used directly or extended.
 * Remove support of Annotation mapping, you should use Attributes or XML instead.
+
+## Fixtures
+
 * Remove `--service` option from `doctrine:mongodb:fixtures:load` command
 * Remove automatic injection of the container in fixtures classes implementing
   `ContainerAwareInterface`. You should use dependency injection instead.
 * Remove the `fixture_loader` configuration
+
+## Cache
+
+The `Doctrine\Common\Cache\` providers are not supported anymore. The configuration
+uses `Symfony\Component\Cache\Adapter\` providers instead, for PSR-6 compatibility.
+
+If you want to use redis or memcached, the configuration of `host`, `port` and `instance_class`
+must be done for each document manager. The parameters `doctrine_mongodb.odm.cache.memcached_*`
+and `doctrine_mongodb.odm.cache.redis_*` are not read anymore.

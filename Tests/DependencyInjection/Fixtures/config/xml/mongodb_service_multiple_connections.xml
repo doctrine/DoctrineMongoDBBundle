@@ -16,7 +16,7 @@
 
         <doctrine:connection id="conn2" server="mongodb://localhost:27017" />
 
-        <doctrine:document-manager id="dm1" metadata-cache-driver="xcache" connection="conn1" />
-        <doctrine:document-manager id="dm2" connection="conn2" metadata-cache-driver="apc" />
+        <doctrine:document-manager id="dm1" metadata-cache-driver="array" connection="conn1" />
+        <doctrine:document-manager id="dm2" connection="conn2" metadata-cache-driver="apcu" />
     </doctrine:mongodb>
 </container>

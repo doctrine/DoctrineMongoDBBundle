@@ -7,7 +7,7 @@ doctrine_mongodb:
     default:
       metadata_cache_driver:
         type: memcached
-        class: Doctrine\Common\Cache\MemcachedCache
+        class: Symfony\Component\Cache\Adapter\MemcachedAdapter
         host: localhost
         port: 11211
         instance_class: Memcached

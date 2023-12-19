@@ -183,7 +183,7 @@ class ConfigurationTest extends TestCase
                     'persistent_collection_factory' => null,
                     'auto_mapping' => false,
                     'filters'      => [],
-                    'metadata_cache_driver' => ['type' => 'apc'],
+                    'metadata_cache_driver' => ['type' => 'apcu'],
                     'mappings' => [
                         'BarBundle' => [
                             'type'      => 'xml',

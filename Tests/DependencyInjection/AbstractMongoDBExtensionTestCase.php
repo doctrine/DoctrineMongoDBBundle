@@ -5,23 +5,19 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
-use Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\BasicFilter;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\ComplexFilter;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\DisabledFilter;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
-use Doctrine\Common\Cache\ApcCache;
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Cache\MemcacheCache;
-use Doctrine\Common\Cache\MemcachedCache;
-use Doctrine\Common\Cache\XcacheCache;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
-use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use MongoDB\Client;
 use PHPUnit\Framework\AssertionFailedError;
+use Symfony\Component\Cache\Adapter\ApcuAdapter;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\MemcachedAdapter;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -51,16 +47,6 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
 
         $this->assertEquals('MongoDBODMProxies', $container->getParameter('doctrine_mongodb.odm.proxy_namespace'));
         $this->assertEquals(Configuration::AUTOGENERATE_EVAL, $container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes'));
-        $this->assertEquals(ArrayCache::class, $container->getParameter('doctrine_mongodb.odm.cache.array.class'));
-        $this->assertEquals(ApcCache::class, $container->getParameter('doctrine_mongodb.odm.cache.apc.class'));
-        $this->assertEquals(MemcacheCache::class, $container->getParameter('doctrine_mongodb.odm.cache.memcache.class'));
-        $this->assertEquals('localhost', $container->getParameter('doctrine_mongodb.odm.cache.memcache_host'));
-        $this->assertEquals('11211', $container->getParameter('doctrine_mongodb.odm.cache.memcache_port'));
-        $this->assertEquals('Memcache', $container->getParameter('doctrine_mongodb.odm.cache.memcache_instance.class'));
-        $this->assertEquals(XcacheCache::class, $container->getParameter('doctrine_mongodb.odm.cache.xcache.class'));
-        $this->assertEquals(MappingDriverChain::class, $container->getParameter('doctrine_mongodb.odm.metadata.driver_chain.class'));
-        $this->assertEquals(AttributeDriver::class, $container->getParameter('doctrine_mongodb.odm.metadata.attribute.class'));
-        $this->assertEquals(XmlDriver::class, $container->getParameter('doctrine_mongodb.odm.metadata.xml.class'));
 
         $config = DoctrineMongoDBExtensionTest::buildConfiguration([
             'proxy_namespace' => 'MyProxies',
@@ -343,10 +329,10 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $container->compile();
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.dm1_metadata_cache');
-        $this->assertEquals('%doctrine_mongodb.odm.cache.xcache.class%', $definition->getClass());
+        $this->assertEquals(ArrayAdapter::class, $definition->getClass());
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.dm2_metadata_cache');
-        $this->assertEquals('%doctrine_mongodb.odm.cache.apc.class%', $definition->getClass());
+        $this->assertEquals(ApcuAdapter::class, $definition->getClass());
     }
 
     /** @psalm-suppress UndefinedClass this won't be necessary when removing metadata cache configuration */
@@ -363,11 +349,10 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $container->compile();
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_metadata_cache');
-        $this->assertEquals(MemcachedCache::class, $definition->getClass());
+        $this->assertEquals(MemcachedAdapter::class, $definition->getClass());
 
-        $calls = $definition->getMethodCalls();
-        $this->assertEquals('setMemcached', $calls[0][0]);
-        $this->assertEquals('doctrine_mongodb.odm.default_memcached_instance', (string) $calls[0][1][0]);
+        $args = $definition->getArguments();
+        $this->assertEquals('doctrine_mongodb.odm.default_memcached_instance', (string) $args[0]);
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_memcached_instance');
         $this->assertEquals('Memcached', $definition->getClass());
