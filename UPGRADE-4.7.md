@@ -6,11 +6,27 @@ UPGRADE FROM 4.6 to 4.7
 * The bundle now requires PHP 8.1 or newer. If you're not running PHP 8.1 yet,
   it's recommended that you upgrade to PHP 8.1 before upgrading the bundle.
 
+## Fixtures
+
 * The `fixture_loader` configuration option was deprecated and will be removed
   in 5.0.
 * The `doctrine_mongodb.odm.fixture_loader` parameter has been removed.
 * Implementing `ContainerAwareInterface` on fixtures classes is deprecated,
   use dependency injection instead.
+
+## Configuration
+
+Deprecate configuration settings:
+
+| namespace                | removed     | replaced by        |
+|--------------------------|-------------|--------------------|
+| `default_commit_options` | `fsync`     | `j`                |
+| `default_commit_options` | `safe`      | `w`                |
+| `connections.*.options`  | `fsync`     | `journal`          |
+| `connections.*.options`  | `slaveOkay` | `readPreference`   |
+| `connections.*.options`  | `timeout`   | `connectTimeoutMS` |
+| `connections.*.options`  | `wTimeout`  | `wTimeoutMS`       |
+
 * Deprecated the following `*.class` parameters, you should use a compiler pass to update the service instead:
   * `doctrine_mongodb.odm.connection.class`
   * `doctrine_mongodb.odm.configuration.class`
