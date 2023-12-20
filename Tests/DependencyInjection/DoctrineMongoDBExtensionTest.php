@@ -97,6 +97,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                 'method' => 'onPrePersist',
                 'lazy' => true,
                 'connection' => 'test',
+                'priority' => 10,
             ],
         ], $listenerDefinition->getTag('doctrine_mongodb.odm.event_listener'));
     }

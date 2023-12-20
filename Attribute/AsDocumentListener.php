@@ -17,6 +17,7 @@ class AsDocumentListener
         public ?string $method = null,
         public ?bool $lazy = null,
         public ?string $connection = null,
+        public ?int $priority = null,
     ) {
     }
 }
