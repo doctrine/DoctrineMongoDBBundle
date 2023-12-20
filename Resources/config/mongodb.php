@@ -5,12 +5,9 @@ declare(strict_types=1);
 use Doctrine\Bundle\MongoDBBundle\Loader\SymfonyFixturesLoader;
 use Doctrine\Bundle\MongoDBBundle\ManagerConfigurator;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
-use Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver;
 use Doctrine\Bundle\MongoDBBundle\Repository\ContainerRepositoryFactory;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\ODM\MongoDB\Tools\ResolveTargetDocumentListener;
-use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use ProxyManager\Proxy\GhostObjectInterface;
 use Symfony\Bridge\Doctrine\ContainerAwareEventManager;
 use Symfony\Bridge\Doctrine\Security\User\EntityUserProvider;
@@ -20,19 +17,6 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\abstract_
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 return static function (ContainerConfigurator $containerConfigurator): void {
-    $containerConfigurator->parameters()
-        ->set('doctrine_mongodb.odm.cache.array.class', 'Doctrine\Common\Cache\ArrayCache')
-        ->set('doctrine_mongodb.odm.cache.apc.class', 'Doctrine\Common\Cache\ApcCache')
-        ->set('doctrine_mongodb.odm.cache.apcu.class', 'Doctrine\Common\Cache\ApcuCache')
-        ->set('doctrine_mongodb.odm.cache.memcache.class', 'Doctrine\Common\Cache\MemcacheCache')
-        ->set('doctrine_mongodb.odm.cache.memcache_host', 'localhost')
-        ->set('doctrine_mongodb.odm.cache.memcache_port', 11211)
-        ->set('doctrine_mongodb.odm.cache.memcache_instance.class', 'Memcache')
-        ->set('doctrine_mongodb.odm.cache.xcache.class', 'Doctrine\Common\Cache\XcacheCache')
-        ->set('doctrine_mongodb.odm.metadata.driver_chain.class', MappingDriverChain::class)
-        ->set('doctrine_mongodb.odm.metadata.attribute.class', AttributeDriver::class)
-        ->set('doctrine_mongodb.odm.metadata.xml.class', XmlDriver::class);
-
     $containerConfigurator->services()
 
         ->alias(DocumentManager::class, 'doctrine_mongodb.odm.document_manager')

@@ -14,6 +14,10 @@ UPGRADE FROM 4.x to 5.0
   used directly or extended.
 * Remove support of Annotation mapping, you should use Attributes or XML instead.
 
+## Configuration
+
+Remove all `doctrine_mongodb.odm.*` parameters.
+
 ## Fixtures
 
 * Remove `--service` option from `doctrine:mongodb:fixtures:load` command
