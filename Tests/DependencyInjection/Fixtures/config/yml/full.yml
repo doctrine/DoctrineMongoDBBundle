@@ -20,8 +20,6 @@ doctrine_mongodb:
         timeout: 10
         w: majority
         wtimeout: 10
-        fsync: false
-        safe: 2
 
     connections:
         conn1:
@@ -38,7 +36,6 @@ doctrine_mongodb:
                   - { dc: west }
                   - {  }
                 replicaSet:                           foo
-                slaveOkay:                            true
                 socketTimeoutMS:                      1000
                 ssl:                                  true
                 tls:                                  true

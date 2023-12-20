@@ -18,6 +18,17 @@ UPGRADE FROM 4.x to 5.0
 
 Remove all `doctrine_mongodb.odm.*` parameters.
 
+Deprecated options have been removed:
+
+| namespace                | removed     | replaced by        |
+|--------------------------|-------------|--------------------|
+| `default_commit_options` | `fsync`     | `j`                |
+| `default_commit_options` | `safe`      | `w`                |
+| `connections.*.options`  | `fsync`     | `journal`          |
+| `connections.*.options`  | `slaveOkay` | `readPreference`   |
+| `connections.*.options`  | `timeout`   | `connectTimeoutMS` |
+| `connections.*.options`  | `wTimeout`  | `wTimeoutMS`       |
+
 ## Fixtures
 
 * Remove `--service` option from `doctrine:mongodb:fixtures:load` command

@@ -58,10 +58,7 @@ class ConfigurationTest extends TestCase
         $this->assertEquals($defaults, $options);
     }
 
-    /**
-     * @dataProvider provideFullConfiguration
-     * @group legacy
-     */
+    /** @dataProvider provideFullConfiguration */
     public function testFullConfiguration(array $config): void
     {
         $processor     = new Processor();
@@ -86,8 +83,6 @@ class ConfigurationTest extends TestCase
                 'timeout' => 10,
                 'w' => 'majority',
                 'wtimeout' => 10,
-                'fsync' => false,
-                'safe' => 2,
             ],
             'connections' => [
                 'conn1' => [
@@ -104,7 +99,6 @@ class ConfigurationTest extends TestCase
                             [],
                         ],
                         'replicaSet'                           => 'foo',
-                        'slaveOkay'                            => true,
                         'socketTimeoutMS'                      => 1000,
                         'ssl'                                  => true,
                         'tls'                                  => true,
@@ -279,7 +273,7 @@ class ConfigurationTest extends TestCase
         // the "options" array is totally replaced
         $cases[] = [
             [
-                ['connections' => ['default' => ['options' => ['timeout' => 2000]]]],
+                ['connections' => ['default' => ['options' => ['socketTimeoutMS' => 2000]]]],
                 ['connections' => ['default' => ['options' => ['username' => 'foo']]]],
             ],
             ['connections' => ['default' => ['options' => ['username' => 'foo']]]],
