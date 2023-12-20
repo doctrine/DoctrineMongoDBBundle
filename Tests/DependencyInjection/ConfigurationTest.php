@@ -58,7 +58,10 @@ class ConfigurationTest extends TestCase
         $this->assertEquals($defaults, $options);
     }
 
-    /** @dataProvider provideFullConfiguration */
+    /**
+     * @dataProvider provideFullConfiguration
+     * @group legacy
+     */
     public function testFullConfiguration(array $config): void
     {
         $processor     = new Processor();
