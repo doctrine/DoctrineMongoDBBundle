@@ -62,15 +62,12 @@
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
-            "Doctrine\\Bundle\\MongoDBBundle\\": ""
-        },
-        "exclude-from-classmap": [
-            "/Tests/"
-        ]
+            "Doctrine\\Bundle\\MongoDBBundle\\": "src"
+        }
     },
     "autoload-dev": {
         "psr-4": {
-            "Doctrine\\Bundle\\MongoDBBundle\\Tests\\": "Tests"
+            "Doctrine\\Bundle\\MongoDBBundle\\Tests\\": "tests"
         }
     },
     "config": {

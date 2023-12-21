@@ -13,21 +13,9 @@
         <pluginClass class="Psalm\SymfonyPsalmPlugin\Plugin"/>
     </plugins>
     <projectFiles>
-        <directory name="APM"/>
-        <directory name="CacheWarmer"/>
-        <directory name="Command"/>
-        <directory name="DataCollector"/>
-        <directory name="DependencyInjection"/>
-        <directory name="Fixture"/>
-        <directory name="Form"/>
-        <directory name="Loader"/>
-        <directory name="Mapping"/>
-        <directory name="Repository"/>
-        <directory name="Tests"/>
-        <directory name="Validator"/>
-        <file name="DoctrineMongoDBBundle.php"/>
-        <file name="ManagerConfigurator.php"/>
-        <file name="ManagerRegistry.php"/>
+        <directory name="./config"/>
+        <directory name="./src"/>
+        <directory name="./tests"/>
         <ignoreFiles>
             <directory name="vendor"/>
         </ignoreFiles>
