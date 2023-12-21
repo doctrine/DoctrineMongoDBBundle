@@ -141,6 +141,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 'method'     => $attribute->method,
                 'lazy'       => $attribute->lazy,
                 'connection' => $attribute->connection,
+                'priority'   => $attribute->priority,
             ]);
         });
 
