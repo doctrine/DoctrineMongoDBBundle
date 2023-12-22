@@ -94,8 +94,6 @@ class DoctrineMongoDBExtensionTest extends TestCase
         self::assertSame([
             [
                 'event' => 'prePersist',
-                'method' => null,
-                'lazy' => null,
                 'connection' => 'test',
                 'priority' => 10,
             ],

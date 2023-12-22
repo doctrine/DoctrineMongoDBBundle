@@ -42,6 +42,8 @@ Deprecated options have been removed:
 
 * Remove `Doctrine\Bundle\MongoDBBundle\EventSubscriber\EventSubscriberInterface`.
   Use the `#[AsDocumentListener]` attribute instead.
+* Remove parameters `$method` and `$lazy` of `#[AsDocumentListener]`, they are
+  not used.
 
 ## Fixtures
 
