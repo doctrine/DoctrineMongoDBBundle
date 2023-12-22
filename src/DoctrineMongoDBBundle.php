@@ -21,6 +21,7 @@ use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 use function assert;
+use function dirname;
 use function spl_autoload_register;
 use function spl_autoload_unregister;
 
@@ -57,6 +58,11 @@ class DoctrineMongoDBBundle extends Bundle
     public function getContainerExtension(): ?ExtensionInterface
     {
         return new DoctrineMongoDBExtension();
+    }
+
+    public function getPath(): string
+    {
+        return dirname(__DIR__);
     }
 
     public function boot(): void
