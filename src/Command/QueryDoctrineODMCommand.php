@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Execute a Doctrine MongoDB ODM query and output the results.
  *
- * @internal since version 4.7.0
+ * @internal
  */
 final class QueryDoctrineODMCommand extends QueryCommand
 {

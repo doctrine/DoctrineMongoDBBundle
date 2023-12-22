@@ -8,7 +8,7 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
-/** @internal since version 4.7.0 */
+/** @internal */
 final class FixturesCompilerPass implements CompilerPassInterface
 {
     public const FIXTURE_TAG = 'doctrine.fixture.odm.mongodb';

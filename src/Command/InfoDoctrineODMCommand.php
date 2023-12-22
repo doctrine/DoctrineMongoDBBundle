@@ -18,7 +18,7 @@ use function sprintf;
 /**
  * Show information about mapped documents
  *
- * @internal since version 4.7.0
+ * @internal
  */
 final class InfoDoctrineODMCommand extends DoctrineODMCommand
 {

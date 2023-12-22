@@ -20,7 +20,7 @@ use function sprintf;
 /**
  * Load data fixtures from bundles.
  *
- * @internal since version 4.7.0
+ * @internal
  */
 final class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
 {

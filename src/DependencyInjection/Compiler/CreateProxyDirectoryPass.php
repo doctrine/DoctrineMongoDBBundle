@@ -14,7 +14,7 @@ use function is_writable;
 use function mkdir;
 use function sprintf;
 
-/** @internal since version 4.7.0 */
+/** @internal */
 final class CreateProxyDirectoryPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
