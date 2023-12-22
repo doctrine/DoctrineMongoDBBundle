@@ -17,4 +17,4 @@ jobs:
               with:
                   args: --short
               env:
-                  DOCS_DIR: 'Resources/doc/'
+                  DOCS_DIR: 'docs/'

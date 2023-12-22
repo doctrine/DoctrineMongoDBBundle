@@ -63,7 +63,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
-        $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../../config'));
 
         $configuration = new Configuration();
         $config        = $this->processConfiguration($configuration, $configs);
@@ -558,7 +558,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
     public function getXsdValidationBasePath(): string
     {
-        return __DIR__ . '/../Resources/config/schema';
+        return __DIR__ . '/../../config/schema';
     }
 
     /**

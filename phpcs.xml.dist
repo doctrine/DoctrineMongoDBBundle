@@ -11,9 +11,9 @@
 
     <config name="php_version" value="80100"/>
 
-    <file>.</file>
-
-    <exclude-pattern>vendor/*</exclude-pattern>
+    <file>config</file>
+    <file>src</file>
+    <file>tests</file>
 
     <rule ref="Doctrine">
         <!-- Traversable type hints often end up as mixed[], so we skip them for now -->
@@ -32,15 +32,15 @@
     </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
-        <exclude-pattern>Tests/*</exclude-pattern>
+        <exclude-pattern>tests/*</exclude-pattern>
     </rule>
 
     <rule ref="Squiz.Classes.ClassFileName.NoMatch">
-        <exclude-pattern>Tests/*</exclude-pattern>
+        <exclude-pattern>tests/*</exclude-pattern>
     </rule>
 
     <!-- It fails when using Nowdoc in method call -->
     <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInCall.MissingTrailingComma">
-        <exclude-pattern>Command/*</exclude-pattern>
+        <exclude-pattern>src/Command/*</exclude-pattern>
     </rule>
 </ruleset>

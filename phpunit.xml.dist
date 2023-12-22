@@ -8,11 +8,11 @@
          convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false"
-         bootstrap="./Tests/bootstrap.php"
+         bootstrap="tests/bootstrap.php"
 >
     <testsuites>
         <testsuite name="DoctrineMongoDBBundle Test Suite">
-            <directory>./Tests/</directory>
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
 
@@ -28,13 +28,8 @@
 
     <coverage>
         <include>
-            <directory>./</directory>
+            <directory>src</directory>
         </include>
-        <exclude>
-            <directory>./Resources</directory>
-            <directory>./Tests</directory>
-            <directory>./vendor</directory>
-        </exclude>
     </coverage>
 
     <listeners>
