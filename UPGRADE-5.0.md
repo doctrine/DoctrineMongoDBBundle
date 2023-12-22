@@ -32,6 +32,11 @@ Deprecated options have been removed:
 | `connections.*.options`  | `timeout`   | `connectTimeoutMS` |
 | `connections.*.options`  | `wTimeout`  | `wTimeoutMS`       |
 
+## Event Subscriber
+
+* `Doctrine\Bundle\MongoDBBundle\EventSubscriber\EventSubscriberInterface` has
+  been deprecated. Use the `#[AsDocumentListener]` attribute instead.
+
 ## Fixtures
 
 * Remove `--service` option from `doctrine:mongodb:fixtures:load` command
