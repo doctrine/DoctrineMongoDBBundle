@@ -6,10 +6,10 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundl
 
 use Doctrine\Bundle\MongoDBBundle\Attribute\AsDocumentListener;
 
-#[AsDocumentListener(event: 'prePersist', method: 'onPrePersist', lazy: true, connection: 'test', priority: 10)]
+#[AsDocumentListener(event: 'prePersist', connection: 'test', priority: 10)]
 class TestAttributeListener
 {
-    public function onPrePersist(): void
+    public function prePersist(): void
     {
     }
 }
