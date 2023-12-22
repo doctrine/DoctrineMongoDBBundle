@@ -1,21 +1,27 @@
 UPGRADE FROM 4.x to 5.0
 =======================
 
+## PHP version and dependencies
+
 * Add support for Symfony 7.0 and require at least Symfony 6.4
 * `doctrine/mongodb-odm` 2.6 and `doctrine/persistence` 3.0 are required
+
+## Annotations
+
+* Remove support of Annotation mapping, you should use Attributes or XML instead.
+
+## Commands
+
+* All command and compiler pass classes are internal and final. They cannot be
+  used directly or extended.
 * The `doctrine:mongodb:tail-cursor` command and
   `Doctrine\Bundle\MongoDBBundle\Cursor\TailableCursorProcessorInterface`
   interface have been dropped. You should use
   [change streams](https://docs.mongodb.com/manual/changeStreams/) instead.
-* Remove `Doctrine\Bundle\MongoDBBundle\EventSubscriber\EventSubscriberInterface`.
-  Use the `#[AsDocumentListener]` attribute instead.
 * The `setContainer`, `getContainer`, `getDoctrineDocumentManagers`,
   `findBundle` and `findBasePathForBundle` methods from
   `Doctrine\Bundle\MongoDBBundle\Command\DoctrineODMCommand` have been
   removed without replacement.
-* All command and compiler pass classes are internal and final. They cannot be
-  used directly or extended.
-* Remove support of Annotation mapping, you should use Attributes or XML instead.
 
 ## Configuration
 
@@ -34,8 +40,8 @@ Deprecated options have been removed:
 
 ## Event Subscriber
 
-* `Doctrine\Bundle\MongoDBBundle\EventSubscriber\EventSubscriberInterface` has
-  been deprecated. Use the `#[AsDocumentListener]` attribute instead.
+* Remove `Doctrine\Bundle\MongoDBBundle\EventSubscriber\EventSubscriberInterface`.
+  Use the `#[AsDocumentListener]` attribute instead.
 
 ## Fixtures
 
