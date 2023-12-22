@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Command to shard database collections for a set of classes based on their
  * mappings.
  *
- * @internal since version 4.7.0
+ * @internal
  */
 final class ShardDoctrineODMCommand extends ShardCommand
 {

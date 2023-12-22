@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Command to create the database schema for a set of classes based on their
  * mappings.
  *
- * @internal since version 4.7.0
+ * @internal
  */
 final class CreateSchemaDoctrineODMCommand extends CreateCommand
 {

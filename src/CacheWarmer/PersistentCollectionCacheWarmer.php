@@ -26,7 +26,7 @@ use function sprintf;
  * In the process of generating persistent collections the cache for all the metadata is primed also,
  * since this information is necessary to build the persistent collections in the first place.
  *
- * @internal since version 4.4
+ * @internal
  *
  * @psalm-suppress ContainerDependency
  */

@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Command to clear the metadata cache of the various cache drivers.
  *
- * @internal since version 4.7.0
+ * @internal
  */
 final class ClearMetadataCacheDoctrineODMCommand extends MetadataCommand
 {
