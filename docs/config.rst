@@ -18,7 +18,7 @@ Sample Configuration
             document_managers:
                 default:
                     mappings:
-                        AcmeDemoBundle: ~
+                        App: ~
                     filters:
                         filter-name:
                             class: Class\Example\Filter\ODM\ExampleFilter
@@ -41,7 +41,7 @@ Sample Configuration
                     </doctrine_mongodb:options>
                 </doctrine_mongodb:connection>
                 <doctrine_mongodb:document-manager id="default">
-                    <doctrine_mongodb:mapping name="AcmeDemoBundle" />
+                    <doctrine_mongodb:mapping name="App" />
                     <doctrine_mongodb:filter name="filter-name" enabled="true" class="Class\Example\Filter\ODM\ExampleFilter" />
                     <doctrine_mongodb:metadata-cache-driver type="array" />
                 </doctrine_mongodb:document-manager>
@@ -105,7 +105,7 @@ If you wish to use memcached to cache your metadata, you need to configure the
             document_managers:
                 default:
                     mappings:
-                        AcmeDemoBundle: ~
+                        App: ~
                     metadata_cache_driver:
                         type: memcached
                         class: Symfony\Component\Cache\Adapter\MemcachedAdapter
@@ -125,7 +125,7 @@ If you wish to use memcached to cache your metadata, you need to configure the
 
             <doctrine_mongodb:config default-database="hello_%kernel.environment%">
                 <doctrine_mongodb:document-manager id="default">
-                    <doctrine_mongodb:mapping name="AcmeDemoBundle" />
+                    <doctrine_mongodb:mapping name="App" />
                     <doctrine_mongodb:metadata-cache-driver type="memcached">
                         <doctrine_mongodb:class>Symfony\Component\Cache\Adapter\MemcachedAdapter</doctrine_mongodb:class>
                         <doctrine_mongodb:host>localhost</doctrine_mongodb:host>
@@ -182,9 +182,9 @@ can control. The following configuration options exist for a mapping:
 - ``prefix`` A common namespace prefix that all documents of this mapping
   share. This prefix should never conflict with prefixes of other defined
   mappings otherwise some of your documents cannot be found by Doctrine. This
-  option defaults to the bundle namespace + ``Document``, for example for an
-  application bundle called ``AcmeHelloBundle``, the prefix would be
-  ``Acme\HelloBundle\Document``.
+  option defaults to the application namespace + ``Document``, for example
+  for an application called ``App``, the prefix would be
+  ``App\Document``.
 
 - ``alias`` Doctrine offers a way to alias document namespaces to simpler,
   shorter names to be used in queries or for Repository access.
@@ -219,14 +219,14 @@ The following configuration shows a bunch of mapping examples:
             document_managers:
                 default:
                     mappings:
-                        MyBundle1: ~
-                        MyBundle2: xml
-                        MyBundle3: { type: attribute, dir: Documents/ }
-                        MyBundle4: { type: xml, dir: Resources/config/doctrine/mapping }
-                        MyBundle5:
+                        App: ~
+                        App2: xml
+                        App3: { type: attribute, dir: Documents/ }
+                        App4: { type: xml, dir: config/doctrine/mapping }
+                        App5:
                             type: xml
-                            dir: my-bundle-mappings-dir
-                            alias: BundleAlias
+                            dir: my-app-mappings-dir
+                            alias: AppAlias
                         doctrine_extensions:
                             type: xml
                             dir: "%kernel.project_dir%/src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents"
@@ -245,10 +245,10 @@ The following configuration shows a bunch of mapping examples:
 
             <doctrine_mongodb:config>
                 <doctrine_mongodb:document-manager id="default">
-                    <doctrine_mongodb:mapping name="MyBundle1" />
-                    <doctrine_mongodb:mapping name="MyBundle2" type="attribute" dir="Documents/" />
-                    <doctrine_mongodb:mapping name="MyBundle3" type="xml" dir="Resources/config/doctrine/mapping" />
-                    <doctrine_mongodb:mapping name="MyBundle4" type="xml" dir="my-bundle-mappings-dir" alias="BundleAlias" />
+                    <doctrine_mongodb:mapping name="App1" />
+                    <doctrine_mongodb:mapping name="App2" type="attribute" dir="Documents/" />
+                    <doctrine_mongodb:mapping name="App3" type="xml" dir="config/doctrine/mapping" />
+                    <doctrine_mongodb:mapping name="App4" type="xml" dir="my-app-mappings-dir" alias="AppAlias" />
                     <doctrine_mongodb:mapping name="doctrine_extensions"
                                               type="xml"
                                               dir="%kernel.project_dir%/src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents"
@@ -433,12 +433,12 @@ following syntax:
                     database: db1
                     metadata_cache_driver: array
                     mappings:
-                        AcmeDemoBundle: ~
+                        App: ~
                 dm2:
                     connection: conn2
                     database: db2
                     mappings:
-                        AcmeHelloBundle: ~
+                        AnotherApp: ~
 
     .. code-block:: xml
 
@@ -465,10 +465,10 @@ following syntax:
                     </doctrine_mongodb:options>
                 </doctrine_mongodb:connection>
                 <doctrine_mongodb:document-manager id="dm1" metadata-cache-driver="array" connection="conn1" database="db1">
-                    <doctrine_mongodb:mapping name="AcmeDemoBundle" />
+                    <doctrine_mongodb:mapping name="App" />
                 </doctrine_mongodb:document-manager>
                 <doctrine_mongodb:document-manager id="dm2" connection="conn2" database="db2">
-                    <doctrine_mongodb:mapping name="AcmeHelloBundle" />
+                    <doctrine_mongodb:mapping name="AnotherApp" />
                 </doctrine_mongodb:document-manager>
             </doctrine_mongodb:config>
         </container>
