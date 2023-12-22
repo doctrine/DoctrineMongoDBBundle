@@ -11,17 +11,12 @@ see Doctrine's `Event Documentation`_.
     document managers tied to that connection. Listeners and subscribers may be
     registered with all event managers or just one (using the connection name).
 
-In Symfony, you can register a listener or subscriber by creating a service
-and then `tagging`_ it with a specific tag.
+Use the ``doctrine_mongodb.odm.event_listener`` tag to register a listener. The
+``event`` attribute is required and should denote the event on which to listen.
+By default, listeners will be registered with event managers for all connections.
+To restrict a listener to a single connection, specify its name in the tag's
+``connection`` attribute.
 
-Event Listeners
----------------
-
-Use the ``doctrine_mongodb.odm.event_listener`` tag to
-register a listener. The ``event`` attribute is required and should denote
-the event on which to listen. By default, listeners will be registered with
-event managers for all connections. To restrict a listener to a single
-connection, specify its name in the tag's ``connection`` attribute.
 
 The ``priority`` attribute, which defaults to ``0`` if omitted, may be used
 to control the order in which listeners are registered. Much like Symfony's
@@ -33,133 +28,69 @@ Lastly, the ``lazy`` attribute, which defaults to ``false`` if omitted, may
 be used to request that the listener be lazily loaded by the event manager
 when its event is dispatched.
 
+Starting with DoctrineMongoDBBundle bundle 4.7, you can use the ``#[AsDocumentListener]``
+attribute to tag the service.
+
 .. configuration-block::
 
-    .. code-block:: yaml
+    .. code-block:: php-attributes
 
-        services:
-            my_doctrine_listener:
-                class:   App\Listener\MyDoctrineListener
-                # ...
-                tags:
-                    -  { name: doctrine_mongodb.odm.event_listener, event: postPersist }
+        // src/App/EventListener/SearchIndexer.php
+        namespace App\EventListener;
 
-    .. code-block:: xml
+        use Doctrine\Bundle\MongoDBBundle\Attribute\AsDocumentListener;
+        use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 
-        <service id="my_doctrine_listener" class="App\Listener\MyDoctrineListener">
-            <!-- ... -->
-            <tag name="doctrine_mongodb.odm.event_listener" event="postPersist" />
-        </service>
-
-    .. code-block:: php
-
-        $definition = new Definition('App\Listener\MyDoctrineListener');
-        // ...
-        $definition->addTag('doctrine_mongodb.odm.event_listener', [
-            'event' => 'postPersist',
-        ]);
-        $container->setDefinition('my_doctrine_listener', $definition);
-
-Event Subscribers
------------------
-
-Implement ``Doctrine\Bundle\MongoDBBundle\EventSubscriber\EventSubscriberInterface``
-and `autoconfiguration`_ to automatically register your class as a MongoODM
-event subscriber.
-
-.. code-block:: php
-
-    // src/App/EventSubscriber/MongoDB/ProductSubscriber.php
-    namespace App\EventSubscriber\MongoDB;
-
-    use App\Document\Product;
-    use Doctrine\Bundle\MongoDBBundle\EventSubscriber\EventSubscriberInterface;
-
-    class ProductSubscriber implements EventSubscriberInterface
-    {
-        public function getSubscribedEvents()
+        #[AsDocumentListener('postPersist', priority: 500, connection: 'default')]
+        class SearchIndexer
         {
-            return [
-                // List events to subscribe
-            ];
+            public function postPersist(LifecycleEventArgs $event): void
+            {
+                // ...
+            }
         }
-    }
-
-.. configuration-block::
 
     .. code-block:: yaml
 
         # config/services.yaml
         services:
+            # ...
 
-            App\EventSubscriber\MongoDB\:
-                resource: '../src/EventSubscriber/MongoDB/*'
-                autoconfigure: true
+            App\EventListener\SearchIndexer:
+                tags:
+                    -
+                        name: 'doctrine_mongodb.odm.event_listener'
+                        # this is the only required option for the lifecycle listener tag
+                        event: 'postPersist'
+
+                        # listeners can define their priority in case multiple subscribers or listeners are associated
+                        # to the same event (default priority = 0; higher numbers = listener is run earlier)
+                        priority: 500
+
+                        # you can also restrict listeners to a specific Doctrine connection
+                        connection: 'default'
 
     .. code-block:: xml
 
         <!-- config/services.xml -->
         <?xml version="1.0" encoding="UTF-8" ?>
         <container xmlns="http://symfony.com/schema/dic/services"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services
-                https://symfony.com/schema/dic/services/services-1.0.xsd">
-
+            xmlns:doctrine="http://symfony.com/schema/dic/doctrine">
             <services>
-                <prototype namespace="App\EventSubscriber\MongoDB\" resource="../src/EventSubscriber/MongoDB/*" autoconfigure="true" />
-            </services>
-        </container>
+                <!-- ... -->
 
-Alternatively, use the ``doctrine_mongodb.odm.event_subscriber`` tag
-to register a subscriber. Subscribers must implement the
-``Doctrine\Common\EventSubscriber`` interface, which means that they must
-contain method returning the events they will observe. For this reason,
-this tag has no ``event`` attribute, however the ``connection``,
-``priority`` and ``lazy`` attributes are available.
-
-.. code-block:: php
-
-    // src/App/EventSubscriber/MongoDB/ProductSubscriber.php
-    namespace App\EventSubscriber\MongoDB;
-
-    use App\Document\Product;
-    use Doctrine\Common\EventSubscriber;
-
-    class ProductSubscriber implements EventSubscriber
-    {
-        public function getSubscribedEvents()
-        {
-            return [
-                // List events to subscribe
-            ];
-        }
-    }
-
-.. configuration-block::
-
-    .. code-block:: yaml
-
-        # config/services.yaml
-        services:
-
-            App\EventSubscriber\MongoDB\:
-                resource: '../src/EventSubscriber/MongoDB/*'
-                tags:
-                    - { name: doctrine_mongodb.odm.event_subscriber }
-
-    .. code-block:: xml
-
-        <!-- config/services.xml -->
-        <?xml version="1.0" encoding="UTF-8" ?>
-        <container xmlns="http://symfony.com/schema/dic/services"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services
-                https://symfony.com/schema/dic/services/services-1.0.xsd">
-
-            <services>
-                <prototype namespace="App\EventSubscriber\MongoDB\" resource="../src/EventSubscriber/MongoDB/*">
-                    <tag name="doctrine_mongodb.odm.event_subscriber" />
-                </prototype>
+                <!--
+                    * 'event' is the only required option that defines the lifecycle listener
+                    * 'priority': used when multiple subscribers or listeners are associated to the same event
+                    *             (default priority = 0; higher numbers = listener is run earlier)
+                    * 'connection': restricts the listener to a specific MongoDB connection
+                -->
+                <service id="App\EventListener\SearchIndexer">
+                    <tag name="doctrine_mongodb.odm.event_listener"
+                        event="postPersist"
+                        priority="500"
+                        connection="default" />
+                </service>
             </services>
         </container>
 
@@ -172,5 +103,3 @@ this tag has no ``event`` attribute, however the ``connection``,
 
 .. _`event dispatcher`: https://symfony.com/doc/current/components/event_dispatcher.html
 .. _`Event Documentation`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/events.html
-.. _`tagging`: https://symfony.com/doc/current/service_container/tags.html
-.. _`autoconfiguration`: https://symfony.com/doc/current/service_container.html#the-autoconfigure-option
