@@ -138,8 +138,6 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $container->registerAttributeForAutoconfiguration(AsDocumentListener::class, static function (ChildDefinition $definition, AsDocumentListener $attribute): void {
             $definition->addTag('doctrine_mongodb.odm.event_listener', [
                 'event'      => $attribute->event,
-                'method'     => $attribute->method,
-                'lazy'       => $attribute->lazy,
                 'connection' => $attribute->connection,
                 'priority'   => $attribute->priority,
             ]);
