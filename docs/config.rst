@@ -51,14 +51,15 @@ Sample Configuration
     .. code-block:: php
 
         use function Symfony\Component\DependencyInjection\Loader\Configurator\env;
+        use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
         use Symfony\Config\DoctrineMongodbConfig;
 
         return static function (DoctrineMongodbConfig $config): void {
-            $config->defaultConnection('default');
             $config->connection('default')
                 ->server(env('MONGODB_URL')->default('mongodb://localhost:27017')->resolve())
                 ->options([]);
 
+            $config->defaultDatabase('hello_' . param('kernel.environment'));
             $config->documentManager('default')
                 ->mapping('AcmeDemoBundle')
                 ->filter('filter-name')
@@ -141,19 +142,18 @@ If you wish to use memcached to cache your metadata, you need to configure the
 
     .. code-block:: php
 
+        use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
         use Symfony\Component\Cache\Adapter\MemcachedAdapter;
         use Symfony\Config\DoctrineMongodbConfig;
 
         return static function (DoctrineMongodbConfig $config): void {
-            $config->defaultConnection('default');
+            $config->defaultDatabase('hello_' . param('kernel.environment'));
             $config->connection('default')
-                ->server('mongodb://localhost:27017');
+                ->server('mongodb://localhost:27017')
+                ->options([]);
 
             $config->documentManager('default')
                 ->mapping('AcmeDemoBundle')
-                ->filter('filter-name')
-                ->class('Class\Example\Filter\ODM\ExampleFilter')
-                ->enabled(true)
                 ->metadataCacheDriver()
                     ->type('memcached')
                     ->class(MemcachedAdapter::class)
@@ -260,6 +260,7 @@ The following configuration shows a bunch of mapping examples:
 
     .. code-block:: php
 
+        use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
         use Symfony\Config\DoctrineMongodbConfig;
 
         return static function (DoctrineMongodbConfig $config): void {
@@ -269,17 +270,17 @@ The following configuration shows a bunch of mapping examples:
                     ->type('xml')
                 ->mapping('MyBundle3')
                     ->type('attribute')
-                    ->dir(__DIR__.'/../src/Document')
+                    ->dir('Documents/')
                 ->mapping('MyBundle4')
                     ->type('xml')
-                    ->dir(__DIR__.'/../config/doctrine/mapping')
+                    ->dir('Resources/config/doctrine/mapping')
                 ->mapping('MyBundle5')
                     ->type('xml')
                     ->dir('my-bundle-mappings-dir')
                     ->alias('BundleAlias')
-                ->mapping('MyBundle6')
+                ->mapping('doctrine_extensions')
                     ->type('xml')
-                    ->dir('%kernel.project_dir%/src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents')
+                    ->dir(param('kernel.project_dir') . '/src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents')
                     ->prefix('DoctrineExtensions\\Documents\\')
                     ->alias('DExt')
             ;
@@ -318,12 +319,11 @@ your documents.
 
     .. code-block:: php
 
-        use Fully\Qualified\Class\Name;
         use Symfony\Config\DoctrineMongodbConfig;
 
         return static function (DoctrineMongodbConfig $config): void {
             $config->type('custom_type')
-                ->class(Name::class)
+                ->class(\Fully\Qualified\Class\Name::class)
             ;
         }
 
@@ -388,11 +388,11 @@ Filters may be registered with a document manager by using the following syntax:
         return static function (DoctrineMongodbConfig $config): void {
             $config->documentManager('default')
                 ->filter('basic_filter')
-                    ->class('Vendor\Filter\BasicFilter')
+                    ->class(\Vendor\Filter\BasicFilter::class)
                     ->enabled(true)
                 ->filter('complex_filter')
-                    ->class('Vendor\Filter\ComplexFilter')
-                    ->enabled(true)
+                    ->class(\Vendor\Filter\ComplexFilter::class)
+                    ->enabled(false)
                     ->parameter('author', 'bob')
                     ->parameter('comments', [ '$gte' => 10 ])
                     ->parameter('tags', [ '$in' => [ 'foo', 'bar' ] ])
@@ -475,14 +475,13 @@ following syntax:
 
     .. code-block:: php
 
+        use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
         use Symfony\Config\DoctrineMongodbConfig;
 
         return static function (DoctrineMongodbConfig $config): void {
-            $config->defaultDatabase('hello_%kernel.environment%');
+            $config->defaultDatabase('hello_' . param('kernel.environment'));
             $config->defaultDocumentManager('dm2');
             $config->defaultConnection('dm2');
-            $config->proxyNamespace('MongoDBODMProxies');
-            $config->autoGenerateProxyClasses(true);
 
             $config->connection('conn1')
                 ->server('mongodb://localhost:27017');
@@ -491,9 +490,9 @@ following syntax:
                 ->server('mongodb://localhost:27017');
 
             $config->documentManager('dm1')
-                ->metadataCacheDriver('array')
                 ->connection('conn1')
                 ->database('db1')
+                ->metadataCacheDriver('array')
                 ->mapping('AcmeDemoBundle');
 
             $config->documentManager('dm2')
@@ -563,7 +562,7 @@ can also use IP addresses if you prefer.
 
 .. tip::
 
-    Please refer to `Replica Sets`_ manual of MongoDB PHP Driver for futher details.
+    Please refer to `Replica Sets`_ manual of MongoDB PHP Driver for further details.
 
 
 Using Authentication on a Database Level
@@ -815,7 +814,6 @@ Full Default Configuration
                     hydrator-namespace="Hydrators"
                     proxy-dir="%kernel.cache_dir%/doctrine/odm/mongodb/Proxies"
                     proxy-namespace="Proxies"
-                    fixture-loader="Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader"
             >
                 <doctrine:document-manager id="id"
                                            connection=""
@@ -865,9 +863,9 @@ Full Default Configuration
 
     .. code-block:: php
 
-        use Symfony\Config\DoctrineConfig;
+        use Symfony\Config\DoctrineMongodbConfig;
 
-        return static function (DoctrineConfig $config): void {
+        return static function (DoctrineMongodbConfig $config): void {
             $config->autoGenerateHydratorClasses(0);
             $config->autoGenerateProxyClasses(0);
             $config->defaultConnection('');
@@ -877,7 +875,6 @@ Full Default Configuration
             $config->hydratorNamespace('Hydrators');
             $config->proxyDir('%kernel.cache_dir%/doctrine/odm/mongodb/Proxies');
             $config->proxyNamespace('Proxies');
-            $config->fixtureLoader('Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader');
 
             $config->documentManager('id')
                 ->connection('')
@@ -888,11 +885,11 @@ Full Default Configuration
                 ->logging(true)
                 ->autoMapping(false)
                 ->metadataCacheDriver()
-                    ->type('')
-                    ->class('')
-                    ->host('')
-                    ->port('')
-                    ->instanceClass('')
+                    ->type(null)
+                    ->class(null)
+                    ->host(null)
+                    ->port(null)
+                    ->instanceClass(null)
                 ->mapping('name')
                     ->type('')
                     ->dir('')
@@ -909,21 +906,36 @@ Full Default Configuration
 
             $config->connection('id')
                 ->server('mongodb://localhost')
+                ->driverOptions([
+                    'context' => null, // stream context to use for connection
+                ])
                 ->options([
-                    'authMechanism' => '',
-                    'connectTimeoutMS' => '',
-                    'db' => '',
-                    'authSource' => '',
-                    'journal' => '',
-                    'password' => '',
-                    'readPreference' => '',
-                    'replicaSet' => '',
-                    'socketTimeoutMS' => '',
-                    'ssl' => '',
-                    'username' => '',
-                    'w' => '',
-                    'wTimeoutMS' => '',
-                ]);
+                    'authMechanism' => null,
+                    'connectTimeoutMS' => null,
+                    'db' => null,
+                    'authSource' => null,
+                    'journal' => null,
+                    'password' => null,
+                    'readPreference' => null,
+                    'readPreferenceTags' => null,
+                    'replicaSet' => null, // replica set name
+                    'socketTimeoutMS' => null,
+                    'ssl' => null,
+                    'tls' => null,
+                    'tlsAllowInvalidCertificates' => null,
+                    'tlsAllowInvalidHostnames' => null,
+                    'tlsCAFile' => null,
+                    'tlsCertificateKeyFile' => null,
+                    'tlsCertificateKeyFilePassword' => null,
+                    'tlsDisableCertificateRevocationCheck' => null,
+                    'tlsDisableOCSPEndpointCheck' => null,
+                    'tlsInsecure' => null,
+                    'username' => null,
+                    'retryReads' => null,
+                    'retryWrites' => null,
+                    'w' => null,
+                    'wTimeoutMS' => null,
+                ])
         };
 
 .. _`Custom types`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/current/reference/custom-mapping-types.html
