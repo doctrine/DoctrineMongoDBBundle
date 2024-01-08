@@ -18,11 +18,11 @@ Sample Configuration
             document_managers:
                 default:
                     mappings:
-                        App: ~
-                    filters:
-                        filter-name:
-                            class: Class\Example\Filter\ODM\ExampleFilter
-                            enabled: true
+                        App:
+                            is_bundle: false
+                            dir: '%kernel.project_dir%/src/Document'
+                            prefix: 'App\Document'
+                            alias: App
                     metadata_cache_driver: array # array, service, apcu, memcached, redis
 
     .. code-block:: xml
@@ -41,8 +41,7 @@ Sample Configuration
                     </doctrine_mongodb:options>
                 </doctrine_mongodb:connection>
                 <doctrine_mongodb:document-manager id="default">
-                    <doctrine_mongodb:mapping name="App" />
-                    <doctrine_mongodb:filter name="filter-name" enabled="true" class="Class\Example\Filter\ODM\ExampleFilter" />
+                    <doctrine_mongodb:mapping name="App" is-bundle="false" prefix="App\Document" alias="App" />
                     <doctrine_mongodb:metadata-cache-driver type="array" />
                 </doctrine_mongodb:document-manager>
             </doctrine_mongodb:config>
@@ -62,9 +61,10 @@ Sample Configuration
             $config->defaultDatabase('hello_' . param('kernel.environment'));
             $config->documentManager('default')
                 ->mapping('App')
-                ->filter('filter-name')
-                    ->class(\Class\Example\Filter\ODM\ExampleFilter::class)
-                    ->enabled(true)
+                    ->isBundle(false)
+                    ->dir(param('kernel.project_dir') . '/src/Document')
+                    ->prefix('App\\Document')
+                    ->alias('App')
                 ->metadataCacheDriver('array'); // array, service, apcu, memcached, redis
         };
 }
