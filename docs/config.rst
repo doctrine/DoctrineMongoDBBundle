@@ -61,10 +61,10 @@ Sample Configuration
 
             $config->defaultDatabase('hello_' . param('kernel.environment'));
             $config->documentManager('default')
-                ->mapping('AcmeDemoBundle')
+                ->mapping('App')
                 ->filter('filter-name')
-                ->class(\Class\Example\Filter\ODM\ExampleFilter::class)
-                ->enabled(true)
+                    ->class(\Class\Example\Filter\ODM\ExampleFilter::class)
+                    ->enabled(true)
                 ->metadataCacheDriver('array'); // array, service, apcu, memcached, redis
         };
 }
@@ -153,7 +153,7 @@ If you wish to use memcached to cache your metadata, you need to configure the
                 ->options([]);
 
             $config->documentManager('default')
-                ->mapping('AcmeDemoBundle')
+                ->mapping('App')
                 ->metadataCacheDriver()
                     ->type('memcached')
                     ->class(MemcachedAdapter::class)
@@ -265,19 +265,19 @@ The following configuration shows a bunch of mapping examples:
 
         return static function (DoctrineMongodbConfig $config): void {
             $config->documentManager('default')
-                ->mapping('MyBundle1')
-                ->mapping('MyBundle2')
+                ->mapping('App')
+                ->mapping('App2')
                     ->type('xml')
-                ->mapping('MyBundle3')
+                ->mapping('App3')
                     ->type('attribute')
                     ->dir('Documents/')
-                ->mapping('MyBundle4')
+                ->mapping('App4')
                     ->type('xml')
-                    ->dir('Resources/config/doctrine/mapping')
-                ->mapping('MyBundle5')
+                    ->dir('config/doctrine/mapping')
+                ->mapping('App5')
                     ->type('xml')
-                    ->dir('my-bundle-mappings-dir')
-                    ->alias('BundleAlias')
+                    ->dir('my-app-mappings-dir')
+                    ->alias('AppAlias')
                 ->mapping('doctrine_extensions')
                     ->type('xml')
                     ->dir(param('kernel.project_dir') . '/src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents')
@@ -493,12 +493,12 @@ following syntax:
                 ->connection('conn1')
                 ->database('db1')
                 ->metadataCacheDriver('array')
-                ->mapping('AcmeDemoBundle');
+                ->mapping('App');
 
             $config->documentManager('dm2')
                 ->connection('conn2')
                 ->database('db2')
-                ->mapping('AcmeHelloBundle');
+                ->mapping('AnotherApp');
         };
 
 Now you can retrieve the configured services connection services:
