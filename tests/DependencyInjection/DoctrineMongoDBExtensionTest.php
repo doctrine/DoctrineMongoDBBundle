@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
 use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Configuration;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\DocumentListenerBundle\EventListener\TestAttributeListener;
+use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\DependencyInjection\Alias;
@@ -21,6 +23,7 @@ use function array_merge;
 use function class_exists;
 use function interface_exists;
 use function is_dir;
+use function method_exists;
 use function sys_get_temp_dir;
 
 class DoctrineMongoDBExtensionTest extends TestCase
@@ -370,8 +373,30 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $this->assertEquals(new MapDocument(null, null, null, [], null, null, null, true), $container->get('controller_resolver_defaults'));
     }
 
+    public function testTransactionalFlushConfigurationWhenNotSupported(): void
+    {
+        if (method_exists(ODMConfiguration::class, 'setUseTransactionalFlush')) {
+            $this->markTestSkipped('Installed version of doctrine/mongodb-odm supports transactional flushes');
+        }
+
+        $container = $this->buildMinimalContainer();
+        $container->setParameter('kernel.debug', false);
+        $container->setParameter('kernel.bundles', []);
+        $container->setParameter('kernel.bundles_metadata', []);
+        $loader = new DoctrineMongoDBExtension();
+        $loader->load(self::buildConfiguration(['document_managers' => ['default' => ['use_transactional_flush' => true]]]), $container);
+
+        $configuration = $container->getDefinition('doctrine_mongodb.odm.default_configuration');
+
+        $this->assertFalse($configuration->hasMethodCall('setUseTransactionalFlush'), 'setUseTransactionalFlush is not called');
+    }
+
     public function testDefaultTransactionalFlush(): void
     {
+        if (! method_exists(Configuration::class, 'setUseTransactionalFlush')) {
+            $this->markTestSkipped('Installed version of doctrine/mongodb-odm does not support transactional flushes');
+        }
+
         $container = $this->buildMinimalContainer();
         $container->setParameter('kernel.debug', false);
         $container->setParameter('kernel.bundles', []);
@@ -392,6 +417,10 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
     public function testUseTransactionalFlush(): void
     {
+        if (! method_exists(Configuration::class, 'setUseTransactionalFlush')) {
+            $this->markTestSkipped('Installed version of doctrine/mongodb-odm does not support transactional flushes');
+        }
+
         $container = $this->buildMinimalContainer();
         $container->setParameter('kernel.debug', false);
         $container->setParameter('kernel.bundles', []);
