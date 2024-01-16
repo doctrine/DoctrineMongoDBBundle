@@ -21,7 +21,7 @@ abstract class DoctrineODMCommand extends Command
         parent::__construct();
     }
 
-    public static function setApplicationDocumentManager(Application $application, string $dmName): void
+    public static function setApplicationDocumentManager(Application $application, ?string $dmName): void
     {
         $dm        = $application->getKernel()->getContainer()->get('doctrine_mongodb')->getManager($dmName);
         $helperSet = $application->getHelperSet();
