@@ -7,10 +7,8 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 use Composer\InstalledVersions;
 use Composer\Semver\VersionParser;
 use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
-use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Configuration;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\DocumentListenerBundle\EventListener\TestAttributeListener;
-use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\DependencyInjection\Alias;
@@ -25,7 +23,6 @@ use function array_merge;
 use function class_exists;
 use function interface_exists;
 use function is_dir;
-use function method_exists;
 use function sys_get_temp_dir;
 
 class DoctrineMongoDBExtensionTest extends TestCase
