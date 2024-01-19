@@ -196,6 +196,7 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('namespace')->end()
                                 ->end()
                             ->end()
+                            ->booleanNode('use_transactional_flush')->defaultFalse()->end()
                         ->end()
                         ->fixXmlConfig('mapping')
                         ->children()

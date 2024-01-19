@@ -555,6 +555,7 @@ Full Default Configuration
                         host:                 ~
                         port:                 ~
                         instance_class:       ~
+                    use_transactional_flush:           false
                     mappings:
 
                         # Prototype
