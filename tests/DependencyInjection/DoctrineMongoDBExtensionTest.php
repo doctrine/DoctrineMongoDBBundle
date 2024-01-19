@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
+use Composer\InstalledVersions;
+use Composer\Semver\VersionParser;
 use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Configuration;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
@@ -375,7 +377,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
     public function testTransactionalFlushConfigurationWhenNotSupported(): void
     {
-        if (method_exists(ODMConfiguration::class, 'setUseTransactionalFlush')) {
+        if (InstalledVersions::satisfies(new VersionParser(), 'doctrine/mongodb-odm', '>=2.7@dev')) {
             $this->markTestSkipped('Installed version of doctrine/mongodb-odm supports transactional flushes');
         }
 
@@ -393,7 +395,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
     public function testDefaultTransactionalFlush(): void
     {
-        if (! method_exists(Configuration::class, 'setUseTransactionalFlush')) {
+        if (! InstalledVersions::satisfies(new VersionParser(), 'doctrine/mongodb-odm', '>=2.7@dev')) {
             $this->markTestSkipped('Installed version of doctrine/mongodb-odm does not support transactional flushes');
         }
 
@@ -417,7 +419,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
     public function testUseTransactionalFlush(): void
     {
-        if (! method_exists(Configuration::class, 'setUseTransactionalFlush')) {
+        if (! InstalledVersions::satisfies(new VersionParser(), 'doctrine/mongodb-odm', '>=2.7@dev')) {
             $this->markTestSkipped('Installed version of doctrine/mongodb-odm does not support transactional flushes');
         }
 
