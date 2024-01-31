@@ -35,7 +35,7 @@ To install DoctrineMongoDBBundle with Composer run the following command:
 Enable the Bundle
 -----------------
 
-Your bundle should be automatically enabled if you use Flex.
+The bundle should be automatically enabled if you use Flex.
 Otherwise, you'll need to manually enable the bundle by adding the
 following line in the ``config/bundles.php`` file of your project:
 

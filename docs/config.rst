@@ -18,11 +18,11 @@ Sample Configuration
             document_managers:
                 default:
                     mappings:
-                        AcmeDemoBundle: ~
-                    filters:
-                        filter-name:
-                            class: Class\Example\Filter\ODM\ExampleFilter
-                            enabled: true
+                        App:
+                            is_bundle: false
+                            dir: '%kernel.project_dir%/src/Document'
+                            prefix: 'App\Document'
+                            alias: App
                     metadata_cache_driver: array # array, service, apcu, memcached, redis
 
     .. code-block:: xml
@@ -41,12 +41,34 @@ Sample Configuration
                     </doctrine_mongodb:options>
                 </doctrine_mongodb:connection>
                 <doctrine_mongodb:document-manager id="default">
-                    <doctrine_mongodb:mapping name="AcmeDemoBundle" />
-                    <doctrine_mongodb:filter name="filter-name" enabled="true" class="Class\Example\Filter\ODM\ExampleFilter" />
+                    <doctrine_mongodb:mapping name="App" is-bundle="false" prefix="App\Document" alias="App" />
                     <doctrine_mongodb:metadata-cache-driver type="array" />
                 </doctrine_mongodb:document-manager>
             </doctrine_mongodb:config>
         </container>
+
+    .. code-block:: php
+
+        use function Symfony\Component\DependencyInjection\Loader\Configurator\env;
+        use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
+        use Symfony\Config\DoctrineMongodbConfig;
+
+        return static function (DoctrineMongodbConfig $config): void {
+            $config->connection('default')
+                ->server(env('MONGODB_URL')->default('mongodb://localhost:27017')->resolve())
+                ->options([]);
+
+            $config->defaultDatabase('hello_' . param('kernel.environment'));
+            $config->documentManager('default')
+                ->mapping('App')
+                    ->isBundle(false)
+                    ->dir(param('kernel.project_dir') . '/src/Document')
+                    ->prefix('App\\Document')
+                    ->alias('App')
+                ->metadataCacheDriver('array'); // array, service, apcu, memcached, redis
+        };
+}
+
 
 .. tip::
 
@@ -66,7 +88,7 @@ Sample Configuration
                 default:
                     server: '%env(resolve:MONGODB_URL)%'
 
-If you wish to use memcache to cache your metadata, you need to configure the
+If you wish to use memcached to cache your metadata, you need to configure the
 ``Memcached`` instance; for example, you can do the following:
 
 .. configuration-block::
@@ -83,7 +105,7 @@ If you wish to use memcache to cache your metadata, you need to configure the
             document_managers:
                 default:
                     mappings:
-                        AcmeDemoBundle: ~
+                        App: ~
                     metadata_cache_driver:
                         type: memcached
                         class: Symfony\Component\Cache\Adapter\MemcachedAdapter
@@ -103,7 +125,7 @@ If you wish to use memcache to cache your metadata, you need to configure the
 
             <doctrine_mongodb:config default-database="hello_%kernel.environment%">
                 <doctrine_mongodb:document-manager id="default">
-                    <doctrine_mongodb:mapping name="AcmeDemoBundle" />
+                    <doctrine_mongodb:mapping name="App" />
                     <doctrine_mongodb:metadata-cache-driver type="memcached">
                         <doctrine_mongodb:class>Symfony\Component\Cache\Adapter\MemcachedAdapter</doctrine_mongodb:class>
                         <doctrine_mongodb:host>localhost</doctrine_mongodb:host>
@@ -118,6 +140,28 @@ If you wish to use memcache to cache your metadata, you need to configure the
             </doctrine_mongodb:config>
         </container>
 
+    .. code-block:: php
+
+        use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
+        use Symfony\Component\Cache\Adapter\MemcachedAdapter;
+        use Symfony\Config\DoctrineMongodbConfig;
+
+        return static function (DoctrineMongodbConfig $config): void {
+            $config->defaultDatabase('hello_' . param('kernel.environment'));
+            $config->connection('default')
+                ->server('mongodb://localhost:27017')
+                ->options([]);
+
+            $config->documentManager('default')
+                ->mapping('App')
+                ->metadataCacheDriver()
+                    ->type('memcached')
+                    ->class(MemcachedAdapter::class)
+                    ->host('localhost')
+                    ->port(11211)
+                    ->instanceClass(\Memcached::class)
+            ;
+        };
 
 Mapping Configuration
 ---------------------
@@ -138,9 +182,9 @@ can control. The following configuration options exist for a mapping:
 - ``prefix`` A common namespace prefix that all documents of this mapping
   share. This prefix should never conflict with prefixes of other defined
   mappings otherwise some of your documents cannot be found by Doctrine. This
-  option defaults to the bundle namespace + ``Document``, for example for an
-  application bundle called ``AcmeHelloBundle``, the prefix would be
-  ``Acme\HelloBundle\Document``.
+  option defaults to the application namespace + ``Document``, for example
+  for an application called ``App``, the prefix would be
+  ``App\Document``.
 
 - ``alias`` Doctrine offers a way to alias document namespaces to simpler,
   shorter names to be used in queries or for Repository access.
@@ -175,14 +219,14 @@ The following configuration shows a bunch of mapping examples:
             document_managers:
                 default:
                     mappings:
-                        MyBundle1: ~
-                        MyBundle2: xml
-                        MyBundle3: { type: attribute, dir: Documents/ }
-                        MyBundle4: { type: xml, dir: Resources/config/doctrine/mapping }
-                        MyBundle5:
+                        App: ~
+                        App2: xml
+                        App3: { type: attribute, dir: Documents/ }
+                        App4: { type: xml, dir: config/doctrine/mapping }
+                        App5:
                             type: xml
-                            dir: my-bundle-mappings-dir
-                            alias: BundleAlias
+                            dir: my-app-mappings-dir
+                            alias: AppAlias
                         doctrine_extensions:
                             type: xml
                             dir: "%kernel.project_dir%/src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents"
@@ -201,10 +245,10 @@ The following configuration shows a bunch of mapping examples:
 
             <doctrine_mongodb:config>
                 <doctrine_mongodb:document-manager id="default">
-                    <doctrine_mongodb:mapping name="MyBundle1" />
-                    <doctrine_mongodb:mapping name="MyBundle2" type="attribute" dir="Documents/" />
-                    <doctrine_mongodb:mapping name="MyBundle3" type="xml" dir="Resources/config/doctrine/mapping" />
-                    <doctrine_mongodb:mapping name="MyBundle4" type="xml" dir="my-bundle-mappings-dir" alias="BundleAlias" />
+                    <doctrine_mongodb:mapping name="App1" />
+                    <doctrine_mongodb:mapping name="App2" type="attribute" dir="Documents/" />
+                    <doctrine_mongodb:mapping name="App3" type="xml" dir="config/doctrine/mapping" />
+                    <doctrine_mongodb:mapping name="App4" type="xml" dir="my-app-mappings-dir" alias="AppAlias" />
                     <doctrine_mongodb:mapping name="doctrine_extensions"
                                               type="xml"
                                               dir="%kernel.project_dir%/src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents"
@@ -213,6 +257,35 @@ The following configuration shows a bunch of mapping examples:
                 </doctrine_mongodb:document-manager>
             </doctrine_mongodb:config>
         </container>
+
+    .. code-block:: php
+
+        use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
+        use Symfony\Config\DoctrineMongodbConfig;
+
+        return static function (DoctrineMongodbConfig $config): void {
+            $config->documentManager('default')
+                ->mapping('App')
+                ->mapping('App2')
+                    ->type('xml')
+                ->mapping('App3')
+                    ->type('attribute')
+                    ->dir('Documents/')
+                ->mapping('App4')
+                    ->type('xml')
+                    ->dir('config/doctrine/mapping')
+                ->mapping('App5')
+                    ->type('xml')
+                    ->dir('my-app-mappings-dir')
+                    ->alias('AppAlias')
+                ->mapping('doctrine_extensions')
+                    ->type('xml')
+                    ->dir(param('kernel.project_dir') . '/src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents')
+                    ->prefix('DoctrineExtensions\\Documents\\')
+                    ->alias('DExt')
+            ;
+        }
+
 
 Custom Types
 ------------
@@ -243,6 +316,16 @@ your documents.
                 <doctrine_mongodb:type name="custom_type" class="Fully\Qualified\Class\Name" />
             </doctrine_mongodb:config>
         </container>
+
+    .. code-block:: php
+
+        use Symfony\Config\DoctrineMongodbConfig;
+
+        return static function (DoctrineMongodbConfig $config): void {
+            $config->type('custom_type')
+                ->class(\Fully\Qualified\Class\Name::class)
+            ;
+        }
 
 Filters
 -------
@@ -298,6 +381,24 @@ Filters may be registered with a document manager by using the following syntax:
             </doctrine:mongodb>
         </container>
 
+    .. code-block:: php
+
+        use Symfony\Config\DoctrineMongodbConfig;
+
+        return static function (DoctrineMongodbConfig $config): void {
+            $config->documentManager('default')
+                ->filter('basic_filter')
+                    ->class(\Vendor\Filter\BasicFilter::class)
+                    ->enabled(true)
+                ->filter('complex_filter')
+                    ->class(\Vendor\Filter\ComplexFilter::class)
+                    ->enabled(false)
+                    ->parameter('author', 'bob')
+                    ->parameter('comments', [ '$gte' => 10 ])
+                    ->parameter('tags', [ '$in' => [ 'foo', 'bar' ] ])
+            ;
+        }
+
 .. note::
 
     Unlike ORM, query parameters in MongoDB ODM may be non-scalar values. Since
@@ -332,12 +433,12 @@ following syntax:
                     database: db1
                     metadata_cache_driver: array
                     mappings:
-                        AcmeDemoBundle: ~
+                        App: ~
                 dm2:
                     connection: conn2
                     database: db2
                     mappings:
-                        AcmeHelloBundle: ~
+                        AnotherApp: ~
 
     .. code-block:: xml
 
@@ -364,13 +465,41 @@ following syntax:
                     </doctrine_mongodb:options>
                 </doctrine_mongodb:connection>
                 <doctrine_mongodb:document-manager id="dm1" metadata-cache-driver="array" connection="conn1" database="db1">
-                    <doctrine_mongodb:mapping name="AcmeDemoBundle" />
+                    <doctrine_mongodb:mapping name="App" />
                 </doctrine_mongodb:document-manager>
                 <doctrine_mongodb:document-manager id="dm2" connection="conn2" database="db2">
-                    <doctrine_mongodb:mapping name="AcmeHelloBundle" />
+                    <doctrine_mongodb:mapping name="AnotherApp" />
                 </doctrine_mongodb:document-manager>
             </doctrine_mongodb:config>
         </container>
+
+    .. code-block:: php
+
+        use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
+        use Symfony\Config\DoctrineMongodbConfig;
+
+        return static function (DoctrineMongodbConfig $config): void {
+            $config->defaultDatabase('hello_' . param('kernel.environment'));
+            $config->defaultDocumentManager('dm2');
+            $config->defaultConnection('dm2');
+
+            $config->connection('conn1')
+                ->server('mongodb://localhost:27017');
+
+            $config->connection('conn2')
+                ->server('mongodb://localhost:27017');
+
+            $config->documentManager('dm1')
+                ->connection('conn1')
+                ->database('db1')
+                ->metadataCacheDriver('array')
+                ->mapping('App');
+
+            $config->documentManager('dm2')
+                ->connection('conn2')
+                ->database('db2')
+                ->mapping('AnotherApp');
+        };
 
 Now you can retrieve the configured services connection services:
 
@@ -419,12 +548,21 @@ string as a comma separated list and using ``replicaSet`` option.
             </doctrine:mongodb>
         </container>
 
+    .. code-block:: php
+
+        use Symfony\Config\DoctrineMongodbConfig;
+
+        return static function (DoctrineMongodbConfig $config): void {
+            $config->connection('default')
+                ->server('mongodb://mongodb-01:27017,mongodb-02:27017,mongodb-03:27017/?replicaSet=replSetName');
+        };
+
 Where mongodb-01, mongodb-02 and mongodb-03 are the machine hostnames. You
 can also use IP addresses if you prefer.
 
 .. tip::
 
-    Please refer to `Replica Sets`_ manual of MongoDB PHP Driver for futher details.
+    Please refer to `Replica Sets`_ manual of MongoDB PHP Driver for further details.
 
 
 Using Authentication on a Database Level
@@ -472,6 +610,20 @@ Otherwise you will get a *auth failed* exception.
             </doctrine:mongodb>
         </container>
 
+    .. code-block:: php
+
+        use Symfony\Config\DoctrineMongodbConfig;
+
+        return static function (DoctrineMongodbConfig $config): void {
+            $config->connection('default')
+                ->server('mongodb://localhost:27017')
+                ->options([
+                    'username' => 'someuser',
+                    'password' => 'somepass',
+                    'authSource' => 'db_you_have_access_to',
+                ]);
+        };
+
 Specifying a context service
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -491,6 +643,20 @@ create a service that creates your logging context:
                 factory: 'stream_context_create'
                 arguments:
                     - { ssl: { verify_expiry: true } }
+
+    .. code-block:: php
+
+        use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+
+        return static function (ContainerConfigurator $container): void {
+            $container->services()
+                ->set('app.mongodb.context_service', 'resource')
+                ->factory('stream_context_create')
+                ->args([
+                    ['ssl' => ['verify_expiry' => true]],
+                ])
+            ;
+        };
 
 Note: the ``class`` option is not used when creating the service, but has to be
 provided for the service definition to be valid.
@@ -528,6 +694,18 @@ You can then use this service in your configuration:
                 </doctrine:connection>
             </doctrine:mongodb>
         </container>
+
+    .. code-block:: php
+
+        use Symfony\Config\DoctrineMongodbConfig;
+
+        return static function (DoctrineMongodbConfig $config): void {
+            $config->connection('default')
+                ->server('mongodb://localhost:27017')
+                ->driverOptions([
+                    'context' => 'app.mongodb.context_service',
+                ]);
+        };
 
 Full Default Configuration
 --------------------------
@@ -636,7 +814,6 @@ Full Default Configuration
                     hydrator-namespace="Hydrators"
                     proxy-dir="%kernel.cache_dir%/doctrine/odm/mongodb/Proxies"
                     proxy-namespace="Proxies"
-                    fixture-loader="Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader"
             >
                 <doctrine:document-manager id="id"
                                            connection=""
@@ -683,6 +860,83 @@ Full Default Configuration
                 </doctrine:connection>
             </doctrine:config>
         </container>
+
+    .. code-block:: php
+
+        use Symfony\Config\DoctrineMongodbConfig;
+
+        return static function (DoctrineMongodbConfig $config): void {
+            $config->autoGenerateHydratorClasses(0);
+            $config->autoGenerateProxyClasses(0);
+            $config->defaultConnection('');
+            $config->defaultDatabase('default');
+            $config->defaultDocumentManager('');
+            $config->hydratorDir('%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators');
+            $config->hydratorNamespace('Hydrators');
+            $config->proxyDir('%kernel.cache_dir%/doctrine/odm/mongodb/Proxies');
+            $config->proxyNamespace('Proxies');
+
+            $config->documentManager('id')
+                ->connection('')
+                ->database('')
+                ->defaultDocumentRepositoryClass('')
+                ->defaultGridfsRepositoryClass('')
+                ->repositoryFactory('')
+                ->logging(true)
+                ->autoMapping(false)
+                ->metadataCacheDriver()
+                    ->type(null)
+                    ->class(null)
+                    ->host(null)
+                    ->port(null)
+                    ->instanceClass(null)
+                ->mapping('name')
+                    ->type('')
+                    ->dir('')
+                    ->prefix('')
+                    ->alias('')
+                    ->isBundle('')
+                ->profiler()
+                    ->enabled(true)
+                    ->pretty(false)
+            ;
+
+            $config->type('custom_type')
+                ->class('Fully\Qualified\Class\Name');
+
+            $config->connection('id')
+                ->server('mongodb://localhost')
+                ->driverOptions([
+                    'context' => null, // stream context to use for connection
+                ])
+                ->options([
+                    'authMechanism' => null,
+                    'connectTimeoutMS' => null,
+                    'db' => null,
+                    'authSource' => null,
+                    'journal' => null,
+                    'password' => null,
+                    'readPreference' => null,
+                    'readPreferenceTags' => null,
+                    'replicaSet' => null, // replica set name
+                    'socketTimeoutMS' => null,
+                    'ssl' => null,
+                    'tls' => null,
+                    'tlsAllowInvalidCertificates' => null,
+                    'tlsAllowInvalidHostnames' => null,
+                    'tlsCAFile' => null,
+                    'tlsCertificateKeyFile' => null,
+                    'tlsCertificateKeyFilePassword' => null,
+                    'tlsDisableCertificateRevocationCheck' => null,
+                    'tlsDisableOCSPEndpointCheck' => null,
+                    'tlsInsecure' => null,
+                    'username' => null,
+                    'retryReads' => null,
+                    'retryWrites' => null,
+                    'w' => null,
+                    'wTimeoutMS' => null,
+                ])
+        };
 
 .. _`Custom types`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/current/reference/custom-mapping-types.html
 .. _`define it as an environment variable`: https://symfony.com/doc/current/configuration.html#configuration-based-on-environment-variables
