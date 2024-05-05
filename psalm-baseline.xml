@@ -1,29 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.18.0@b113f3ed0259fd6e212d87c3df80eec95a6abf19">
+<files psalm-version="5.24.0@462c80e31c34e58cc4f750c656be3927e80e550e">
   <file src="config/value_resolver.php">
     <UndefinedClass>
-      <code>ExpressionLanguage</code>
+      <code><![CDATA[ExpressionLanguage]]></code>
     </UndefinedClass>
   </file>
   <file src="src/Command/LoadDataFixturesDoctrineODMCommand.php">
     <UndefinedInterfaceMethod>
-      <code>ask</code>
+      <code><![CDATA[ask]]></code>
     </UndefinedInterfaceMethod>
   </file>
   <file src="src/DependencyInjection/Configuration.php">
     <UndefinedInterfaceMethod>
-      <code>arrayNode</code>
-      <code>end</code>
-      <code>scalarNode</code>
-      <code>scalarNode</code>
+      <code><![CDATA[arrayNode]]></code>
+      <code><![CDATA[end]]></code>
+      <code><![CDATA[scalarNode]]></code>
+      <code><![CDATA[scalarNode]]></code>
     </UndefinedInterfaceMethod>
     <UndefinedMethod>
-      <code>children</code>
+      <code><![CDATA[children]]></code>
     </UndefinedMethod>
+  </file>
+  <file src="tests/DocumentValueResolverFunctionalTest.php">
+    <InvalidArgument>
+      <code><![CDATA[[DocumentValueResolverController::class, 'showUserByDefault']]]></code>
+      <code><![CDATA[[DocumentValueResolverController::class, 'showUserWithMapping']]]></code>
+    </InvalidArgument>
   </file>
   <file src="tests/Form/Type/GuesserTestType.php">
     <MissingTemplateParam>
-      <code>GuesserTestType</code>
+      <code><![CDATA[GuesserTestType]]></code>
     </MissingTemplateParam>
   </file>
 </files>
