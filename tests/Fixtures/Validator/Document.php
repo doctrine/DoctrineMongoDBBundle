@@ -17,11 +17,9 @@ class Document
     #[ODM\Field(type: Type::STRING)]
     public string $name;
 
-    /** @var array */
     #[ODM\Field(type: Type::HASH)]
     public array $hash;
 
-    /** @var array */
     #[ODM\Field(type: Type::COLLECTION)]
     public array $collection;
 

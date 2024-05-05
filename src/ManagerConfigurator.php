@@ -15,8 +15,6 @@ class ManagerConfigurator
 {
     /**
      * Construct.
-     *
-     * @param array $enabledFilters
      */
     public function __construct(private array $enabledFilters = [])
     {
@@ -47,8 +45,6 @@ class ManagerConfigurator
 
     /**
      * Loads custom types.
-     *
-     * @param array $types
      *
      * @throws MappingException
      */
