@@ -13,11 +13,7 @@
             "name": "5.0",
             "branchName": "5.0.x",
             "slug": "5.0",
-            "current": true,
-            "aliases": [
-                "current",
-                "stable"
-            ]
+            "current": true
         },
         {
             "name": "4.7",

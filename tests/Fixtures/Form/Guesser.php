@@ -43,7 +43,6 @@ class Guesser
     #[ODM\Field(type: Type::INT)]
     public ?int $intField = null;
 
-    /** @var array */
     #[ODM\Field(type: Type::COLLECTION)]
     public array $collectionField;
 
