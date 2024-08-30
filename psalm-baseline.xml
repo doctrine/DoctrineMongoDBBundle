@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.24.0@462c80e31c34e58cc4f750c656be3927e80e550e">
+<files psalm-version="5.25.0@01a8eb06b9e9cc6cfb6a320bf9fb14331919d505">
   <file src="config/value_resolver.php">
     <UndefinedClass>
       <code><![CDATA[ExpressionLanguage]]></code>
@@ -21,15 +21,14 @@
       <code><![CDATA[children]]></code>
     </UndefinedMethod>
   </file>
-  <file src="tests/DocumentValueResolverFunctionalTest.php">
-    <InvalidArgument>
-      <code><![CDATA[[DocumentValueResolverController::class, 'showUserByDefault']]]></code>
-      <code><![CDATA[[DocumentValueResolverController::class, 'showUserWithMapping']]]></code>
-    </InvalidArgument>
-  </file>
   <file src="tests/Form/Type/GuesserTestType.php">
     <MissingTemplateParam>
       <code><![CDATA[GuesserTestType]]></code>
     </MissingTemplateParam>
+  </file>
+  <file src="tests/ManagerRegistryTest.php">
+    <RedundantCondition>
+      <code><![CDATA[assertSame]]></code>
+    </RedundantCondition>
   </file>
 </files>
