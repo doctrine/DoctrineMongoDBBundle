@@ -26,11 +26,7 @@ final class SymfonyFixturesLoader extends Loader implements SymfonyFixturesLoade
     /** @var array<string, array<string, bool>> */
     private array $groupsFixtureMapping = [];
 
-    /**
-     * @internal
-     *
-     * @param array $fixtures
-     */
+    /** @internal */
     public function addFixtures(array $fixtures): void
     {
         // Because parent::addFixture may call $this->createFixture

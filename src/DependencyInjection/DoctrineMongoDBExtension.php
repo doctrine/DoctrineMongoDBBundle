@@ -467,14 +467,14 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      *
      *  doctrine_mongodb:
      *     mappings:
-     *         MyBundle1: ~
-     *         MyBundle2: xml
-     *         MyBundle3: { type: attribute }
-     *         MyBundle4: { type: xml, dir: Resources/config/doctrine/mapping }
-     *         MyBundle5:
+     *         App1: ~
+     *         App2: xml
+     *         App3: { type: attribute }
+     *         App4: { type: xml, dir: config/doctrine/mapping }
+     *         App5:
      *             type: xml
-     *             dir: [bundle-mappings1/, bundle-mappings2/]
-     *             alias: BundleAlias
+     *             dir: [app-mappings1/, app-mappings2/]
+     *             alias: AppAlias
      *         arbitrary_key:
      *             type: xml
      *             dir: %kernel.dir%/../src/vendor/DoctrineExtensions/lib/DoctrineExtensions/Documents
