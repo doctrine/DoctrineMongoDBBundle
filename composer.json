@@ -50,7 +50,7 @@
         "symfony/stopwatch": "^6.4 || ^7.0",
         "symfony/validator": "^6.4 || ^7.0",
         "symfony/yaml": "^6.4 || ^7.0",
-        "vimeo/psalm": "^5.12"
+        "vimeo/psalm": "^5.25"
     },
     "conflict": {
         "doctrine/data-fixtures": "<1.3"
