@@ -95,7 +95,7 @@ jobs:
       - name: "Upload coverage file"
         uses: "actions/upload-artifact@v4"
         with:
-          name: "phpunit-${{ matrix.php-version }}-${{ hashFiles(composer.lock) }}.coverage"
+          name: "phpunit-${{ matrix.php-version }}-${{ hashFiles('composer.lock') }}.coverage"
           path: "coverage.xml"
 
   upload_coverage:
