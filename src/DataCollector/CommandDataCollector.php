@@ -6,6 +6,7 @@ namespace Doctrine\Bundle\MongoDBBundle\DataCollector;
 
 use Doctrine\ODM\MongoDB\APM\Command;
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
+use MongoDB\BSON\Document;
 use stdClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,8 +17,6 @@ use function array_map;
 use function array_reduce;
 use function count;
 use function json_decode;
-use function MongoDB\BSON\fromPHP;
-use function MongoDB\BSON\toCanonicalExtendedJSON;
 
 /** @internal */
 final class CommandDataCollector extends DataCollector
@@ -33,10 +32,11 @@ final class CommandDataCollector extends DataCollector
             'commands' => array_map(
                 static function (Command $command): array {
                     $dbProperty = '$db';
+                    $document   = Document::fromPHP($command->getCommand());
 
                     return [
                         'database' => $command->getCommand()->$dbProperty ?? '',
-                        'command' => json_decode(toCanonicalExtendedJSON(fromPHP($command->getCommand()))),
+                        'command' => json_decode($document->toCanonicalExtendedJSON()),
                         'durationMicros' => $command->getDurationMicros(),
                     ];
                 },
