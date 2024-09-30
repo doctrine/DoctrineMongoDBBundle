@@ -25,7 +25,7 @@
     "homepage": "http://www.doctrine-project.org",
     "require": {
         "php": "^8.1",
-        "ext-mongodb": "^1.5",
+        "ext-mongodb": "^1.16",
         "composer-runtime-api": "^2.0",
         "doctrine/mongodb-odm": "^2.6",
         "doctrine/persistence": "^3.0",
