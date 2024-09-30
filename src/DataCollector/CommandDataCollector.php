@@ -32,7 +32,7 @@ final class CommandDataCollector extends DataCollector
             'commands' => array_map(
                 static function (Command $command): array {
                     $dbProperty = '$db';
-                    $document = Document::fromPHP($command->getCommand());
+                    $document   = Document::fromPHP($command->getCommand());
 
                     return [
                         'database' => $command->getCommand()->$dbProperty ?? '',
