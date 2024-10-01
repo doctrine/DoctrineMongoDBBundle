@@ -14,7 +14,7 @@ Compatibility
 
 The current version of this bundle has the following requirements:
  * PHP 8.1 or newer is required
- * `ext-mongodb` 1.5 or newer
+ * `ext-mongodb` 1.16 or newer
  * Symfony 6.4 or newer is required
 
 Support for older Symfony, PHP and MongoDB versions is provided via the `4.7.x`
