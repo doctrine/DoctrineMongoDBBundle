@@ -16,6 +16,7 @@ use Doctrine\Common\DataFixtures\Loader as DataFixturesLoader;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use InvalidArgumentException;
@@ -141,6 +142,10 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 'connection' => $attribute->connection,
                 'priority'   => $attribute->priority,
             ]);
+        });
+
+        $container->registerAttributeForAutoconfiguration(Document::class, static function (ChildDefinition $definition): void {
+            $definition->addTag('container.excluded', ['source' => __FILE__]);
         });
 
         $this->loadMessengerServices($container, $loader);
