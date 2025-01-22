@@ -46,7 +46,6 @@ use function class_implements;
 use function in_array;
 use function interface_exists;
 use function is_dir;
-use function method_exists;
 use function sprintf;
 
 /**
@@ -255,11 +254,9 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             'setPersistentCollectionDir' => '%doctrine_mongodb.odm.persistent_collection_dir%',
             'setPersistentCollectionNamespace' => '%doctrine_mongodb.odm.persistent_collection_namespace%',
             'setAutoGeneratePersistentCollectionClasses' => '%doctrine_mongodb.odm.auto_generate_persistent_collection_classes%',
+            'setUseLazyGhostObject' => true,
+            'setUseTransactionalFlush' => $documentManager['use_transactional_flush'],
         ];
-
-        if (method_exists(ODMConfiguration::class, 'setUseTransactionalFlush')) {
-            $methods['setUseTransactionalFlush'] = $documentManager['use_transactional_flush'];
-        }
 
         if ($documentManager['repository_factory']) {
             $methods['setRepositoryFactory'] = new Reference($documentManager['repository_factory']);

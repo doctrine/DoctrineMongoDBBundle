@@ -8,7 +8,7 @@ use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\Bundle\MongoDBBundle\Repository\ContainerRepositoryFactory;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Tools\ResolveTargetDocumentListener;
-use ProxyManager\Proxy\GhostObjectInterface;
+use Doctrine\Persistence\Proxy;
 use Symfony\Bridge\Doctrine\ContainerAwareEventManager;
 use Symfony\Bridge\Doctrine\Security\User\EntityUserProvider;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -54,7 +54,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
                 '%doctrine_mongodb.odm.document_managers%',
                 '%doctrine_mongodb.odm.default_connection%',
                 '%doctrine_mongodb.odm.default_document_manager%',
-                GhostObjectInterface::class,
+                Proxy::class,
                 service('service_container'),
             ])
 
