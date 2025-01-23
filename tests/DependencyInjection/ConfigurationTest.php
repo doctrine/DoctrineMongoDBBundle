@@ -22,6 +22,7 @@ use Symfony\Component\Yaml\Yaml;
 
 use function array_key_exists;
 use function file_get_contents;
+use function method_exists;
 
 class ConfigurationTest extends TestCase
 {
@@ -37,6 +38,7 @@ class ConfigurationTest extends TestCase
             'auto_generate_hydrator_classes' => false,
             'auto_generate_proxy_classes'    => ODMConfiguration::AUTOGENERATE_EVAL,
             'auto_generate_persistent_collection_classes' => ODMConfiguration::AUTOGENERATE_NEVER,
+            'enable_lazy_ghost_objects'      => method_exists(ODMConfiguration::class, 'setUseLazyGhostObject'),
             'default_database'               => 'default',
             'document_managers'              => [],
             'connections'                    => [],
@@ -69,6 +71,7 @@ class ConfigurationTest extends TestCase
             'auto_generate_hydrator_classes' => 1,
             'auto_generate_proxy_classes'    => ODMConfiguration::AUTOGENERATE_FILE_NOT_EXISTS,
             'auto_generate_persistent_collection_classes' => ODMConfiguration::AUTOGENERATE_EVAL,
+            'enable_lazy_ghost_objects'      => method_exists(ODMConfiguration::class, 'setUseLazyGhostObject'),
             'default_connection'             => 'conn1',
             'default_database'               => 'default_db_name',
             'default_document_manager'       => 'default_dm_name',

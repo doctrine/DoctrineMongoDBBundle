@@ -109,9 +109,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         }
 
         // Requires doctrine/mongodb-odm 2.10
-        $useLazyGhostObject = method_exists(ODMConfiguration::class, 'setUseLazyGhostObject');
         $container->getDefinition('doctrine_mongodb')
-            ->setArgument(5, $useLazyGhostObject ? Proxy::class : LazyLoadingInterface::class);
+            ->setArgument(5, $config['enable_lazy_ghost_objects'] ? Proxy::class : LazyLoadingInterface::class);
 
         // load the connections
         $this->loadConnections($config['connections'], $container);
@@ -124,7 +123,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $config['default_document_manager'],
             $config['default_database'],
             $container,
-            $useLazyGhostObject,
+            $config['enable_lazy_ghost_objects'],
         );
 
         if ($config['resolve_target_documents']) {

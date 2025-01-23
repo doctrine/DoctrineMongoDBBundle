@@ -15,6 +15,7 @@ use function count;
 use function is_array;
 use function is_string;
 use function json_decode;
+use function method_exists;
 use function preg_match;
 
 /**
@@ -39,6 +40,13 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('proxy_namespace')->defaultValue('MongoDBODMProxies')->end()
                 ->scalarNode('proxy_dir')->defaultValue('%kernel.cache_dir%/doctrine/odm/mongodb/Proxies')->end()
+                ->booleanNode('enable_lazy_ghost_objects')
+                    ->defaultValue(method_exists(ODMConfiguration::class, 'setUseLazyGhostObject'))
+                    ->validate()
+                        ->ifTrue(static fn ($v) => $v === true && ! method_exists(ODMConfiguration::class, 'setUseLazyGhostObject'))
+                        ->thenInvalid('Lazy ghost objects require doctrine/mongodb-odm 2.10 or higher.')
+                    ->end()
+                ->end()
                 ->scalarNode('auto_generate_proxy_classes')
                     ->defaultValue(ODMConfiguration::AUTOGENERATE_EVAL)
                     ->beforeNormalization()
