@@ -19,8 +19,10 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
+use Doctrine\Persistence\Proxy;
 use InvalidArgumentException;
 use MongoDB\Client;
+use ProxyManager\Proxy\LazyLoadingInterface;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
@@ -46,6 +48,7 @@ use function class_implements;
 use function in_array;
 use function interface_exists;
 use function is_dir;
+use function method_exists;
 use function sprintf;
 
 /**
@@ -105,6 +108,11 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $container->removeDefinition('doctrine_mongodb.odm.command.load_data_fixtures');
         }
 
+        // Requires doctrine/mongodb-odm 2.10
+        $useLazyGhostObject = method_exists(ODMConfiguration::class, 'setUseLazyGhostObject');
+        $container->getDefinition('doctrine_mongodb')
+            ->setArgument(5, $useLazyGhostObject ? Proxy::class : LazyLoadingInterface::class);
+
         // load the connections
         $this->loadConnections($config['connections'], $container);
 
@@ -116,6 +124,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $config['default_document_manager'],
             $config['default_database'],
             $container,
+            $useLazyGhostObject,
         );
 
         if ($config['resolve_target_documents']) {
@@ -197,7 +206,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      * @param string           $defaultDB The default db name
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
-    protected function loadDocumentManagers(array $dmConfigs, string|null $defaultDM, string $defaultDB, ContainerBuilder $container): void
+    protected function loadDocumentManagers(array $dmConfigs, string|null $defaultDM, string $defaultDB, ContainerBuilder $container, bool $useLazyGhostObject = false): void
     {
         $dms = [];
         foreach ($dmConfigs as $name => $documentManager) {
@@ -207,6 +216,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 $defaultDM,
                 $defaultDB,
                 $container,
+                $useLazyGhostObject,
             );
             $dms[$name] = sprintf('doctrine_mongodb.odm.%s_document_manager', $name);
         }
@@ -222,7 +232,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      * @param string           $defaultDB       The default db name
      * @param ContainerBuilder $container       A ContainerBuilder instance
      */
-    protected function loadDocumentManager(array $documentManager, string|null $defaultDM, string $defaultDB, ContainerBuilder $container): void
+    protected function loadDocumentManager(array $documentManager, string|null $defaultDM, string $defaultDB, ContainerBuilder $container, bool $useLazyGhostObject = false): void
     {
         $connectionName  = $documentManager['connection'] ?? $documentManager['name'];
         $configurationId = sprintf('doctrine_mongodb.odm.%s_configuration', $documentManager['name']);
@@ -254,9 +264,15 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             'setPersistentCollectionDir' => '%doctrine_mongodb.odm.persistent_collection_dir%',
             'setPersistentCollectionNamespace' => '%doctrine_mongodb.odm.persistent_collection_namespace%',
             'setAutoGeneratePersistentCollectionClasses' => '%doctrine_mongodb.odm.auto_generate_persistent_collection_classes%',
-            'setUseLazyGhostObject' => true,
-            'setUseTransactionalFlush' => $documentManager['use_transactional_flush'],
         ];
+
+        if ($useLazyGhostObject) {
+            $methods['setUseLazyGhostObject'] = $useLazyGhostObject;
+        }
+
+        if (method_exists(ODMConfiguration::class, 'setUseTransactionalFlush')) {
+            $methods['setUseTransactionalFlush'] = $documentManager['use_transactional_flush'];
+        }
 
         if ($documentManager['repository_factory']) {
             $methods['setRepositoryFactory'] = new Reference($documentManager['repository_factory']);

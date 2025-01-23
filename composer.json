@@ -27,7 +27,7 @@
         "php": "^8.1",
         "ext-mongodb": "^1.16",
         "composer-runtime-api": "^2.0",
-        "doctrine/mongodb-odm": "^2.10@dev",
+        "doctrine/mongodb-odm": "^2.6",
         "doctrine/persistence": "^3.0",
         "psr/log": "^1.0 || ^2.0 || ^3.0",
         "symfony/config": "^6.4 || ^7.0",
