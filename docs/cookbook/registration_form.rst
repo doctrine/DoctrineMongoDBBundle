@@ -19,25 +19,22 @@ We begin this tutorial with the model for a ``User`` document:
         namespace App\Document;
 
         use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
-        use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+        use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
         use Symfony\Component\Validator\Constraints as Assert;
 
-        #[MongoDB\Document(collection: 'users')]
-        #[MongoDB\Unique(fields: 'email')]
+        #[ODM\Document(collection: 'users')]
+        #[ODM\Unique(fields: 'email')]
         class User
         {
-            /**
-             * @MongoDB\Id
-             */
-            #[MongoDB\Id]
+            #[ODM\Id]
             protected string $id;
 
-            #[MongoDB\Field(type: 'string')]
+            #[ODM\Field(type: 'string')]
             #[Assert\NotBlank]
             #[Assert\Email]
             protected ?string $email = null;
 
-            #[MongoDB\Field(type: 'string')]
+            #[ODM\Field(type: 'string')]
             #[Assert\NotBlank]
             protected ?string $password = null;
 
