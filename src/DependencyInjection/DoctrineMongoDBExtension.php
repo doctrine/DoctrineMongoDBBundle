@@ -17,6 +17,11 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\File;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\MappedSuperclass;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\QueryResultDocument;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\View;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use Doctrine\Persistence\Proxy;
@@ -151,8 +156,24 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             ]);
         });
 
+        // Document classes are excluded from the container by default
         $container->registerAttributeForAutoconfiguration(Document::class, static function (ChildDefinition $definition): void {
-            $definition->addTag('container.excluded', ['source' => __FILE__]);
+            $definition->addTag('container.excluded', ['source' => sprintf('with #[%s] attribute', Document::class)])->setAbstract(true);
+        });
+        $container->registerAttributeForAutoconfiguration(EmbeddedDocument::class, static function (ChildDefinition $definition): void {
+            $definition->addTag('container.excluded', ['source' => sprintf('with #[%s] attribute', EmbeddedDocument::class)])->setAbstract(true);
+        });
+        $container->registerAttributeForAutoconfiguration(MappedSuperclass::class, static function (ChildDefinition $definition): void {
+            $definition->addTag('container.excluded', ['source' => sprintf('with #[%s] attribute', MappedSuperclass::class)])->setAbstract(true);
+        });
+        $container->registerAttributeForAutoconfiguration(View::class, static function (ChildDefinition $definition): void {
+            $definition->addTag('container.excluded', ['source' => sprintf('with #[%s] attribute', View::class)])->setAbstract(true);
+        });
+        $container->registerAttributeForAutoconfiguration(QueryResultDocument::class, static function (ChildDefinition $definition): void {
+            $definition->addTag('container.excluded', ['source' => sprintf('with #[%s] attribute', QueryResultDocument::class)])->setAbstract(true);
+        });
+        $container->registerAttributeForAutoconfiguration(File::class, static function (ChildDefinition $definition): void {
+            $definition->addTag('container.excluded', ['source' => sprintf('with #[%s] attribute', File::class)])->setAbstract(true);
         });
 
         $this->loadMessengerServices($container, $loader);
