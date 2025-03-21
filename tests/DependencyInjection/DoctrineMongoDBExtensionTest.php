@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
+use Closure;
 use Composer\InstalledVersions;
 use Composer\Semver\VersionParser;
 use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\DocumentListenerBundle\EventListener\TestAttributeListener;
+use Doctrine\ODM\MongoDB\Mapping\Annotations;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\DependencyInjection\Alias;
+use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -23,6 +26,7 @@ use function array_merge;
 use function class_exists;
 use function interface_exists;
 use function is_dir;
+use function sprintf;
 use function sys_get_temp_dir;
 
 class DoctrineMongoDBExtensionTest extends TestCase
@@ -100,6 +104,36 @@ class DoctrineMongoDBExtensionTest extends TestCase
                 'priority' => 10,
             ],
         ], $listenerDefinition->getTag('doctrine_mongodb.odm.event_listener'));
+    }
+
+    /** @return array<array{0: class-string}> */
+    public static function provideAttributeExcludedFromContainer(): array
+    {
+        return [
+            'Document' => [Annotations\Document::class],
+            'EmbeddedDocument' => [Annotations\EmbeddedDocument::class],
+            'MappedSuperclass' => [Annotations\MappedSuperclass::class],
+            'View' => [Annotations\View::class],
+            'QueryResultDocument' => [Annotations\QueryResultDocument::class],
+            'File' => [Annotations\File::class],
+        ];
+    }
+
+    /** @dataProvider provideAttributeExcludedFromContainer */
+    public function testDocumentAttributeExcludesFromContainer(string $class): void
+    {
+        $container = $this->getContainer();
+        $extension = new DoctrineMongoDBExtension();
+        $extension->load($this->buildConfiguration(), $container);
+
+        $attributes = $container->getAutoconfiguredAttributes();
+        $this->assertInstanceOf(Closure::class, $attributes[$class]);
+
+        $definition = new ChildDefinition('');
+        $attributes[$class]($definition);
+
+        $this->assertSame([['source' => sprintf('with #[%s] attribute', $class)]], $definition->getTag('container.excluded'));
+        $this->assertTrue($definition->isAbstract());
     }
 
     /** @param string|string[] $bundles */
