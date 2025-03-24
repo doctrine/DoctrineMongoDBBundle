@@ -18,6 +18,7 @@ jobs:
       SYMFONY_REQUIRE: ${{matrix.symfony-version}}
 
     strategy:
+      fail-fast: false
       matrix:
         os:
           - "ubuntu-20.04"
@@ -25,11 +26,12 @@ jobs:
           - "8.1"
           - "8.2"
           - "8.3"
+          - "8.4"
         stability:
           - "stable"
         symfony-version:
           - "6.4.*"
-          - "7.0.*"
+          - "7.2.*"
         driver-version:
           - "stable"
         dependencies:
@@ -38,12 +40,18 @@ jobs:
           - dependencies: "lowest"
             os: "ubuntu-20.04"
             php-version: "8.1"
-            driver-version: "1.5.0"
+            driver-version: "1.16.0"
             stability: "stable"
             symfony-version: "6.4.*"
+          - dependencies: "highest"
+            os: "ubuntu-20.04"
+            php-version: "8.2"
+            driver-version: "mongodb/mongo-php-driver@v2.x"
+            stability: "dev"
+            symfony-version: "7.2.*"
         exclude:
           - php-version: "8.1"
-            symfony-version: "7.0.*"
+            symfony-version: "7.2.*"
 
     services:
       mongodb:
