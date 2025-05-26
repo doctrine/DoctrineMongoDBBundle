@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - "ubuntu-20.04"
+          - "ubuntu-24.04"
         php-version:
           - "8.1"
           - "8.2"
@@ -38,13 +38,13 @@ jobs:
           - "highest"
         include:
           - dependencies: "lowest"
-            os: "ubuntu-20.04"
+            os: "ubuntu-24.04"
             php-version: "8.1"
             driver-version: "1.16.0"
             stability: "stable"
             symfony-version: "6.4.*"
           - dependencies: "highest"
-            os: "ubuntu-20.04"
+            os: "ubuntu-24.04"
             php-version: "8.2"
             driver-version: "mongodb/mongo-php-driver@v2.x"
             stability: "dev"
@@ -108,7 +108,7 @@ jobs:
 
   upload_coverage:
     name: "Upload coverage to Codecov"
-    runs-on: "ubuntu-20.04"
+    runs-on: "ubuntu-24.04"
     needs:
       - "phpunit"
 
