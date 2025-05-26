@@ -21,6 +21,7 @@ use Symfony\Component\Config\Util\XmlUtils;
 use Symfony\Component\Yaml\Yaml;
 
 use function array_key_exists;
+use function array_merge;
 use function file_get_contents;
 use function method_exists;
 
@@ -518,5 +519,384 @@ class ConfigurationTest extends TestCase
         $configuration   = new Configuration();
         $processedConfig = $processor->processConfiguration($configuration, [$config]);
         $this->assertFalse(array_key_exists('replicaSet', $processedConfig['connections']['conn1']['options']));
+    }
+
+    protected function processConfiguration(array $config): array
+    {
+        $processor     = new Processor();
+        $configuration = new Configuration();
+
+        return $processor->processConfiguration($configuration, [$this->getMinimalValidConfig($config)]);
+    }
+
+    protected function getMinimalValidConfig(array $config = []): array
+    {
+        $baseConfig = [
+            'connections' => [
+                'default' => [
+                    'driver_options' => [], // Placeholder for autoEncryption or other options
+                ],
+            ],
+            'document_managers' => [
+                'default' => [],
+            ],
+        ];
+
+        // Deep merge config into baseConfig
+        if (isset($config['connections']['default']['driver_options'])) {
+            $baseConfig['connections']['default']['driver_options'] = array_merge(
+                $baseConfig['connections']['default']['driver_options'],
+                $config['connections']['default']['driver_options'],
+            );
+            unset($config['connections']['default']['driver_options']);
+        }
+
+        if (isset($config['connections']['default'])) {
+            $baseConfig['connections']['default'] = array_merge(
+                $baseConfig['connections']['default'],
+                $config['connections']['default'],
+            );
+            unset($config['connections']['default']);
+        }
+
+        if (isset($config['connections'])) {
+            $baseConfig['connections'] = array_merge(
+                $baseConfig['connections'],
+                $config['connections'],
+            );
+            unset($config['connections']);
+        }
+
+        return array_merge($baseConfig, $config);
+    }
+
+    private function assertProcessedConfigurationEquals(array $expected, array $config): void
+    {
+        $this->assertEquals($expected, $this->processConfiguration($config));
+    }
+
+    private function assertConfigurationIsInvalid(array $config, ?string $expectedMessage = null): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        if ($expectedMessage !== null) {
+            $this->expectExceptionMessageMatches($expectedMessage);
+        }
+
+        $this->processConfiguration($config);
+    }
+
+    public function testBasicValidAutoEncryptionConfig(): void
+    {
+        $config   = [
+            'connections' => [
+                'default' => [
+                    'driver_options' => [
+                        'autoEncryption' => ['bypassAutoEncryption' => false],
+                    ],
+                ],
+            ],
+        ];
+        $expected = $this->getMinimalValidConfig($config);
+        // Only include non-empty keys for autoEncryption
+        $expected['connections']['default']['driver_options']['autoEncryption'] = ['bypassAutoEncryption' => false];
+        $expected['connections']['default']['driver_options']['context']        = null;
+        $expected['document_managers']['default']                               = array_merge([
+            'logging' => '%kernel.debug%',
+            'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'],
+            'default_document_repository_class' => DocumentRepository::class,
+            'default_gridfs_repository_class' => DefaultGridFSRepository::class,
+            'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory',
+            'persistent_collection_factory' => null,
+            'auto_mapping' => false,
+            'filters' => [],
+            'metadata_cache_driver' => ['type' => 'array'],
+            'use_transactional_flush' => false,
+            'mappings' => [],
+        ], $expected['document_managers']['default']);
+        $expected['resolve_target_documents']                                   = [];
+        $expected['types']                                                      = [];
+        $expected['proxy_namespace']                                            = 'MongoDBODMProxies';
+        $expected['proxy_dir']                                                  = '%kernel.cache_dir%/doctrine/odm/mongodb/Proxies';
+        $expected['enable_lazy_ghost_objects']                                  = true;
+        $expected['auto_generate_proxy_classes']                                = 3;
+        $expected['hydrator_namespace']                                         = 'Hydrators';
+        $expected['hydrator_dir']                                               = '%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators';
+        $expected['auto_generate_hydrator_classes']                             = 0;
+        $expected['persistent_collection_namespace']                            = 'PersistentCollections';
+        $expected['persistent_collection_dir']                                  = '%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections';
+        $expected['auto_generate_persistent_collection_classes']                = 0;
+        $expected['default_database']                                           = 'default';
+        $expected['default_commit_options']                                     = [];
+        $expected['controller_resolver']                                        = [
+            'enabled' => true,
+            'auto_mapping' => true,
+        ];
+        $this->assertProcessedConfigurationEquals($expected, $config);
+    }
+
+    public function testAutoEncryptionWithKeyVaultClientService(): void
+    {
+        $config                                                                 = [
+            'connections' => [
+                'default' => [
+                    'driver_options' => [
+                        'autoEncryption' => [
+                            'kmsProviders' => ['local' => ['key' => 'cGFzc3dvcmQ=']],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+        $expected                                                               = $this->getMinimalValidConfig($config);
+        $expected['connections']['default']['driver_options']['autoEncryption'] = [
+            'kmsProviders' => ['local' => ['key' => 'cGFzc3dvcmQ=']],
+        ];
+        $expected['connections']['default']['driver_options']['context']        = null;
+        $expected['document_managers']['default']                               = array_merge([
+            'logging' => '%kernel.debug%',
+            'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'],
+            'default_document_repository_class' => DocumentRepository::class,
+            'default_gridfs_repository_class' => DefaultGridFSRepository::class,
+            'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory',
+            'persistent_collection_factory' => null,
+            'auto_mapping' => false,
+            'filters' => [],
+            'metadata_cache_driver' => ['type' => 'array'],
+            'use_transactional_flush' => false,
+            'mappings' => [],
+        ], $expected['document_managers']['default']);
+        $expected['resolve_target_documents']                                   = [];
+        $expected['types']                                                      = [];
+        $expected['proxy_namespace']                                            = 'MongoDBODMProxies';
+        $expected['proxy_dir']                                                  = '%kernel.cache_dir%/doctrine/odm/mongodb/Proxies';
+        $expected['enable_lazy_ghost_objects']                                  = true;
+        $expected['auto_generate_proxy_classes']                                = 3;
+        $expected['hydrator_namespace']                                         = 'Hydrators';
+        $expected['hydrator_dir']                                               = '%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators';
+        $expected['auto_generate_hydrator_classes']                             = 0;
+        $expected['persistent_collection_namespace']                            = 'PersistentCollections';
+        $expected['persistent_collection_dir']                                  = '%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections';
+        $expected['auto_generate_persistent_collection_classes']                = 0;
+        $expected['default_database']                                           = 'default';
+        $expected['default_commit_options']                                     = [];
+        $expected['controller_resolver']                                        = [
+            'enabled' => true,
+            'auto_mapping' => true,
+        ];
+        $this->assertProcessedConfigurationEquals($expected, $config);
+    }
+
+    public function testAutoEncryptionWithSchemaMap(): void
+    {
+        $config                                                                 = [
+            'connections' => [
+                'default' => [
+                    'driver_options' => [
+                        'autoEncryption' => [
+                            'schemaMap' => ['foo' => 'bar'],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+        $expected                                                               = $this->getMinimalValidConfig($config);
+        $expected['connections']['default']['driver_options']['autoEncryption'] = [
+            'schemaMap' => ['foo' => 'bar'],
+        ];
+        $expected['connections']['default']['driver_options']['context']        = null;
+        $expected['document_managers']['default']                               = array_merge([
+            'logging' => '%kernel.debug%',
+            'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'],
+            'default_document_repository_class' => DocumentRepository::class,
+            'default_gridfs_repository_class' => DefaultGridFSRepository::class,
+            'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory',
+            'persistent_collection_factory' => null,
+            'auto_mapping' => false,
+            'filters' => [],
+            'metadata_cache_driver' => ['type' => 'array'],
+            'use_transactional_flush' => false,
+            'mappings' => [],
+        ], $expected['document_managers']['default']);
+        $expected['resolve_target_documents']                                   = [];
+        $expected['types']                                                      = [];
+        $expected['proxy_namespace']                                            = 'MongoDBODMProxies';
+        $expected['proxy_dir']                                                  = '%kernel.cache_dir%/doctrine/odm/mongodb/Proxies';
+        $expected['enable_lazy_ghost_objects']                                  = true;
+        $expected['auto_generate_proxy_classes']                                = 3;
+        $expected['hydrator_namespace']                                         = 'Hydrators';
+        $expected['hydrator_dir']                                               = '%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators';
+        $expected['auto_generate_hydrator_classes']                             = 0;
+        $expected['persistent_collection_namespace']                            = 'PersistentCollections';
+        $expected['persistent_collection_dir']                                  = '%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections';
+        $expected['auto_generate_persistent_collection_classes']                = 0;
+        $expected['default_database']                                           = 'default';
+        $expected['default_commit_options']                                     = [];
+        $expected['controller_resolver']                                        = [
+            'enabled' => true,
+            'auto_mapping' => true,
+        ];
+        $this->assertProcessedConfigurationEquals($expected, $config);
+    }
+
+    public function testAutoEncryptionWithEncryptedFieldsMap(): void
+    {
+        $config                                                                 = [
+            'connections' => [
+                'default' => [
+                    'driver_options' => [
+                        'autoEncryption' => [
+                            'encryptedFieldsMap' => ['foo' => 'bar'],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+        $expected                                                               = $this->getMinimalValidConfig($config);
+        $expected['connections']['default']['driver_options']['autoEncryption'] = [
+            'encryptedFieldsMap' => ['foo' => 'bar'],
+        ];
+        $expected['connections']['default']['driver_options']['context']        = null;
+        $expected['document_managers']['default']                               = array_merge([
+            'logging' => '%kernel.debug%',
+            'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'],
+            'default_document_repository_class' => DocumentRepository::class,
+            'default_gridfs_repository_class' => DefaultGridFSRepository::class,
+            'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory',
+            'persistent_collection_factory' => null,
+            'auto_mapping' => false,
+            'filters' => [],
+            'metadata_cache_driver' => ['type' => 'array'],
+            'use_transactional_flush' => false,
+            'mappings' => [],
+        ], $expected['document_managers']['default']);
+        $expected['resolve_target_documents']                                   = [];
+        $expected['types']                                                      = [];
+        $expected['proxy_namespace']                                            = 'MongoDBODMProxies';
+        $expected['proxy_dir']                                                  = '%kernel.cache_dir%/doctrine/odm/mongodb/Proxies';
+        $expected['enable_lazy_ghost_objects']                                  = true;
+        $expected['auto_generate_proxy_classes']                                = 3;
+        $expected['hydrator_namespace']                                         = 'Hydrators';
+        $expected['hydrator_dir']                                               = '%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators';
+        $expected['auto_generate_hydrator_classes']                             = 0;
+        $expected['persistent_collection_namespace']                            = 'PersistentCollections';
+        $expected['persistent_collection_dir']                                  = '%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections';
+        $expected['auto_generate_persistent_collection_classes']                = 0;
+        $expected['default_database']                                           = 'default';
+        $expected['default_commit_options']                                     = [];
+        $expected['controller_resolver']                                        = [
+            'enabled' => true,
+            'auto_mapping' => true,
+        ];
+        $this->assertProcessedConfigurationEquals($expected, $config);
+    }
+
+    public function testAutoEncryptionWithSchemaAndEncryptedFieldsMap(): void
+    {
+        $config                                                                 = [
+            'connections' => [
+                'default' => [
+                    'driver_options' => [
+                        'autoEncryption' => [
+                            'schemaMap' => ['foo' => 'bar'],
+                            'encryptedFieldsMap' => ['baz' => 'qux'],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+        $expected                                                               = $this->getMinimalValidConfig($config);
+        $expected['connections']['default']['driver_options']['autoEncryption'] = [
+            'schemaMap' => ['foo' => 'bar'],
+            'encryptedFieldsMap' => ['baz' => 'qux'],
+        ];
+        $expected['connections']['default']['driver_options']['context']        = null;
+        $expected['document_managers']['default']                               = array_merge([
+            'logging' => '%kernel.debug%',
+            'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'],
+            'default_document_repository_class' => DocumentRepository::class,
+            'default_gridfs_repository_class' => DefaultGridFSRepository::class,
+            'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory',
+            'persistent_collection_factory' => null,
+            'auto_mapping' => false,
+            'filters' => [],
+            'metadata_cache_driver' => ['type' => 'array'],
+            'use_transactional_flush' => false,
+            'mappings' => [],
+        ], $expected['document_managers']['default']);
+        $expected['resolve_target_documents']                                   = [];
+        $expected['types']                                                      = [];
+        $expected['proxy_namespace']                                            = 'MongoDBODMProxies';
+        $expected['proxy_dir']                                                  = '%kernel.cache_dir%/doctrine/odm/mongodb/Proxies';
+        $expected['enable_lazy_ghost_objects']                                  = true;
+        $expected['auto_generate_proxy_classes']                                = 3;
+        $expected['hydrator_namespace']                                         = 'Hydrators';
+        $expected['hydrator_dir']                                               = '%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators';
+        $expected['auto_generate_hydrator_classes']                             = 0;
+        $expected['persistent_collection_namespace']                            = 'PersistentCollections';
+        $expected['persistent_collection_dir']                                  = '%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections';
+        $expected['auto_generate_persistent_collection_classes']                = 0;
+        $expected['default_database']                                           = 'default';
+        $expected['default_commit_options']                                     = [];
+        $expected['controller_resolver']                                        = [
+            'enabled' => true,
+            'auto_mapping' => true,
+        ];
+        $this->assertProcessedConfigurationEquals($expected, $config);
+    }
+
+    public function testAutoEncryptionWithEmptySchemaAndEncryptedFieldsMap(): void
+    {
+        $config                                                                 = [
+            'connections' => [
+                'default' => [
+                    'driver_options' => [
+                        'autoEncryption' => [
+                            'keyVaultNamespace' => 'db.coll',
+                            'kmsProviders' => ['local' => ['key' => 'foo']],
+                            'schemaMap' => [],
+                            'encryptedFieldsMap' => [],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+        $expected                                                               = $this->getMinimalValidConfig($config);
+        $expected['connections']['default']['driver_options']['autoEncryption'] = [
+            'keyVaultNamespace' => 'db.coll',
+            'kmsProviders' => ['local' => ['key' => 'foo']],
+        ];
+        $expected['connections']['default']['driver_options']['context']        = null;
+        $expected['document_managers']['default']                               = array_merge([
+            'logging' => '%kernel.debug%',
+            'profiler' => ['enabled' => '%kernel.debug%', 'pretty' => '%kernel.debug%'],
+            'default_document_repository_class' => DocumentRepository::class,
+            'default_gridfs_repository_class' => DefaultGridFSRepository::class,
+            'repository_factory' => 'doctrine_mongodb.odm.container_repository_factory',
+            'persistent_collection_factory' => null,
+            'auto_mapping' => false,
+            'filters' => [],
+            'metadata_cache_driver' => ['type' => 'array'],
+            'use_transactional_flush' => false,
+            'mappings' => [],
+        ], $expected['document_managers']['default']);
+        $expected['resolve_target_documents']                                   = [];
+        $expected['types']                                                      = [];
+        $expected['proxy_namespace']                                            = 'MongoDBODMProxies';
+        $expected['proxy_dir']                                                  = '%kernel.cache_dir%/doctrine/odm/mongodb/Proxies';
+        $expected['enable_lazy_ghost_objects']                                  = true;
+        $expected['auto_generate_proxy_classes']                                = 3;
+        $expected['hydrator_namespace']                                         = 'Hydrators';
+        $expected['hydrator_dir']                                               = '%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators';
+        $expected['auto_generate_hydrator_classes']                             = 0;
+        $expected['persistent_collection_namespace']                            = 'PersistentCollections';
+        $expected['persistent_collection_dir']                                  = '%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections';
+        $expected['auto_generate_persistent_collection_classes']                = 0;
+        $expected['default_database']                                           = 'default';
+        $expected['default_commit_options']                                     = [];
+        $expected['controller_resolver']                                        = [
+            'enabled' => true,
+            'auto_mapping' => true,
+        ];
+        $this->assertProcessedConfigurationEquals($expected, $config);
     }
 }

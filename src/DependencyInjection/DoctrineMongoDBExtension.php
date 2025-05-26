@@ -53,6 +53,7 @@ use function class_implements;
 use function in_array;
 use function interface_exists;
 use function is_dir;
+use function is_string;
 use function method_exists;
 use function sprintf;
 
@@ -118,7 +119,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             ->setArgument(5, $config['enable_lazy_ghost_objects'] ? Proxy::class : LazyLoadingInterface::class);
 
         // load the connections
-        $this->loadConnections($config['connections'], $container);
+        $this->loadConnections($config['connections'], $container, $config);
 
         $config['document_managers'] = $this->fixManagersAutoMappings($config['document_managers'], $container->getParameter('kernel.bundles'));
 
@@ -382,7 +383,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      * @param array            $config    An array of connections configurations
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
-    protected function loadConnections(array $connections, ContainerBuilder $container): void
+    protected function loadConnections(array $connections, ContainerBuilder $container, array $config): void
     {
         $cons = [];
         foreach ($connections as $name => $connection) {
@@ -403,7 +404,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 $connection['server'] ?? null,
                 /* phpcs:ignore Squiz.Arrays.ArrayDeclaration.ValueNoNewline */
                 $connection['options'] ?? [],
-                $this->normalizeDriverOptions($connection),
+                $this->normalizeDriverOptions($connection, $config),
             ];
 
             $odmConnDef = new Definition(Client::class, $odmConnArgs);
@@ -467,13 +468,23 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      *
      * @return array<string, mixed>
      */
-    private function normalizeDriverOptions(array $connection): array
+    private function normalizeDriverOptions(array $connection, array $config): array
     {
         $driverOptions            = $connection['driver_options'] ?? [];
         $driverOptions['typeMap'] = DocumentManager::CLIENT_TYPEMAP;
 
         if (isset($driverOptions['context'])) {
             $driverOptions['context'] = new Reference($driverOptions['context']);
+        }
+
+        if (isset($driverOptions['autoEncryption'])) {
+            if (isset($driverOptions['autoEncryption']['keyVaultClient']) && is_string($driverOptions['autoEncryption']['keyVaultClient'])) {
+                $driverOptions['autoEncryption']['keyVaultClient'] = new Reference($driverOptions['autoEncryption']['keyVaultClient']);
+            }
+
+            if (! isset($driverOptions['autoEncryption']['keyVaultNamespace'])) {
+                $driverOptions['autoEncryption']['keyVaultNamespace'] = $config['default_database'] . '.datakeys';
+            }
         }
 
         $driverOptions['driver'] = [
