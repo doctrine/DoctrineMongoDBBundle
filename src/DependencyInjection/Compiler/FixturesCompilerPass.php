@@ -26,11 +26,9 @@ final class FixturesCompilerPass implements CompilerPassInterface
         foreach ($taggedServices as $serviceId => $tags) {
             $groups = [];
             foreach ($tags as $tagData) {
-                if (! isset($tagData['group'])) {
-                    continue;
+                if (isset($tagData['group'])) {
+                    $groups[] = $tagData['group'];
                 }
-
-                $groups[] = $tagData['group'];
             }
 
             $fixtures[] = [

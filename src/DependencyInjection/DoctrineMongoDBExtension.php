@@ -205,14 +205,12 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         ];
 
         foreach ($overrides as $key) {
-            if (! isset($options[$key])) {
-                continue;
+            if (isset($options[$key])) {
+                $container->setParameter('doctrine_mongodb.odm.' . $key, $options[$key]);
+
+                // the option should not be used, the parameter should be referenced
+                unset($options[$key]);
             }
-
-            $container->setParameter('doctrine_mongodb.odm.' . $key, $options[$key]);
-
-            // the option should not be used, the parameter should be referenced
-            unset($options[$key]);
         }
 
         return $options;
@@ -325,11 +323,9 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         foreach ($documentManager['filters'] as $name => $filter) {
             $parameters = $filter['parameters'] ?? [];
             $odmConfigDef->addMethodCall('addFilter', [$name, $filter['class'], $parameters]);
-            if (! $filter['enabled']) {
-                continue;
+            if ($filter['enabled']) {
+                $enabledFilters[] = $name;
             }
-
-            $enabledFilters[] = $name;
         }
 
         $managerConfiguratorName = sprintf('doctrine_mongodb.odm.%s_manager_configurator', $documentManager['name']);
@@ -534,11 +530,9 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             // TODO: Can we make a method out of it on Definition? replaceMethodArguments() or something.
             $calls = $odmConfigDef->getMethodCalls();
             foreach ($calls as $call) {
-                if ($call[0] !== 'setDocumentNamespaces') {
-                    continue;
+                if ($call[0] === 'setDocumentNamespaces') {
+                    $this->aliasMap = array_merge($call[1][0], $this->aliasMap);
                 }
-
-                $this->aliasMap = array_merge($call[1][0], $this->aliasMap);
             }
 
             $method = $odmConfigDef->removeMethodCall('setDocumentNamespaces');
