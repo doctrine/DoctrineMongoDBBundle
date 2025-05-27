@@ -7,6 +7,7 @@ namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 use Composer\InstalledVersions;
 use Doctrine\Bundle\MongoDBBundle\Attribute\AsDocumentListener;
 use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
+use Doctrine\Bundle\MongoDBBundle\DataCollector\ConnectionDiagnostic;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\Fixture\ODMFixtureInterface;
@@ -180,6 +181,22 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $this->loadMessengerServices($container, $loader);
 
         $this->loadEntityValueResolverServices($container, $loader, $config);
+
+        // Register EncryptionDiagnostics for each connection
+        $diagnosticsRefs = [];
+        foreach ($config['connections'] as $connName => $connConfig) {
+            $connService   = sprintf('doctrine_mongodb.odm.%s_connection', $connName);
+            $driverOptions = $connConfig['driver_options'] ?? [];
+            $diagServiceId = sprintf('doctrine_mongodb.encryption_diagnostics.%s', $connName);
+            $container->setDefinition(
+                $diagServiceId,
+                new Definition(ConnectionDiagnostic::class, [
+                    new Reference($connService), // Use the connection service, which is a MongoDB\Client
+                    $driverOptions,
+                ]),
+            );
+            $diagnosticsRefs[$connName] = new Reference($diagServiceId);
+        }
     }
 
     /**
@@ -385,7 +402,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      */
     protected function loadConnections(array $connections, ContainerBuilder $container, array $config): void
     {
-        $cons = [];
+        $cons        = [];
+        $diagnostics = [];
         foreach ($connections as $name => $connection) {
             // Define an event manager for this connection
             $eventManagerId = sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $name);
@@ -400,11 +418,12 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 new Definition(ODMConfiguration::class),
             );
 
-            $odmConnArgs = [
+            $driverOptions = $this->normalizeDriverOptions($connection, $config);
+            $odmConnArgs   = [
                 $connection['server'] ?? null,
                 /* phpcs:ignore Squiz.Arrays.ArrayDeclaration.ValueNoNewline */
                 $connection['options'] ?? [],
-                $this->normalizeDriverOptions($connection, $config),
+                $driverOptions,
             ];
 
             $odmConnDef = new Definition(Client::class, $odmConnArgs);
@@ -412,6 +431,11 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $id = sprintf('doctrine_mongodb.odm.%s_connection', $name);
             $container->setDefinition($id, $odmConnDef);
             $cons[$name] = $id;
+
+            // Diagnostic service
+            $container->register(sprintf('doctrine_mongodb.odm.%s_connection_diagnostic', $name), ConnectionDiagnostic::class)
+                ->setArguments([new Reference($id), $driverOptions])
+                ->addTag('doctrine_mongodb.connection_diagnostic', ['name' => $name]);
         }
 
         $container->setParameter('doctrine_mongodb.odm.connections', $cons);
