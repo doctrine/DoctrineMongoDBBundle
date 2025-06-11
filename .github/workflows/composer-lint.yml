@@ -10,6 +10,7 @@ on:
   push:
     branches:
       - "*.x"
+      - "feature/*"
     paths:
       - "composer.json"
 

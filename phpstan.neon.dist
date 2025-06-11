@@ -8,3 +8,7 @@ parameters:
         - config
         - src
         - tests
+
+    ignoreErrors:
+        - message: '# with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata#'
+          identifier: missingType.generics

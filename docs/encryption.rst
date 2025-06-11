@@ -76,10 +76,23 @@ Example of configuration for AWS
                         key: "arn:aws:kms:eu-west-1:123456789012:key/abcd1234-12ab-34cd-56ef-1234567890ab"
 
 
-Queryable Encryption (QE)
--------------------------
+Encrypted Fields Map
+--------------------
 
-Queryable Encryption (QE) allows you to run queries on encrypted fields. To use QE, you may need to provide an ``encryptedFieldsMap`` or use a schema map, depending on your driver and use case.
+You can configure which fields are encrypted in each collection by specifying the
+``autoEncryption.encryptedFieldsMap`` option in the connection configuration.
+This setting is **recommended** for improved security and performance.
+
+- If the connection ``encryptedFieldsMap`` object contains a key for the specified
+  collection, the client uses that object to perform automatic Queryable Encryption,
+  rather than using the remote schema. At minimum, the local rules must encrypt
+  all fields that the remote schema does.
+
+- If the connection ``encryptedFieldsMap`` object doesn't contain a key for the
+  specified collection, the client downloads the server-side remote schema for
+  the collection and uses it instead.
+
+For more details, see the official MongoDB documentation: `Encrypted Fields and Enabled Queries <https://www.mongodb.com/docs/manual/core/queryable-encryption/fundamentals/encrypt-and-query/>`_.
 
 .. tabs::
 
@@ -129,6 +142,51 @@ Queryable Encryption (QE) allows you to run queries on encrypted fields. To use 
                                     ],
                                 ],
                             ],
+                        ],
+                    ]);
+            };
+
+Automatic Encryption Shared Library
+-----------------------------------
+
+To use automatic encryption, the MongoDB PHP driver requires the `Automatic Encryption Shared Library`_.
+
+If the driver is not able to find the library, you can specify its path using the ``cryptSharedLibPath`` extra option in your connection configuration.
+
+.. tabs::
+
+    .. group-tab:: YAML
+
+        .. code-block:: yaml
+
+            doctrine_mongodb:
+                connections:
+                    default:
+                        autoEncryption:
+                            extraOptions:
+                                cryptSharedLibPath: '%kernel.project_dir%/bin/mongo_crypt_v1.so'
+
+    .. group-tab:: XML
+
+        .. code-block:: xml
+
+            <doctrine:connection>
+                <doctrine:autoEncryption>
+                    <doctrine:extraOptions cryptSharedLibPath="%kernel.project_dir%/bin/mongo_crypt_v1.so" />
+                </doctrine:autoEncryption>
+            </doctrine:connection>
+
+    .. group-tab:: PHP
+
+        .. code-block:: php
+
+            use Symfony\Config\DoctrineMongodbConfig;
+
+            return static function (DoctrineMongodbConfig $config): void {
+                $config->connection('default')
+                    ->autoEncryption([
+                        'extraOptions' => [
+                            'cryptSharedLibPath' => '%kernel.project_dir%/bin/mongo_crypt_v1.so',
                         ],
                     ]);
             };
@@ -221,3 +279,5 @@ Further Reading
 - `MongoDB CSFLE documentation <https://www.mongodb.com/docs/manual/core/csfle/>`_
 - `MongoDB PHP driver Manager::__construct <https://www.php.net/manual/en/mongodb-driver-manager.construct.php>`_
 - :doc:`config`
+
+.. _`Automatic Encryption Shared Library`: https://www.mongodb.com/docs/manual/core/queryable-encryption/install-library/

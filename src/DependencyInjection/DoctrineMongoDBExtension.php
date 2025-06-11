@@ -182,22 +182,6 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         $this->loadMessengerServices($container, $loader);
 
         $this->loadEntityValueResolverServices($container, $loader, $config);
-
-        // Register EncryptionDiagnostics for each connection
-        $diagnosticsRefs = [];
-        foreach ($config['connections'] as $connName => $connConfig) {
-            $connService   = sprintf('doctrine_mongodb.odm.%s_connection', $connName);
-            $driverOptions = $connConfig['driver_options'] ?? [];
-            $diagServiceId = sprintf('doctrine_mongodb.encryption_diagnostics.%s', $connName);
-            $container->setDefinition(
-                $diagServiceId,
-                new Definition(ConnectionDiagnostic::class, [
-                    new Reference($connService), // Use the connection service, which is a MongoDB\Client
-                    $driverOptions,
-                ]),
-            );
-            $diagnosticsRefs[$connName] = new Reference($diagServiceId);
-        }
     }
 
     /**
