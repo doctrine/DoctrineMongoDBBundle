@@ -60,9 +60,14 @@ class ConfigurationTest extends TestCase
         $this->assertEquals($defaults, $options);
     }
 
-    /** @dataProvider provideFullConfiguration */
+    /**
+     * @dataProvider provideFullConfiguration
+     * @group legacy
+     */
     public function testFullConfiguration(array $config): void
     {
+        self::expectDeprecation('Since doctrine/mongodb-odm-bundle 5.4: The "context" driver option is deprecated and will be removed in 3.0. This option is ignored by the MongoDB driver version 2.');
+
         $processor     = new Processor();
         $configuration = new Configuration();
         $options       = $processor->processConfiguration($configuration, [$config]);
