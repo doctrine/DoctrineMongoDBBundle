@@ -86,8 +86,31 @@ final class ConnectionDiagnosticCommand extends Command
                     'crypt_shared path: ' . ($serverInfo['crypt_shared_path'] ?? '[unknown]'),
                     'Topology: ' . ($serverInfo['topology'] ?? '[unknown]'),
                 ]);
-            } catch (Throwable2 $exception) {
+            } catch (Throwable $exception) {
                 $io->error('Could not retrieve server info: ' . $exception->getMessage());
+            }
+
+            $io->text('<info>Auto Encryption Configuration</info>');
+            try {
+                $autoEncryptionInfo = $diagnostic->getAutoEncryptionInfo();
+                if ($autoEncryptionInfo) {
+                    $io->listing([
+                        'Auto Encryption Enabled: ' . ($autoEncryptionInfo['autoEncryption enabled'] ? 'Yes' : 'No'),
+                        'Key Vault Namespace: ' . $autoEncryptionInfo['keyVaultNamespace'],
+                        'Key Count: ' . $autoEncryptionInfo['keyCount'],
+                    ]);
+                } else {
+                    $io->text('No auto encryption configuration found for this connection.');
+                }
+            } catch (Throwable $exception) {
+                $io->error('Could not retrieve auto encryption info: ' . $exception->getMessage());
+            }
+
+            if ($mongocryptdVersion = $diagnostic->getMongocryptdVersion()) {
+                $io->text('<info>mongocryptd Version</info>');
+                $io->text($mongocryptdVersion);
+            } else {
+                $io->text('mongocryptd not found');
             }
         }
 
