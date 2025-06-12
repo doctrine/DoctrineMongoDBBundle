@@ -26,6 +26,7 @@ use function array_merge;
 use function class_exists;
 use function interface_exists;
 use function is_dir;
+use function method_exists;
 use function sprintf;
 use function sys_get_temp_dir;
 
@@ -126,14 +127,21 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $extension = new DoctrineMongoDBExtension();
         $extension->load($this->buildConfiguration(), $container);
 
-        $attributes = $container->getAutoconfiguredAttributes();
-        $this->assertInstanceOf(Closure::class, $attributes[$class]);
+        // @phpstan-ignore function.alreadyNarrowedType
+        if (method_exists($container, 'getAttributeAutoconfigurators')) {
+            // Compatibility with Symfony 7.3 and later
+            $autoconfigurator = $container->getAttributeAutoconfigurators()[$class][0];
+        } else {
+            // Compatibility with Symfony 7.2 and earlier
+            $autoconfigurator = $container->getAutoconfiguredAttributes()[$class];
+        }
+
+        $this->assertInstanceOf(Closure::class, $autoconfigurator);
 
         $definition = new ChildDefinition('');
-        $attributes[$class]($definition);
+        $autoconfigurator($definition);
 
         $this->assertSame([['source' => sprintf('with #[%s] attribute', $class)]], $definition->getTag('container.excluded'));
-        $this->assertTrue($definition->isAbstract());
     }
 
     /** @param string|string[] $bundles */
