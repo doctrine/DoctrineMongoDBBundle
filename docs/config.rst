@@ -49,9 +49,9 @@ Sample Configuration
 
     .. code-block:: php
 
+        use Symfony\Config\DoctrineMongodbConfig;
         use function Symfony\Component\DependencyInjection\Loader\Configurator\env;
         use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
-        use Symfony\Config\DoctrineMongodbConfig;
 
         return static function (DoctrineMongodbConfig $config): void {
             $config->connection('default')
@@ -142,9 +142,9 @@ If you wish to use memcached to cache your metadata, you need to configure the
 
     .. code-block:: php
 
-        use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
         use Symfony\Component\Cache\Adapter\MemcachedAdapter;
         use Symfony\Config\DoctrineMongodbConfig;
+        use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 
         return static function (DoctrineMongodbConfig $config): void {
             $config->defaultDatabase('hello_' . param('kernel.environment'));
@@ -260,8 +260,8 @@ The following configuration shows a bunch of mapping examples:
 
     .. code-block:: php
 
-        use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
         use Symfony\Config\DoctrineMongodbConfig;
+        use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 
         return static function (DoctrineMongodbConfig $config): void {
             $config->documentManager('default')
@@ -475,8 +475,8 @@ following syntax:
 
     .. code-block:: php
 
-        use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
         use Symfony\Config\DoctrineMongodbConfig;
+        use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 
         return static function (DoctrineMongodbConfig $config): void {
             $config->defaultDatabase('hello_' . param('kernel.environment'));
