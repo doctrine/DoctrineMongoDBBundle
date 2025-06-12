@@ -624,14 +624,10 @@ Otherwise you will get a *auth failed* exception.
                 ]);
         };
 
-Specifying a context service
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using Queryable Encryption
+--------------------------
 
-The MongoDB driver supports receiving a stream context to set SSL and logging options. This can be used to authenticate using SSL certificates.
-
-.. seealso::
-
-    For full documentation and configuration examples for Client-Side Field-Level Encryption (CSFLE) and Queryable Encryption (QE), see :doc:`csfle_qe`
+TODO: Add documentation for queryable encryption configuration.
 
 Full Default Configuration
 --------------------------

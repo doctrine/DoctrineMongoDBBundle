@@ -47,6 +47,8 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
 
+use function array_diff_key;
+use function array_intersect_key;
 use function array_key_first;
 use function array_merge;
 use function class_exists;
@@ -54,7 +56,6 @@ use function class_implements;
 use function in_array;
 use function interface_exists;
 use function is_dir;
-use function is_string;
 use function method_exists;
 use function sprintf;
 
@@ -501,14 +502,27 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $driverOptions['context'] = new Reference($driverOptions['context']);
         }
 
-        if (isset($driverOptions['autoEncryption'])) {
-            if (isset($driverOptions['autoEncryption']['keyVaultClient']) && is_string($driverOptions['autoEncryption']['keyVaultClient'])) {
+        if (isset($connection['autoEncryption'])) {
+            $kmsProvider                     = $connection['autoEncryption']['kmsProvider'];
+            $driverOptions['autoEncryption'] = array_intersect_key($connection['autoEncryption'], [
+                'bypassAutoEncryption' => true,
+                'bypassQueryAnalysis' => true,
+                'encryptedFieldsMap' => true,
+                'extraOptions' => true,
+                'keyVaultClient' => true,
+                'keyVaultNamespace' => true,
+                'schemaMap' => true,
+                'tlsOptions' => true,
+            ]);
+
+            $driverOptions['autoEncryption']['keyVaultNamespace'] ??= $config['default_database'] . '.datakeys';
+            if (isset($driverOptions['autoEncryption']['keyVaultClient'])) {
                 $driverOptions['autoEncryption']['keyVaultClient'] = new Reference($driverOptions['autoEncryption']['keyVaultClient']);
             }
 
-            if (! isset($driverOptions['autoEncryption']['keyVaultNamespace'])) {
-                $driverOptions['autoEncryption']['keyVaultNamespace'] = $config['default_database'] . '.datakeys';
-            }
+            $driverOptions['autoEncryption']['kmsProviders'] = [
+                $kmsProvider['name'] => array_diff_key($kmsProvider, ['name' => true]),
+            ];
         }
 
         $driverOptions['driver'] = [

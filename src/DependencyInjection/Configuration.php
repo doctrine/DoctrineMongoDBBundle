@@ -12,6 +12,7 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 use function count;
+use function in_array;
 use function is_array;
 use function is_string;
 use function json_decode;
@@ -337,109 +338,102 @@ class Configuration implements ConfigurationInterface
                                         ->defaultNull()
                                         ->setDeprecated('doctrine/mongodb-odm-bundle', '5.4', 'The "context" driver option is deprecated and will be removed in 3.0. This option is ignored by the MongoDB driver version 2.')
                                     ->end()
-                                    ->arrayNode('autoEncryption')
-                                        ->children()
-                                            ->booleanNode('bypassAutoEncryption')->end()
-                                            ->scalarNode('keyVaultClient')->end()
-                                            ->scalarNode('keyVaultNamespace')
-                                                ->validate()
-                                                    ->ifTrue(static fn ($v) => ! preg_match('/^.+\..+$/', $v))
-                                                    ->thenInvalid('Invalid keyVaultNamespace format. It should be "database.collection".')
-                                                ->end()
-                                            ->end()
-                                            ->arrayNode('kmsProviders')
-                                                ->children()
-                                                    ->arrayNode('aws')
-                                                        ->children()
-                                                            ->scalarNode('accessKeyId')->isRequired()->cannotBeEmpty()->end()
-                                                            ->scalarNode('secretAccessKey')->isRequired()->cannotBeEmpty()->end()
-                                                            ->scalarNode('sessionToken')->end()
-                                                        ->end()
-                                                    ->end()
-                                                    ->arrayNode('azure')
-                                                        ->children()
-                                                            ->scalarNode('tenantId')->isRequired()->cannotBeEmpty()->end()
-                                                            ->scalarNode('clientId')->isRequired()->cannotBeEmpty()->end()
-                                                            ->scalarNode('clientSecret')->isRequired()->cannotBeEmpty()->end()
-                                                            ->scalarNode('keyVaultEndpoint')->isRequired()->cannotBeEmpty()->end()
-                                                            ->scalarNode('identityPlatformEndpoint')->end()
-                                                            ->scalarNode('keyName')->end()
-                                                            ->scalarNode('keyVersion')->end()
-                                                        ->end()
-                                                    ->end()
-                                                    ->arrayNode('gcp')
-                                                        ->children()
-                                                            ->scalarNode('email')->isRequired()->cannotBeEmpty()->end()
-                                                            ->scalarNode('privateKey')->isRequired()->cannotBeEmpty()->end()
-                                                            ->scalarNode('endpoint')->end()
-                                                            ->scalarNode('projectId')->isRequired()->cannotBeEmpty()->end()
-                                                            ->scalarNode('location')->isRequired()->cannotBeEmpty()->end()
-                                                            ->scalarNode('keyRing')->isRequired()->cannotBeEmpty()->end()
-                                                            ->scalarNode('keyName')->isRequired()->cannotBeEmpty()->end()
-                                                            ->scalarNode('keyVersion')->end()
-                                                        ->end()
-                                                    ->end()
-                                                    ->arrayNode('kmip')
-                                                        ->children()
-                                                            ->scalarNode('endpoint')->isRequired()->cannotBeEmpty()->end()
-                                                            ->scalarNode('tlsCAFile')->end()
-                                                            ->scalarNode('tlsClientCertificateKeyFile')->end()
-                                                            ->scalarNode('tlsClientCertificateKeyFilePassword')->end()
-                                                        ->end()
-                                                    ->end()
-                                                    ->arrayNode('local')
-                                                        ->children()
-                                                            ->scalarNode('key')->isRequired()->cannotBeEmpty()->end()
-                                                        ->end()
-                                                    ->end()
-                                                ->end()
-                                            ->end()
-                                            ->arrayNode('schemaMap')
-                                                ->prototype('variable')->end()
-                                            ->end()
-                                            ->arrayNode('encryptedFieldsMap')
-                                                ->prototype('variable')->end()
-                                            ->end()
-                                            ->arrayNode('extraOptions')
-                                                ->prototype('variable')->end()
-                                            ->end()
-                                            ->booleanNode('bypassQueryAnalysis')->end()
-                                            ->arrayNode('tlsOptions')
-                                                ->children()
-                                                    ->scalarNode('tlsCAFile')->end()
-                                                    ->scalarNode('tlsCertificateKeyFile')->end()
-                                                    ->scalarNode('tlsCertificateKeyFilePassword')->end()
-                                                    ->booleanNode('tlsAllowInvalidCertificates')->end()
-                                                    ->booleanNode('tlsAllowInvalidHostnames')->end()
-                                                    ->booleanNode('tlsDisableCertificateRevocationCheck')->end()
-                                                    ->booleanNode('tlsDisableOCSPEndpointCheck')->end()
-                                                    ->booleanNode('tlsInsecure')->end()
-                                                ->end()
-                                            ->end()
-                                        ->end()
+                                ->end()
+                            ->end()
+                            ->arrayNode('autoEncryption')
+                                ->children()
+                                    ->booleanNode('bypassAutoEncryption')->end()
+                                    ->scalarNode('keyVaultClient')->end()
+                                    ->scalarNode('keyVaultNamespace')
                                         ->validate()
-                                            ->always(static function ($v) {
-                                                // Remove empty arrays for schemaMap, encryptedFieldsMap, extraOptions, tlsOptions
-                                                foreach (
-                                                    [
-                                                        'schemaMap',
-                                                        'encryptedFieldsMap',
-                                                        'extraOptions',
-                                                        'tlsOptions',
-                                                    ] as $key
-                                                ) {
-                                                    if (! isset($v[$key]) || ! is_array($v[$key]) || count($v[$key]) !== 0) {
-                                                        continue;
-                                                    }
-
-                                                    unset($v[$key]);
-                                                }
-
-                                                // Always keep kmsProviders, even if all providers are empty arrays
-                                                return $v;
-                                            })
+                                            ->ifTrue(static fn ($v) => ! preg_match('/^.+\..+$/', $v))
+                                            ->thenInvalid('Invalid keyVaultNamespace format. It should be "database.collection".')
                                         ->end()
                                     ->end()
+                                    ->arrayNode('kmsProvider')
+                                        ->isRequired()
+                                        ->children()
+                                            ->scalarNode('name')
+                                                ->isRequired()
+                                                ->validate()
+                                                    ->ifTrue(static fn ($v) => ! in_array($v, ['aws', 'azure', 'gcp', 'kmip', 'local'], true))
+                                                    ->thenInvalid('Invalid KMS provider name "%s". Valid values are "aws", "azure", "gcp", "kmip", or "local".')
+                                                ->end()
+                                            ->end()
+                                            // AWS
+                                            ->scalarNode('accessKeyId')->end()
+                                            ->scalarNode('secretAccessKey')->end()
+                                            ->scalarNode('sessionToken')->end()
+                                            // Azure
+                                            ->scalarNode('tenantId')->end()
+                                            ->scalarNode('clientId')->end()
+                                            ->scalarNode('clientSecret')->end()
+                                            ->scalarNode('keyVaultEndpoint')->end()
+                                            ->scalarNode('identityPlatformEndpoint')->end()
+                                            ->scalarNode('keyName')->end()
+                                            ->scalarNode('keyVersion')->end()
+                                            // GCP
+                                            ->scalarNode('email')->end()
+                                            ->scalarNode('privateKey')->end()
+                                            ->scalarNode('endpoint')->end()
+                                            ->scalarNode('projectId')->end()
+                                            ->scalarNode('location')->end()
+                                            ->scalarNode('keyRing')->end()
+                                            ->scalarNode('keyName')->end()
+                                            ->scalarNode('keyVersion')->end()
+                                            // KMIP
+                                            ->scalarNode('endpoint')->end()
+                                            ->scalarNode('tlsCAFile')->end()
+                                            ->scalarNode('tlsClientCertificateKeyFile')->end()
+                                            ->scalarNode('tlsClientCertificateKeyFilePassword')->end()
+                                            // Local
+                                            ->scalarNode('key')->end()
+                                        ->end()
+                                    ->end()
+                                    ->arrayNode('schemaMap')
+                                        ->prototype('variable')->end()
+                                    ->end()
+                                    ->arrayNode('encryptedFieldsMap')
+                                        ->prototype('variable')->end()
+                                    ->end()
+                                    ->arrayNode('extraOptions')
+                                        ->prototype('variable')->end()
+                                    ->end()
+                                    ->booleanNode('bypassQueryAnalysis')->end()
+                                    ->arrayNode('tlsOptions')
+                                        ->children()
+                                            ->scalarNode('tlsCAFile')->end()
+                                            ->scalarNode('tlsCertificateKeyFile')->end()
+                                            ->scalarNode('tlsCertificateKeyFilePassword')->end()
+                                            ->booleanNode('tlsAllowInvalidCertificates')->end()
+                                            ->booleanNode('tlsAllowInvalidHostnames')->end()
+                                            ->booleanNode('tlsDisableCertificateRevocationCheck')->end()
+                                            ->booleanNode('tlsDisableOCSPEndpointCheck')->end()
+                                            ->booleanNode('tlsInsecure')->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
+                                ->validate()
+                                    ->always(static function ($v) {
+                                        // Remove empty arrays for schemaMap, encryptedFieldsMap, extraOptions, tlsOptions
+                                        foreach (
+                                            [
+                                                'schemaMap',
+                                                'encryptedFieldsMap',
+                                                'extraOptions',
+                                                'tlsOptions',
+                                            ] as $key
+                                        ) {
+                                            if (! isset($v[$key]) || ! is_array($v[$key]) || count($v[$key]) !== 0) {
+                                                continue;
+                                            }
+
+                                            unset($v[$key]);
+                                        }
+
+                                        // Always keep kmsProviders, even if all providers are empty arrays
+                                        return $v;
+                                    })
                                 ->end()
                             ->end()
                         ->end()
