@@ -11,6 +11,7 @@ use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
+use function array_is_list;
 use function count;
 use function in_array;
 use function is_array;
@@ -350,14 +351,17 @@ class Configuration implements ConfigurationInterface
                                             ->thenInvalid('Invalid keyVaultNamespace format. It should be "database.collection".')
                                         ->end()
                                     ->end()
+                                    ->arrayNode('masterKey')
+                                        ->prototype('variable')->end()
+                                    ->end()
                                     ->arrayNode('kmsProvider')
                                         ->isRequired()
                                         ->children()
-                                            ->scalarNode('name')
+                                            ->scalarNode('type')
                                                 ->isRequired()
                                                 ->validate()
                                                     ->ifTrue(static fn ($v) => ! in_array($v, ['aws', 'azure', 'gcp', 'kmip', 'local'], true))
-                                                    ->thenInvalid('Invalid KMS provider name "%s". Valid values are "aws", "azure", "gcp", "kmip", or "local".')
+                                                    ->thenInvalid('Invalid KMS provider type "%s". Valid values are "aws", "azure", "gcp", "kmip", or "local".')
                                                 ->end()
                                             ->end()
                                             // AWS
@@ -379,10 +383,10 @@ class Configuration implements ConfigurationInterface
                                             ->scalarNode('projectId')->end()
                                             ->scalarNode('location')->end()
                                             ->scalarNode('keyRing')->end()
-                                            ->scalarNode('keyName')->end()
-                                            ->scalarNode('keyVersion')->end()
+                                            //->scalarNode('keyName')->end()
+                                            //->scalarNode('keyVersion')->end()
                                             // KMIP
-                                            ->scalarNode('endpoint')->end()
+                                            //->scalarNode('endpoint')->end()
                                             ->scalarNode('tlsCAFile')->end()
                                             ->scalarNode('tlsClientCertificateKeyFile')->end()
                                             ->scalarNode('tlsClientCertificateKeyFilePassword')->end()
@@ -394,7 +398,44 @@ class Configuration implements ConfigurationInterface
                                         ->prototype('variable')->end()
                                     ->end()
                                     ->arrayNode('encryptedFieldsMap')
-                                        ->prototype('variable')->end()
+                                        ->useAttributeAsKey('name', false)
+                                        ->beforeNormalization()
+                                            ->always(static function ($v) {
+                                                if (isset($v['encryptedFields']) && is_array($v['encryptedFields'])) {
+                                                    $encryptedFields = $v['encryptedFields'];
+                                                    if (! array_is_list($encryptedFields)) {
+                                                        $encryptedFields = [$encryptedFields];
+                                                    }
+
+                                                    $v = [];
+                                                    foreach ($encryptedFields as $field) {
+                                                        if (is_array($field['field'] ?? null) && ! array_is_list($field['field'])) {
+                                                            $field['field'] = [$field['field']];
+                                                        }
+
+                                                        $v[$field['name'] ?? ''] = $field['field'] ?? [];
+                                                    }
+                                                }
+
+                                                return $v;
+                                            })->end()
+                                        ->prototype('array')
+                                            ->prototype('array')
+                                                ->children()
+                                                    ->scalarNode('path')->isRequired()->cannotBeEmpty()->end()
+                                                    ->scalarNode('bsonType')->isRequired()->cannotBeEmpty()->end()
+                                                    ->arrayNode('queries')
+                                                        ->children()
+                                                            ->scalarNode('queryType')->isRequired()->cannotBeEmpty()->end()
+                                                            ->integerNode('min')->end()
+                                                            ->integerNode('max')->end()
+                                                            ->integerNode('sparsity')->end()
+                                                            ->integerNode('trimFactor')->end()
+                                                        ->end()
+                                                    ->end()
+                                                ->end()
+                                            ->end()
+                                        ->end()
                                     ->end()
                                     ->arrayNode('extraOptions')
                                         ->prototype('variable')->end()
