@@ -624,6 +624,10 @@ Otherwise you will get a *auth failed* exception.
                 ]);
         };
 
+Using Queryable Encryption
+--------------------------
+
+TODO: Add documentation for queryable encryption configuration.
 
 Full Default Configuration
 --------------------------
@@ -699,6 +703,33 @@ Full Default Configuration
                         wTimeoutMS:                             ~
                     driver_options:
                         context:              ~ # stream context to use for connection
+                        autoEncryption:       # Options for client-side field-level encryption
+                            keyVaultClient:               null  # Service ID of a MongoDB\Driver\Manager for the key vault
+                            keyVaultNamespace:            null  # The namespace for the key vault collection (e.g., "encryption.__keyVault")
+                            kmsProvider:                  {}    # Configuration for Key Management System provider (see specific examples above)
+                                # e.g., { type: "local", key: "YOUR_BASE64_KEY" }
+                                # e.g., { type: "aws", accessKeyId: "...", secretAccessKey: "..." }
+                            masterKey:                    ~     # Default master key to use when creating a new encrypted collection
+                            schemaMap:                    []    # Document schemas for explicit encryption
+                            encryptedFieldsMap:           []    # Map of collections to their encrypted fields configuration
+                            extraOptions:                 []    # Extra options for mongocryptd
+                                # mongocryptdURI: "mongodb://localhost:27020"
+                                # mongocryptdBypassSpawn: false
+                                # mongocryptdSpawnPath: "/usr/local/bin/mongocryptd"
+                                # mongocryptdSpawnArgs: ["--idleShutdownTimeoutSecs=60"]
+                                # cryptSharedLibPath: null  # Path to the crypt_shared library
+                                # cryptSharedLibRequired: false # If true, fails if the crypt_shared library cannot be loaded
+                            bypassQueryAnalysis:          false # Disables automatic analysis of read and write operations for encryption
+                            bypassAutoEncryption:         false # Disables auto-encryption
+                            tlsOptions:                   # TLS options for the Key Vault client (if keyVaultClient is not specified)
+                                tlsCAFile:                              null  # Path to CA file, e.g., /path/to/key-vault-ca.pem
+                                tlsCertificateKeyFile:                  null  # Path to client cert/key file, e.g., /path/to/key-vault-client.pem
+                                tlsCertificateKeyFilePassword:          null  # Password for client cert/key file
+                                tlsAllowInvalidCertificates:            false # Bypass server certificate validation (use with caution)
+                                tlsAllowInvalidHostnames:               false # Bypass server hostname validation (use with caution)
+                                tlsDisableCertificateRevocationCheck:   false # Disable CRL checks
+                                tlsDisableOCSPEndpointCheck:            false # Disable OCSP checks
+                                tlsInsecure:                            false # Allow invalid/no server cert (use with extreme caution)
 
             proxy_namespace:      MongoDBODMProxies
             proxy_dir:            "%kernel.cache_dir%/doctrine/odm/mongodb/Proxies"
@@ -825,8 +856,32 @@ Full Default Configuration
 
             $config->connection('id')
                 ->server('mongodb://localhost')
-                ->driverOptions([
-                    'context' => null, // stream context to use for connection
+                ->driverOptions(['context' => null]), // stream context to use for connection
+                ->autoEncryption([ // Options for client-side field-level encryption
+                    'bypassAutoEncryption' => false, // Disables auto-encryption
+                    'keyVaultClient' => null,  // Service ID of a MongoDB\Driver\Manager for the key vault
+                    'keyVaultNamespace' => null,  // The namespace for the key vault collection (e.g., "encryption.__keyVault")
+                    'kmsProvider' => [    // Configuration for Key Management System provider
+                        // e.g., ['type' => 'local', 'key' => 'YOUR_BASE64_KEY']
+                        // e.g., ['type' => 'aws', 'accessKeyId' => '...', 'secretAccessKey' => '...']
+                    ],
+                    'schemaMap' => [],    // Document schemas for explicit encryption
+                    'encryptedFieldsMap' => [], // Map of collections to their encrypted fields configuration
+                    'extraOptions' => [    // Extra options for mongocryptd
+                        // 'cryptSharedLibPath' => null,  // Path to the crypt_shared library
+                        // 'cryptSharedLibRequired' => false, // If true, fails if the crypt_shared library cannot be loaded
+                    ],
+                    'bypassQueryAnalysis' => false, // Disables automatic analysis of read and write operations for encryption
+                    'tlsOptions' => [        // TLS options for the Key Vault client (if keyVaultClient is not specified)
+                        // 'tlsCAFile' => null,  // Path to CA file, e.g., /path/to/key-vault-ca.pem
+                        // 'tlsCertificateKeyFile' => null,  // Path to client cert/key file, e.g., /path/to/key-vault-client.pem
+                        // 'tlsCertificateKeyFilePassword' => null,  // Password for client cert/key file
+                        // 'tlsAllowInvalidCertificates' => false, // Bypass server certificate validation (use with caution)
+                        // 'tlsAllowInvalidHostnames' => false, // Bypass server hostname validation (use with caution)
+                        // 'tlsDisableCertificateRevocation' => false, // Disable CRL checks
+                        // 'tlsDisableOCSPEndpointCheck' => false, // Disable OCSP checks
+                        // 'tlsInsecure' => false, // Allow invalid/no server cert (use with extreme caution)
+                    ],
                 ])
                 ->options([
                     'authMechanism' => null,

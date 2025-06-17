@@ -478,4 +478,112 @@ class DoctrineMongoDBExtensionTest extends TestCase
             $configuration->getMethodCalls(),
         );
     }
+
+    public function testAutoEncryptionWithKeyVaultClientService(): void
+    {
+        $container = $this->buildMinimalContainer();
+        $loader    = new DoctrineMongoDBExtension();
+
+        // Define a dummy service for the keyVaultClient
+        $dummyServiceId = 'my_key_vault_client_service';
+        $container->setDefinition($dummyServiceId, new Definition('stdClass'));
+
+        $config = [
+            'connections' => [
+                'default' => [
+                    'autoEncryption' => [
+                        'keyVaultNamespace' => 'db.vault',
+                        'keyVaultClient' => $dummyServiceId,
+                        'kmsProvider' => ['type' => 'local', 'key' => 'cGFzc3dvcmQ='],
+                    ],
+                ],
+            ],
+            'document_managers' => ['default' => []],
+        ];
+
+        $loader->load([$config], $container);
+
+        $clientDef     = $container->getDefinition('doctrine_mongodb.odm.default_connection');
+        $driverOptions = $clientDef->getArgument(2);
+
+        $this->assertArrayHasKey('autoEncryption', $driverOptions);
+        $this->assertInstanceOf(Reference::class, $driverOptions['autoEncryption']['keyVaultClient']);
+        $this->assertEquals($dummyServiceId, (string) $driverOptions['autoEncryption']['keyVaultClient']);
+        $this->assertEquals('db.vault', $driverOptions['autoEncryption']['keyVaultNamespace']);
+        $this->assertEquals(['local' => ['key' => 'cGFzc3dvcmQ=']], $driverOptions['autoEncryption']['kmsProviders']);
+    }
+
+    public function testAutoEncryptionWithComplexKmsAndSchemaMap(): void
+    {
+        $container = $this->buildMinimalContainer();
+        $loader    = new DoctrineMongoDBExtension();
+
+        $schemaMap = [
+            'db.coll.users' => [
+                'bsonType' => 'object',
+                'encryptMetadata' => ['keyId' => '/dataKeyId'],
+                'properties' => ['ssn' => ['encrypt' => ['bsonType' => 'string', 'algorithm' => 'AEAD_AES_256_CBC_HMAC_SHA_512-Deterministic']]],
+            ],
+        ];
+        $config    = [
+            'connections' => [
+                'default' => [
+                    'autoEncryption' => [
+                        'keyVaultNamespace' => 'db.vault',
+                        'kmsProvider' => ['type' => 'aws', 'accessKeyId' => 'test', 'secretAccessKey' => 'secret'],
+                        'schemaMap' => $schemaMap,
+                    ],
+                ],
+            ],
+            'document_managers' => ['default' => []],
+        ];
+
+        $loader->load([$config], $container);
+
+        $clientDef     = $container->getDefinition('doctrine_mongodb.odm.default_connection');
+        $driverOptions = $clientDef->getArgument(2);
+
+        $this->assertArrayHasKey('autoEncryption', $driverOptions);
+        $this->assertEquals(['aws' => ['accessKeyId' => 'test', 'secretAccessKey' => 'secret']], $driverOptions['autoEncryption']['kmsProviders']);
+        $this->assertEquals($schemaMap, $driverOptions['autoEncryption']['schemaMap']);
+        $this->assertEquals('db.vault', $driverOptions['autoEncryption']['keyVaultNamespace']);
+    }
+
+    public function testAutoEncryptionWithExtraOptions(): void
+    {
+        $container = $this->buildMinimalContainer();
+        $loader    = new DoctrineMongoDBExtension();
+
+        $config = [
+            'connections' => [
+                'default' => [
+                    'autoEncryption' => [
+                        'keyVaultNamespace' => 'db.vault',
+                        'kmsProvider' => ['type' => 'local', 'key' => 'cGFzc3dvcmQ='],
+                        'extraOptions' => [
+                            'cryptSharedLibPath' => '/another/path.so',
+                            'cryptSharedLibRequired' => false,
+                            'mongocryptdSpawnPath' => '/custom/mongocryptd',
+                        ],
+                    ],
+                ],
+            ],
+            'document_managers' => ['default' => []],
+        ];
+
+        $loader->load([$config], $container);
+
+        $clientDef     = $container->getDefinition('doctrine_mongodb.odm.default_connection');
+        $driverOptions = $clientDef->getArgument(2);
+
+        $this->assertArrayHasKey('autoEncryption', $driverOptions);
+        $this->assertEquals('/another/path.so', $driverOptions['autoEncryption']['extraOptions']['cryptSharedLibPath']);
+        $this->assertFalse($driverOptions['autoEncryption']['extraOptions']['cryptSharedLibRequired']);
+        $this->assertEquals('/custom/mongocryptd', $driverOptions['autoEncryption']['extraOptions']['mongocryptdSpawnPath']);
+
+        $this->assertArrayHasKey('typeMap', $driverOptions); // Default option
+        $this->assertArrayHasKey('driver', $driverOptions); // Added by normalizeDriverOptions
+        $this->assertEquals('symfony-mongodb', $driverOptions['driver']['name']);
+        $this->assertArrayHasKey('version', $driverOptions['driver']);
+    }
 }

@@ -13,6 +13,7 @@ use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Repository\CustomRepository;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Generator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\PhpUnit\ExpectDeprecationTrait;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -21,6 +22,7 @@ use Symfony\Component\Config\Util\XmlUtils;
 use Symfony\Component\Yaml\Yaml;
 
 use function array_key_exists;
+use function array_merge;
 use function file_get_contents;
 use function method_exists;
 
@@ -127,6 +129,56 @@ class ConfigurationTest extends TestCase
                         'wTimeoutMS'                           => 1000,
                     ],
                     'driver_options' => ['context' => 'conn1_context_service'],
+                    'autoEncryption' => [
+                        'kmsProvider' => [
+                            'type' => 'aws',
+                            'accessKeyId' => 'MONGODB_AWS_ACCESS_KEY_ID',
+                            'secretAccessKey' => 'MONGODB_AWS_SECRET_ACCESS_KEY',
+                            'sessionToken' => 'MONGODB_AWS_SESSION_TOKEN',
+                        ],
+                        'masterKey' => ['key' => 'MONGODB_AWS_MASTER_KEY'],
+                        'keyVaultNamespace' => 'encryption.__keyVault',
+                        'tlsOptions' => [
+                            'tlsCAFile' => '%kernel.project_dir%/config/certificates/mongodb-ca.pem',
+                            'tlsCertificateKeyFile' => '%kernel.project_dir%/config/certificates/mongodb-client.pem',
+                            'tlsCertificateKeyFilePassword' => 'MONGODB_TLS_CERTIFICATE_KEY_FILE_PASSWORD',
+                            'tlsDisableOCSPEndpointCheck' => false,
+                        ],
+                        'bypassAutoEncryption' => true,
+                        'bypassQueryAnalysis' => true,
+                        'encryptedFieldsMap' => [
+                            'encrypted.patients' => [
+                                [
+                                    'path' => 'patientRecord.ssn',
+                                    'bsonType' => 'string',
+                                    'queries' => ['queryType' => 'equality'],
+                                ],
+                                [
+                                    'path' => 'patientRecord.billing',
+                                    'bsonType' => 'object',
+                                ],
+                                [
+                                    'path' => 'patientRecord.billingAmount',
+                                    'bsonType' => 'int',
+                                    'queries' => ['queryType' => 'range', 'min' => 100, 'max' => 2000, 'sparsity' => 1, 'trimFactor' => 4],
+                                ],
+                            ],
+                            'encrypted.users' => [
+                                [
+                                    'path' => 'email',
+                                    'bsonType' => 'string',
+                                    'queries' => ['queryType' => 'equality'],
+                                ],
+                            ],
+                        ],
+                        'extraOptions' => [
+                            'mongocryptdURI' => 'mongodb://localhost:27020',
+                            'mongocryptdBypassSpawn' => true,
+                            'mongocryptdSpawnPath' => '%kernel.project_dir%/bin/mongocryptd',
+                            'mongocryptdSpawnArgs' => '--pidfilepath=%kernel.project_dir%/var/mongocryptd.pid --idleShutdownTimeoutSecs=60',
+                            'cryptSharedLibPath' => '%kernel.project_dir%/bin/libmongocrypt.so',
+                        ],
+                    ],
                 ],
                 'conn2' => ['server' => 'mongodb://otherhost'],
             ],
@@ -228,8 +280,8 @@ class ConfigurationTest extends TestCase
         $xml = XmlUtils::convertDomElementToArray($xml->getElementsByTagName('config')->item(0));
 
         return [
-            [$yaml],
-            [$xml],
+            'yaml' => [$yaml],
+            'xml' => [$xml],
         ];
     }
 
@@ -356,7 +408,7 @@ class ConfigurationTest extends TestCase
     }
 
     /**
-     * @param array $configs  A configuration array to process
+     * @param array $config   A configuration array to process
      * @param array $expected Array of key/value options expected in the processed configuration
      *
      * @dataProvider provideNormalizeOptions
@@ -372,13 +424,11 @@ class ConfigurationTest extends TestCase
         }
     }
 
-    /** @return array<mixed[]> */
-    public static function provideNormalizeOptions(): array
+    /** @return Generator<array{0: array<string, mixed>, 1: array<string, mixed>}> */
+    public static function provideNormalizeOptions(): Generator
     {
-        $cases = [];
-
         // connection versus connections (id is the identifier)
-        $cases[] = [
+        yield [
             [
                 'connection' => [
                     ['server' => 'mongodb://abc', 'id' => 'foo'],
@@ -394,7 +444,7 @@ class ConfigurationTest extends TestCase
         ];
 
         // document_manager versus document_managers (id is the identifier)
-        $cases[] = [
+        yield [
             [
                 'document_manager' => [
                     ['connection' => 'conn1', 'id' => 'foo'],
@@ -410,7 +460,7 @@ class ConfigurationTest extends TestCase
         ];
 
         // mapping configuration that's beneath a specific document manager
-        $cases[] = [
+        yield [
             [
                 'document_manager' => [
                     [
@@ -443,7 +493,88 @@ class ConfigurationTest extends TestCase
             ],
         ];
 
-        return $cases;
+        // Encrypted Field Map normalization from XML tags
+        yield [
+            [
+                'connection' => [
+                    [
+                        'server' => 'mongodb://abc',
+                        'id' => 'foo',
+                        'autoEncryption' => [
+                            'kmsProvider' => ['type' => 'local', 'key' => '1234567890123456789012345678901234567890123456789012345678901234'],
+                            'encryptedFieldsMap' => [
+                                'encryptedFields' => [
+                                    [
+                                        'name' => 'encrypted.patients',
+                                        'field' => [
+                                            [
+                                                'path' => 'patientRecord.ssn',
+                                                'bsonType' => 'string',
+                                                'queries' => ['queryType' => 'equality'],
+                                            ],
+                                            [
+                                                'path' => 'patientRecord.billing',
+                                                'bsonType' => 'object',
+                                            ],
+                                            [
+                                                'path' => 'patientRecord.billingAmount',
+                                                'bsonType' => 'int',
+                                                'queries' => ['queryType' => 'range', 'min' => 100, 'max' => 2000, 'sparsity' => 1, 'trimFactor' => 4],
+                                            ],
+                                        ],
+                                    ],
+                                    [
+                                        'name' => 'encrypted.users',
+                                        'field' =>
+                                            [
+                                                'path' => 'email',
+                                                'bsonType' => 'string',
+                                                'queries' => ['queryType' => 'equality'],
+                                            ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'connections' => [
+                    'foo' => [
+                        'server' => 'mongodb://abc',
+                        'autoEncryption' => [
+                            'kmsProvider' => ['type' => 'local', 'key' => '1234567890123456789012345678901234567890123456789012345678901234'],
+                            'encryptedFieldsMap' => [
+                                'encrypted.patients' => [
+                                    [
+                                        'path' => 'patientRecord.ssn',
+                                        'bsonType' => 'string',
+                                        'queries' => ['queryType' => 'equality'],
+                                    ],
+                                    [
+                                        'path' => 'patientRecord.billing',
+                                        'bsonType' => 'object',
+                                    ],
+                                    [
+                                        'path' => 'patientRecord.billingAmount',
+                                        'bsonType' => 'int',
+                                        'queries' => ['queryType' => 'range', 'min' => 100, 'max' => 2000, 'sparsity' => 1, 'trimFactor' => 4],
+                                    ],
+                                ],
+                                'encrypted.users' => [
+                                    [
+                                        'path' => 'email',
+                                        'bsonType' => 'string',
+                                        'queries' => ['queryType' => 'equality'],
+                                    ],
+                                ],
+                            ],
+                        ],
+
+                    ],
+                ],
+            ],
+        ];
     }
 
     public function testPasswordAndUsernameShouldBeUnsetIfNull(): void
@@ -518,5 +649,64 @@ class ConfigurationTest extends TestCase
         $configuration   = new Configuration();
         $processedConfig = $processor->processConfiguration($configuration, [$config]);
         $this->assertFalse(array_key_exists('replicaSet', $processedConfig['connections']['conn1']['options']));
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     *
+     * @return array<string, mixed>
+     */
+    protected function processConfiguration(array $config): array
+    {
+        $processor     = new Processor();
+        $configuration = new Configuration();
+
+        return $processor->processConfiguration($configuration, [$this->getMinimalValidConfig($config)]);
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     *
+     * @return array<string, mixed>
+     */
+    protected function getMinimalValidConfig(array $config = []): array
+    {
+        $baseConfig = [
+            'connections' => [
+                'default' => [
+                    'driver_options' => [], // Placeholder for autoEncryption or other options
+                ],
+            ],
+            'document_managers' => [
+                'default' => [],
+            ],
+        ];
+
+        // Deep merge config into baseConfig
+        if (isset($config['connections']['default']['driver_options'])) {
+            $baseConfig['connections']['default']['driver_options'] = array_merge(
+                $baseConfig['connections']['default']['driver_options'],
+                $config['connections']['default']['driver_options'],
+            );
+            unset($config['connections']['default']['driver_options']);
+        }
+
+        if (isset($config['connections']['default'])) {
+            $baseConfig['connections']['default'] = array_merge(
+                $baseConfig['connections']['default'],
+                $config['connections']['default'],
+            );
+            unset($config['connections']['default']);
+        }
+
+        if (isset($config['connections'])) {
+            $baseConfig['connections'] = array_merge(
+                $baseConfig['connections'],
+                $config['connections'],
+            );
+            unset($config['connections']);
+        }
+
+        return array_merge($baseConfig, $config);
     }
 }
