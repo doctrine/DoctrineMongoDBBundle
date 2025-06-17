@@ -103,6 +103,42 @@ parameters:
 			path: src/Command/UpdateSchemaDoctrineODMCommand.php
 
 		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: src/DataCollector/ConnectionDiagnostic.php
+
+		-
+			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\DataCollector\\ConnectionDiagnostic\:\:__construct\(\) has parameter \$driverOptions with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DataCollector/ConnectionDiagnostic.php
+
+		-
+			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\DataCollector\\ConnectionDiagnostic\:\:getAutoEncryptionInfo\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DataCollector/ConnectionDiagnostic.php
+
+		-
+			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\DataCollector\\ConnectionDiagnostic\:\:getPhpExtensionInfo\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DataCollector/ConnectionDiagnostic.php
+
+		-
+			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\DataCollector\\ConnectionDiagnostic\:\:getServerInfo\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DataCollector/ConnectionDiagnostic.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/DataCollector/ConnectionDiagnostic.php
+
+		-
 			message: '#^Cannot cast array\|bool\|float\|int\|string\|UnitEnum\|null to string\.$#'
 			identifier: cast.string
 			count: 1
@@ -223,6 +259,12 @@ parameters:
 			path: src/DependencyInjection/DoctrineMongoDBExtension.php
 
 		-
+			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\DependencyInjection\\DoctrineMongoDBExtension\:\:loadConnections\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DependencyInjection/DoctrineMongoDBExtension.php
+
+		-
 			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\DependencyInjection\\DoctrineMongoDBExtension\:\:loadConnections\(\) has parameter \$connections with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -249,12 +291,6 @@ parameters:
 		-
 			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\DependencyInjection\\DoctrineMongoDBExtension\:\:overrideParameters\(\) has parameter \$options with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: src/DependencyInjection/DoctrineMongoDBExtension.php
-
-		-
-			message: '#^PHPDoc tag @param references unknown parameter\: \$config$#'
-			identifier: parameter.notFound
 			count: 1
 			path: src/DependencyInjection/DoctrineMongoDBExtension.php
 
@@ -537,12 +573,6 @@ parameters:
 		-
 			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\Tests\\DependencyInjection\\ConfigurationTest\:\:testNormalizeOptions\(\) has parameter \$expected with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: tests/DependencyInjection/ConfigurationTest.php
-
-		-
-			message: '#^PHPDoc tag @param references unknown parameter\: \$configs$#'
-			identifier: parameter.notFound
 			count: 1
 			path: tests/DependencyInjection/ConfigurationTest.php
 

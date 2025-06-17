@@ -67,6 +67,48 @@
             <doctrine:driver-options
                 context="conn1_context_service"
             />
+            <doctrine:autoEncryption
+                bypassAutoEncryption="true"
+                bypassQueryAnalysis="true"
+            >
+                <doctrine:kmsProvider
+                    type="aws"
+                    accessKeyId="MONGODB_AWS_ACCESS_KEY_ID"
+                    secretAccessKey="MONGODB_AWS_SECRET_ACCESS_KEY"
+                    sessionToken="MONGODB_AWS_SESSION_TOKEN"
+                />
+                <doctrine:masterKey key="MONGODB_AWS_MASTER_KEY" />
+                <doctrine:keyVaultNamespace>encryption.__keyVault</doctrine:keyVaultNamespace>
+                <doctrine:tlsOptions
+                    tlsCAFile="%kernel.project_dir%/config/certificates/mongodb-ca.pem"
+                    tlsCertificateKeyFile="%kernel.project_dir%/config/certificates/mongodb-client.pem"
+                    tlsCertificateKeyFilePassword="MONGODB_TLS_CERTIFICATE_KEY_FILE_PASSWORD"
+                    tlsDisableOCSPEndpointCheck="false"
+                />
+                <doctrine:encryptedFieldsMap>
+                    <doctrine:encryptedFields name="encrypted.patients">
+                        <doctrine:field path="patientRecord.ssn" bsonType="string">
+                            <doctrine:queries queryType="equality" />
+                        </doctrine:field>
+                        <doctrine:field path="patientRecord.billing" bsonType="object" />
+                        <doctrine:field path="patientRecord.billingAmount" bsonType="int">
+                            <doctrine:queries queryType="range" min="100" max="2000" sparsity="1" trimFactor="4" />
+                        </doctrine:field>
+                    </doctrine:encryptedFields>
+                    <doctrine:encryptedFields name="encrypted.users">
+                        <doctrine:field path="email" bsonType="string">
+                            <doctrine:queries queryType="equality" />
+                        </doctrine:field>
+                    </doctrine:encryptedFields>
+                </doctrine:encryptedFieldsMap>
+                <doctrine:extraOptions
+                    mongocryptdURI="mongodb://localhost:27020"
+                    mongocryptdBypassSpawn="true"
+                    mongocryptdSpawnPath="%kernel.project_dir%/bin/mongocryptd"
+                    mongocryptdSpawnArgs="--pidfilepath=%kernel.project_dir%/var/mongocryptd.pid --idleShutdownTimeoutSecs=60"
+                    cryptSharedLibPath="%kernel.project_dir%/bin/libmongocrypt.so"
+                />
+            </doctrine:autoEncryption>
         </doctrine:connection>
 
         <doctrine:connection id="conn2" server="mongodb://otherhost" />
