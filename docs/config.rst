@@ -704,12 +704,12 @@ Full Default Configuration
                     driver_options:
                         context:              ~ # stream context to use for connection
                         autoEncryption:       # Options for client-side field-level encryption
-                            bypassAutoEncryption:         false # Disables auto-encryption
                             keyVaultClient:               null  # Service ID of a MongoDB\Driver\Manager for the key vault
                             keyVaultNamespace:            null  # The namespace for the key vault collection (e.g., "encryption.__keyVault")
-                            kmsProviders:                 []    # Configuration for Key Management System providers (see specific examples above)
-                                # e.g., local: { key: "YOUR_BASE64_KEY" }
-                                # e.g., aws: { accessKeyId: "...", secretAccessKey: "..." }
+                            kmsProvider:                  {}    # Configuration for Key Management System provider (see specific examples above)
+                                # e.g., { type: "local", key: "YOUR_BASE64_KEY" }
+                                # e.g., { type: "aws", accessKeyId: "...", secretAccessKey: "..." }
+                            masterKey:                    ~     # Default master key to use when creating a new encrypted collection
                             schemaMap:                    []    # Document schemas for explicit encryption
                             encryptedFieldsMap:           []    # Map of collections to their encrypted fields configuration
                             extraOptions:                 []    # Extra options for mongocryptd
@@ -720,6 +720,7 @@ Full Default Configuration
                                 # cryptSharedLibPath: null  # Path to the crypt_shared library
                                 # cryptSharedLibRequired: false # If true, fails if the crypt_shared library cannot be loaded
                             bypassQueryAnalysis:          false # Disables automatic analysis of read and write operations for encryption
+                            bypassAutoEncryption:         false # Disables auto-encryption
                             tlsOptions:                   # TLS options for the Key Vault client (if keyVaultClient is not specified)
                                 tlsCAFile:                              null  # Path to CA file, e.g., /path/to/key-vault-ca.pem
                                 tlsCertificateKeyFile:                  null  # Path to client cert/key file, e.g., /path/to/key-vault-client.pem
@@ -855,33 +856,31 @@ Full Default Configuration
 
             $config->connection('id')
                 ->server('mongodb://localhost')
-                ->driverOptions([
-                    'context' => null, // stream context to use for connection
-                    'autoEncryption' => [ // Options for client-side field-level encryption
-                        'bypassAutoEncryption' => false, // Disables auto-encryption
-                        'keyVaultClient' => null,  // Service ID of a MongoDB\Driver\Manager for the key vault
-                        'keyVaultNamespace' => null,  // The namespace for the key vault collection (e.g., "encryption.__keyVault")
-                        'kmsProviders' => [    // Configuration for Key Management System providers
-                                                 // e.g., 'local' => ['key' => 'YOUR_BASE64_KEY'],
-                                                 // e.g., 'aws' => ['accessKeyId' => '...', 'secretAccessKey' => '...'],
-                        ],
-                        'schemaMap' => [],    // Document schemas for explicit encryption
-                        'encryptedFieldsMap' => [], // Map of collections to their encrypted fields configuration
-                        'extraOptions' => [    // Extra options for mongocryptd
-                            // 'cryptSharedLibPath' => null,  // Path to the crypt_shared library
-                            // 'cryptSharedLibRequired' => false, // If true, fails if the crypt_shared library cannot be loaded
-                        ],
-                        'bypassQueryAnalysis' => false, // Disables automatic analysis of read and write operations for encryption
-                        'tlsOptions' => [        // TLS options for the Key Vault client (if keyVaultClient is not specified)
-                            // 'tlsCAFile' => null,  // Path to CA file, e.g., /path/to/key-vault-ca.pem
-                            // 'tlsCertificateKeyFile' => null,  // Path to client cert/key file, e.g., /path/to/key-vault-client.pem
-                            // 'tlsCertificateKeyFilePassword' => null,  // Password for client cert/key file
-                            // 'tlsAllowInvalidCertificates' => false, // Bypass server certificate validation (use with caution)
-                            // 'tlsAllowInvalidHostnames' => false, // Bypass server hostname validation (use with caution)
-                            // 'tlsDisableCertificateRevocation' => false, // Disable CRL checks
-                            // 'tlsDisableOCSPEndpointCheck' => false, // Disable OCSP checks
-                            // 'tlsInsecure' => false, // Allow invalid/no server cert (use with extreme caution)
-                        ],
+                ->driverOptions(['context' => null]), // stream context to use for connection
+                ->autoEncryption([ // Options for client-side field-level encryption
+                    'bypassAutoEncryption' => false, // Disables auto-encryption
+                    'keyVaultClient' => null,  // Service ID of a MongoDB\Driver\Manager for the key vault
+                    'keyVaultNamespace' => null,  // The namespace for the key vault collection (e.g., "encryption.__keyVault")
+                    'kmsProvider' => [    // Configuration for Key Management System provider
+                        // e.g., ['type' => 'local', 'key' => 'YOUR_BASE64_KEY']
+                        // e.g., ['type' => 'aws', 'accessKeyId' => '...', 'secretAccessKey' => '...']
+                    ],
+                    'schemaMap' => [],    // Document schemas for explicit encryption
+                    'encryptedFieldsMap' => [], // Map of collections to their encrypted fields configuration
+                    'extraOptions' => [    // Extra options for mongocryptd
+                        // 'cryptSharedLibPath' => null,  // Path to the crypt_shared library
+                        // 'cryptSharedLibRequired' => false, // If true, fails if the crypt_shared library cannot be loaded
+                    ],
+                    'bypassQueryAnalysis' => false, // Disables automatic analysis of read and write operations for encryption
+                    'tlsOptions' => [        // TLS options for the Key Vault client (if keyVaultClient is not specified)
+                        // 'tlsCAFile' => null,  // Path to CA file, e.g., /path/to/key-vault-ca.pem
+                        // 'tlsCertificateKeyFile' => null,  // Path to client cert/key file, e.g., /path/to/key-vault-client.pem
+                        // 'tlsCertificateKeyFilePassword' => null,  // Password for client cert/key file
+                        // 'tlsAllowInvalidCertificates' => false, // Bypass server certificate validation (use with caution)
+                        // 'tlsAllowInvalidHostnames' => false, // Bypass server hostname validation (use with caution)
+                        // 'tlsDisableCertificateRevocation' => false, // Disable CRL checks
+                        // 'tlsDisableOCSPEndpointCheck' => false, // Disable OCSP checks
+                        // 'tlsInsecure' => false, // Allow invalid/no server cert (use with extreme caution)
                     ],
                 ])
                 ->options([
