@@ -494,7 +494,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                     'autoEncryption' => [
                         'keyVaultNamespace' => 'db.vault',
                         'keyVaultClient' => $dummyServiceId,
-                        'kmsProvider' => ['name' => 'local', 'key' => 'cGFzc3dvcmQ='],
+                        'kmsProvider' => ['type' => 'local', 'key' => 'cGFzc3dvcmQ='],
                     ],
                 ],
             ],
@@ -530,7 +530,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                 'default' => [
                     'autoEncryption' => [
                         'keyVaultNamespace' => 'db.vault',
-                        'kmsProvider' => ['name' => 'aws', 'accessKeyId' => 'test', 'secretAccessKey' => 'secret'],
+                        'kmsProvider' => ['type' => 'aws', 'accessKeyId' => 'test', 'secretAccessKey' => 'secret'],
                         'schemaMap' => $schemaMap,
                     ],
                 ],
@@ -559,7 +559,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                 'default' => [
                     'autoEncryption' => [
                         'keyVaultNamespace' => 'db.vault',
-                        'kmsProvider' => ['name' => 'local', 'key' => 'cGFzc3dvcmQ='],
+                        'kmsProvider' => ['type' => 'local', 'key' => 'cGFzc3dvcmQ='],
                         'extraOptions' => [
                             'cryptSharedLibPath' => '/another/path.so',
                             'cryptSharedLibRequired' => false,

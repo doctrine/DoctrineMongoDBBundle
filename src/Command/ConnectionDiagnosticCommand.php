@@ -42,12 +42,6 @@ final class ConnectionDiagnosticCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $io->title('MongoDB Encryption Diagnostics');
 
-        if (! $this->diagnostics) {
-            $io->warning('No MongoDB connections found. Please ensure you have configured your connections correctly.');
-
-            return Command::SUCCESS;
-        }
-
         /** @var string[] $connectionNames */
         $connectionNames = $input->getOption('connection');
         if ($connectionNames) {
@@ -106,7 +100,8 @@ final class ConnectionDiagnosticCommand extends Command
                 $io->error('Could not retrieve auto encryption info: ' . $exception->getMessage());
             }
 
-            if ($mongocryptdVersion = $diagnostic->getMongocryptdVersion()) {
+            $mongocryptdVersion = $diagnostic->getMongocryptdVersion();
+            if ($mongocryptdVersion) {
                 $io->text('<info>mongocryptd Version</info>');
                 $io->text($mongocryptdVersion);
             } else {
@@ -117,7 +112,7 @@ final class ConnectionDiagnosticCommand extends Command
         return Command::SUCCESS;
     }
 
-    /** @return string[] */
+    /** @return list<string> */
     private function getConnectionNames(): array
     {
         return array_keys($this->diagnostics->getProvidedServices());

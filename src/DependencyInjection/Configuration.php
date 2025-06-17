@@ -459,6 +459,7 @@ class Configuration implements ConfigurationInterface
                                         // Remove empty arrays for schemaMap, encryptedFieldsMap, extraOptions, tlsOptions
                                         foreach (
                                             [
+                                                'masterKey',
                                                 'schemaMap',
                                                 'encryptedFieldsMap',
                                                 'extraOptions',
@@ -472,7 +473,6 @@ class Configuration implements ConfigurationInterface
                                             unset($v[$key]);
                                         }
 
-                                        // Always keep kmsProviders, even if all providers are empty arrays
                                         return $v;
                                     })
                                 ->end()

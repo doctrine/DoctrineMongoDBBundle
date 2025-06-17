@@ -48,7 +48,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
 
 use function array_diff_key;
-use function array_intersect_key;
 use function array_key_first;
 use function array_merge;
 use function class_exists;
@@ -489,7 +488,8 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     /**
      * Normalizes the driver options array
      *
-     * @param array<string, mixed> $connection
+     * @param array<string, mixed> $connection Connection configuration
+     * @param array<string, mixed> $config     Full configuration
      *
      * @return array<string, mixed>
      */
@@ -504,15 +504,9 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
         if (isset($connection['autoEncryption'])) {
             $kmsProvider                     = $connection['autoEncryption']['kmsProvider'];
-            $driverOptions['autoEncryption'] = array_intersect_key($connection['autoEncryption'], [
-                'bypassAutoEncryption' => true,
-                'bypassQueryAnalysis' => true,
-                'encryptedFieldsMap' => true,
-                'extraOptions' => true,
-                'keyVaultClient' => true,
-                'keyVaultNamespace' => true,
-                'schemaMap' => true,
-                'tlsOptions' => true,
+            $driverOptions['autoEncryption'] = array_diff_key($connection['autoEncryption'], [
+                'kmsProvider' => false,
+                'masterKey' => false,
             ]);
 
             $driverOptions['autoEncryption']['keyVaultNamespace'] ??= $config['default_database'] . '.datakeys';
@@ -521,7 +515,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             }
 
             $driverOptions['autoEncryption']['kmsProviders'] = [
-                $kmsProvider['name'] => array_diff_key($kmsProvider, ['name' => true]),
+                $kmsProvider['type'] => array_diff_key($kmsProvider, ['type' => true]),
             ];
         }
 
