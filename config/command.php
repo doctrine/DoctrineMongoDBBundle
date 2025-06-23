@@ -9,6 +9,7 @@ use Doctrine\Bundle\MongoDBBundle\Command\DropSchemaDoctrineODMCommand;
 use Doctrine\Bundle\MongoDBBundle\Command\GenerateHydratorsDoctrineODMCommand;
 use Doctrine\Bundle\MongoDBBundle\Command\GenerateProxiesDoctrineODMCommand;
 use Doctrine\Bundle\MongoDBBundle\Command\InfoDoctrineODMCommand;
+use Doctrine\Bundle\MongoDBBundle\Command\InstallLibmongocryptCommand;
 use Doctrine\Bundle\MongoDBBundle\Command\LoadDataFixturesDoctrineODMCommand;
 use Doctrine\Bundle\MongoDBBundle\Command\QueryDoctrineODMCommand;
 use Doctrine\Bundle\MongoDBBundle\Command\ShardDoctrineODMCommand;
@@ -59,5 +60,8 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             ->tag('console.command', ['command' => 'doctrine:mongodb:schema:shard'])
 
         ->set('doctrine_mongodb.odm.command.update_schema', UpdateSchemaDoctrineODMCommand::class)
-            ->tag('console.command', ['command' => 'doctrine:mongodb:schema:update']);
+            ->tag('console.command', ['command' => 'doctrine:mongodb:schema:update'])
+
+        ->set('doctrine_mongodb.odm.command.generate_proxies', InstallLibmongocryptCommand::class)
+            ->tag('console.command', ['command' => 'doctrine:mongodb:install-libmongocrypt']);
 };
