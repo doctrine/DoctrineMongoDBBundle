@@ -131,6 +131,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $config['default_database'],
             $container,
             $config['enable_lazy_ghost_objects'],
+            $config['connections'],
         );
 
         if ($config['resolve_target_documents']) {
@@ -237,12 +238,13 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     /**
      * Loads the document managers configuration.
      *
-     * @param array            $dmConfigs An array of document manager configs
-     * @param string|null      $defaultDM The default document manager name
-     * @param string           $defaultDB The default db name
-     * @param ContainerBuilder $container A ContainerBuilder instance
+     * @param array                $dmConfigs   An array of document manager configs
+     * @param string|null          $defaultDM   The default document manager name
+     * @param string               $defaultDB   The default db name
+     * @param ContainerBuilder     $container   A ContainerBuilder instance
+     * @param array<string, mixed> $connections Configuration of connections
      */
-    protected function loadDocumentManagers(array $dmConfigs, string|null $defaultDM, string $defaultDB, ContainerBuilder $container, bool $useLazyGhostObject = false): void
+    protected function loadDocumentManagers(array $dmConfigs, string|null $defaultDM, string $defaultDB, ContainerBuilder $container, bool $useLazyGhostObject = false, array $connections = []): void
     {
         $dms = [];
         foreach ($dmConfigs as $name => $documentManager) {
@@ -253,6 +255,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 $defaultDB,
                 $container,
                 $useLazyGhostObject,
+                $connections,
             );
             $dms[$name] = sprintf('doctrine_mongodb.odm.%s_document_manager', $name);
         }
@@ -263,12 +266,13 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     /**
      * Loads a document manager configuration.
      *
-     * @param array            $documentManager A document manager configuration array
-     * @param string|null      $defaultDM       The default document manager name
-     * @param string           $defaultDB       The default db name
-     * @param ContainerBuilder $container       A ContainerBuilder instance
+     * @param array                $documentManager A document manager configuration array
+     * @param string|null          $defaultDM       The default document manager name
+     * @param string               $defaultDB       The default db name
+     * @param ContainerBuilder     $container       A ContainerBuilder instance
+     * @param array<string, mixed> $connections     Configuration of connections
      */
-    protected function loadDocumentManager(array $documentManager, string|null $defaultDM, string $defaultDB, ContainerBuilder $container, bool $useLazyGhostObject = false): void
+    protected function loadDocumentManager(array $documentManager, string|null $defaultDM, string $defaultDB, ContainerBuilder $container, bool $useLazyGhostObject = false, array $connections = []): void
     {
         $connectionName  = $documentManager['connection'] ?? $documentManager['name'];
         $configurationId = sprintf('doctrine_mongodb.odm.%s_configuration', $documentManager['name']);
@@ -301,6 +305,16 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             'setPersistentCollectionNamespace' => '%doctrine_mongodb.odm.persistent_collection_namespace%',
             'setAutoGeneratePersistentCollectionClasses' => '%doctrine_mongodb.odm.auto_generate_persistent_collection_classes%',
         ];
+
+        if (isset($connections[$connectionName]['autoEncryption'])) {
+            $autoEncryption                 = $connections[$connectionName]['autoEncryption'];
+            $methods['setAutoEncryption']   = array_diff_key(
+                $this->normalizeAutoEncryption($autoEncryption, $defaultDB),
+                ['kmsProviders' => false],
+            );
+            $methods['setKmsProvider']      = $autoEncryption['kmsProvider'];
+            $methods['setDefaultMasterKey'] = $autoEncryption['masterKey'] ?? null;
+        }
 
         if ($useLazyGhostObject) {
             $methods['setUseLazyGhostObject'] = $useLazyGhostObject;
@@ -503,20 +517,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         }
 
         if (isset($connection['autoEncryption'])) {
-            $kmsProvider                     = $connection['autoEncryption']['kmsProvider'];
-            $driverOptions['autoEncryption'] = array_diff_key($connection['autoEncryption'], [
-                'kmsProvider' => false,
-                'masterKey' => false,
-            ]);
-
-            $driverOptions['autoEncryption']['keyVaultNamespace'] ??= $config['default_database'] . '.datakeys';
-            if (isset($driverOptions['autoEncryption']['keyVaultClient'])) {
-                $driverOptions['autoEncryption']['keyVaultClient'] = new Reference($driverOptions['autoEncryption']['keyVaultClient']);
-            }
-
-            $driverOptions['autoEncryption']['kmsProviders'] = [
-                $kmsProvider['type'] => array_diff_key($kmsProvider, ['type' => true]),
-            ];
+            $driverOptions['autoEncryption'] = $this->normalizeAutoEncryption($connection['autoEncryption'], $config['default_database']);
         }
 
         $driverOptions['driver'] = [
@@ -525,6 +526,35 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         ];
 
         return $driverOptions;
+    }
+
+    /**
+     * Prepare the auto encryption configuration for the connection.
+     *
+     * @param array<string, mixed> $autoEncryption The AutoEncryption configuration of a connection
+     * @param string               $defaultDB      The default database name
+     *
+     * @return array<string, mixed>
+     */
+    private function normalizeAutoEncryption(array $autoEncryption, string $defaultDB): array
+    {
+        if (! isset($autoEncryption['kmsProvider']['type'])) {
+            throw new InvalidArgumentException('The "kmsProvider" option must contain a "type" key.');
+        }
+
+        $autoEncryption['kmsProviders'] = [
+            $autoEncryption['kmsProvider']['type'] => array_diff_key($autoEncryption['kmsProvider'], ['type' => true]),
+        ];
+        unset($autoEncryption['kmsProvider']);
+        unset($autoEncryption['masterKey']);
+
+        if (isset($autoEncryption['keyVaultClient'])) {
+            $autoEncryption['keyVaultClient'] = new Reference($autoEncryption['keyVaultClient']);
+        }
+
+        $autoEncryption['keyVaultNamespace'] ??= $defaultDB . '.datakeys';
+
+        return $autoEncryption;
     }
 
     /**
