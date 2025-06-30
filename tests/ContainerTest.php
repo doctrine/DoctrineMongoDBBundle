@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Tests;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
@@ -33,7 +34,7 @@ class ContainerTest extends TestCase
         $this->extension = new DoctrineMongoDBExtension();
     }
 
-    /** @dataProvider provideLoggerConfigs */
+    #[DataProvider('provideLoggerConfigs')]
     public function testLoggerConfig(bool $expected, array $config, bool $debug): void
     {
         $this->container->setParameter('kernel.debug', $debug);
@@ -81,7 +82,7 @@ class ContainerTest extends TestCase
         ];
     }
 
-    /** @dataProvider provideDataCollectorConfigs */
+    #[DataProvider('provideDataCollectorConfigs')]
     public function testDataCollectorConfig(bool $expected, array $config, bool $debug): void
     {
         $this->container->setParameter('kernel.debug', $debug);

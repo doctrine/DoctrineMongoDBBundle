@@ -6,12 +6,13 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\Command;
 
 use Doctrine\Bundle\MongoDBBundle\Command\DoctrineODMCommand;
 use Doctrine\ODM\MongoDB\Tools\Console\Helper\DocumentManagerHelper;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class DoctrineODMCommandTest extends KernelTestCase
 {
-    /** @dataProvider provideDmName */
+    #[DataProvider('provideDmName')]
     public function testSetApplicationManager(?string $dmName): void
     {
         $kernel = new CommandTestKernel('test', false);
