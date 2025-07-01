@@ -13,6 +13,8 @@ use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Repository\CustomRepository;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\PhpUnit\ExpectDeprecationTrait;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -60,10 +62,8 @@ class ConfigurationTest extends TestCase
         $this->assertEquals($defaults, $options);
     }
 
-    /**
-     * @dataProvider provideFullConfiguration
-     * @group legacy
-     */
+    #[Group('legacy')]
+    #[DataProvider('provideFullConfiguration')]
     public function testFullConfiguration(array $config): void
     {
         self::expectDeprecation('Since doctrine/mongodb-odm-bundle 5.4: The "context" driver option is deprecated and will be removed in 3.0. This option is ignored by the MongoDB driver version 2.');
@@ -236,9 +236,8 @@ class ConfigurationTest extends TestCase
     /**
      * @param array $configs  An array of configuration arrays to process
      * @param array $expected Array of key/value options expected in the processed configuration
-     *
-     * @dataProvider provideMergeOptions
      */
+    #[DataProvider('provideMergeOptions')]
     public function testMergeOptions(array $configs, array $expected): void
     {
         $processor     = new Processor();
@@ -358,9 +357,8 @@ class ConfigurationTest extends TestCase
     /**
      * @param array $configs  A configuration array to process
      * @param array $expected Array of key/value options expected in the processed configuration
-     *
-     * @dataProvider provideNormalizeOptions
      */
+    #[DataProvider('provideNormalizeOptions')]
     public function testNormalizeOptions(array $config, array $expected): void
     {
         $processor     = new Processor();

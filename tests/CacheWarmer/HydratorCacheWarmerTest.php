@@ -8,6 +8,7 @@ use Doctrine\Bundle\MongoDBBundle\CacheWarmer\HydratorCacheWarmer;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\ODM\MongoDB\Configuration;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -54,7 +55,7 @@ class HydratorCacheWarmerTest extends TestCase
         }
     }
 
-    /** @dataProvider provideWarmerNotExecuted */
+    #[DataProvider('provideWarmerNotExecuted')]
     public function testWarmerNotExecuted(int $autoGenerate): void
     {
         $this->container->setParameter('doctrine_mongodb.odm.auto_generate_hydrator_classes', $autoGenerate);

@@ -11,6 +11,7 @@ use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\DocumentListenerBundle\EventListener\TestAttributeListener;
 use Doctrine\ODM\MongoDB\Mapping\Annotations;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\DependencyInjection\Alias;
@@ -59,7 +60,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         ]));
     }
 
-    /** @dataProvider parameterProvider */
+    #[DataProvider('parameterProvider')]
     public function testParameterOverride(string $option, string $parameter, string $value): void
     {
         $container = $this->buildMinimalContainer();
@@ -120,7 +121,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         ];
     }
 
-    /** @dataProvider provideAttributeExcludedFromContainer */
+    #[DataProvider('provideAttributeExcludedFromContainer')]
     public function testDocumentAttributeExcludesFromContainer(string $class): void
     {
         $container = $this->getContainer();
@@ -244,7 +245,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         ];
     }
 
-    /** @dataProvider getAutomappingConfigurations */
+    #[DataProvider('getAutomappingConfigurations')]
     public function testAutomapping(array $documentManagers): void
     {
         $container = $this->getContainer([

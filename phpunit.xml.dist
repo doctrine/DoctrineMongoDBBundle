@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<phpunit backupGlobals="false"
-         backupStaticAttributes="false"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+         backupGlobals="false"
          colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false"
          bootstrap="tests/bootstrap.php"
+         cacheDirectory=".phpunit.cache"
+         backupStaticProperties="false"
 >
     <testsuites>
         <testsuite name="DoctrineMongoDBBundle Test Suite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
-
     <php>
         <!-- <server name="SYMFONY" value="/path/to/symfony/src" /> -->
         <!-- <server name="SYMFONY_TESTS" value="/path/to/symfony/tests" /> -->
@@ -25,14 +23,9 @@
         <!-- Allow 1 direct deprecation until https://github.com/doctrine/DoctrineMongoDBBundle/pull/675 is merged -->
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[direct]=1"/>
     </php>
-
-    <coverage>
+    <source>
         <include>
             <directory>src</directory>
         </include>
-    </coverage>
-
-    <listeners>
-        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener"/>
-    </listeners>
+    </source>
 </phpunit>
