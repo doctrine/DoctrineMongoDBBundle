@@ -37,12 +37,6 @@ parameters:
 			path: src/CacheWarmer/ProxyCacheWarmer.php
 
 		-
-			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\CacheWarmer\\ProxyCacheWarmer\:\:getClassesForProxyGeneration\(\) return type with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/CacheWarmer/ProxyCacheWarmer.php
-
-		-
 			message: '#^Parameter \#1 \$application of static method Doctrine\\Bundle\\MongoDBBundle\\Command\\DoctrineODMCommand\:\:setApplicationDocumentManager\(\) expects Symfony\\Bundle\\FrameworkBundle\\Console\\Application, Symfony\\Component\\Console\\Application\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -121,38 +115,8 @@ parameters:
 			path: src/Command/UpdateSchemaDoctrineODMCommand.php
 
 		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
-			count: 1
-			path: src/DataCollector/ConnectionDiagnostic.php
-
-		-
 			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\DataCollector\\ConnectionDiagnostic\:\:__construct\(\) has parameter \$driverOptions with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: src/DataCollector/ConnectionDiagnostic.php
-
-		-
-			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\DataCollector\\ConnectionDiagnostic\:\:getAutoEncryptionInfo\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/DataCollector/ConnectionDiagnostic.php
-
-		-
-			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\DataCollector\\ConnectionDiagnostic\:\:getPhpExtensionInfo\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/DataCollector/ConnectionDiagnostic.php
-
-		-
-			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\DataCollector\\ConnectionDiagnostic\:\:getServerInfo\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/DataCollector/ConnectionDiagnostic.php
-
-		-
-			message: '#^Unreachable statement \- code above always terminates\.$#'
-			identifier: deadCode.unreachable
 			count: 1
 			path: src/DataCollector/ConnectionDiagnostic.php
 
@@ -373,12 +337,6 @@ parameters:
 			path: src/Form/ChoiceList/MongoDBQueryBuilderLoader.php
 
 		-
-			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\Form\\DoctrineMongoDBTypeGuesser\:\:getMetadata\(\) return type with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/DoctrineMongoDBTypeGuesser.php
-
-		-
 			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\Form\\DoctrineMongoDBTypeGuesser\:\:getMetadata\(\) should return array\{Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata, string\}\|null but returns array\{Doctrine\\Persistence\\Mapping\\ClassMetadata\<object\>, string\}\.$#'
 			identifier: return.type
 			count: 1
@@ -417,12 +375,6 @@ parameters:
 		-
 			message: '#^Property Doctrine\\Bundle\\MongoDBBundle\\Form\\DoctrineMongoDBTypeGuesser\:\:\$cache \(array\<class\-string, array\{Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata, string\}\|null\>\) does not accept non\-empty\-array\<string, array\{Doctrine\\Persistence\\Mapping\\ClassMetadata\<object\>, string\}\|null\>\.$#'
 			identifier: assign.propertyType
-			count: 1
-			path: src/Form/DoctrineMongoDBTypeGuesser.php
-
-		-
-			message: '#^Property Doctrine\\Bundle\\MongoDBBundle\\Form\\DoctrineMongoDBTypeGuesser\:\:\$cache with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata does not specify its types\: T$#'
-			identifier: missingType.generics
 			count: 1
 			path: src/Form/DoctrineMongoDBTypeGuesser.php
 
