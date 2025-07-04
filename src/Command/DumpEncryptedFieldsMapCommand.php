@@ -6,7 +6,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Command;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Utility\EncryptedFieldsMapGenerator;
+use MongoDB\BSON\PackedArray;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,10 +16,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Contracts\Service\ServiceCollectionInterface;
 
-use function array_combine;
-use function array_keys;
-use function array_map;
-use function array_values;
+use function assert;
+use function json_decode;
 use function json_encode;
 use function sprintf;
 use function var_export;
@@ -63,24 +61,27 @@ final class DumpEncryptedFieldsMapCommand extends Command
         $dumper = new Dumper();
 
         foreach ($this->documentManagers as $name => $documentManager) {
-            $generator          = new EncryptedFieldsMapGenerator($documentManager->getMetadataFactory());
-            $encryptedFieldsMap = $generator->getEncryptedFieldsMap();
+            assert($documentManager instanceof DocumentManager);
+
+            $encryptedFieldsMap = [];
+            foreach ($documentManager->getMetadataFactory()->getAllMetadata() as $metadata) {
+                $database               =  $documentManager->getDocumentDatabase($metadata->getName());
+                $collectionInfoIterator = $database->listCollections(['filter' => ['name' => $metadata->getCollection()]]);
+
+                foreach ($collectionInfoIterator as $collectionInfo) {
+                    if ($collectionInfo['options']['encryptedFields'] ?? null) {
+                        $encryptedFieldsMap[$this->getDocumentNamespace($metadata, $database->getDatabaseName())] = $collectionInfo['options']['encryptedFields'];
+                    }
+                }
+            }
 
             if (empty($encryptedFieldsMap)) {
                 continue;
             }
 
-            $encryptedFieldsMap = array_combine(
-                // Convert class names in keys to their full namespaces
-                array_map(
-                    fn (string $fqcn): string => $this->getDocumentNamespace(
-                        $documentManager->getClassMetadata($fqcn),
-                        $documentManager->getConfiguration()->getDefaultDB(),
-                    ),
-                    array_keys($encryptedFieldsMap),
-                ),
-                array_values($encryptedFieldsMap),
-            );
+            foreach ($encryptedFieldsMap as $ns => $encryptedFields) {
+                $encryptedFieldsMap[$ns] = json_decode(PackedArray::fromPHP($encryptedFields['fields'])->toRelaxedExtendedJSON(), true);
+            }
 
             $io->section(sprintf('Dumping encrypted fields map for document manager "%s"', $name));
             switch ($format) {
