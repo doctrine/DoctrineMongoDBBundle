@@ -60,6 +60,18 @@ class LoadDataFixturesDoctrineODMCommandTest extends KernelTestCase
         $commandTester->execute([], ['interactive' => false]);
 
         $output = $commandTester->getDisplay();
+        $this->assertStringContainsString('purging database', $output);
+        $this->assertStringContainsString('loading Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\CommandBundle\DataFixtures\UserFixtures', $output);
+        $this->assertStringContainsString('loading Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\CommandBundle\DataFixtures\OtherFixtures', $output);
+    }
+
+    public function testExecutePurgeWithDelete(): void
+    {
+        $commandTester = new CommandTester($this->command);
+        $commandTester->execute(['--purge-with-delete'], ['interactive' => false]);
+
+        $output = $commandTester->getDisplay();
+        $this->assertStringContainsString('purging database', $output);
         $this->assertStringContainsString('loading Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\CommandBundle\DataFixtures\UserFixtures', $output);
         $this->assertStringContainsString('loading Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\CommandBundle\DataFixtures\OtherFixtures', $output);
     }

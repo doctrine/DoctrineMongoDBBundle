@@ -10,7 +10,6 @@ use Doctrine\Common\DataFixtures\Executor\MongoDBExecutor;
 use Doctrine\Common\DataFixtures\Purger\MongoDBPurgeMode;
 use Doctrine\Common\DataFixtures\Purger\MongoDBPurger;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use InvalidArgumentException;
 use Psr\Log\AbstractLogger;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -18,7 +17,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use function array_column;
 use function assert;
 use function class_exists;
 use function implode;
@@ -44,7 +42,7 @@ final class LoadDataFixturesDoctrineODMCommand extends DoctrineODMCommand
             ->addOption('group', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Only load fixtures that belong to this group (use with --services)')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of flushing the database first.')
             ->addOption('dm', null, InputOption::VALUE_REQUIRED, 'The document manager to use for this command.')
-            ->addOption('purge', null, InputOption::VALUE_OPTIONAL, 'Purge the database before loading the fixtures. If set to "delete", collections will be kept and documents deleted instead of dropping the collections.', null, self::getPurgeModes(...))
+            ->addOption('purge-with-delete', null, InputOption::VALUE_NONE, 'Purge the database using deleteMany() instead of dropping and recreating the collections.')
             ->setHelp(<<<'EOT'
 The <info>doctrine:mongodb:fixtures:load</info> command loads data fixtures from your application:
 
@@ -58,9 +56,9 @@ You can also choose to load only fixtures that live in a certain group:
 
     <info>php %command.full_name%</info> <comment>--group=group1</comment>
 
-If the collection uses search indexes or encryption, you can use the <info>--purge=delete</info> option to keep the collections instead of dropping them when purging the database:
+If the collection uses search indexes or encryption, you can use the <info>--purge-with-delete</info> option to keep the collections instead of dropping them when purging the database:
 
-  <info>php %command.full_name%</info> --purge=delete
+  <info>php %command.full_name%</info> --purge-with-delete
 EOT
         );
     }
@@ -72,13 +70,7 @@ EOT
 
         $ui = new SymfonyStyle($input, $output);
 
-        if ($input->hasOption('purge')) {
-            if ($input->getOption('append')) {
-                $ui->error('The --purge option cannot be used with the --append option.');
-
-                return self::INVALID;
-            }
-        } elseif ($input->isInteractive() && ! $input->getOption('append')) {
+        if ($input->isInteractive() && ! $input->getOption('append')) {
             $helper   = $this->getHelper('question');
             $question = new ConfirmationQuestion('Careful, database will be purged. Do you want to continue (y/N) ?', false);
 
@@ -102,19 +94,17 @@ EOT
         }
 
         $purger = new MongoDBPurger($dm);
-        $purge  = $input->getOption('purge');
-        if ($purge) {
+        if ($input->getOption('purge-with-delete')) {
             if (! class_exists(MongoDBPurgeMode::class)) {
                 $ui->error('The --purge-with-delete option requires doctrine/data-fixtures >= 2.1.0.');
 
                 return self::INVALID;
             }
 
-            $purger->setPurgeMode(MongoDBPurgeMode::tryFrom($purge) ?? throw new InvalidArgumentException('Invalid purge mode: ' . $purge));
+            $purger->setPurgeMode(MongoDBPurgeMode::Delete);
         }
 
         $executor = new MongoDBExecutor($dm, $purger);
-
         $executor->setLogger(new class ($output) extends AbstractLogger {
             public function __construct(private OutputInterface $output)
             {
@@ -129,10 +119,5 @@ EOT
         $executor->execute($fixtures, $input->getOption('append'));
 
         return 0;
-    }
-
-    private static function getPurgeModes(): array
-    {
-        return class_exists(MongoDBPurgeMode::class) ? array_column(MongoDBPurgeMode::cases(), 'value') : [];
     }
 }
