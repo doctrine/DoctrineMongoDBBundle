@@ -85,12 +85,6 @@ parameters:
 			path: src/Command/LoadDataFixturesDoctrineODMCommand.php
 
 		-
-			message: '#^Method Psr\\Log\\AbstractLogger@anonymous/src/Command/LoadDataFixturesDoctrineODMCommand\.php\:109\:\:log\(\) has parameter \$message with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Command/LoadDataFixturesDoctrineODMCommand.php
-
-		-
 			message: '#^Parameter \#1 \$application of static method Doctrine\\Bundle\\MongoDBBundle\\Command\\DoctrineODMCommand\:\:setApplicationDocumentManager\(\) expects Symfony\\Bundle\\FrameworkBundle\\Console\\Application, Symfony\\Component\\Console\\Application\|null given\.$#'
 			identifier: argument.type
 			count: 1

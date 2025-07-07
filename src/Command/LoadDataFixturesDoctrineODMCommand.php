@@ -101,6 +101,7 @@ EOT
                 return self::INVALID;
             }
 
+            // @phpstan-ignore method.notFound
             $purger->setPurgeMode(MongoDBPurgeMode::Delete);
         }
 
@@ -110,7 +111,10 @@ EOT
             {
             }
 
-            /** {@inheritDoc} */
+            /**
+             * @inheritdoc
+             * @phpstan-ignore missingType.parameter
+             */
             public function log($level, $message, array $context = []): void
             {
                 $this->output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
