@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Command;
 
 use Doctrine\Bundle\MongoDBBundle\Command\LoadDataFixturesDoctrineODMCommand;
+use Doctrine\Common\DataFixtures\Purger\MongoDBPurgeMode;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
+
+use function class_exists;
 
 class LoadDataFixturesDoctrineODMCommandTest extends KernelTestCase
 {
@@ -60,6 +63,22 @@ class LoadDataFixturesDoctrineODMCommandTest extends KernelTestCase
         $commandTester->execute([], ['interactive' => false]);
 
         $output = $commandTester->getDisplay();
+        $this->assertStringContainsString('purging database', $output);
+        $this->assertStringContainsString('loading Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\CommandBundle\DataFixtures\UserFixtures', $output);
+        $this->assertStringContainsString('loading Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\CommandBundle\DataFixtures\OtherFixtures', $output);
+    }
+
+    public function testExecutePurgeWithDelete(): void
+    {
+        if (! class_exists(MongoDBPurgeMode::class)) {
+            $this->markTestSkipped('The --purge-with-delete option requires doctrine/data-fixtures >= 2.1.0.');
+        }
+
+        $commandTester = new CommandTester($this->command);
+        $commandTester->execute(['--purge-with-delete' => true], ['interactive' => false]);
+
+        $output = $commandTester->getDisplay();
+        $this->assertStringContainsString('purging database', $output);
         $this->assertStringContainsString('loading Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\CommandBundle\DataFixtures\UserFixtures', $output);
         $this->assertStringContainsString('loading Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\CommandBundle\DataFixtures\OtherFixtures', $output);
     }

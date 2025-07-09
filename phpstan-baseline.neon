@@ -85,24 +85,6 @@ parameters:
 			path: src/Command/LoadDataFixturesDoctrineODMCommand.php
 
 		-
-			message: '#^Method Psr\\Log\\AbstractLogger@anonymous/src/Command/LoadDataFixturesDoctrineODMCommand\.php\:88\:\:log\(\) has parameter \$message with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Command/LoadDataFixturesDoctrineODMCommand.php
-
-		-
-			message: '#^Parameter \#1 \$dm of class Doctrine\\Common\\DataFixtures\\Executor\\MongoDBExecutor constructor expects Doctrine\\ODM\\MongoDB\\DocumentManager, Doctrine\\Persistence\\ObjectManager given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Command/LoadDataFixturesDoctrineODMCommand.php
-
-		-
-			message: '#^Parameter \#1 \$dm of class Doctrine\\Common\\DataFixtures\\Purger\\MongoDBPurger constructor expects Doctrine\\ODM\\MongoDB\\DocumentManager\|null, Doctrine\\Persistence\\ObjectManager given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Command/LoadDataFixturesDoctrineODMCommand.php
-
-		-
 			message: '#^Parameter \#1 \$application of static method Doctrine\\Bundle\\MongoDBBundle\\Command\\DoctrineODMCommand\:\:setApplicationDocumentManager\(\) expects Symfony\\Bundle\\FrameworkBundle\\Console\\Application, Symfony\\Component\\Console\\Application\|null given\.$#'
 			identifier: argument.type
 			count: 1
