@@ -92,7 +92,12 @@ This setting is **recommended** for improved security and performance.
   specified collection, the client downloads the server-side remote schema for
   the collection and uses it instead.
 
-For more details, see the official MongoDB documentation: `Encrypted Fields and Enabled Queries <https://www.mongodb.com/docs/manual/core/queryable-encryption/fundamentals/encrypt-and-query/>`_.
+For more details, see the official MongoDB documentation:
+`Encrypted Fields and Enabled Queries <https://www.mongodb.com/docs/manual/core/queryable-encryption/fundamentals/encrypt-and-query/>`_.
+
+Note that there is no ``fields`` key in the configuration of each collection
+for the bundle configuration. Instead, you directly specify the list of
+encrypted fields as an array under the collection namespace.
 
 .. tabs::
 
@@ -106,9 +111,9 @@ For more details, see the official MongoDB documentation: `Encrypted Fields and 
                         autoEncryption:
                             encryptedFieldsMap:
                                 "mydatabase.mycollection":
-                                    fields:
-                                        - path: "sensitive_field"
-                                          bsonType: "string"
+                                    - keyId: { $binary: { base64: 2CSosXLSTEKaYphcSnUuCw==, subType: '04' } }
+                                      path: "sensitive_field"
+                                      bsonType: "string"
 
     .. group-tab:: XML
 
@@ -117,9 +122,15 @@ For more details, see the official MongoDB documentation: `Encrypted Fields and 
             <doctrine:connection>
                 <doctrine:autoEncryption>
                     <doctrine:encryptedFieldsMap>
-                        <doctrine:encryptedFields name="mydatabase.mycollection">
-                            <doctrine:field path="sensitive_field" bsonType="string" />
-                        </doctrine:encryptedFields>
+                        <![CDATA[
+                            {
+                                "mydatabase.mycollection": [
+                                    "keyId": { "$binary": { "base64": "2CSosXLSTEKaYphcSnUuCw==", "subType": "04" } },
+                                    "path": "sensitive_field",
+                                    "bsonType": "string"
+                                ]
+                            }
+                        ]]>
                     </doctrine:encryptedFieldsMap>
                 </doctrine:autoEncryption>
             </doctrine:connection>
@@ -135,11 +146,10 @@ For more details, see the official MongoDB documentation: `Encrypted Fields and 
                     ->autoEncryption([
                         'encryptedFieldsMap' => [
                             'mydatabase.mycollection' => [
-                                'fields' => [
-                                    [
-                                        'path' => 'sensitive_field',
-                                        'bsonType' => 'string',
-                                    ],
+                                [
+                                    'path' => 'sensitive_field',
+                                    'keyId' => ['$binary' => ['base64' => '2CSosXLSTEKaYphcSnUuCw==', 'subType' => '04' ] ],
+                                    'bsonType' => 'string',
                                 ],
                             ],
                         ],
