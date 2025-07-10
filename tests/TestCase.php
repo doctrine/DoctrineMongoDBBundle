@@ -7,9 +7,11 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
+use MongoDB\Client;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
+use function getenv;
 use function sys_get_temp_dir;
 
 class TestCase extends BaseTestCase
@@ -25,7 +27,8 @@ class TestCase extends BaseTestCase
         $config->setHydratorNamespace('SymfonyTests\Doctrine');
         $config->setMetadataDriverImpl(new AttributeDriver($paths));
         $config->setMetadataCache(new ArrayAdapter());
+        $uri = getenv('DOCTRINE_MONGODB_SERVER') ?: 'mongodb://localhost:27017';
 
-        return DocumentManager::create(null, $config);
+        return DocumentManager::create(new Client($uri), $config);
     }
 }
