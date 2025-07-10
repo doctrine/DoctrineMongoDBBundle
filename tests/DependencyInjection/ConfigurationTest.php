@@ -572,7 +572,7 @@ class ConfigurationTest extends TestCase
             ],
         ];
 
-        // Encrypted Field Map normalization from XML tags
+        // Encrypted Field Map can be a JSON string in a <![CDATA[...]]>
         yield [
             [
                 'connection' => [
@@ -581,38 +581,40 @@ class ConfigurationTest extends TestCase
                         'id' => 'foo',
                         'autoEncryption' => [
                             'kmsProvider' => ['type' => 'local', 'key' => '1234567890123456789012345678901234567890123456789012345678901234'],
-                            'encryptedFieldsMap' => [
-                                'encryptedFields' => [
-                                    [
-                                        'name' => 'encrypted.patients',
-                                        'field' => [
-                                            [
-                                                'path' => 'patientRecord.ssn',
-                                                'bsonType' => 'string',
-                                                'queries' => ['queryType' => 'equality'],
-                                            ],
-                                            [
-                                                'path' => 'patientRecord.billing',
-                                                'bsonType' => 'object',
-                                            ],
-                                            [
-                                                'path' => 'patientRecord.billingAmount',
-                                                'bsonType' => 'int',
-                                                'queries' => ['queryType' => 'range', 'min' => 100, 'max' => 2000, 'sparsity' => 1, 'trimFactor' => 4],
-                                            ],
-                                        ],
-                                    ],
-                                    [
-                                        'name' => 'encrypted.users',
-                                        'field' =>
-                                            [
-                                                'path' => 'email',
-                                                'bsonType' => 'string',
-                                                'queries' => ['queryType' => 'equality'],
-                                            ],
-                                    ],
+                            'encryptedFieldsMap' => <<<'JSON'
+                            {
+                                "encrypted.patients": [
+                                    {
+                                        "keyId": { "$binary": { "base64": "GH25/XvYSaCgTUQLAo1hQw==", "subType": "04" } },
+                                        "path": "pathologies",
+                                        "bsonType": "array"
+                                    },
+                                    {
+                                        "keyId": { "$binary": { "base64": "krVWyFlNTUOaGFMfk+s7UA==", "subType": "04" } },
+                                        "path": "patientRecord.billing",
+                                        "bsonType": "object"
+                                    },
+                                    {
+                                        "keyId": { "$binary": { "base64": "X1ZaSI1GSAKnZ+sPGcmYBA==", "subType": "04" } },
+                                        "path": "patientRecord.billingAmount",
+                                        "bsonType": "int",
+                                        "queries": { "queryType": "range", "contention": 8, "min": 100, "max": 2000, "sparsity": 1, "trimFactor": 4 }
+                                    }
                                 ],
-                            ],
+                                "encrypted.client": [
+                                    {
+                                        "keyId": { "$binary": { "base64": "I0Aw18vnRGWzVS1t3uejpQ==", "subType": "04" } },
+                                        "path": "name",
+                                        "bsonType": "string"
+                                    },
+                                    {
+                                        "keyId": { "$binary": { "base64": "XSPRK3vaTLmMZr9IEj/qwQ==", "subType": "04" } },
+                                        "path": "clientCards",
+                                        "bsonType": "array"
+                                    }
+                                ]
+                            }
+                            JSON,
                         ],
                     ],
                 ],
@@ -626,25 +628,39 @@ class ConfigurationTest extends TestCase
                             'encryptedFieldsMap' => [
                                 'encrypted.patients' => [
                                     [
-                                        'path' => 'patientRecord.ssn',
-                                        'bsonType' => 'string',
-                                        'queries' => ['queryType' => 'equality'],
+                                        'keyId' => ['$binary' => ['base64' => 'GH25/XvYSaCgTUQLAo1hQw==', 'subType' => '04']],
+                                        'path' => 'pathologies',
+                                        'bsonType' => 'array',
                                     ],
                                     [
+                                        'keyId' => ['$binary' => ['base64' => 'krVWyFlNTUOaGFMfk+s7UA==', 'subType' => '04']],
                                         'path' => 'patientRecord.billing',
                                         'bsonType' => 'object',
                                     ],
                                     [
+                                        'keyId' => ['$binary' => ['base64' => 'X1ZaSI1GSAKnZ+sPGcmYBA==', 'subType' => '04']],
                                         'path' => 'patientRecord.billingAmount',
                                         'bsonType' => 'int',
-                                        'queries' => ['queryType' => 'range', 'min' => 100, 'max' => 2000, 'sparsity' => 1, 'trimFactor' => 4],
+                                        'queries' => [
+                                            'queryType' => 'range',
+                                            'contention' => 8,
+                                            'min' => 100,
+                                            'max' => 2000,
+                                            'sparsity' => 1,
+                                            'trimFactor' => 4,
+                                        ],
                                     ],
                                 ],
-                                'encrypted.users' => [
+                                'encrypted.client' => [
                                     [
-                                        'path' => 'email',
+                                        'keyId' => ['$binary' => ['base64' => 'I0Aw18vnRGWzVS1t3uejpQ==', 'subType' => '04']],
+                                        'path' => 'name',
                                         'bsonType' => 'string',
-                                        'queries' => ['queryType' => 'equality'],
+                                    ],
+                                    [
+                                        'keyId' => ['$binary' => ['base64' => 'XSPRK3vaTLmMZr9IEj/qwQ==', 'subType' => '04']],
+                                        'path' => 'clientCards',
+                                        'bsonType' => 'array',
                                     ],
                                 ],
                             ],

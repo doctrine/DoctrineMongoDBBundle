@@ -16,7 +16,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Contracts\Service\ServiceCollectionInterface;
 
-use function assert;
 use function json_decode;
 use function json_encode;
 use function sprintf;
@@ -61,8 +60,6 @@ final class DumpEncryptedFieldsMapCommand extends Command
         $dumper = new Dumper();
 
         foreach ($this->documentManagers as $name => $documentManager) {
-            assert($documentManager instanceof DocumentManager);
-
             $encryptedFieldsMap = [];
             foreach ($documentManager->getMetadataFactory()->getAllMetadata() as $metadata) {
                 $database               =  $documentManager->getDocumentDatabase($metadata->getName());
