@@ -11,7 +11,6 @@ use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
-use function array_is_list;
 use function count;
 use function in_array;
 use function is_array;
@@ -19,6 +18,8 @@ use function is_string;
 use function json_decode;
 use function method_exists;
 use function preg_match;
+
+use const JSON_THROW_ON_ERROR;
 
 /**
  * FrameworkExtension configuration structure.
@@ -401,20 +402,8 @@ class Configuration implements ConfigurationInterface
                                         ->useAttributeAsKey('name', false)
                                         ->beforeNormalization()
                                             ->always(static function ($v) {
-                                                if (isset($v['encryptedFields']) && is_array($v['encryptedFields'])) {
-                                                    $encryptedFields = $v['encryptedFields'];
-                                                    if (! array_is_list($encryptedFields)) {
-                                                        $encryptedFields = [$encryptedFields];
-                                                    }
-
-                                                    $v = [];
-                                                    foreach ($encryptedFields as $field) {
-                                                        if (is_array($field['field'] ?? null) && ! array_is_list($field['field'])) {
-                                                            $field['field'] = [$field['field']];
-                                                        }
-
-                                                        $v[$field['name'] ?? ''] = $field['field'] ?? [];
-                                                    }
+                                                if (is_string($v)) {
+                                                    return json_decode($v, true, 512, JSON_THROW_ON_ERROR);
                                                 }
 
                                                 return $v;
@@ -424,7 +413,7 @@ class Configuration implements ConfigurationInterface
                                                 ->children()
                                                     ->scalarNode('path')->isRequired()->cannotBeEmpty()->end()
                                                     ->scalarNode('bsonType')->isRequired()->cannotBeEmpty()->end()
-                                                    ->variableNode('keyId')->defaultNull()->end()
+                                                    ->variableNode('keyId')->isRequired()->cannotBeEmpty()->end()
                                                     ->arrayNode('queries')
                                                         ->children()
                                                             ->scalarNode('queryType')->isRequired()->cannotBeEmpty()->end()

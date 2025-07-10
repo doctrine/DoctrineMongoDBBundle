@@ -542,7 +542,6 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
 
         if (isset($autoEncryption['encryptedFieldsMap'])) {
             foreach ($autoEncryption['encryptedFieldsMap'] as &$value) {
-                //$value = ['fields' => $value];
                 $value = (new Definition(BsonDocument::class))->setFactory([BsonDocument::class, 'fromJSON'])->setArguments([json_encode(['fields' => $value])]);
             }
         }

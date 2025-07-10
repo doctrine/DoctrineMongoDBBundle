@@ -147,27 +147,108 @@ class ConfigurationTest extends TestCase
                         'bypassAutoEncryption' => true,
                         'bypassQueryAnalysis' => true,
                         'encryptedFieldsMap' => [
-                            'encrypted.patients' => [
+                            'encrypted.RangeTypes' => [
                                 [
-                                    'path' => 'patientRecord.ssn',
-                                    'bsonType' => 'string',
-                                    'queries' => ['queryType' => 'equality'],
+                                    'keyId' => ['$binary' => ['base64' => 'lhZHItpvRkqXevh4Wtqg/g==', 'subType' => '04']],
+                                    'path' => 'intField',
+                                    'bsonType' => 'int',
+                                    'queries' => ['queryType' => 'range', 'contention' => 8, 'min' => 5, 'max' => 10],
                                 ],
                                 [
+                                    'keyId' => ['$binary' => ['base64' => 'qd9PEKIPTE2J30ev29lMpQ==', 'subType' => '04']],
+                                    'path' => 'floatField',
+                                    'bsonType' => 'double',
+                                    'queries' => ['queryType' => 'range', 'contention' => 8, 'min' => 5.5, 'max' => 10.5, 'precision' => 1],
+                                ],
+                                [
+                                    'keyId' => ['$binary' => ['base64' => 'zVLg8CF4RSSu4xn7x7dOyQ==', 'subType' => '04']],
+                                    'path' => 'decimalField',
+                                    'bsonType' => 'decimal',
+                                    'queries' => [
+                                        'queryType' => 'range',
+                                        'contention' => 8,
+                                        'min' => ['$numberDecimal' => '0.1'],
+                                        'max' => ['$numberDecimal' => '0.2'],
+                                        'precision' => 2,
+                                    ],
+                                ],
+                                [
+                                    'keyId' => ['$binary' => ['base64' => 'ySdd8lZ2QBqnwKPJTp/yLA==', 'subType' => '04']],
+                                    'path' => 'immutableDateField',
+                                    'bsonType' => 'date',
+                                    'queries' => [
+                                        'queryType' => 'range',
+                                        'contention' => 8,
+                                        'min' => ['$date' => '2000-01-01T00:00:00Z'],
+                                        'max' => ['$date' => '2100-01-01T00:00:00Z'],
+                                    ],
+                                ],
+                                [
+                                    'keyId' => ['$binary' => ['base64' => 'NWKI+DyES/OlNkUbJbWJ9w==', 'subType' => '04']],
+                                    'path' => 'dateField',
+                                    'bsonType' => 'date',
+                                ],
+                                [
+                                    'keyId' => ['$binary' => ['base64' => 'wiiv+0K/QAquyEq3HDxRKw==', 'subType' => '04']],
+                                    'path' => 'binField',
+                                    'bsonType' => 'binData',
+                                ],
+                                [
+                                    'keyId' => ['$binary' => ['base64' => '2CSosXLSTEKaYphcSnUuCw==', 'subType' => '04']],
+                                    'path' => 'timestampField',
+                                    'bsonType' => 'timestamp',
+                                ],
+                                [
+                                    'keyId' => ['$binary' => ['base64' => 'h3H6HdG3T5CK+Z2yQ4Ho+Q==', 'subType' => '04']],
+                                    'path' => 'hashField',
+                                    'bsonType' => 'object',
+                                ],
+                                [
+                                    'keyId' => ['$binary' => ['base64' => 'X78UZZ/HTX2wLw4K3uG42w==', 'subType' => '04']],
+                                    'path' => 'collectionField',
+                                    'bsonType' => 'objectId',
+                                ],
+                                [
+                                    'keyId' => ['$binary' => ['base64' => 'LugQL/ZXTJOl856Yacmkwg==', 'subType' => '04']],
+                                    'path' => 'boolField',
+                                    'bsonType' => 'bool',
+                                ],
+                            ],
+                            'encrypted.patients' => [
+                                [
+                                    'keyId' => ['$binary' => ['base64' => 'GH25/XvYSaCgTUQLAo1hQw==', 'subType' => '04']],
+                                    'path' => 'pathologies',
+                                    'bsonType' => 'array',
+                                ],
+                                [
+                                    'keyId' => ['$binary' => ['base64' => 'krVWyFlNTUOaGFMfk+s7UA==', 'subType' => '04']],
                                     'path' => 'patientRecord.billing',
                                     'bsonType' => 'object',
                                 ],
                                 [
+                                    'keyId' => ['$binary' => ['base64' => 'X1ZaSI1GSAKnZ+sPGcmYBA==', 'subType' => '04']],
                                     'path' => 'patientRecord.billingAmount',
                                     'bsonType' => 'int',
-                                    'queries' => ['queryType' => 'range', 'min' => 100, 'max' => 2000, 'sparsity' => 1, 'trimFactor' => 4],
+                                    'queries' => [
+                                        'queryType' => 'range',
+                                        'contention' => 8,
+                                        'min' => 100,
+                                        'max' => 2000,
+                                        'sparsity' => 1,
+                                        'trimFactor' => 4,
+                                    ],
                                 ],
                             ],
-                            'encrypted.users' => [
+                            'encrypted.client' => [
                                 [
-                                    'path' => 'email',
+                                    'keyId' => ['$binary' => ['base64' => 'I0Aw18vnRGWzVS1t3uejpQ==', 'subType' => '04']],
+                                    'path' => 'name',
                                     'bsonType' => 'string',
-                                    'queries' => ['queryType' => 'equality'],
+                                ],
+                                [
+                                    'keyId' => ['$binary' => ['base64' => 'XSPRK3vaTLmMZr9IEj/qwQ==', 'subType' => '04']],
+                                    'path' => 'clientCards',
+                                    'bsonType' => 'array',
                                 ],
                             ],
                         ],
