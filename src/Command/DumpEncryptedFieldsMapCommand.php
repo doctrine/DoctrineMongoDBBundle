@@ -62,7 +62,7 @@ final class DumpEncryptedFieldsMapCommand extends Command
         foreach ($this->documentManagers as $name => $documentManager) {
             $encryptedFieldsMap = [];
             foreach ($documentManager->getMetadataFactory()->getAllMetadata() as $metadata) {
-                $database               =  $documentManager->getDocumentDatabase($metadata->getName());
+                $database               = $documentManager->getDocumentDatabase($metadata->getName());
                 $collectionInfoIterator = $database->listCollections(['filter' => ['name' => $metadata->getCollection()]]);
 
                 foreach ($collectionInfoIterator as $collectionInfo) {
