@@ -27,6 +27,7 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use Doctrine\Persistence\Proxy;
 use InvalidArgumentException;
+use MongoDB\BSON\Document as BsonDocument;
 use MongoDB\Client;
 use ProxyManager\Proxy\LazyLoadingInterface;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
@@ -55,6 +56,7 @@ use function class_implements;
 use function in_array;
 use function interface_exists;
 use function is_dir;
+use function json_encode;
 use function method_exists;
 use function sprintf;
 
@@ -537,6 +539,12 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         }
 
         $autoEncryption['keyVaultNamespace'] ??= $defaultDB . '.datakeys';
+
+        if (isset($autoEncryption['encryptedFieldsMap'])) {
+            foreach ($autoEncryption['encryptedFieldsMap'] as &$value) {
+                $value = (new Definition(BsonDocument::class))->setFactory([BsonDocument::class, 'fromJSON'])->setArguments([json_encode(['fields' => $value])]);
+            }
+        }
 
         return $autoEncryption;
     }
