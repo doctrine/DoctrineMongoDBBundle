@@ -627,7 +627,7 @@ Otherwise you will get a *auth failed* exception.
 Using Queryable Encryption
 --------------------------
 
-TODO: Add documentation for queryable encryption configuration.
+For details on configuring Queryable Encryption (QE) and Client-Side Field-Level Encryption (CSFLE), see :doc:`encryption`.
 
 Full Default Configuration
 --------------------------
