@@ -101,7 +101,6 @@ EOT
                 return self::INVALID;
             }
 
-            // @phpstan-ignore method.notFound
             $purger->setPurgeMode(MongoDBPurgeMode::Delete);
         }
 
