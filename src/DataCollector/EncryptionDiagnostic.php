@@ -7,6 +7,7 @@ namespace Doctrine\Bundle\MongoDBBundle\DataCollector;
 use Composer\InstalledVersions;
 use ReflectionExtension;
 
+use function escapeshellarg;
 use function exec;
 use function explode;
 use function extension_loaded;
@@ -71,7 +72,7 @@ class EncryptionDiagnostic
         }
 
         $output = [];
-        exec($mongocryptdPath . ' --version', $output);
+        exec(escapeshellarg($mongocryptdPath) . ' --version', $output);
 
         if (isset($output[0])) {
             return trim($output[0]);
