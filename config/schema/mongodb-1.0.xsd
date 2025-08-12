@@ -158,13 +158,11 @@
     <xsd:attribute name="projectId" type="xsd:string" use="optional" />
     <xsd:attribute name="location" type="xsd:string" use="optional" />
     <xsd:attribute name="keyRing" type="xsd:string" use="optional" />
+    <!-- Attribute already present for another KMS type -->
     <!-- <xsd:attribute name="keyName" type="xsd:string" use="optional" /> -->
     <!-- <xsd:attribute name="keyVersion" type="xsd:string" use="optional" /> -->
     <!-- KMIP -->
     <!-- <xsd:attribute name="endpoint" type="xsd:string" use="optional" /> -->
-    <xsd:attribute name="tlsCAFile" type="xsd:string" use="optional" />
-    <xsd:attribute name="tlsClientCertificateKeyFile" type="xsd:string" use="optional" />
-    <xsd:attribute name="tlsClientCertificateKeyFilePassword" type="xsd:string" use="optional" />
     <!-- Local -->
     <xsd:attribute name="key" type="xsd:string" use="optional" />
   </xsd:complexType>
