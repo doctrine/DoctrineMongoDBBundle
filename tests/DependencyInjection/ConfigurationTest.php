@@ -137,6 +137,7 @@ class ConfigurationTest extends TestCase
                             'sessionToken' => 'MONGODB_AWS_SESSION_TOKEN',
                         ],
                         'masterKey' => ['key' => 'MONGODB_AWS_MASTER_KEY'],
+                        'keyVaultClient' => 'my_key_vault_client_service',
                         'keyVaultNamespace' => 'encryption.__keyVault',
                         'tlsOptions' => [
                             'tlsCAFile' => '%kernel.project_dir%/config/certificates/mongodb-ca.pem',

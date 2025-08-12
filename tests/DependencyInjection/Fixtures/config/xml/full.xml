@@ -78,6 +78,7 @@
                     sessionToken="MONGODB_AWS_SESSION_TOKEN"
                 />
                 <doctrine:masterKey key="MONGODB_AWS_MASTER_KEY" />
+                <doctrine:keyVaultClient>my_key_vault_client_service</doctrine:keyVaultClient>
                 <doctrine:keyVaultNamespace>encryption.__keyVault</doctrine:keyVaultNamespace>
                 <doctrine:tlsOptions
                     tlsCAFile="%kernel.project_dir%/config/certificates/mongodb-ca.pem"

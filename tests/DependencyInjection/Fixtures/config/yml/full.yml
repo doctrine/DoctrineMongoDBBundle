@@ -64,6 +64,7 @@ doctrine_mongodb:
                 masterKey:
                     key: 'MONGODB_AWS_MASTER_KEY'
                 keyVaultNamespace: 'encryption.__keyVault'
+                keyVaultClient: 'my_key_vault_client_service'
                 tlsOptions:
                     tlsCAFile: '%kernel.project_dir%/config/certificates/mongodb-ca.pem'
                     tlsCertificateKeyFile: '%kernel.project_dir%/config/certificates/mongodb-client.pem'
