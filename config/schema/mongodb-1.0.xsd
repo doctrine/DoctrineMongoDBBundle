@@ -196,6 +196,7 @@
     <xsd:attribute name="mongocryptdSpawnPath" type="xsd:string" use="optional" />
     <xsd:attribute name="mongocryptdSpawnArgs" type="xsd:string" use="optional" />
     <xsd:attribute name="cryptSharedLibPath" type="xsd:string" use="optional" />
+    <xsd:attribute name="cryptSharedLibRequired" type="xsd:boolean" use="optional" />
   </xsd:complexType>
 
   <xsd:complexType name="document-manager">
