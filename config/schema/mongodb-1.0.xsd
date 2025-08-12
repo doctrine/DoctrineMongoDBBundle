@@ -125,7 +125,7 @@
 
   <xsd:complexType name="auto-encryption">
     <xsd:sequence>
-      <xsd:element name="kmsProvider" type="kms-provider" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="kmsProvider" type="kms-provider" minOccurs="1" maxOccurs="1" />
       <xsd:element name="masterKey" type="master-key" minOccurs="0" maxOccurs="1" />
       <xsd:element name="keyVaultClient" type="xsd:string" minOccurs="0" maxOccurs="1" />
       <xsd:element name="keyVaultNamespace" type="xsd:string" minOccurs="0" maxOccurs="1" />
