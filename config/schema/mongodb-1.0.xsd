@@ -125,8 +125,9 @@
 
   <xsd:complexType name="auto-encryption">
     <xsd:sequence>
-      <xsd:element name="kmsProvider" type="kms-provider" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="kmsProvider" type="kms-provider" minOccurs="1" maxOccurs="1" />
       <xsd:element name="masterKey" type="master-key" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="keyVaultClient" type="xsd:string" minOccurs="0" maxOccurs="1" />
       <xsd:element name="keyVaultNamespace" type="xsd:string" minOccurs="0" maxOccurs="1" />
       <xsd:element name="tlsOptions" type="tls-options" minOccurs="0" maxOccurs="1" />
       <xsd:element name="encryptedFieldsMap" type="encrypted-fields-map" minOccurs="0" maxOccurs="1" />
@@ -157,13 +158,11 @@
     <xsd:attribute name="projectId" type="xsd:string" use="optional" />
     <xsd:attribute name="location" type="xsd:string" use="optional" />
     <xsd:attribute name="keyRing" type="xsd:string" use="optional" />
+    <!-- Attribute already present for another KMS type -->
     <!-- <xsd:attribute name="keyName" type="xsd:string" use="optional" /> -->
     <!-- <xsd:attribute name="keyVersion" type="xsd:string" use="optional" /> -->
     <!-- KMIP -->
     <!-- <xsd:attribute name="endpoint" type="xsd:string" use="optional" /> -->
-    <xsd:attribute name="tlsCAFile" type="xsd:string" use="optional" />
-    <xsd:attribute name="tlsClientCertificateKeyFile" type="xsd:string" use="optional" />
-    <xsd:attribute name="tlsClientCertificateKeyFilePassword" type="xsd:string" use="optional" />
     <!-- Local -->
     <xsd:attribute name="key" type="xsd:string" use="optional" />
   </xsd:complexType>
@@ -197,6 +196,7 @@
     <xsd:attribute name="mongocryptdSpawnPath" type="xsd:string" use="optional" />
     <xsd:attribute name="mongocryptdSpawnArgs" type="xsd:string" use="optional" />
     <xsd:attribute name="cryptSharedLibPath" type="xsd:string" use="optional" />
+    <xsd:attribute name="cryptSharedLibRequired" type="xsd:boolean" use="optional" />
   </xsd:complexType>
 
   <xsd:complexType name="document-manager">

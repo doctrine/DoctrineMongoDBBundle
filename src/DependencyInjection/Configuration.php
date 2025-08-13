@@ -384,13 +384,11 @@ class Configuration implements ConfigurationInterface
                                             ->scalarNode('projectId')->end()
                                             ->scalarNode('location')->end()
                                             ->scalarNode('keyRing')->end()
+                                            // Attribute already present for another KMS type
                                             //->scalarNode('keyName')->end()
                                             //->scalarNode('keyVersion')->end()
                                             // KMIP
                                             //->scalarNode('endpoint')->end()
-                                            ->scalarNode('tlsCAFile')->end()
-                                            ->scalarNode('tlsClientCertificateKeyFile')->end()
-                                            ->scalarNode('tlsClientCertificateKeyFilePassword')->end()
                                             // Local
                                             ->scalarNode('key')->end()
                                         ->end()
@@ -438,11 +436,7 @@ class Configuration implements ConfigurationInterface
                                             ->scalarNode('tlsCAFile')->end()
                                             ->scalarNode('tlsCertificateKeyFile')->end()
                                             ->scalarNode('tlsCertificateKeyFilePassword')->end()
-                                            ->booleanNode('tlsAllowInvalidCertificates')->end()
-                                            ->booleanNode('tlsAllowInvalidHostnames')->end()
-                                            ->booleanNode('tlsDisableCertificateRevocationCheck')->end()
                                             ->booleanNode('tlsDisableOCSPEndpointCheck')->end()
-                                            ->booleanNode('tlsInsecure')->end()
                                         ->end()
                                     ->end()
                                 ->end()

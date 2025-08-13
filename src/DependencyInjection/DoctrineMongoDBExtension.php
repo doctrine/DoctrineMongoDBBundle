@@ -528,9 +528,14 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             throw new InvalidArgumentException('The "kmsProvider" option must contain a "type" key.');
         }
 
+        $provider                       = $autoEncryption['kmsProvider']['type'];
         $autoEncryption['kmsProviders'] = [
-            $autoEncryption['kmsProvider']['type'] => array_diff_key($autoEncryption['kmsProvider'], ['type' => true]),
+            $provider => array_diff_key($autoEncryption['kmsProvider'], ['type' => true]),
         ];
+        if (isset($autoEncryption['tlsOptions'])) {
+            $autoEncryption['tlsOptions'] = [$provider => $autoEncryption['tlsOptions']];
+        }
+
         unset($autoEncryption['kmsProvider']);
         unset($autoEncryption['masterKey']);
 
