@@ -77,7 +77,8 @@ final class DumpEncryptedFieldsMapCommand extends Command
             }
 
             foreach ($encryptedFieldsMap as $ns => $encryptedFields) {
-                $encryptedFieldsMap[$ns] = json_decode(PackedArray::fromPHP($encryptedFields['fields'])->toRelaxedExtendedJSON(), true);
+                // Keep only the "fields" key and ignore "escCollection" and "ecocCollection"
+                $encryptedFieldsMap[$ns] = ['fields' => json_decode(PackedArray::fromPHP($encryptedFields['fields'])->toRelaxedExtendedJSON(), true)];
             }
 
             $io->section(sprintf('Dumping encrypted fields map for document manager "%s"', $name));
@@ -105,9 +106,7 @@ final class DumpEncryptedFieldsMapCommand extends Command
 
     private function getDocumentNamespace(ClassMetadata $metadata, string $defaultDb): string
     {
-        $db = $metadata->getDatabase();
-        $db = $db ?: $defaultDb;
-        $db = $db ?: 'doctrine';
+        $db = $metadata->getDatabase() ?: $defaultDb ?: 'doctrine';
 
         return $db . '.' . $metadata->getCollection();
     }

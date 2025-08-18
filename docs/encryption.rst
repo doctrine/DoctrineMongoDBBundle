@@ -79,25 +79,36 @@ Example of configuration for AWS
 Encrypted Fields Map
 --------------------
 
-You can configure which fields are encrypted in each collection by specifying the
+The encrypted fields are set to the collection when you create it, and the MongoDB
+client will query the server for the collection schema before performing any
+operations. For additional security, you can also specify the encrypted fields
+in the connection configuration, which allows the client to use local rules
+instead of downloading the remote schema from the server, that could potentially
+be tampered with if an attacker compromises the server.
+
+The Encrypted Fields Maps is a list of all encrypted fields associated with all
+the collection namespaces that has encryption enabled. To configure it, you
+can run a command that extract the encrypted fields from the server and generate
+the ``encryptedFieldsMap`` configuration.
+
+.. code-block:: console
+
+    php bin/console doctrine:mongodb:dump-encrypted-fields-map --format yaml
+
+The output of the command will be a YAML configuration for the
 ``autoEncryption.encryptedFieldsMap`` option in the connection configuration.
-This setting is **recommended** for improved security and performance.
 
 - If the connection ``encryptedFieldsMap`` object contains a key for the specified
-  collection, the client uses that object to perform automatic Queryable Encryption,
-  rather than using the remote schema. At minimum, the local rules must encrypt
-  all fields that the remote schema does.
+  collection namespace, the client uses that object to perform automatic
+  Queryable Encryption, rather than using the remote schema. At minimum, the
+  local rules must encrypt all fields that the remote schema does.
 
 - If the connection ``encryptedFieldsMap`` object doesn't contain a key for the
-  specified collection, the client downloads the server-side remote schema for
-  the collection and uses it instead.
+  specified collection namespace, the client downloads the server-side remote
+  schema for the collection and uses it instead.
 
 For more details, see the official MongoDB documentation:
 `Encrypted Fields and Enabled Queries <https://www.mongodb.com/docs/manual/core/queryable-encryption/fundamentals/encrypt-and-query/>`_.
-
-Note that there is no ``fields`` key in the configuration of each collection
-for the bundle configuration. Instead, you directly specify the list of
-encrypted fields as an array under the collection namespace.
 
 .. tabs::
 
@@ -111,9 +122,10 @@ encrypted fields as an array under the collection namespace.
                         autoEncryption:
                             encryptedFieldsMap:
                                 "mydatabase.mycollection":
-                                    - keyId: { $binary: { base64: 2CSosXLSTEKaYphcSnUuCw==, subType: '04' } }
-                                      path: "sensitive_field"
-                                      bsonType: "string"
+                                    fields:
+                                        - keyId: { $binary: { base64: 2CSosXLSTEKaYphcSnUuCw==, subType: '04' } }
+                                          path: "sensitive_field"
+                                          bsonType: "string"
 
     .. group-tab:: XML
 
@@ -124,11 +136,13 @@ encrypted fields as an array under the collection namespace.
                     <doctrine:encryptedFieldsMap>
                         <![CDATA[
                             {
-                                "mydatabase.mycollection": [
-                                    "keyId": { "$binary": { "base64": "2CSosXLSTEKaYphcSnUuCw==", "subType": "04" } },
-                                    "path": "sensitive_field",
-                                    "bsonType": "string"
-                                ]
+                                "mydatabase.mycollection": {
+                                    fields: [
+                                        "keyId": { "$binary": { "base64": "2CSosXLSTEKaYphcSnUuCw==", "subType": "04" } },
+                                        "path": "sensitive_field",
+                                        "bsonType": "string"
+                                    ]
+                                }
                             }
                         ]]>
                     </doctrine:encryptedFieldsMap>
@@ -146,10 +160,12 @@ encrypted fields as an array under the collection namespace.
                     ->autoEncryption([
                         'encryptedFieldsMap' => [
                             'mydatabase.mycollection' => [
-                                [
-                                    'path' => 'sensitive_field',
-                                    'keyId' => ['$binary' => ['base64' => '2CSosXLSTEKaYphcSnUuCw==', 'subType' => '04' ] ],
-                                    'bsonType' => 'string',
+                                'fields' => [
+                                    [
+                                        'path' => 'sensitive_field',
+                                        'keyId' => ['$binary' => ['base64' => '2CSosXLSTEKaYphcSnUuCw==', 'subType' => '04' ] ],
+                                        'bsonType' => 'string',
+                                    ],
                                 ],
                             ],
                         ],
