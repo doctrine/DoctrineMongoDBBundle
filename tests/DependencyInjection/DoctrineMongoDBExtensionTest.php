@@ -16,6 +16,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations;
 use MongoDB\Client;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -634,5 +635,32 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
         // Ensure the driver option set in the client matches the ODM configuration
         self::assertEquals($driverOptions['autoEncryption'], $odmConfiguration->getDriverOptions()['autoEncryption']);
+    }
+
+    public function testAutoEncryptionWithEmptyKmsProvider(): void
+    {
+        $container = $this->buildMinimalContainer();
+        $loader    = new DoctrineMongoDBExtension();
+
+        $config = [
+            'connections' => [
+                'default' => [
+                    'autoEncryption' => [
+                        'keyVaultNamespace' => 'db.vault',
+                        'kmsProvider' => ['type' => 'aws'],
+                    ],
+                ],
+            ],
+            'document_managers' => ['default' => []],
+        ];
+
+        $loader->load([$config], $container);
+        (new ServiceRepositoryCompilerPass())->process($container);
+
+        $clientDef     = $container->getDefinition('doctrine_mongodb.odm.default_connection');
+        $driverOptions = $clientDef->getArgument(2);
+
+        self::assertArrayHasKey('autoEncryption', $driverOptions);
+        self::assertEquals(['aws' => new Definition(stdClass::class)], $driverOptions['autoEncryption']['kmsProviders']);
     }
 }

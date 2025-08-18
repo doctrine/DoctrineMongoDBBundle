@@ -528,10 +528,16 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             throw new InvalidArgumentException('The "kmsProvider" option must contain a "type" key.');
         }
 
-        $provider                       = $autoEncryption['kmsProvider']['type'];
-        $autoEncryption['kmsProviders'] = [
-            $provider => array_diff_key($autoEncryption['kmsProvider'], ['type' => true]),
-        ];
+        $provider     = $autoEncryption['kmsProvider']['type'];
+        $providerOpts = array_diff_key($autoEncryption['kmsProvider'], ['type' => true]);
+        // To use "Automatic Credentials", the provider options must be an empty document.
+        // Fix the empty array to an empty stdClass object, as the driver expects it.
+        if ($providerOpts === []) {
+            $providerOpts = new Definition('stdClass');
+        }
+
+        $autoEncryption['kmsProviders'] = [$provider => $providerOpts];
+
         if (isset($autoEncryption['tlsOptions'])) {
             $autoEncryption['tlsOptions'] = [$provider => $autoEncryption['tlsOptions']];
         }
