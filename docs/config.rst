@@ -725,11 +725,7 @@ Full Default Configuration
                                 tlsCAFile:                              null  # Path to CA file, e.g., /path/to/key-vault-ca.pem
                                 tlsCertificateKeyFile:                  null  # Path to client cert/key file, e.g., /path/to/key-vault-client.pem
                                 tlsCertificateKeyFilePassword:          null  # Password for client cert/key file
-                                tlsAllowInvalidCertificates:            false # Bypass server certificate validation (use with caution)
-                                tlsAllowInvalidHostnames:               false # Bypass server hostname validation (use with caution)
-                                tlsDisableCertificateRevocationCheck:   false # Disable CRL checks
                                 tlsDisableOCSPEndpointCheck:            false # Disable OCSP checks
-                                tlsInsecure:                            false # Allow invalid/no server cert (use with extreme caution)
 
             proxy_namespace:      MongoDBODMProxies
             proxy_dir:            "%kernel.cache_dir%/doctrine/odm/mongodb/Proxies"
