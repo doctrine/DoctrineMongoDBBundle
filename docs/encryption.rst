@@ -204,7 +204,8 @@ If the driver is not able to find the library, you can specify its path using th
 TLS Options
 -----------
 
-If you are not specifying a custom ``keyVaultClient`` service, you can configure TLS settings for the internal key vault client using the ``tlsOptions`` key:
+If you are not specifying a custom ``keyVaultClient`` service, you can configure
+TLS settings for the internal key vault client using the ``tlsOptions`` key:
 
 .. tabs::
 
@@ -220,8 +221,7 @@ If you are not specifying a custom ``keyVaultClient`` service, you can configure
                                 tlsCAFile: "/path/to/key-vault-ca.pem"
                                 tlsCertificateKeyFile: "/path/to/key-vault-client.pem"
                                 tlsCertificateKeyFilePassword: "keyvaultclientpassword"
-                                tlsAllowInvalidCertificates: false
-                                tlsAllowInvalidHostnames: false
+                                tlsDisableOCSPEndpointCheck: false
 
     .. group-tab:: XML
 
@@ -233,8 +233,7 @@ If you are not specifying a custom ``keyVaultClient`` service, you can configure
                         <doctrine:tlsCAFile>/path/to/key-vault-ca.pem</doctrine:tlsCAFile>
                         <doctrine:tlsCertificateKeyFile>/path/to/key-vault-client.pem</doctrine:tlsCertificateKeyFile>
                         <doctrine:tlsCertificateKeyFilePassword>keyvaultclientpassword</doctrine:tlsCertificateKeyFilePassword>
-                        <doctrine:tlsAllowInvalidCertificates>false</doctrine:tlsAllowInvalidCertificates>
-                        <doctrine:tlsAllowInvalidHostnames>false</doctrine:tlsAllowInvalidHostnames>
+                        <doctrine:tlsDisableOCSPEndpointCheck>false</doctrine:tlsAllowInvalidCertificates>
                     </doctrine:tlsOptions>
                 </doctrine:autoEncryption>
             </doctrine:connection>
@@ -252,8 +251,7 @@ If you are not specifying a custom ``keyVaultClient`` service, you can configure
                             'tlsCAFile' => '/path/to/key-vault-ca.pem',
                             'tlsCertificateKeyFile' => '/path/to/key-vault-client.pem',
                             'tlsCertificateKeyFilePassword' => 'keyvaultclientpassword',
-                            'tlsAllowInvalidCertificates' => false,
-                            'tlsAllowInvalidHostnames' => false,
+                            'tlsDisableOCSPEndpointCheck' => false,
                         ],
                     ]);
             };
