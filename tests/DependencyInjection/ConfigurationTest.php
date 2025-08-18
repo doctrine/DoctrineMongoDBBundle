@@ -257,7 +257,7 @@ class ConfigurationTest extends TestCase
                             'mongocryptdURI' => 'mongodb://localhost:27020',
                             'mongocryptdBypassSpawn' => true,
                             'mongocryptdSpawnPath' => '%kernel.project_dir%/bin/mongocryptd',
-                            'mongocryptdSpawnArgs' => '--pidfilepath=%kernel.project_dir%/var/mongocryptd.pid --idleShutdownTimeoutSecs=60',
+                            'mongocryptdSpawnArgs' => ['--pidfilepath=%kernel.project_dir%/var/mongocryptd.pid', '--idleShutdownTimeoutSecs=60'],
                             'cryptSharedLibPath' => '%kernel.project_dir%/bin/mongo_crypt_v1.dylib',
                             'cryptSharedLibRequired' => true,
                         ],
