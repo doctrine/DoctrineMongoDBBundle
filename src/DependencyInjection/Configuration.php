@@ -12,6 +12,7 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 use function count;
+use function explode;
 use function in_array;
 use function is_array;
 use function is_string;
@@ -432,7 +433,20 @@ class Configuration implements ConfigurationInterface
                                         ->end()
                                     ->end()
                                     ->arrayNode('extraOptions')
-                                        ->prototype('variable')->end()
+                                        ->children()
+                                            ->scalarNode('mongocryptdURI')->end()
+                                            ->booleanNode('mongocryptdBypassSpawn')->end()
+                                            ->scalarNode('mongocryptdSpawnPath')->end()
+                                            ->arrayNode('mongocryptdSpawnArgs')
+                                                ->beforeNormalization()
+                                                    ->ifString()
+                                                    ->then(static fn ($v) => explode(' ', $v))
+                                                ->end()
+                                                ->prototype('scalar')->cannotBeEmpty()->end()
+                                            ->end()
+                                            ->scalarNode('cryptSharedLibPath')->end()
+                                            ->booleanNode('cryptSharedLibRequired')->end()
+                                        ->end()
                                     ->end()
                                     ->booleanNode('bypassQueryAnalysis')->end()
                                     ->arrayNode('tlsOptions')
