@@ -555,7 +555,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             foreach ($autoEncryption['encryptedFieldsMap'] as &$value) {
                 // Wrap the encrypted fields in a 'fields' key as required the encryptedFieldsMap structure.
                 // Some values can be BSON binary, date or numbers, the extended JSON format is used to convert them BSON document.
-                $value = (new Definition(BsonDocument::class))->setFactory([BsonDocument::class, 'fromJSON'])->setArguments([json_encode(['fields' => $value])]);
+                $value = (new Definition(BsonDocument::class))->setFactory([BsonDocument::class, 'fromJSON'])->setArguments([json_encode($value)]);
             }
         }
 
