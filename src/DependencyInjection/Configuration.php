@@ -440,7 +440,7 @@ class Configuration implements ConfigurationInterface
                                             ->arrayNode('mongocryptdSpawnArgs')
                                                 ->beforeNormalization()
                                                     ->ifString()
-                                                    ->then(static fn ($v) => explode(' ', $v))
+                                                    ->then(static fn ($v) => [$v])
                                                 ->end()
                                                 ->prototype('scalar')->cannotBeEmpty()->end()
                                             ->end()
