@@ -11,7 +11,6 @@ use MongoDB\Driver\Server;
 
 use function array_flip;
 use function array_intersect_key;
-use function in_array;
 use function iterator_count;
 use function version_compare;
 
@@ -23,12 +22,6 @@ class ConnectionDiagnostic
         'keyVaultNamespace',
         'kmsProviders',
         'tlsOptions',
-    ];
-
-    private const SUPPORTED_SERVER_TYPES = [
-        Server::TYPE_MONGOS,
-        Server::TYPE_RS_PRIMARY,
-        Server::TYPE_RS_SECONDARY,
     ];
 
     public function __construct(
@@ -71,9 +64,9 @@ class ConnectionDiagnostic
 
         return [
             'topologyName' => $this->getTopologyType($server),
-            'topologySupported' => in_array($server->getType(), self::SUPPORTED_SERVER_TYPES),
+            'topologySupported' => $server->getType() !== Server::TYPE_STANDALONE,
             'version' => $version,
-            'versionSupported' => $version ? version_compare($version, '8.0.0', '>=') : false,
+            'versionSupported' => $version ? version_compare($version, '7.0.0', '>=') : false,
         ];
     }
 
