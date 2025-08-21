@@ -400,6 +400,9 @@ class Configuration implements ConfigurationInterface
                                         ->useAttributeAsKey('name', false)
                                         ->beforeNormalization()
                                             ->always(static function ($v) {
+                                                // Create a PHP array representation of the Extended BSON that is later
+                                                // converted to JSON string to create a BSON document from this JSON.
+                                                // This lets the DI dumper transform the parameters in the string and dump it.
                                                 if (is_string($v)) {
                                                     return json_decode($v, true, 512, JSON_THROW_ON_ERROR);
                                                 }
