@@ -12,7 +12,6 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 use function count;
-use function explode;
 use function in_array;
 use function is_array;
 use function is_string;

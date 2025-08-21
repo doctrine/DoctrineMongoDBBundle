@@ -192,13 +192,13 @@
 
   <xsd:complexType name="extra-options">
     <xsd:sequence>
-      <xsd:element name="mongocryptdURI" type="xsd:string" minOccurs="0" />
-      <xsd:element name="mongocryptdBypassSpawn" type="xsd:boolean" minOccurs="0" />
-      <xsd:element name="mongocryptdSpawnPath" type="xsd:string" minOccurs="0" />
       <xsd:element name="mongocryptdSpawnArgs" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
-      <xsd:element name="cryptSharedLibPath" type="xsd:string" minOccurs="0" />
-      <xsd:element name="cryptSharedLibRequired" type="xsd:boolean" minOccurs="0" />
     </xsd:sequence>
+    <xsd:attribute name="mongocryptdURI" type="xsd:string" />
+    <xsd:attribute name="mongocryptdBypassSpawn" type="xsd:boolean" />
+    <xsd:attribute name="mongocryptdSpawnPath" type="xsd:string" />
+    <xsd:attribute name="cryptSharedLibPath" type="xsd:string" />
+    <xsd:attribute name="cryptSharedLibRequired" type="xsd:boolean" />
   </xsd:complexType>
 
   <xsd:complexType name="document-manager">
