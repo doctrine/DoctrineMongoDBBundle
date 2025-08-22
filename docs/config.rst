@@ -852,7 +852,6 @@ Full Default Configuration
 
             $config->connection('id')
                 ->server('mongodb://localhost')
-                ->driverOptions(['context' => null]), // stream context to use for connection
                 ->autoEncryption([ // Options for client-side field-level encryption
                     'bypassAutoEncryption' => false, // Disables auto-encryption
                     'keyVaultClient' => null,  // Service ID of a MongoDB\Driver\Manager for the key vault
@@ -872,11 +871,7 @@ Full Default Configuration
                         // 'tlsCAFile' => null,  // Path to CA file, e.g., /path/to/key-vault-ca.pem
                         // 'tlsCertificateKeyFile' => null,  // Path to client cert/key file, e.g., /path/to/key-vault-client.pem
                         // 'tlsCertificateKeyFilePassword' => null,  // Password for client cert/key file
-                        // 'tlsAllowInvalidCertificates' => false, // Bypass server certificate validation (use with caution)
-                        // 'tlsAllowInvalidHostnames' => false, // Bypass server hostname validation (use with caution)
-                        // 'tlsDisableCertificateRevocation' => false, // Disable CRL checks
                         // 'tlsDisableOCSPEndpointCheck' => false, // Disable OCSP checks
-                        // 'tlsInsecure' => false, // Allow invalid/no server cert (use with extreme caution)
                     ],
                 ])
                 ->options([

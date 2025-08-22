@@ -402,8 +402,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      */
     protected function loadConnections(array $connections, ContainerBuilder $container, array $config): void
     {
-        $cons        = [];
-        $diagnostics = [];
+        $cons = [];
         foreach ($connections as $name => $connection) {
             // Define an event manager for this connection
             $eventManagerId = sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $name);

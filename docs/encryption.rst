@@ -86,7 +86,7 @@ in the connection configuration, which allows the client to use local rules
 instead of downloading the remote schema from the server, that could potentially
 be tampered with if an attacker compromises the server.
 
-The Encrypted Fields Maps is a list of all encrypted fields associated with all
+The Encrypted Fields Map is a list of all encrypted fields associated with all
 the collection namespaces that has encryption enabled. To configure it, you
 can run a command that extract the encrypted fields from the server and generate
 the ``encryptedFieldsMap`` configuration.
@@ -163,6 +163,8 @@ For more details, see the official MongoDB documentation:
                                 'fields' => [
                                     [
                                         'path' => 'sensitive_field',
+                                        // Extended JSON representation of a BSON binary type
+                                        // The MongoDB\BSON\Binary class cannot be used here
                                         'keyId' => ['$binary' => ['base64' => '2CSosXLSTEKaYphcSnUuCw==', 'subType' => '04' ] ],
                                         'bsonType' => 'string',
                                     ],
@@ -245,12 +247,12 @@ TLS settings for the internal key vault client using the ``tlsOptions`` key:
 
             <doctrine:connection>
                 <doctrine:autoEncryption>
-                    <doctrine:tlsOptions>
-                        <doctrine:tlsCAFile>/path/to/key-vault-ca.pem</doctrine:tlsCAFile>
-                        <doctrine:tlsCertificateKeyFile>/path/to/key-vault-client.pem</doctrine:tlsCertificateKeyFile>
-                        <doctrine:tlsCertificateKeyFilePassword>keyvaultclientpassword</doctrine:tlsCertificateKeyFilePassword>
-                        <doctrine:tlsDisableOCSPEndpointCheck>false</doctrine:tlsAllowInvalidCertificates>
-                    </doctrine:tlsOptions>
+                    <doctrine:tlsOptions
+                        tlsCAFile="/path/to/key-vault-ca.pem"
+                        tlsCertificateKeyFile="/path/to/key-vault-client.pem"
+                        tlsCertificateKeyFilePassword="keyvaultclientpassword"
+                        tlsDisableOCSPEndpointCheck="false"
+                    />
                 </doctrine:autoEncryption>
             </doctrine:connection>
 
@@ -271,31 +273,6 @@ TLS settings for the internal key vault client using the ``tlsOptions`` key:
                         ],
                     ]);
             };
-
-Context Service for SSL
------------------------
-
-You can use a Symfony service to provide a stream context for SSL options:
-
-.. code-block:: yaml
-
-    services:
-        app.mongodb.context_service:
-            class: 'resource'
-            factory: 'stream_context_create'
-            arguments:
-                - { ssl: { verify_expiry: true } }
-
-Then reference this service in your connection configuration:
-
-.. code-block:: yaml
-
-    doctrine_mongodb:
-        connections:
-            default:
-                server: "mongodb://localhost:27017"
-                driver_options:
-                    context: "app.mongodb.context_service"
 
 Further Reading
 ---------------

@@ -45,7 +45,7 @@ final class EncryptionDumpFieldsMapCommand extends Command
             'format',
             'f',
             InputOption::VALUE_REQUIRED,
-            'The output format for the encrypted fields map (yaml, php)',
+            'The output format for the encrypted fields map (yaml, json, php)',
             'yaml',
             ['yaml', 'php', 'json']
         );
