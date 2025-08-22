@@ -22,10 +22,10 @@ use function sprintf;
 
 /** @internal */
 #[AsCommand(
-    name: 'doctrine:mongodb:connection:diagnostic',
+    name: 'doctrine:mongodb:encryption:diagnostic',
     description: 'Diagnose MongoDB configuration and server capabilities for each connection.',
 )]
-final class ConnectionDiagnosticCommand extends Command
+final class EncryptionDiagnosticCommand extends Command
 {
     /** @param ServiceProviderInterface<ConnectionDiagnostic> $diagnostics */
     public function __construct(

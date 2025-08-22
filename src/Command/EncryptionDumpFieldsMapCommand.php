@@ -28,10 +28,10 @@ use const JSON_UNESCAPED_UNICODE;
 
 /** @internal */
 #[AsCommand(
-    name: 'doctrine:mongodb:dump-encrypted-fields-map',
+    name: 'doctrine:mongodb:encryption:dump-fields-map',
     description: 'Dumps the encrypted fields map for all documents in the configured connections.',
 )]
-final class DumpEncryptedFieldsMapCommand extends Command
+final class EncryptionDumpFieldsMapCommand extends Command
 {
     /** @param ServiceCollectionInterface<DocumentManager> $documentManagers */
     public function __construct(private readonly ServiceCollectionInterface $documentManagers)

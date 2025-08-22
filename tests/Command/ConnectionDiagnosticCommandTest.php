@@ -15,7 +15,7 @@ final class ConnectionDiagnosticCommandTest extends KernelTestCase
         $kernel      = new CommandTestKernel('test', false);
         $application = new Application($kernel);
 
-        $command       = $application->find('doctrine:mongodb:connection:diagnostic');
+        $command       = $application->find('doctrine:mongodb:encryption:diagnostic');
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
 

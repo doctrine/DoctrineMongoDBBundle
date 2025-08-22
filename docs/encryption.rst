@@ -93,7 +93,7 @@ the ``encryptedFieldsMap`` configuration.
 
 .. code-block:: console
 
-    php bin/console doctrine:mongodb:dump-encrypted-fields-map --format yaml
+    php bin/console doctrine:mongodb:encryption:dump-fields-map --format yaml
 
 The output of the command will be a YAML configuration for the
 ``autoEncryption.encryptedFieldsMap`` option in the connection configuration.
