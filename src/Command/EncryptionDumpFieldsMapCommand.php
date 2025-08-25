@@ -76,9 +76,32 @@ final class EncryptionDumpFieldsMapCommand extends Command
                 continue;
             }
 
+            // The min/max query options must have the same type as the field.
+            // But the PHP driver always convert to "int" or "float" when the value fit in the range
             foreach ($encryptedFieldsMap as $ns => $encryptedFields) {
+                $fields = json_decode(PackedArray::fromPHP($encryptedFields['fields'])->toCanonicalExtendedJSON(), true);
+                foreach ($fields as &$field) {
+                    if ($field['bsonType'] === 'long') {
+                        if (isset($field['queries']['min']['$numberInt'])) {
+                            $field['queries']['min'] = ['$numberLong' => $field['queries']['min']['$numberInt']];
+                        }
+
+                        if (isset($field['queries']['max']['$numberInt'])) {
+                            $field['queries']['max'] = ['$numberLong' => $field['queries']['max']['$numberInt']];
+                        }
+                    } elseif ($field['bsonType'] === 'decimal') {
+                        if (isset($field['queries']['min']['$numberDouble'])) {
+                            $field['queries']['min'] = ['$numberDecimal' => $field['queries']['min']['$numberDouble']];
+                        }
+
+                        if (isset($field['queries']['max']['$numberDouble'])) {
+                            $field['queries']['max'] = ['$numberDecimal' => $field['queries']['max']['$numberDouble']];
+                        }
+                    }
+                }
+
                 // Keep only the "fields" key and ignore "escCollection" and "ecocCollection"
-                $encryptedFieldsMap[$ns] = ['fields' => json_decode(PackedArray::fromPHP($encryptedFields['fields'])->toRelaxedExtendedJSON(), true)];
+                $encryptedFieldsMap[$ns] = ['fields' => $fields];
             }
 
             $io->section(sprintf('Dumping encrypted fields map for document manager "%s"', $name));
