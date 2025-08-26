@@ -89,14 +89,6 @@ final class EncryptionDumpFieldsMapCommand extends Command
                         if (isset($field['queries']['max']['$numberInt'])) {
                             $field['queries']['max'] = ['$numberLong' => $field['queries']['max']['$numberInt']];
                         }
-                    } elseif ($field['bsonType'] === 'decimal') {
-                        if (isset($field['queries']['min']['$numberDouble'])) {
-                            $field['queries']['min'] = ['$numberDecimal' => $field['queries']['min']['$numberDouble']];
-                        }
-
-                        if (isset($field['queries']['max']['$numberDouble'])) {
-                            $field['queries']['max'] = ['$numberDecimal' => $field['queries']['max']['$numberDouble']];
-                        }
                     }
                 }
 
