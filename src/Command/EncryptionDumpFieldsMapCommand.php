@@ -98,7 +98,7 @@ final class EncryptionDumpFieldsMapCommand extends Command
                     return Command::FAILURE;
             }
 
-            $io->block($outputContent);
+            $output->writeln($outputContent, OutputInterface::VERBOSITY_QUIET);
         }
 
         return Command::SUCCESS;
