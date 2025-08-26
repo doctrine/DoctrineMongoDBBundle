@@ -55,7 +55,7 @@ Sample Configuration
 
         return static function (DoctrineMongodbConfig $config): void {
             $config->connection('default')
-                ->server(env('MONGODB_URL')->default('mongodb://localhost:27017')->resolve())
+                ->server(env('MONGODB_URI')->default('mongodb://localhost:27017')->resolve())
                 ->options([]);
 
             $config->defaultDatabase('hello_' . param('kernel.environment'));
@@ -78,7 +78,7 @@ Sample Configuration
     .. code-block:: yaml
 
         # .env
-        MONGODB_URL=mongodb://localhost:27017
+        MONGODB_URI=mongodb://localhost:27017
 
     .. code-block:: yaml
 
@@ -86,7 +86,7 @@ Sample Configuration
         doctrine_mongodb:
             connections:
                 default:
-                    server: '%env(resolve:MONGODB_URL)%'
+                    server: '%env(resolve:MONGODB_URI)%'
 
 If you wish to use memcached to cache your metadata, you need to configure the
 ``Memcached`` instance; for example, you can do the following:
