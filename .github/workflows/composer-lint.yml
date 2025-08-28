@@ -4,11 +4,13 @@ on:
   pull_request:
     branches:
       - "*.x"
+      - "feature/*"
     paths:
       - "composer.json"
   push:
     branches:
       - "*.x"
+      - "feature/*"
     paths:
       - "composer.json"
 

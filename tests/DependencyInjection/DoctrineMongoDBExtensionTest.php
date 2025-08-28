@@ -8,11 +8,16 @@ use Closure;
 use Composer\InstalledVersions;
 use Composer\Semver\VersionParser;
 use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\DocumentListenerBundle\EventListener\TestAttributeListener;
+use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Mapping\Annotations;
+use InvalidArgumentException;
+use MongoDB\Client;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -23,6 +28,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Messenger\MessageBusInterface;
 
+use function array_diff_key;
 use function array_merge;
 use function class_exists;
 use function interface_exists;
@@ -51,6 +57,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         return new ContainerBuilder(new ParameterBag([
             'kernel.root_dir'         => __DIR__,
             'kernel.project_dir'      => __DIR__,
+            'kernel.cache_dir'        => sys_get_temp_dir() . '/doctrine_mongodb_odm_bundle',
             'kernel.name'             => 'kernel',
             'kernel.environment'      => 'test',
             'kernel.debug'            => 'true',
@@ -478,5 +485,223 @@ class DoctrineMongoDBExtensionTest extends TestCase
             ],
             $configuration->getMethodCalls(),
         );
+    }
+
+    public function testAutoEncryptionWithKeyVaultClientService(): void
+    {
+        self::requireAutoEncryptionSupportInODM();
+
+        $container = $this->buildMinimalContainer();
+        $loader    = new DoctrineMongoDBExtension();
+
+        // Define a dummy service for the keyVaultClient
+        $dummyServiceId = 'my_key_vault_client_service';
+        $container->setDefinition($dummyServiceId, new Definition(Client::class));
+
+        $config = [
+            'connections' => [
+                'default' => [
+                    'autoEncryption' => [
+                        'keyVaultNamespace' => 'db.vault',
+                        'keyVaultClient' => $dummyServiceId,
+                        'kmsProvider' => ['type' => 'local', 'key' => 'base64_encoded_key'],
+                    ],
+                ],
+            ],
+            'document_managers' => ['default' => []],
+        ];
+
+        $loader->load([$config], $container);
+        (new ServiceRepositoryCompilerPass())->process($container);
+
+        $clientDef     = $container->getDefinition('doctrine_mongodb.odm.default_connection');
+        $driverOptions = $clientDef->getArgument(2);
+
+        self::assertArrayHasKey('autoEncryption', $driverOptions);
+        self::assertInstanceOf(Reference::class, $driverOptions['autoEncryption']['keyVaultClient']);
+        self::assertEquals($dummyServiceId, (string) $driverOptions['autoEncryption']['keyVaultClient']);
+        self::assertEquals('db.vault', $driverOptions['autoEncryption']['keyVaultNamespace']);
+        self::assertEquals(['local' => ['key' => 'base64_encoded_key']], $driverOptions['autoEncryption']['kmsProviders']);
+
+        // Auto encryption configuration should be set in the ODM configuration
+        $odmConfiguration = $container->get('doctrine_mongodb.odm.default_configuration');
+        self::assertInstanceOf(Configuration::class, $odmConfiguration);
+        self::assertSame('local', $odmConfiguration->getDefaultKmsProvider());
+        self::assertNull($odmConfiguration->getDefaultMasterKey());
+        self::assertArrayHasKey('autoEncryption', $odmConfiguration->getDriverOptions());
+        self::assertInstanceOf(Client::class, $odmConfiguration->getDriverOptions()['autoEncryption']['keyVaultClient']);
+
+        // Ensure the driver option set in the client matches the ODM configuration
+        // except for the keyVaultClient, which is a service reference
+        self::assertEquals(
+            array_diff_key($driverOptions['autoEncryption'], ['keyVaultClient' => false]),
+            array_diff_key($odmConfiguration->getDriverOptions()['autoEncryption'], ['keyVaultClient' => false]),
+        );
+    }
+
+    public function testAutoEncryptionWithComplexKmsAndSchemaMap(): void
+    {
+        self::requireAutoEncryptionSupportInODM();
+
+        $container = $this->buildMinimalContainer();
+        $loader    = new DoctrineMongoDBExtension();
+
+        $schemaMap = [
+            'db.coll.users' => [
+                'bsonType' => 'object',
+                'encryptMetadata' => ['keyId' => '/dataKeyId'],
+                'properties' => ['ssn' => ['encrypt' => ['bsonType' => 'string', 'algorithm' => 'AEAD_AES_256_CBC_HMAC_SHA_512-Deterministic']]],
+            ],
+        ];
+        $masterKey = [
+            'region' => 'eu-west-3',
+            'key' => 'arn:aws:kms:eu-west-3:123456789012:key/abcd1234-a123-456a-a12b-a123b4cd56ef',
+        ];
+        $config    = [
+            'connections' => [
+                'default' => [
+                    'autoEncryption' => [
+                        'keyVaultNamespace' => 'db.vault',
+                        'kmsProvider' => ['type' => 'aws', 'accessKeyId' => 'test', 'secretAccessKey' => 'secret'],
+                        'schemaMap' => $schemaMap,
+                        'masterKey' => $masterKey,
+                    ],
+                ],
+            ],
+            'document_managers' => ['default' => []],
+        ];
+
+        $loader->load([$config], $container);
+        (new ServiceRepositoryCompilerPass())->process($container);
+
+        $clientDef     = $container->getDefinition('doctrine_mongodb.odm.default_connection');
+        $driverOptions = $clientDef->getArgument(2);
+
+        self::assertArrayHasKey('autoEncryption', $driverOptions);
+        self::assertEquals(['aws' => ['accessKeyId' => 'test', 'secretAccessKey' => 'secret']], $driverOptions['autoEncryption']['kmsProviders']);
+        self::assertEquals($schemaMap, $driverOptions['autoEncryption']['schemaMap']);
+        self::assertEquals('db.vault', $driverOptions['autoEncryption']['keyVaultNamespace']);
+
+        // Auto encryption configuration should be set in the ODM configuration
+        $odmConfiguration = $container->get('doctrine_mongodb.odm.default_configuration');
+        self::assertInstanceOf(Configuration::class, $odmConfiguration);
+        self::assertSame('aws', $odmConfiguration->getDefaultKmsProvider());
+        self::assertSame($masterKey, $odmConfiguration->getDefaultMasterKey());
+        self::assertArrayHasKey('autoEncryption', $odmConfiguration->getDriverOptions());
+
+        // Ensure the driver option set in the client matches the ODM configuration
+        self::assertEquals($driverOptions['autoEncryption'], $odmConfiguration->getDriverOptions()['autoEncryption']);
+    }
+
+    public function testAutoEncryptionWithExtraOptions(): void
+    {
+        self::requireAutoEncryptionSupportInODM();
+
+        $container = $this->buildMinimalContainer();
+        $loader    = new DoctrineMongoDBExtension();
+
+        $config = [
+            'connections' => [
+                'default' => [
+                    'autoEncryption' => [
+                        'keyVaultNamespace' => 'db.vault',
+                        'kmsProvider' => ['type' => 'local', 'key' => 'base64_encoded_key'],
+                        'extraOptions' => [
+                            'cryptSharedLibPath' => '/another/path.so',
+                            'cryptSharedLibRequired' => false,
+                            'mongocryptdSpawnPath' => '/custom/mongocryptd',
+                        ],
+                    ],
+                ],
+            ],
+            'document_managers' => ['default' => []],
+        ];
+
+        $loader->load([$config], $container);
+        (new ServiceRepositoryCompilerPass())->process($container);
+
+        $clientDef     = $container->getDefinition('doctrine_mongodb.odm.default_connection');
+        $driverOptions = $clientDef->getArgument(2);
+
+        self::assertArrayHasKey('autoEncryption', $driverOptions);
+        self::assertEquals('/another/path.so', $driverOptions['autoEncryption']['extraOptions']['cryptSharedLibPath']);
+        self::assertFalse($driverOptions['autoEncryption']['extraOptions']['cryptSharedLibRequired']);
+        self::assertEquals('/custom/mongocryptd', $driverOptions['autoEncryption']['extraOptions']['mongocryptdSpawnPath']);
+
+        self::assertArrayHasKey('typeMap', $driverOptions); // Default option
+        self::assertArrayHasKey('driver', $driverOptions); // Added by normalizeDriverOptions
+        self::assertEquals('symfony-mongodb', $driverOptions['driver']['name']);
+        self::assertArrayHasKey('version', $driverOptions['driver']);
+
+        // Auto encryption configuration should be set in the ODM configuration
+        $odmConfiguration = $container->get('doctrine_mongodb.odm.default_configuration');
+        self::assertInstanceOf(Configuration::class, $odmConfiguration);
+        self::assertSame('local', $odmConfiguration->getDefaultKmsProvider());
+        self::assertNull($odmConfiguration->getDefaultMasterKey());
+        self::assertArrayHasKey('autoEncryption', $odmConfiguration->getDriverOptions());
+
+        // Ensure the driver option set in the client matches the ODM configuration
+        self::assertEquals($driverOptions['autoEncryption'], $odmConfiguration->getDriverOptions()['autoEncryption']);
+    }
+
+    public function testAutoEncryptionWithEmptyKmsProvider(): void
+    {
+        self::requireAutoEncryptionSupportInODM();
+
+        $container = $this->buildMinimalContainer();
+        $loader    = new DoctrineMongoDBExtension();
+
+        $config = [
+            'connections' => [
+                'default' => [
+                    'autoEncryption' => [
+                        'keyVaultNamespace' => 'db.vault',
+                        'kmsProvider' => ['type' => 'aws'],
+                    ],
+                ],
+            ],
+            'document_managers' => ['default' => []],
+        ];
+
+        $loader->load([$config], $container);
+        (new ServiceRepositoryCompilerPass())->process($container);
+
+        $clientDef     = $container->getDefinition('doctrine_mongodb.odm.default_connection');
+        $driverOptions = $clientDef->getArgument(2);
+
+        self::assertArrayHasKey('autoEncryption', $driverOptions);
+        self::assertEquals(['aws' => new Definition(stdClass::class)], $driverOptions['autoEncryption']['kmsProviders']);
+    }
+
+    public function testAutoEncryptionMinimumODMVersion(): void
+    {
+        if (InstalledVersions::satisfies(new VersionParser(), 'doctrine/mongodb-odm', '>=2.12@dev')) {
+            self::markTestSkipped('Installed version of doctrine/mongodb-odm does support auto encryption');
+        }
+
+        $container = $this->buildMinimalContainer();
+        $loader    = new DoctrineMongoDBExtension();
+
+        $config = [
+            'connections' => [
+                'default' => [
+                    'autoEncryption' => [
+                        'kmsProvider' => ['type' => 'aws'],
+                    ],
+                ],
+            ],
+            'document_managers' => ['default' => []],
+        ];
+
+        self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage('The "autoEncryption" option requires doctrine/mongodb-odm version 2.12 or higher');
+        $loader->load([$config], $container);
+    }
+
+    private static function requireAutoEncryptionSupportInODM(): void
+    {
+        if (! InstalledVersions::satisfies(new VersionParser(), 'doctrine/mongodb-odm', '>=2.12@dev')) {
+            self::markTestSkipped('Installed version of doctrine/mongodb-odm does not support auto encryption');
+        }
     }
 }

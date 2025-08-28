@@ -13,6 +13,7 @@ use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Repository\CustomRepository;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
@@ -23,6 +24,7 @@ use Symfony\Component\Config\Util\XmlUtils;
 use Symfony\Component\Yaml\Yaml;
 
 use function array_key_exists;
+use function array_merge;
 use function file_get_contents;
 use function method_exists;
 
@@ -127,6 +129,145 @@ class ConfigurationTest extends TestCase
                         'wTimeoutMS'                           => 1000,
                     ],
                     'driver_options' => ['context' => 'conn1_context_service'],
+                    'autoEncryption' => [
+                        'kmsProvider' => [
+                            'type' => 'aws',
+                            'accessKeyId' => 'MONGODB_AWS_ACCESS_KEY_ID',
+                            'secretAccessKey' => 'MONGODB_AWS_SECRET_ACCESS_KEY',
+                            'sessionToken' => 'MONGODB_AWS_SESSION_TOKEN',
+                        ],
+                        'masterKey' => ['key' => 'MONGODB_AWS_MASTER_KEY'],
+                        'keyVaultClient' => 'my_key_vault_client_service',
+                        'keyVaultNamespace' => 'encryption.__keyVault',
+                        'tlsOptions' => [
+                            'tlsCAFile' => '%kernel.project_dir%/config/certificates/mongodb-ca.pem',
+                            'tlsCertificateKeyFile' => '%kernel.project_dir%/config/certificates/mongodb-client.pem',
+                            'tlsCertificateKeyFilePassword' => 'MONGODB_TLS_CERTIFICATE_KEY_FILE_PASSWORD',
+                            'tlsDisableOCSPEndpointCheck' => false,
+                        ],
+                        'bypassAutoEncryption' => true,
+                        'bypassQueryAnalysis' => true,
+                        'encryptedFieldsMap' => [
+                            'encrypted.RangeTypes' => [
+                                'fields' => [
+                                    [
+                                        'keyId' => ['$binary' => ['base64' => 'lhZHItpvRkqXevh4Wtqg/g==', 'subType' => '04']],
+                                        'path' => 'intField',
+                                        'bsonType' => 'int',
+                                        'queries' => ['queryType' => 'range', 'contention' => 8, 'min' => 5, 'max' => 10],
+                                    ],
+                                    [
+                                        'keyId' => ['$binary' => ['base64' => 'qd9PEKIPTE2J30ev29lMpQ==', 'subType' => '04']],
+                                        'path' => 'floatField',
+                                        'bsonType' => 'double',
+                                        'queries' => ['queryType' => 'range', 'contention' => 8, 'min' => 5.5, 'max' => 10.5, 'precision' => 1],
+                                    ],
+                                    [
+                                        'keyId' => ['$binary' => ['base64' => 'zVLg8CF4RSSu4xn7x7dOyQ==', 'subType' => '04']],
+                                        'path' => 'decimalField',
+                                        'bsonType' => 'decimal',
+                                        'queries' => [
+                                            'queryType' => 'range',
+                                            'contention' => 8,
+                                            'min' => ['$numberDecimal' => '0.1'],
+                                            'max' => ['$numberDecimal' => '0.2'],
+                                            'precision' => 2,
+                                        ],
+                                    ],
+                                    [
+                                        'keyId' => ['$binary' => ['base64' => 'ySdd8lZ2QBqnwKPJTp/yLA==', 'subType' => '04']],
+                                        'path' => 'immutableDateField',
+                                        'bsonType' => 'date',
+                                        'queries' => [
+                                            'queryType' => 'range',
+                                            'contention' => 8,
+                                            'min' => ['$date' => '2000-01-01T00:00:00Z'],
+                                            'max' => ['$date' => '2100-01-01T00:00:00Z'],
+                                        ],
+                                    ],
+                                    [
+                                        'keyId' => ['$binary' => ['base64' => 'NWKI+DyES/OlNkUbJbWJ9w==', 'subType' => '04']],
+                                        'path' => 'dateField',
+                                        'bsonType' => 'date',
+                                    ],
+                                    [
+                                        'keyId' => ['$binary' => ['base64' => 'wiiv+0K/QAquyEq3HDxRKw==', 'subType' => '04']],
+                                        'path' => 'binField',
+                                        'bsonType' => 'binData',
+                                    ],
+                                    [
+                                        'keyId' => ['$binary' => ['base64' => '2CSosXLSTEKaYphcSnUuCw==', 'subType' => '04']],
+                                        'path' => 'timestampField',
+                                        'bsonType' => 'timestamp',
+                                    ],
+                                    [
+                                        'keyId' => ['$binary' => ['base64' => 'h3H6HdG3T5CK+Z2yQ4Ho+Q==', 'subType' => '04']],
+                                        'path' => 'hashField',
+                                        'bsonType' => 'object',
+                                    ],
+                                    [
+                                        'keyId' => ['$binary' => ['base64' => 'X78UZZ/HTX2wLw4K3uG42w==', 'subType' => '04']],
+                                        'path' => 'collectionField',
+                                        'bsonType' => 'objectId',
+                                    ],
+                                    [
+                                        'keyId' => ['$binary' => ['base64' => 'LugQL/ZXTJOl856Yacmkwg==', 'subType' => '04']],
+                                        'path' => 'boolField',
+                                        'bsonType' => 'bool',
+                                    ],
+                                ],
+                            ],
+                            'encrypted.patients' => [
+                                'fields' => [
+                                    [
+                                        'keyId' => ['$binary' => ['base64' => 'GH25/XvYSaCgTUQLAo1hQw==', 'subType' => '04']],
+                                        'path' => 'pathologies',
+                                        'bsonType' => 'array',
+                                    ],
+                                    [
+                                        'keyId' => ['$binary' => ['base64' => 'krVWyFlNTUOaGFMfk+s7UA==', 'subType' => '04']],
+                                        'path' => 'patientRecord.billing',
+                                        'bsonType' => 'object',
+                                    ],
+                                    [
+                                        'keyId' => ['$binary' => ['base64' => 'X1ZaSI1GSAKnZ+sPGcmYBA==', 'subType' => '04']],
+                                        'path' => 'patientRecord.billingAmount',
+                                        'bsonType' => 'int',
+                                        'queries' => [
+                                            'queryType' => 'range',
+                                            'contention' => 8,
+                                            'min' => 100,
+                                            'max' => 2000,
+                                            'sparsity' => 1,
+                                            'trimFactor' => 4,
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            'encrypted.client' => [
+                                'fields' => [
+                                    [
+                                        'keyId' => ['$binary' => ['base64' => 'I0Aw18vnRGWzVS1t3uejpQ==', 'subType' => '04']],
+                                        'path' => 'name',
+                                        'bsonType' => 'string',
+                                    ],
+                                    [
+                                        'keyId' => ['$binary' => ['base64' => 'XSPRK3vaTLmMZr9IEj/qwQ==', 'subType' => '04']],
+                                        'path' => 'clientCards',
+                                        'bsonType' => 'array',
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'extraOptions' => [
+                            'mongocryptdURI' => 'mongodb://localhost:27020',
+                            'mongocryptdBypassSpawn' => true,
+                            'mongocryptdSpawnPath' => '%kernel.project_dir%/bin/mongocryptd',
+                            'mongocryptdSpawnArgs' => ['--pidfilepath=%kernel.project_dir%/var/mongocryptd.pid', '--idleShutdownTimeoutSecs=60'],
+                            'cryptSharedLibPath' => '%kernel.project_dir%/bin/mongo_crypt_v1.dylib',
+                            'cryptSharedLibRequired' => true,
+                        ],
+                    ],
                 ],
                 'conn2' => ['server' => 'mongodb://otherhost'],
             ],
@@ -228,8 +369,8 @@ class ConfigurationTest extends TestCase
         $xml = XmlUtils::convertDomElementToArray($xml->getElementsByTagName('config')->item(0));
 
         return [
-            [$yaml],
-            [$xml],
+            'yaml' => [$yaml],
+            'xml' => [$xml],
         ];
     }
 
@@ -355,7 +496,7 @@ class ConfigurationTest extends TestCase
     }
 
     /**
-     * @param array $configs  A configuration array to process
+     * @param array $config   A configuration array to process
      * @param array $expected Array of key/value options expected in the processed configuration
      */
     #[DataProvider('provideNormalizeOptions')]
@@ -370,13 +511,11 @@ class ConfigurationTest extends TestCase
         }
     }
 
-    /** @return array<mixed[]> */
-    public static function provideNormalizeOptions(): array
+    /** @return Generator<array{0: array<string, mixed>, 1: array<string, mixed>}> */
+    public static function provideNormalizeOptions(): Generator
     {
-        $cases = [];
-
         // connection versus connections (id is the identifier)
-        $cases[] = [
+        yield [
             [
                 'connection' => [
                     ['server' => 'mongodb://abc', 'id' => 'foo'],
@@ -392,7 +531,7 @@ class ConfigurationTest extends TestCase
         ];
 
         // document_manager versus document_managers (id is the identifier)
-        $cases[] = [
+        yield [
             [
                 'document_manager' => [
                     ['connection' => 'conn1', 'id' => 'foo'],
@@ -408,7 +547,7 @@ class ConfigurationTest extends TestCase
         ];
 
         // mapping configuration that's beneath a specific document manager
-        $cases[] = [
+        yield [
             [
                 'document_manager' => [
                     [
@@ -441,7 +580,112 @@ class ConfigurationTest extends TestCase
             ],
         ];
 
-        return $cases;
+        // Encrypted Field Map can be a JSON string in a <![CDATA[...]]>
+        yield [
+            [
+                'connection' => [
+                    [
+                        'server' => 'mongodb://abc',
+                        'id' => 'foo',
+                        'autoEncryption' => [
+                            'kmsProvider' => ['type' => 'local', 'key' => '1234567890123456789012345678901234567890123456789012345678901234'],
+                            'encryptedFieldsMap' => <<<'JSON'
+                            {
+                                "encrypted.patients": {
+                                    "fields": [
+                                        {
+                                            "keyId": { "$binary": { "base64": "GH25/XvYSaCgTUQLAo1hQw==", "subType": "04" } },
+                                            "path": "pathologies",
+                                            "bsonType": "array"
+                                        },
+                                        {
+                                            "keyId": { "$binary": { "base64": "krVWyFlNTUOaGFMfk+s7UA==", "subType": "04" } },
+                                            "path": "patientRecord.billing",
+                                            "bsonType": "object"
+                                        },
+                                        {
+                                            "keyId": { "$binary": { "base64": "X1ZaSI1GSAKnZ+sPGcmYBA==", "subType": "04" } },
+                                            "path": "patientRecord.billingAmount",
+                                            "bsonType": "int",
+                                            "queries": { "queryType": "range", "contention": 8, "min": 100, "max": 2000, "sparsity": 1, "trimFactor": 4 }
+                                        }
+                                    ]
+                                },
+                                "encrypted.client": {
+                                    "fields": [
+                                        {
+                                            "keyId": { "$binary": { "base64": "I0Aw18vnRGWzVS1t3uejpQ==", "subType": "04" } },
+                                            "path": "name",
+                                            "bsonType": "string"
+                                        },
+                                        {
+                                            "keyId": { "$binary": { "base64": "XSPRK3vaTLmMZr9IEj/qwQ==", "subType": "04" } },
+                                            "path": "clientCards",
+                                            "bsonType": "array"
+                                        }
+                                    ]
+                                }
+                            }
+                            JSON,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'connections' => [
+                    'foo' => [
+                        'server' => 'mongodb://abc',
+                        'autoEncryption' => [
+                            'kmsProvider' => ['type' => 'local', 'key' => '1234567890123456789012345678901234567890123456789012345678901234'],
+                            'encryptedFieldsMap' => [
+                                'encrypted.patients' => [
+                                    'fields' => [
+                                        [
+                                            'keyId' => ['$binary' => ['base64' => 'GH25/XvYSaCgTUQLAo1hQw==', 'subType' => '04']],
+                                            'path' => 'pathologies',
+                                            'bsonType' => 'array',
+                                        ],
+                                        [
+                                            'keyId' => ['$binary' => ['base64' => 'krVWyFlNTUOaGFMfk+s7UA==', 'subType' => '04']],
+                                            'path' => 'patientRecord.billing',
+                                            'bsonType' => 'object',
+                                        ],
+                                        [
+                                            'keyId' => ['$binary' => ['base64' => 'X1ZaSI1GSAKnZ+sPGcmYBA==', 'subType' => '04']],
+                                            'path' => 'patientRecord.billingAmount',
+                                            'bsonType' => 'int',
+                                            'queries' => [
+                                                'queryType' => 'range',
+                                                'contention' => 8,
+                                                'min' => 100,
+                                                'max' => 2000,
+                                                'sparsity' => 1,
+                                                'trimFactor' => 4,
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'encrypted.client' => [
+                                    'fields' => [
+                                        [
+                                            'keyId' => ['$binary' => ['base64' => 'I0Aw18vnRGWzVS1t3uejpQ==', 'subType' => '04']],
+                                            'path' => 'name',
+                                            'bsonType' => 'string',
+                                        ],
+                                        [
+                                            'keyId' => ['$binary' => ['base64' => 'XSPRK3vaTLmMZr9IEj/qwQ==', 'subType' => '04']],
+                                            'path' => 'clientCards',
+                                            'bsonType' => 'array',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+
+                    ],
+                ],
+            ],
+        ];
     }
 
     public function testPasswordAndUsernameShouldBeUnsetIfNull(): void
@@ -516,5 +760,64 @@ class ConfigurationTest extends TestCase
         $configuration   = new Configuration();
         $processedConfig = $processor->processConfiguration($configuration, [$config]);
         $this->assertFalse(array_key_exists('replicaSet', $processedConfig['connections']['conn1']['options']));
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     *
+     * @return array<string, mixed>
+     */
+    protected function processConfiguration(array $config): array
+    {
+        $processor     = new Processor();
+        $configuration = new Configuration();
+
+        return $processor->processConfiguration($configuration, [$this->getMinimalValidConfig($config)]);
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     *
+     * @return array<string, mixed>
+     */
+    protected function getMinimalValidConfig(array $config = []): array
+    {
+        $baseConfig = [
+            'connections' => [
+                'default' => [
+                    'driver_options' => [], // Placeholder for autoEncryption or other options
+                ],
+            ],
+            'document_managers' => [
+                'default' => [],
+            ],
+        ];
+
+        // Deep merge config into baseConfig
+        if (isset($config['connections']['default']['driver_options'])) {
+            $baseConfig['connections']['default']['driver_options'] = array_merge(
+                $baseConfig['connections']['default']['driver_options'],
+                $config['connections']['default']['driver_options'],
+            );
+            unset($config['connections']['default']['driver_options']);
+        }
+
+        if (isset($config['connections']['default'])) {
+            $baseConfig['connections']['default'] = array_merge(
+                $baseConfig['connections']['default'],
+                $config['connections']['default'],
+            );
+            unset($config['connections']['default']);
+        }
+
+        if (isset($config['connections'])) {
+            $baseConfig['connections'] = array_merge(
+                $baseConfig['connections'],
+                $config['connections'],
+            );
+            unset($config['connections']);
+        }
+
+        return array_merge($baseConfig, $config);
     }
 }

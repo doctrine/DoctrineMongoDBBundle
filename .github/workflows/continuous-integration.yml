@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - "*.x"
-      - "master"
+      - "feature/*"
   push:
 
 env:
@@ -41,7 +41,7 @@ jobs:
           - dependencies: "lowest"
             os: "ubuntu-24.04"
             php-version: "8.1"
-            driver-version: "1.16.0"
+            driver-version: "1.21.0"
             stability: "stable"
             symfony-version: "6.4.*"
           - dependencies: "highest"

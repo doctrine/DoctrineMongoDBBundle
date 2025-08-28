@@ -5,6 +5,8 @@ declare(strict_types=1);
 use Doctrine\Bundle\MongoDBBundle\Command\ClearMetadataCacheDoctrineODMCommand;
 use Doctrine\Bundle\MongoDBBundle\Command\CreateSchemaDoctrineODMCommand;
 use Doctrine\Bundle\MongoDBBundle\Command\DropSchemaDoctrineODMCommand;
+use Doctrine\Bundle\MongoDBBundle\Command\Encryption\DiagnosticCommand;
+use Doctrine\Bundle\MongoDBBundle\Command\Encryption\DumpFieldsMapCommand;
 use Doctrine\Bundle\MongoDBBundle\Command\GenerateHydratorsDoctrineODMCommand;
 use Doctrine\Bundle\MongoDBBundle\Command\GenerateProxiesDoctrineODMCommand;
 use Doctrine\Bundle\MongoDBBundle\Command\InfoDoctrineODMCommand;
@@ -15,11 +17,20 @@ use Doctrine\Bundle\MongoDBBundle\Command\UpdateSchemaDoctrineODMCommand;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_locator;
 
 return static function (ContainerConfigurator $containerConfigurator): void {
     $containerConfigurator->services()
         ->set('doctrine_mongodb.odm.command.clear_metadata_cache', ClearMetadataCacheDoctrineODMCommand::class)
             ->tag('console.command', ['command' => 'doctrine:mongodb:cache:clear-metadata'])
+
+        ->set('doctrine_mongodb.odm.command.encryption_diagnostic', DiagnosticCommand::class)
+            ->tag('console.command', ['command' => 'doctrine:mongodb:encryption:diagnostic'])
+            ->args([tagged_locator('doctrine_mongodb.connection_diagnostic', 'name')])
+
+        ->set('doctrine_mongodb.odm.command.encryption_dump_fields_map', DumpFieldsMapCommand::class)
+            ->tag('console.command', ['command' => 'doctrine:mongodb:encryption:dump-fields-map'])
+            ->args([tagged_locator('doctrine_mongodb.odm.document_manager', 'name')])
 
         ->set('doctrine_mongodb.odm.command.create_schema', CreateSchemaDoctrineODMCommand::class)
             ->tag('console.command', ['command' => 'doctrine:mongodb:schema:create'])

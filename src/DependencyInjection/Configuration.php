@@ -12,11 +12,14 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 use function count;
+use function in_array;
 use function is_array;
 use function is_string;
 use function json_decode;
 use function method_exists;
 use function preg_match;
+
+use const JSON_THROW_ON_ERROR;
 
 /**
  * FrameworkExtension configuration structure.
@@ -337,6 +340,147 @@ class Configuration implements ConfigurationInterface
                                         ->defaultNull()
                                         ->setDeprecated('doctrine/mongodb-odm-bundle', '5.4', 'The "context" driver option is deprecated and will be removed in 3.0. This option is ignored by the MongoDB driver version 2.')
                                     ->end()
+                                ->end()
+                            ->end()
+                            ->arrayNode('autoEncryption')
+                                ->children()
+                                    ->booleanNode('bypassAutoEncryption')->end()
+                                    ->scalarNode('keyVaultClient')->end()
+                                    ->scalarNode('keyVaultNamespace')
+                                        ->validate()
+                                            ->ifTrue(static fn ($v) => ! preg_match('/^.+\..+$/', $v))
+                                            ->thenInvalid('Invalid keyVaultNamespace format. It should be "database.collection".')
+                                        ->end()
+                                    ->end()
+                                    ->arrayNode('masterKey')
+                                        ->prototype('variable')->end()
+                                    ->end()
+                                    ->arrayNode('kmsProvider')
+                                        ->isRequired()
+                                        ->children()
+                                            ->scalarNode('type')
+                                                ->isRequired()
+                                                ->validate()
+                                                    ->ifTrue(static fn ($v) => ! in_array($v, ['aws', 'azure', 'gcp', 'kmip', 'local'], true))
+                                                    ->thenInvalid('Invalid KMS provider type "%s". Valid values are "aws", "azure", "gcp", "kmip", or "local".')
+                                                ->end()
+                                            ->end()
+                                            // AWS
+                                            ->scalarNode('accessKeyId')->end()
+                                            ->scalarNode('secretAccessKey')->end()
+                                            ->scalarNode('sessionToken')->end()
+                                            // Azure
+                                            ->scalarNode('tenantId')->end()
+                                            ->scalarNode('clientId')->end()
+                                            ->scalarNode('clientSecret')->end()
+                                            ->scalarNode('keyVaultEndpoint')->end()
+                                            ->scalarNode('identityPlatformEndpoint')->end()
+                                            ->scalarNode('keyName')->end()
+                                            ->scalarNode('keyVersion')->end()
+                                            // GCP
+                                            ->scalarNode('email')->end()
+                                            ->scalarNode('privateKey')->end()
+                                            ->scalarNode('endpoint')->end()
+                                            ->scalarNode('projectId')->end()
+                                            ->scalarNode('location')->end()
+                                            ->scalarNode('keyRing')->end()
+                                            // Attribute already present for another KMS type
+                                            //->scalarNode('keyName')->end()
+                                            //->scalarNode('keyVersion')->end()
+                                            // KMIP
+                                            //->scalarNode('endpoint')->end()
+                                            // Local
+                                            ->scalarNode('key')->end()
+                                        ->end()
+                                    ->end()
+                                    ->arrayNode('schemaMap')
+                                        ->prototype('variable')->end()
+                                    ->end()
+                                    ->arrayNode('encryptedFieldsMap')
+                                        ->useAttributeAsKey('name', false)
+                                        ->beforeNormalization()
+                                            ->always(static function ($v) {
+                                                // Create a PHP array representation of the Extended BSON that is later
+                                                // converted to JSON string to create a BSON document from this JSON.
+                                                // This lets the DI dumper transform the parameters in the string and dump it.
+                                                if (is_string($v)) {
+                                                    return json_decode($v, true, 512, JSON_THROW_ON_ERROR);
+                                                }
+
+                                                return $v;
+                                            })->end()
+                                        ->prototype('array')
+                                            ->children()
+                                                ->arrayNode('fields')
+                                                    ->prototype('array')
+                                                        ->children()
+                                                            ->scalarNode('path')->isRequired()->cannotBeEmpty()->end()
+                                                            ->scalarNode('bsonType')->isRequired()->cannotBeEmpty()->end()
+                                                            ->variableNode('keyId')->isRequired()->cannotBeEmpty()->end()
+                                                            ->arrayNode('queries')
+                                                                ->children()
+                                                                    ->scalarNode('queryType')->isRequired()->cannotBeEmpty()->end()
+                                                                    ->variableNode('min')->end()
+                                                                    ->variableNode('max')->end()
+                                                                    ->integerNode('sparsity')->end()
+                                                                    ->integerNode('precision')->end()
+                                                                    ->integerNode('trimFactor')->end()
+                                                                    ->integerNode('contention')->end()
+                                                                ->end()
+                                                            ->end()
+                                                        ->end()
+                                                    ->end()
+                                                ->end()
+                                            ->end()
+                                        ->end()
+                                    ->end()
+                                    ->arrayNode('extraOptions')
+                                        ->children()
+                                            ->scalarNode('mongocryptdURI')->end()
+                                            ->booleanNode('mongocryptdBypassSpawn')->end()
+                                            ->scalarNode('mongocryptdSpawnPath')->end()
+                                            ->arrayNode('mongocryptdSpawnArgs')
+                                                ->beforeNormalization()
+                                                    ->ifString()
+                                                    ->then(static fn ($v) => [$v])
+                                                ->end()
+                                                ->prototype('scalar')->cannotBeEmpty()->end()
+                                            ->end()
+                                            ->scalarNode('cryptSharedLibPath')->end()
+                                            ->booleanNode('cryptSharedLibRequired')->end()
+                                        ->end()
+                                    ->end()
+                                    ->booleanNode('bypassQueryAnalysis')->end()
+                                    ->arrayNode('tlsOptions')
+                                        ->children()
+                                            ->scalarNode('tlsCAFile')->end()
+                                            ->scalarNode('tlsCertificateKeyFile')->end()
+                                            ->scalarNode('tlsCertificateKeyFilePassword')->end()
+                                            ->booleanNode('tlsDisableOCSPEndpointCheck')->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
+                                ->validate()
+                                    ->always(static function ($v) {
+                                        // Remove empty arrays for schemaMap, encryptedFieldsMap, extraOptions, tlsOptions
+                                        foreach (
+                                            [
+                                                'masterKey',
+                                                'schemaMap',
+                                                'encryptedFieldsMap',
+                                                'extraOptions',
+                                                'tlsOptions',
+                                            ] as $key
+                                        ) {
+                                            if (! isset($v[$key]) || ! is_array($v[$key]) || count($v[$key]) !== 0) {
+                                                continue;
+                                            }
+
+                                            unset($v[$key]);
+                                        }
+
+                                        return $v;
+                                    })
                                 ->end()
                             ->end()
                         ->end()

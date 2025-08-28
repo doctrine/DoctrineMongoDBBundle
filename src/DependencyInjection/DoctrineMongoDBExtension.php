@@ -7,6 +7,7 @@ namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 use Composer\InstalledVersions;
 use Doctrine\Bundle\MongoDBBundle\Attribute\AsDocumentListener;
 use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
+use Doctrine\Bundle\MongoDBBundle\DataCollector\ConnectionDiagnostic;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\Fixture\ODMFixtureInterface;
@@ -26,6 +27,7 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use Doctrine\Persistence\Proxy;
 use InvalidArgumentException;
+use MongoDB\BSON\Document as BsonDocument;
 use MongoDB\Client;
 use ProxyManager\Proxy\LazyLoadingInterface;
 use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
@@ -46,6 +48,7 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
 
+use function array_diff_key;
 use function array_key_first;
 use function array_merge;
 use function class_exists;
@@ -53,6 +56,7 @@ use function class_implements;
 use function in_array;
 use function interface_exists;
 use function is_dir;
+use function json_encode;
 use function method_exists;
 use function sprintf;
 
@@ -118,7 +122,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             ->setArgument(5, $config['enable_lazy_ghost_objects'] ? Proxy::class : LazyLoadingInterface::class);
 
         // load the connections
-        $this->loadConnections($config['connections'], $container);
+        $this->loadConnections($config['connections'], $container, $config);
 
         $config['document_managers'] = $this->fixManagersAutoMappings($config['document_managers'], $container->getParameter('kernel.bundles'));
 
@@ -129,6 +133,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $config['default_database'],
             $container,
             $config['enable_lazy_ghost_objects'],
+            $config['connections'],
         );
 
         if ($config['resolve_target_documents']) {
@@ -219,12 +224,13 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     /**
      * Loads the document managers configuration.
      *
-     * @param array            $dmConfigs An array of document manager configs
-     * @param string|null      $defaultDM The default document manager name
-     * @param string           $defaultDB The default db name
-     * @param ContainerBuilder $container A ContainerBuilder instance
+     * @param array                $dmConfigs   An array of document manager configs
+     * @param string|null          $defaultDM   The default document manager name
+     * @param string               $defaultDB   The default db name
+     * @param ContainerBuilder     $container   A ContainerBuilder instance
+     * @param array<string, mixed> $connections Configuration of connections
      */
-    protected function loadDocumentManagers(array $dmConfigs, string|null $defaultDM, string $defaultDB, ContainerBuilder $container, bool $useLazyGhostObject = false): void
+    protected function loadDocumentManagers(array $dmConfigs, string|null $defaultDM, string $defaultDB, ContainerBuilder $container, bool $useLazyGhostObject = false, array $connections = []): void
     {
         $dms = [];
         foreach ($dmConfigs as $name => $documentManager) {
@@ -235,6 +241,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 $defaultDB,
                 $container,
                 $useLazyGhostObject,
+                $connections,
             );
             $dms[$name] = sprintf('doctrine_mongodb.odm.%s_document_manager', $name);
         }
@@ -245,12 +252,13 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     /**
      * Loads a document manager configuration.
      *
-     * @param array            $documentManager A document manager configuration array
-     * @param string|null      $defaultDM       The default document manager name
-     * @param string           $defaultDB       The default db name
-     * @param ContainerBuilder $container       A ContainerBuilder instance
+     * @param array                $documentManager A document manager configuration array
+     * @param string|null          $defaultDM       The default document manager name
+     * @param string               $defaultDB       The default db name
+     * @param ContainerBuilder     $container       A ContainerBuilder instance
+     * @param array<string, mixed> $connections     Configuration of connections
      */
-    protected function loadDocumentManager(array $documentManager, string|null $defaultDM, string $defaultDB, ContainerBuilder $container, bool $useLazyGhostObject = false): void
+    protected function loadDocumentManager(array $documentManager, string|null $defaultDM, string $defaultDB, ContainerBuilder $container, bool $useLazyGhostObject = false, array $connections = []): void
     {
         $connectionName  = $documentManager['connection'] ?? $documentManager['name'];
         $configurationId = sprintf('doctrine_mongodb.odm.%s_configuration', $documentManager['name']);
@@ -283,6 +291,20 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             'setPersistentCollectionNamespace' => '%doctrine_mongodb.odm.persistent_collection_namespace%',
             'setAutoGeneratePersistentCollectionClasses' => '%doctrine_mongodb.odm.auto_generate_persistent_collection_classes%',
         ];
+
+        if (isset($connections[$connectionName]['autoEncryption'])) {
+            if (! method_exists(ODMConfiguration::class, 'setAutoEncryption')) {
+                throw new InvalidArgumentException(sprintf('The "autoEncryption" option requires doctrine/mongodb-odm version 2.12 or higher, "%s" installed.', self::getODMVersion()));
+            }
+
+            $autoEncryption                 = $connections[$connectionName]['autoEncryption'];
+            $methods['setAutoEncryption']   = array_diff_key(
+                $this->normalizeAutoEncryption($autoEncryption, $defaultDB),
+                ['kmsProviders' => false],
+            );
+            $methods['setKmsProvider']      = $autoEncryption['kmsProvider'];
+            $methods['setDefaultMasterKey'] = $autoEncryption['masterKey'] ?? null;
+        }
 
         if ($useLazyGhostObject) {
             $methods['setUseLazyGhostObject'] = $useLazyGhostObject;
@@ -382,7 +404,7 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
      * @param array            $config    An array of connections configurations
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
-    protected function loadConnections(array $connections, ContainerBuilder $container): void
+    protected function loadConnections(array $connections, ContainerBuilder $container, array $config): void
     {
         $cons = [];
         foreach ($connections as $name => $connection) {
@@ -399,11 +421,12 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
                 new Definition(ODMConfiguration::class),
             );
 
-            $odmConnArgs = [
+            $driverOptions = $this->normalizeDriverOptions($connection, $config);
+            $odmConnArgs   = [
                 $connection['server'] ?? null,
                 /* phpcs:ignore Squiz.Arrays.ArrayDeclaration.ValueNoNewline */
                 $connection['options'] ?? [],
-                $this->normalizeDriverOptions($connection),
+                $driverOptions,
             ];
 
             $odmConnDef = new Definition(Client::class, $odmConnArgs);
@@ -411,6 +434,11 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $id = sprintf('doctrine_mongodb.odm.%s_connection', $name);
             $container->setDefinition($id, $odmConnDef);
             $cons[$name] = $id;
+
+            // Diagnostic service
+            $container->register(sprintf('doctrine_mongodb.odm.%s_connection_diagnostic', $name), ConnectionDiagnostic::class)
+                ->setArguments([new Reference($id), $driverOptions])
+                ->addTag('doctrine_mongodb.connection_diagnostic', ['name' => $name]);
         }
 
         $container->setParameter('doctrine_mongodb.odm.connections', $cons);
@@ -463,11 +491,12 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     /**
      * Normalizes the driver options array
      *
-     * @param array<string, mixed> $connection
+     * @param array<string, mixed> $connection Connection configuration
+     * @param array<string, mixed> $config     Full configuration
      *
      * @return array<string, mixed>
      */
-    private function normalizeDriverOptions(array $connection): array
+    private function normalizeDriverOptions(array $connection, array $config): array
     {
         $driverOptions            = $connection['driver_options'] ?? [];
         $driverOptions['typeMap'] = DocumentManager::CLIENT_TYPEMAP;
@@ -476,12 +505,64 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
             $driverOptions['context'] = new Reference($driverOptions['context']);
         }
 
+        if (isset($connection['autoEncryption'])) {
+            $driverOptions['autoEncryption'] = $this->normalizeAutoEncryption($connection['autoEncryption'], $config['default_database']);
+        }
+
         $driverOptions['driver'] = [
             'name' => 'symfony-mongodb',
             'version' => self::getODMVersion(),
         ];
 
         return $driverOptions;
+    }
+
+    /**
+     * Prepare the auto encryption configuration for the connection.
+     *
+     * @param array<string, mixed> $autoEncryption The AutoEncryption configuration of a connection
+     * @param string               $defaultDB      The default database name
+     *
+     * @return array<string, mixed>
+     */
+    private function normalizeAutoEncryption(array $autoEncryption, string $defaultDB): array
+    {
+        if (! isset($autoEncryption['kmsProvider']['type'])) {
+            throw new InvalidArgumentException('The "kmsProvider" option must contain a "type" key.');
+        }
+
+        $provider     = $autoEncryption['kmsProvider']['type'];
+        $providerOpts = array_diff_key($autoEncryption['kmsProvider'], ['type' => true]);
+        // To use "Automatic Credentials", the provider options must be an empty document.
+        // Fix the empty array to an empty stdClass object, as the driver expects it.
+        if ($providerOpts === []) {
+            $providerOpts = new Definition('stdClass');
+        }
+
+        $autoEncryption['kmsProviders'] = [$provider => $providerOpts];
+
+        if (isset($autoEncryption['tlsOptions'])) {
+            $autoEncryption['tlsOptions'] = [$provider => $autoEncryption['tlsOptions']];
+        }
+
+        unset($autoEncryption['kmsProvider']);
+        unset($autoEncryption['masterKey']);
+
+        if (isset($autoEncryption['keyVaultClient'])) {
+            $autoEncryption['keyVaultClient'] = new Reference($autoEncryption['keyVaultClient']);
+        }
+
+        $autoEncryption['keyVaultNamespace'] ??= $defaultDB . '.datakeys';
+
+        if (isset($autoEncryption['encryptedFieldsMap'])) {
+            foreach ($autoEncryption['encryptedFieldsMap'] as &$value) {
+                // Wrap the encrypted fields in a 'fields' key as required the encryptedFieldsMap structure.
+                // Some values can be BSON binary, date or numbers, the extended JSON format is used to convert them BSON document.
+                $value = (new Definition(BsonDocument::class))->setFactory([BsonDocument::class, 'fromJSON'])->setArguments([json_encode($value)]);
+            }
+        }
+
+        return $autoEncryption;
     }
 
     /**
