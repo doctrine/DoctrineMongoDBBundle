@@ -168,7 +168,26 @@
   </xsd:complexType>
 
   <xsd:complexType name="master-key">
-    <xsd:attribute name="key" type="xsd:string" use="required" />
+    <!-- AWS -->
+    <xsd:attribute name="region" type="xsd:string" />
+    <xsd:attribute name="key" type="xsd:string" />
+    <xsd:attribute name="endpoint" type="xsd:string" />
+    <!-- Azure -->
+    <xsd:attribute name="keyVaultEndpoint" type="xsd:string" />
+    <xsd:attribute name="keyName" type="xsd:string" />
+    <xsd:attribute name="keyVersion" type="xsd:string" />
+    <!-- GCP -->
+    <xsd:attribute name="projectId" type="xsd:string" />
+    <xsd:attribute name="location" type="xsd:string" />
+    <xsd:attribute name="keyRing" type="xsd:string" />
+    <!-- Attribute already present for another master key type -->
+    <!-- <xsd:attribute name="keyName" type="xsd:string" /> -->
+    <!-- <xsd:attribute name="keyVersion" type="xsd:string" /> -->
+    <!-- <xsd:attribute name="endpoint" type="xsd:string" /> -->
+    <!-- KMIP -->
+    <xsd:attribute name="keyId" type="xsd:string" />
+    <!-- <xsd:attribute name="endpoint" type="xsd:string" /> -->
+    <xsd:attribute name="delegated" type="xsd:boolean" />
   </xsd:complexType>
 
   <xsd:complexType name="tls-options">
