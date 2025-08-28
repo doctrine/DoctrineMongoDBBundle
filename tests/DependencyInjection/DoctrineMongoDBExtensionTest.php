@@ -13,6 +13,7 @@ use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\DocumentListenerBundle\EventListener\TestAttributeListener;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Mapping\Annotations;
+use InvalidArgumentException;
 use MongoDB\Client;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -488,6 +489,8 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
     public function testAutoEncryptionWithKeyVaultClientService(): void
     {
+        self::requireAutoEncryptionSupportInODM();
+
         $container = $this->buildMinimalContainer();
         $loader    = new DoctrineMongoDBExtension();
 
@@ -538,6 +541,8 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
     public function testAutoEncryptionWithComplexKmsAndSchemaMap(): void
     {
+        self::requireAutoEncryptionSupportInODM();
+
         $container = $this->buildMinimalContainer();
         $loader    = new DoctrineMongoDBExtension();
 
@@ -590,6 +595,8 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
     public function testAutoEncryptionWithExtraOptions(): void
     {
+        self::requireAutoEncryptionSupportInODM();
+
         $container = $this->buildMinimalContainer();
         $loader    = new DoctrineMongoDBExtension();
 
@@ -639,6 +646,8 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
     public function testAutoEncryptionWithEmptyKmsProvider(): void
     {
+        self::requireAutoEncryptionSupportInODM();
+
         $container = $this->buildMinimalContainer();
         $loader    = new DoctrineMongoDBExtension();
 
@@ -662,5 +671,37 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
         self::assertArrayHasKey('autoEncryption', $driverOptions);
         self::assertEquals(['aws' => new Definition(stdClass::class)], $driverOptions['autoEncryption']['kmsProviders']);
+    }
+
+    public function testAutoEncryptionMinimumODMVersion(): void
+    {
+        if (InstalledVersions::satisfies(new VersionParser(), 'doctrine/mongodb-odm', '>=2.12@dev')) {
+            self::markTestSkipped('Installed version of doctrine/mongodb-odm does support auto encryption');
+        }
+
+        $container = $this->buildMinimalContainer();
+        $loader    = new DoctrineMongoDBExtension();
+
+        $config = [
+            'connections' => [
+                'default' => [
+                    'autoEncryption' => [
+                        'kmsProvider' => ['type' => 'aws'],
+                    ],
+                ],
+            ],
+            'document_managers' => ['default' => []],
+        ];
+
+        self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage('The "autoEncryption" option requires doctrine/mongodb-odm version 2.12 or higher');
+        $loader->load([$config], $container);
+    }
+
+    private static function requireAutoEncryptionSupportInODM(): void
+    {
+        if (! InstalledVersions::satisfies(new VersionParser(), 'doctrine/mongodb-odm', '>=2.12@dev')) {
+            self::markTestSkipped('Installed version of doctrine/mongodb-odm does not support auto encryption');
+        }
     }
 }

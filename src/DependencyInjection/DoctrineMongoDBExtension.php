@@ -293,6 +293,10 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
         ];
 
         if (isset($connections[$connectionName]['autoEncryption'])) {
+            if (! method_exists(ODMConfiguration::class, 'setAutoEncryption')) {
+                throw new InvalidArgumentException(sprintf('The "autoEncryption" option requires doctrine/mongodb-odm version 2.12 or higher, "%s" installed.', self::getODMVersion()));
+            }
+
             $autoEncryption                 = $connections[$connectionName]['autoEncryption'];
             $methods['setAutoEncryption']   = array_diff_key(
                 $this->normalizeAutoEncryption($autoEncryption, $defaultDB),
