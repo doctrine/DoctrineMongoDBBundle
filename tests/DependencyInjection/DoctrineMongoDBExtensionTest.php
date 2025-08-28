@@ -501,7 +501,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                     'autoEncryption' => [
                         'keyVaultNamespace' => 'db.vault',
                         'keyVaultClient' => $dummyServiceId,
-                        'kmsProvider' => ['type' => 'local', 'key' => 'cGFzc3dvcmQ='],
+                        'kmsProvider' => ['type' => 'local', 'key' => 'base64_encoded_key'],
                     ],
                 ],
             ],
@@ -518,7 +518,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         self::assertInstanceOf(Reference::class, $driverOptions['autoEncryption']['keyVaultClient']);
         self::assertEquals($dummyServiceId, (string) $driverOptions['autoEncryption']['keyVaultClient']);
         self::assertEquals('db.vault', $driverOptions['autoEncryption']['keyVaultNamespace']);
-        self::assertEquals(['local' => ['key' => 'cGFzc3dvcmQ=']], $driverOptions['autoEncryption']['kmsProviders']);
+        self::assertEquals(['local' => ['key' => 'base64_encoded_key']], $driverOptions['autoEncryption']['kmsProviders']);
 
         // Auto encryption configuration should be set in the ODM configuration
         $odmConfiguration = $container->get('doctrine_mongodb.odm.default_configuration');
@@ -598,7 +598,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
                 'default' => [
                     'autoEncryption' => [
                         'keyVaultNamespace' => 'db.vault',
-                        'kmsProvider' => ['type' => 'local', 'key' => 'cGFzc3dvcmQ='],
+                        'kmsProvider' => ['type' => 'local', 'key' => 'base64_encoded_key'],
                         'extraOptions' => [
                             'cryptSharedLibPath' => '/another/path.so',
                             'cryptSharedLibRequired' => false,
