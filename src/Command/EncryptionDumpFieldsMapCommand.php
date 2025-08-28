@@ -21,6 +21,7 @@ use function json_encode;
 use function sprintf;
 use function var_export;
 
+use const JSON_BIGINT_AS_STRING;
 use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
@@ -79,7 +80,7 @@ final class EncryptionDumpFieldsMapCommand extends Command
             // The min/max query options must have the same type as the field.
             // But the PHP driver always convert to "int" or "float" when the value fit in the range
             foreach ($encryptedFieldsMap as $ns => $encryptedFields) {
-                $fields = json_decode(PackedArray::fromPHP($encryptedFields['fields'])->toCanonicalExtendedJSON(), true);
+                $fields = json_decode(PackedArray::fromPHP($encryptedFields['fields'])->toCanonicalExtendedJSON(), true, flags: JSON_BIGINT_AS_STRING | JSON_THROW_ON_ERROR);
                 foreach ($fields as &$field) {
                     if ($field['bsonType'] === 'long') {
                         if (isset($field['queries']['min']['$numberInt'])) {
@@ -88,6 +89,14 @@ final class EncryptionDumpFieldsMapCommand extends Command
 
                         if (isset($field['queries']['max']['$numberInt'])) {
                             $field['queries']['max'] = ['$numberLong' => $field['queries']['max']['$numberInt']];
+                        }
+                    } elseif ($field['bsonType'] === 'decimal') {
+                        if (isset($field['queries']['min']['$numberDouble'])) {
+                            $field['queries']['min'] = ['$numberDecimal' => $field['queries']['min']['$numberDouble']];
+                        }
+
+                        if (isset($field['queries']['max']['$numberDouble'])) {
+                            $field['queries']['max'] = ['$numberDecimal' => $field['queries']['max']['$numberDouble']];
                         }
                     }
                 }
