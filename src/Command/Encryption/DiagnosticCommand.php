@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Bundle\MongoDBBundle\Command;
+namespace Doctrine\Bundle\MongoDBBundle\Command\Encryption;
 
 use Doctrine\Bundle\MongoDBBundle\DataCollector\ConnectionDiagnostic;
 use Doctrine\Bundle\MongoDBBundle\DataCollector\EncryptionDiagnostic;
@@ -25,7 +25,7 @@ use function sprintf;
     name: 'doctrine:mongodb:encryption:diagnostic',
     description: 'Diagnose MongoDB configuration and server capabilities for each connection.',
 )]
-final class EncryptionDiagnosticCommand extends Command
+final class DiagnosticCommand extends Command
 {
     /** @param ServiceProviderInterface<ConnectionDiagnostic> $diagnostics */
     public function __construct(

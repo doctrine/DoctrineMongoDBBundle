@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Doctrine\Bundle\MongoDBBundle\Command\ClearMetadataCacheDoctrineODMCommand;
 use Doctrine\Bundle\MongoDBBundle\Command\CreateSchemaDoctrineODMCommand;
 use Doctrine\Bundle\MongoDBBundle\Command\DropSchemaDoctrineODMCommand;
-use Doctrine\Bundle\MongoDBBundle\Command\EncryptionDiagnosticCommand;
-use Doctrine\Bundle\MongoDBBundle\Command\EncryptionDumpFieldsMapCommand;
+use Doctrine\Bundle\MongoDBBundle\Command\Encryption\DiagnosticCommand;
+use Doctrine\Bundle\MongoDBBundle\Command\Encryption\DumpFieldsMapCommand;
 use Doctrine\Bundle\MongoDBBundle\Command\GenerateHydratorsDoctrineODMCommand;
 use Doctrine\Bundle\MongoDBBundle\Command\GenerateProxiesDoctrineODMCommand;
 use Doctrine\Bundle\MongoDBBundle\Command\InfoDoctrineODMCommand;
@@ -24,11 +24,11 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->set('doctrine_mongodb.odm.command.clear_metadata_cache', ClearMetadataCacheDoctrineODMCommand::class)
             ->tag('console.command', ['command' => 'doctrine:mongodb:cache:clear-metadata'])
 
-        ->set('doctrine_mongodb.odm.command.connection_diagnostic', EncryptionDiagnosticCommand::class)
+        ->set('doctrine_mongodb.odm.command.encryption_diagnostic', DiagnosticCommand::class)
             ->tag('console.command', ['command' => 'doctrine:mongodb:encryption:diagnostic'])
             ->args([tagged_locator('doctrine_mongodb.connection_diagnostic', 'name')])
 
-        ->set('doctrine_mongodb.odm.command.dump_encrypted_fields_map', EncryptionDumpFieldsMapCommand::class)
+        ->set('doctrine_mongodb.odm.command.encryption_dump_fields_map', DumpFieldsMapCommand::class)
             ->tag('console.command', ['command' => 'doctrine:mongodb:encryption:dump-fields-map'])
             ->args([tagged_locator('doctrine_mongodb.odm.document_manager', 'name')])
 

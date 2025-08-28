@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Bundle\MongoDBBundle\Tests\Command;
+namespace Doctrine\Bundle\MongoDBBundle\Tests\Command\Encryption;
 
+use Doctrine\Bundle\MongoDBBundle\Tests\Command\CommandTestKernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
-final class ConnectionDiagnosticCommandTest extends KernelTestCase
+final class DiagnosticCommandTest extends KernelTestCase
 {
     public function testExecute(): void
     {

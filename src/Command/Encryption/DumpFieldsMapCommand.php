@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Bundle\MongoDBBundle\Command;
+namespace Doctrine\Bundle\MongoDBBundle\Command\Encryption;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -32,7 +32,7 @@ use const JSON_UNESCAPED_UNICODE;
     name: 'doctrine:mongodb:encryption:dump-fields-map',
     description: 'Dumps the encrypted fields map for all documents in the configured connections.',
 )]
-final class EncryptionDumpFieldsMapCommand extends Command
+final class DumpFieldsMapCommand extends Command
 {
     /** @param ServiceCollectionInterface<DocumentManager> $documentManagers */
     public function __construct(private readonly ServiceCollectionInterface $documentManagers)
