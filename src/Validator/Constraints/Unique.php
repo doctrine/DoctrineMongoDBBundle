@@ -31,10 +31,7 @@ if ((new ReflectionProperty(UniqueEntity::class, 'service'))->hasType()) {
     #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
     class Unique extends UniqueEntity
     {
-        /**
-         * @phpstan-ignore missingType.property
-         * @var string $service
-         */
+        /** @var string $service */
         public $service = 'doctrine_odm.mongodb.unique';
     }
 }
