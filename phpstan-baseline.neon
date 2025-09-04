@@ -415,18 +415,6 @@ parameters:
 			path: src/Repository/ContainerRepositoryFactory.php
 
 		-
-			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\Validator\\Constraints\\Unique\:\:__construct\(\) has parameter \$identifierFieldNames with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Validator/Constraints/Unique.php
-
-		-
-			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\Validator\\Constraints\\Unique\:\:__construct\(\) has parameter \$options with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Validator/Constraints/Unique.php
-
-		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertFalse\(\) with false will always evaluate to false\.$#'
 			identifier: method.impossibleType
 			count: 1
