@@ -211,6 +211,12 @@ parameters:
 			path: src/DependencyInjection/Configuration.php
 
 		-
+			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\ODM\\\\MongoDB\\\\Configuration'' and ''setAutoEncryption'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/DependencyInjection/DoctrineMongoDBExtension.php
+
+		-
 			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\ODM\\\\MongoDB\\\\Configuration'' and ''setUseTransactional…'' will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
@@ -527,24 +533,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/DependencyInjection/ConfigurationTest.php
-
-		-
-			message: '#^Call to an undefined method Doctrine\\ODM\\MongoDB\\Configuration\:\:getDefaultKmsProvider\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/DependencyInjection/DoctrineMongoDBExtensionTest.php
-
-		-
-			message: '#^Call to an undefined method Doctrine\\ODM\\MongoDB\\Configuration\:\:getDefaultMasterKey\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/DependencyInjection/DoctrineMongoDBExtensionTest.php
-
-		-
-			message: '#^Call to an undefined method Doctrine\\ODM\\MongoDB\\Configuration\:\:getDriverOptions\(\)\.$#'
-			identifier: method.notFound
-			count: 7
-			path: tests/DependencyInjection/DoctrineMongoDBExtensionTest.php
 
 		-
 			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\Tests\\DependencyInjection\\DoctrineMongoDBExtensionTest\:\:assertDICDefinitionMethodCall\(\) has parameter \$params with no value type specified in iterable type array\.$#'
