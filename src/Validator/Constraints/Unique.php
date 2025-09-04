@@ -5,46 +5,33 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Validator\Constraints;
 
 use Attribute;
+use ReflectionProperty;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-/**
- * Constraint for the unique document validator
- *
- * @Annotation
- * @Target({"CLASS", "ANNOTATION"})
- */
-#[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-class Unique extends UniqueEntity
-{
+if ((new ReflectionProperty(UniqueEntity::class, 'service'))->hasType()) {
     /**
-     * @param string[]|string      $fields     The combination of fields that must contain unique values or a set of options
-     * @param bool|string[]|string $ignoreNull The combination of fields that ignore null values
+     * Constraint for the unique document validator
+     *
+     * @Annotation
+     * @Target({"CLASS", "ANNOTATION"})
      */
-    public function __construct(
-        array|string $fields,
-        ?string $message = null,
-        string $service = 'doctrine_odm.mongodb.unique',
-        ?string $em = null,
-        ?string $entityClass = null,
-        ?string $repositoryMethod = null,
-        ?string $errorPath = null,
-        bool|array|string|null $ignoreNull = null,
-        ?array $groups = null,
-        mixed $payload = null,
-        array $options = [],
-    ) {
-        parent::__construct(
-            $fields,
-            $message,
-            $service,
-            $em,
-            $entityClass,
-            $repositoryMethod,
-            $errorPath,
-            $ignoreNull,
-            $groups,
-            $payload,
-            $options,
-        );
+    #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
+    class Unique extends UniqueEntity
+    {
+        public string $service = 'doctrine_odm.mongodb.unique';
+    }
+} else {
+    // Compatibility for symfony/doctrine-bridge < 7.0
+    /**
+     * Constraint for the unique document validator
+     *
+     * @Annotation
+     * @Target({"CLASS", "ANNOTATION"})
+     */
+    #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
+    class Unique extends UniqueEntity
+    {
+        /** @var string $service */
+        public $service = 'doctrine_odm.mongodb.unique';
     }
 }
