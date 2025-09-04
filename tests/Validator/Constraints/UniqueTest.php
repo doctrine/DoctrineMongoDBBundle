@@ -70,13 +70,13 @@ final class UniqueTest extends TestCase
 #[Unique(['email'])]
 class UniqueDocumentDummyOne
 {
-    private string $email;
+    public string $email;
 }
 
 #[Unique(fields: 'email', groups: ['group1'])]
 class UniqueDocumentWithGroups
 {
-    private string $email;
+    public string $email;
 }
 
 #[Unique(
@@ -89,7 +89,7 @@ class UniqueDocumentWithGroups
 )]
 class UniqueDocumentWithIdentifierFieldNames
 {
-    private string $name;
+    public string $name;
 
-    private string $email;
+    public string $email;
 }
