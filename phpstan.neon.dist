@@ -8,6 +8,9 @@ parameters:
         - config
         - src
         - tests
+    excludePaths:
+        # Error "overriding property ... should also have native type" is not ignorable
+        - src/Validator/Constraints/Unique.php
 
     ignoreErrors:
         - message: '# with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata#'
