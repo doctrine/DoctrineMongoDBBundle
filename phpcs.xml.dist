@@ -32,12 +32,12 @@
     </rule>
 
     <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint">
-        <exclude-pattern>src/Validator/Constraints/UniqueInternalCompatibilityTrait.php</exclude-pattern>
+        <exclude-pattern>src/Validator/Constraints/Unique.php</exclude-pattern>
     </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
         <exclude-pattern>tests/*</exclude-pattern>
-        <exclude-pattern>src/Validator/Constraints/UniqueInternalCompatibilityTrait.php</exclude-pattern>
+        <exclude-pattern>src/Validator/Constraints/Unique.php</exclude-pattern>
     </rule>
 
     <rule ref="Squiz.Classes.ClassFileName.NoMatch">
