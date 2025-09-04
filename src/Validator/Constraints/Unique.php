@@ -8,7 +8,6 @@ use Attribute;
 use ReflectionProperty;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-// @phpcsSuppress PSR1.Classes.ClassDeclaration.MultipleClasses
 if ((new ReflectionProperty(UniqueEntity::class, 'service'))->hasType()) {
     /**
      * Constraint for the unique document validator
