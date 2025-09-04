@@ -34,17 +34,17 @@ class Unique extends UniqueEntity
         array $options = [],
     ) {
         parent::__construct(
-            $fields,
-            $message,
-            $service,
-            $em,
-            $entityClass,
-            $repositoryMethod,
-            $errorPath,
-            $ignoreNull,
-            $groups,
-            $payload,
-            $options,
+            fields: $fields,
+            message: $message,
+            service: $service,
+            em: $em,
+            entityClass: $entityClass,
+            repositoryMethod: $repositoryMethod,
+            errorPath: $errorPath,
+            ignoreNull: $ignoreNull,
+            groups: $groups,
+            payload: $payload,
+            options: $options,
         );
     }
 }
