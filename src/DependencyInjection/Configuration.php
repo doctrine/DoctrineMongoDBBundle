@@ -53,17 +53,8 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('auto_generate_proxy_classes')
                     ->defaultValue(ODMConfiguration::AUTOGENERATE_EVAL)
                     ->beforeNormalization()
-                    ->always(static function ($v) {
-                        if ($v === false) {
-                            return ODMConfiguration::AUTOGENERATE_EVAL;
-                        }
-
-                        if ($v === true) {
-                            return ODMConfiguration::AUTOGENERATE_FILE_NOT_EXISTS;
-                        }
-
-                        return $v;
-                    })
+                        ->ifTrue()->then(static fn ($v) => ODMConfiguration::AUTOGENERATE_FILE_NOT_EXISTS)
+                        ->ifFalse()->then(static fn ($v) => ODMConfiguration::AUTOGENERATE_NEVER)
                     ->end()
                 ->end()
                 ->scalarNode('hydrator_namespace')->defaultValue('Hydrators')->end()
@@ -71,22 +62,13 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('auto_generate_hydrator_classes')
                     ->defaultValue(ODMConfiguration::AUTOGENERATE_NEVER)
                     ->beforeNormalization()
-                    ->always(static function ($v) {
-                        if ($v === false) {
-                            return ODMConfiguration::AUTOGENERATE_NEVER;
-                        }
-
-                        if ($v === true) {
-                            return ODMConfiguration::AUTOGENERATE_ALWAYS;
-                        }
-
-                        return $v;
-                    })
+                        ->ifTrue()->then(static fn ($v) => ODMConfiguration::AUTOGENERATE_ALWAYS)
+                        ->ifFalse()->then(static fn ($v) => ODMConfiguration::AUTOGENERATE_NEVER)
                     ->end()
                 ->end()
                 ->scalarNode('persistent_collection_namespace')->defaultValue('PersistentCollections')->end()
                 ->scalarNode('persistent_collection_dir')->defaultValue('%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections')->end()
-                ->scalarNode('auto_generate_persistent_collection_classes')->defaultValue(ODMConfiguration::AUTOGENERATE_NEVER)->end()
+                ->integerNode('auto_generate_persistent_collection_classes')->defaultValue(ODMConfiguration::AUTOGENERATE_NEVER)->end()
                 ->scalarNode('default_document_manager')->end()
                 ->scalarNode('default_connection')->end()
                 ->scalarNode('default_database')->defaultValue('default')->end()
@@ -149,20 +131,15 @@ class Configuration implements ConfigurationInterface
                                 ->useAttributeAsKey('name')
                                 ->prototype('array')
                                     ->fixXmlConfig('parameter')
-                                    ->beforeNormalization()
-                                        ->ifString()
-                                        ->then(static function ($v) {
-                                            return ['class' => $v];
-                                        })
-                                    ->end()
+                                    ->acceptAndWrap(['string'], 'class')
                                     ->beforeNormalization()
                                         // The content of the XML node is returned as the "value" key so we need to rename it
-                                        ->ifTrue(static function ($v): bool {
-                                            return is_array($v) && isset($v['value']);
-                                        })
+                                        ->ifArray()
                                         ->then(static function ($v) {
-                                            $v['class'] = $v['value'];
-                                            unset($v['value']);
+                                            if (isset($v['value']) && ! isset($v['class'])) {
+                                                $v['class'] = $v['value'];
+                                                unset($v['value']);
+                                            }
 
                                             return $v;
                                         })
@@ -175,13 +152,15 @@ class Configuration implements ConfigurationInterface
                                             ->useAttributeAsKey('name')
                                             ->prototype('variable')
                                                 ->beforeNormalization()
-                                                    // Detect JSON object and array syntax (for XML)
-                                                    ->ifTrue(static function ($v): bool {
-                                                        return is_string($v) && (preg_match('/\[.*\]/', $v) || preg_match('/\{.*\}/', $v));
-                                                    })
-                                                    // Decode objects to associative arrays for consistency with YAML
+                                                    ->ifString()
                                                     ->then(static function ($v) {
-                                                        return json_decode($v, true);
+                                                        // Detect JSON object and array syntax (for XML)
+                                                        // Decode objects to associative arrays for consistency with YAML
+                                                        if (is_string($v) && (preg_match('/\[.*\]/', $v) || preg_match('/\{.*\}/', $v))) {
+                                                            return json_decode($v, true);
+                                                        }
+
+                                                        return $v;
                                                     })
                                                 ->end()
                                             ->end()
@@ -191,12 +170,7 @@ class Configuration implements ConfigurationInterface
                             ->end()
                             ->arrayNode('metadata_cache_driver')
                                 ->addDefaultsIfNotSet()
-                                ->beforeNormalization()
-                                    ->ifString()
-                                    ->then(static function ($v) {
-                                        return ['type' => $v];
-                                    })
-                                ->end()
+                                ->acceptAndWrap(['string'], 'type')
                                 ->children()
                                     ->scalarNode('type')->defaultValue('array')->end()
                                     ->scalarNode('class')->end()
@@ -214,12 +188,7 @@ class Configuration implements ConfigurationInterface
                             ->arrayNode('mappings')
                                 ->useAttributeAsKey('name')
                                 ->prototype('array')
-                                    ->beforeNormalization()
-                                        ->ifString()
-                                        ->then(static function ($v) {
-                                            return ['type' => $v];
-                                        })
-                                    ->end()
+                                    ->acceptAndWrap(['string'], 'type')
                                     ->treatNullLike([])
                                     ->treatFalseLike(['mapping' => false])
                                     ->performNoDeepMerging()
@@ -276,17 +245,18 @@ class Configuration implements ConfigurationInterface
                                         ->performNoDeepMerging()
                                         ->prototype('array')
                                             ->beforeNormalization()
-                                                // Handle readPreferenceTag XML nodes
-                                                ->ifTrue(static function ($v): bool {
-                                                    return isset($v['readPreferenceTag']);
-                                                })
+                                                ->ifArray()
                                                 ->then(static function ($v) {
                                                     // Equivalent of fixXmlConfig() for inner node
                                                     if (isset($v['readPreferenceTag']['name'])) {
-                                                        $v['readPreferenceTag'] = [$v['readPreferenceTag']];
+                                                        return [$v['readPreferenceTag']];
                                                     }
 
-                                                    return $v['readPreferenceTag'];
+                                                    if (isset($v['readPreferenceTag'])) {
+                                                        return $v['readPreferenceTag'];
+                                                    }
+
+                                                    return $v;
                                                 })
                                             ->end()
                                             ->useAttributeAsKey('name')
@@ -323,11 +293,11 @@ class Configuration implements ConfigurationInterface
                                     ->integerNode('wTimeoutMS')->end()
                                 ->end()
                                 ->validate()
-                                    ->ifTrue(static function ($v): bool {
-                                        return count($v['readPreferenceTags']) === 0;
-                                    })
+                                    ->ifArray()
                                     ->then(static function ($v) {
-                                        unset($v['readPreferenceTags']);
+                                        if (! $v['readPreferenceTags']) {
+                                            unset($v['readPreferenceTags']);
+                                        }
 
                                         return $v;
                                     })
@@ -399,16 +369,12 @@ class Configuration implements ConfigurationInterface
                                     ->arrayNode('encryptedFieldsMap')
                                         ->useAttributeAsKey('name', false)
                                         ->beforeNormalization()
-                                            ->always(static function ($v) {
-                                                // Create a PHP array representation of the Extended BSON that is later
-                                                // converted to JSON string to create a BSON document from this JSON.
-                                                // This lets the DI dumper transform the parameters in the string and dump it.
-                                                if (is_string($v)) {
-                                                    return json_decode($v, true, 512, JSON_THROW_ON_ERROR);
-                                                }
-
-                                                return $v;
-                                            })->end()
+                                            ->ifString()
+                                            // Create a PHP array representation of the Extended BSON that is later
+                                            // converted to JSON string to create a BSON document from this JSON.
+                                            // This lets the DI dumper transform the parameters in the string and dump it.
+                                            ->then(static fn ($v) => json_decode($v, true, 512, JSON_THROW_ON_ERROR))
+                                        ->end()
                                         ->prototype('array')
                                             ->children()
                                                 ->arrayNode('fields')
@@ -440,10 +406,7 @@ class Configuration implements ConfigurationInterface
                                             ->booleanNode('mongocryptdBypassSpawn')->end()
                                             ->scalarNode('mongocryptdSpawnPath')->end()
                                             ->arrayNode('mongocryptdSpawnArgs')
-                                                ->beforeNormalization()
-                                                    ->ifString()
-                                                    ->then(static fn ($v) => [$v])
-                                                ->end()
+                                                ->acceptAndWrap(['string'])
                                                 ->prototype('scalar')->cannotBeEmpty()->end()
                                             ->end()
                                             ->scalarNode('cryptSharedLibPath')->end()
@@ -517,10 +480,7 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('types')
                     ->useAttributeAsKey('name')
                     ->prototype('array')
-                        ->beforeNormalization()
-                            ->ifString()
-                            ->then(static fn ($v) => ['class' => $v])
-                        ->end()
+                        ->acceptAndWrap(['string'], 'class')
                         ->children()
                             ->scalarNode('class')->isRequired()->end()
                         ->end()
