@@ -29,6 +29,7 @@
 
         <!-- Allow short nullable syntax for non-union types -->
         <exclude name="SlevomatCodingStandard.TypeHints.UnionTypeHintFormat.DisallowedShortNullable" />
+        <exclude name="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.DisallowedShortNullable" />
     </rule>
 
     <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint">
