@@ -27,10 +27,11 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use Doctrine\Persistence\Proxy;
 use InvalidArgumentException;
+use LogicException;
 use MongoDB\BSON\Document as BsonDocument;
 use MongoDB\Client;
 use ProxyManager\Proxy\LazyLoadingInterface;
-use Symfony\Bridge\Doctrine\DependencyInjection\AbstractDoctrineExtension;
+use ReflectionClass;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -45,30 +46,398 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
 
 use function array_diff_key;
+use function array_flip;
 use function array_key_first;
+use function array_keys;
 use function array_merge;
+use function array_replace;
+use function array_values;
 use function class_exists;
 use function class_implements;
+use function dirname;
+use function glob;
 use function in_array;
 use function interface_exists;
 use function is_dir;
 use function json_encode;
 use function method_exists;
+use function realpath;
 use function sprintf;
+use function str_contains;
+
+use const GLOB_NOSORT;
 
 /**
  * Doctrine MongoDB ODM extension.
  */
-class DoctrineMongoDBExtension extends AbstractDoctrineExtension
+class DoctrineMongoDBExtension extends Extension
 {
+    /**
+     * Used inside metadata driver method to simplify aggregation of data.
+     *
+     * @var array<string, string> List of alias => namespace
+     */
+    protected $aliasMap = [];
+
+    /**
+     * Used inside metadata driver method to simplify aggregation of data.
+     *
+     * @var array<string, array<string, string>> List of driver type => prefix => path
+     */
+    protected $drivers = [];
+
     private static ?string $odmVersion = null;
 
     /** @internal */
     public const CONFIGURATION_TAG = 'doctrine.odm.configuration';
+
+    /**
+     * @param array<string, mixed> $objectManager A configured object manager
+     *
+     * @return void
+     *
+     * @throws InvalidArgumentException
+     */
+    protected function loadMappingInformation(array $objectManager, ContainerBuilder $container)
+    {
+        if ($objectManager['auto_mapping']) {
+            // automatically register bundle mappings
+            foreach (array_keys($container->getParameter('kernel.bundles')) as $bundle) {
+                if (! isset($objectManager['mappings'][$bundle])) {
+                    $objectManager['mappings'][$bundle] = [
+                        'mapping' => true,
+                        'is_bundle' => true,
+                    ];
+                }
+            }
+        }
+
+        foreach ($objectManager['mappings'] as $mappingName => $mappingConfig) {
+            if ($mappingConfig !== null && $mappingConfig['mapping'] === false) {
+                continue;
+            }
+
+            $mappingConfig = array_replace([
+                'dir' => false,
+                'type' => false,
+                'prefix' => false,
+            ], (array) $mappingConfig);
+
+            $mappingConfig['dir'] = $container->getParameterBag()->resolveValue($mappingConfig['dir']);
+            // a bundle configuration is detected by realizing that the specified dir is not absolute and existing
+            if (! isset($mappingConfig['is_bundle'])) {
+                $mappingConfig['is_bundle'] = ! is_dir((string) $mappingConfig['dir']);
+            }
+
+            if ($mappingConfig['is_bundle']) {
+                $bundle         = null;
+                $bundleMetadata = null;
+                foreach ($container->getParameter('kernel.bundles') as $name => $class) {
+                    if ($mappingName === $name) {
+                        $bundle         = new ReflectionClass($class);
+                        $bundleMetadata = $container->getParameter('kernel.bundles_metadata')[$name];
+
+                        break;
+                    }
+                }
+
+                if ($bundle === null) {
+                    throw new InvalidArgumentException(sprintf('Bundle "%s" does not exist or it is not enabled.', $mappingName));
+                }
+
+                $mappingConfig = $this->getMappingDriverBundleConfigDefaults($mappingConfig, $bundle, $container, $bundleMetadata['path']);
+                if (! $mappingConfig) {
+                    continue;
+                }
+            } elseif (! $mappingConfig['type']) {
+                 $mappingConfig['type'] = 'attribute';
+            }
+
+            $this->assertValidMappingConfiguration($mappingConfig, $objectManager['name']);
+            $this->setMappingDriverConfig($mappingConfig, $mappingName);
+            $this->setMappingDriverAlias($mappingConfig, $mappingName);
+        }
+    }
+
+    /**
+     * Register the alias for this mapping driver.
+     *
+     * Aliases can be used in the Query languages of all the Doctrine object managers to simplify writing tasks.
+     *
+     * @param array<string, mixed> $mappingConfig
+     *
+     * @return void
+     */
+    protected function setMappingDriverAlias(
+        array $mappingConfig,
+        string $mappingName,
+    ) {
+        if (isset($mappingConfig['alias'])) {
+            $this->aliasMap[$mappingConfig['alias']] = $mappingConfig['prefix'];
+        } else {
+            $this->aliasMap[$mappingName] = $mappingConfig['prefix'];
+        }
+    }
+
+    /**
+     * Register the mapping driver configuration for later use with the object managers metadata driver chain.
+     *
+     * @param array<string, mixed> $mappingConfig
+     *
+     * @return void
+     *
+     * @throws InvalidArgumentException
+     */
+    protected function setMappingDriverConfig(array $mappingConfig, string $mappingName)
+    {
+        $mappingDirectory = $mappingConfig['dir'];
+        if (! is_dir($mappingDirectory)) {
+            throw new InvalidArgumentException(sprintf('Invalid Doctrine mapping path given. Cannot load Doctrine mapping/bundle named "%s".', $mappingName));
+        }
+
+        $this->drivers[$mappingConfig['type']][$mappingConfig['prefix']] = realpath($mappingDirectory) ?: $mappingDirectory;
+    }
+
+    /**
+     * If this is a bundle controlled mapping all the missing information can be autodetected by this method.
+     *
+     * Returns false when autodetection failed, an array of the completed information otherwise.
+     *
+     * @param array<string, mixed> $bundleConfig
+     *
+     * @return array<string, mixed>|false The completed bundle mapping information or false when no mapping information is found
+     */
+    protected function getMappingDriverBundleConfigDefaults(
+        array $bundleConfig,
+        ReflectionClass $bundle,
+        ContainerBuilder $container,
+        ?string $bundleDir = null,
+    ): array|false {
+        $bundleClassDir = dirname($bundle->getFileName());
+        $bundleDir    ??= $bundleClassDir;
+
+        if (! $bundleConfig['type']) {
+            $bundleConfig['type'] = $this->detectMetadataDriver($bundleDir, $container);
+
+            if (! $bundleConfig['type'] && $bundleDir !== $bundleClassDir) {
+                $bundleConfig['type'] = $this->detectMetadataDriver($bundleClassDir, $container);
+            }
+        }
+
+        if (! $bundleConfig['type']) {
+            // skip this bundle, no mapping information was found.
+            return false;
+        }
+
+        if (! $bundleConfig['dir']) {
+            if (in_array($bundleConfig['type'], ['staticphp', 'attribute'])) {
+                $bundleConfig['dir'] = $bundleClassDir . '/' . $this->getMappingObjectDefaultName();
+            } else {
+                $bundleConfig['dir'] = $bundleDir . '/' . $this->getMappingResourceConfigDirectory($bundleDir);
+            }
+        } else {
+            $bundleConfig['dir'] = $bundleDir . '/' . $bundleConfig['dir'];
+        }
+
+        if (! $bundleConfig['prefix']) {
+            $bundleConfig['prefix'] = $bundle->getNamespaceName() . '\\' . $this->getMappingObjectDefaultName();
+        }
+
+        return $bundleConfig;
+    }
+
+    /**
+     * Register all the collected mapping information with the object manager by registering the appropriate mapping drivers.
+     *
+     * @param array<string, mixed> $objectManager
+     *
+     * @return void
+     */
+    protected function registerMappingDrivers(array $objectManager, ContainerBuilder $container)
+    {
+        // configure metadata driver for each bundle based on the type of mapping files found
+        if ($container->hasDefinition($this->getObjectManagerElementName($objectManager['name'] . '_metadata_driver'))) {
+            $chainDriverDef = $container->getDefinition($this->getObjectManagerElementName($objectManager['name'] . '_metadata_driver'));
+        } else {
+            $chainDriverDef = new Definition($this->getMetadataDriverClass('driver_chain'));
+        }
+
+        foreach ($this->drivers as $driverType => $driverPaths) {
+            $mappingService = $this->getObjectManagerElementName($objectManager['name'] . '_' . $driverType . '_metadata_driver');
+            if ($container->hasDefinition($mappingService)) {
+                $mappingDriverDef = $container->getDefinition($mappingService);
+                $args             = $mappingDriverDef->getArguments();
+                if ($driverType === 'attribute') {
+                    $args[1] = array_merge(array_values($driverPaths), $args[1]);
+                } else {
+                    $args[0] = array_merge(array_values($driverPaths), $args[0]);
+                }
+
+                $mappingDriverDef->setArguments($args);
+            } elseif ($driverType === 'attribute') {
+                $mappingDriverDef = new Definition($this->getMetadataDriverClass($driverType), [
+                    array_values($driverPaths),
+                ]);
+            } else {
+                $mappingDriverDef = new Definition($this->getMetadataDriverClass($driverType), [
+                    array_values($driverPaths),
+                ]);
+            }
+
+            if (str_contains($mappingDriverDef->getClass(), 'Xml')) {
+                $mappingDriverDef->setArguments([array_flip($driverPaths)]);
+                $mappingDriverDef->addMethodCall('setGlobalBasename', ['mapping']);
+            }
+
+            $container->setDefinition($mappingService, $mappingDriverDef);
+
+            foreach ($driverPaths as $prefix => $driverPath) {
+                $chainDriverDef->addMethodCall('addDriver', [new Reference($mappingService), $prefix]);
+            }
+        }
+
+        $container->setDefinition($this->getObjectManagerElementName($objectManager['name'] . '_metadata_driver'), $chainDriverDef);
+    }
+
+    /**
+     * Assertion if the specified mapping information is valid.
+     *
+     * @param array<string, mixed> $mappingConfig
+     *
+     * @return void
+     *
+     * @throws InvalidArgumentException
+     */
+    protected function assertValidMappingConfiguration(
+        array $mappingConfig,
+        string $objectManagerName,
+    ) {
+        if (! $mappingConfig['type'] || ! $mappingConfig['dir'] || ! $mappingConfig['prefix']) {
+            throw new InvalidArgumentException(sprintf('Mapping definitions for Doctrine manager "%s" require at least the "type", "dir" and "prefix" options.', $objectManagerName));
+        }
+
+        if (! is_dir($mappingConfig['dir'])) {
+            throw new InvalidArgumentException(sprintf('Specified non-existing directory "%s" as Doctrine mapping source.', $mappingConfig['dir']));
+        }
+
+        if (! in_array($mappingConfig['type'], ['xml', 'php', 'staticphp', 'attribute'])) {
+            throw new InvalidArgumentException(sprintf('Can only configure "xml", "yml", "php", "staticphp" or "attribute" through the DoctrineBundle. Use your own bundle to configure other metadata drivers. You can register them by adding a new driver to the "%s" service definition.', $this->getObjectManagerElementName($objectManagerName . '_metadata_driver')));
+        }
+    }
+
+    /**
+     * Detects what metadata driver to use for the supplied directory.
+     */
+    protected function detectMetadataDriver(string $dir, ContainerBuilder $container): ?string
+    {
+        $configPath = $this->getMappingResourceConfigDirectory($dir);
+        $extension  = $this->getMappingResourceExtension();
+
+        if (glob($dir . '/' . $configPath . '/*.' . $extension . '.xml', GLOB_NOSORT)) {
+            $driver = 'xml';
+        } elseif (glob($dir . '/' . $configPath . '/*.' . $extension . '.php', GLOB_NOSORT)) {
+            $driver = 'php';
+        } else {
+            // add the closest existing directory as a resource
+            $resource = $dir . '/' . $configPath;
+            while (! is_dir($resource)) {
+                $resource = dirname($resource);
+            }
+
+            $container->fileExists($resource, false);
+            $discoveryPath = $dir . '/' . $this->getMappingObjectDefaultName();
+            if ($container->fileExists($discoveryPath, false)) {
+                return 'attribute';
+            }
+
+            return null;
+        }
+
+        $container->fileExists($dir . '/' . $configPath, false);
+
+        return $driver;
+    }
+
+    /**
+     * Loads a configured object manager metadata, query or result cache driver.
+     *
+     * @param array<string, mixed> $objectManager
+     *
+     * @return void
+     *
+     * @throws InvalidArgumentException in case of unknown driver type.
+     */
+    protected function loadObjectManagerCacheDriver(
+        array $objectManager,
+        ContainerBuilder $container,
+        string $cacheName,
+    ) {
+        $this->loadCacheDriver($cacheName, $objectManager['name'], $objectManager[$cacheName . '_driver'], $container);
+    }
+
+    /**
+     * Returns a modified version of $managerConfigs.
+     *
+     * The manager called $autoMappedManager will map all bundles that are not mapped by other managers.
+     *
+     * @param array<string, array<string, mixed>> $managerConfigs
+     * @param array<string, string>               $bundles
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    protected function fixManagersAutoMappings(array $managerConfigs, array $bundles): array
+    {
+        $autoMappedManager = $this->validateAutoMapping($managerConfigs);
+
+        if ($autoMappedManager !== null) {
+            foreach (array_keys($bundles) as $bundle) {
+                foreach ($managerConfigs as $manager) {
+                    if (isset($manager['mappings'][$bundle])) {
+                        continue 2;
+                    }
+                }
+
+                $managerConfigs[$autoMappedManager]['mappings'][$bundle] = [
+                    'mapping' => true,
+                    'is_bundle' => true,
+                ];
+            }
+
+            $managerConfigs[$autoMappedManager]['auto_mapping'] = false;
+        }
+
+        return $managerConfigs;
+    }
+
+    /**
+     * Search for a manager that is declared as 'auto_mapping' = true.
+     *
+     * @param array<string, array<string, mixed>> $managerConfigs
+     *
+     * @throws LogicException
+     */
+    private function validateAutoMapping(array $managerConfigs): ?string
+    {
+        $autoMappedManager = null;
+        foreach ($managerConfigs as $name => $manager) {
+            if (! $manager['auto_mapping']) {
+                continue;
+            }
+
+            if ($autoMappedManager !== null) {
+                throw new LogicException(sprintf('You cannot enable "auto_mapping" on more than one manager at the same time (found in "%s" and "%s"").', $autoMappedManager, $name));
+            }
+
+            $autoMappedManager = $name;
+        }
+
+        return $autoMappedManager;
+    }
 
     /**
      * Responds to the doctrine_mongodb configuration parameter.
@@ -401,11 +770,15 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     /**
      * Loads the configured connections.
      *
-     * @param array            $config    An array of connections configurations
-     * @param ContainerBuilder $container A ContainerBuilder instance
+     * @param array<string, array<string, mixed>> $connections An array of connections configurations
+     * @param ContainerBuilder                    $container   A ContainerBuilder instance
+     * @param array<string, mixed>                $config      An array of connections configurations
      */
-    protected function loadConnections(array $connections, ContainerBuilder $container, array $config): void
-    {
+    protected function loadConnections(
+        array $connections,
+        ContainerBuilder $container,
+        array $config,
+    ): void {
         $cons = [];
         foreach ($connections as $name => $connection) {
             // Define an event manager for this connection
@@ -679,12 +1052,85 @@ class DoctrineMongoDBExtension extends AbstractDoctrineExtension
     /**
      * Loads a cache driver.
      *
+     * @param array<string, mixed> $cacheDriver
+     *
      * @throws InvalidArgumentException
      */
-    protected function loadCacheDriver(string $cacheName, string $objectManagerName, array $cacheDriver, ContainerBuilder $container): string
-    {
+    protected function loadCacheDriver(
+        string $cacheName,
+        string $objectManagerName,
+        array $cacheDriver,
+        ContainerBuilder $container,
+    ): string {
         if (isset($cacheDriver['namespace'])) {
-            return parent::loadCacheDriver($cacheName, $objectManagerName, $cacheDriver, $container);
+            $cacheDriverServiceId = $this->getObjectManagerElementName($objectManagerName . '_' . $cacheName);
+
+            switch ($cacheDriver['type']) {
+                case 'service':
+                    $container->setAlias($cacheDriverServiceId, new Alias($cacheDriver['id'], false));
+
+                    return $cacheDriverServiceId;
+
+                case 'memcached':
+                    $memcachedClass         = ! empty($cacheDriver['class']) ? $cacheDriver['class'] : '%' . $this->getObjectManagerElementName('cache.memcached.class') . '%';
+                    $memcachedInstanceClass = ! empty($cacheDriver['instance_class']) ? $cacheDriver['instance_class'] : '%' . $this->getObjectManagerElementName('cache.memcached_instance.class') . '%';
+                    $memcachedHost          = ! empty($cacheDriver['host']) ? $cacheDriver['host'] : '%' . $this->getObjectManagerElementName('cache.memcached_host') . '%';
+                    $memcachedPort          = ! empty($cacheDriver['port']) ? $cacheDriver['port'] : '%' . $this->getObjectManagerElementName('cache.memcached_port') . '%';
+                    $cacheDef               = new Definition($memcachedClass);
+                    $memcachedInstance      = new Definition($memcachedInstanceClass);
+                    $memcachedInstance->addMethodCall('addServer', [
+                        $memcachedHost,
+                        $memcachedPort,
+                    ]);
+                    $container->setDefinition($this->getObjectManagerElementName(sprintf('%s_memcached_instance', $objectManagerName)), $memcachedInstance);
+                    $cacheDef->addMethodCall('setMemcached', [new Reference($this->getObjectManagerElementName(sprintf('%s_memcached_instance', $objectManagerName)))]);
+                    break;
+                case 'redis':
+                case 'valkey':
+                    $redisClass         = ! empty($cacheDriver['class']) ? $cacheDriver['class'] : '%' . $this->getObjectManagerElementName('cache.redis.class') . '%';
+                    $redisInstanceClass = ! empty($cacheDriver['instance_class']) ? $cacheDriver['instance_class'] : '%' . $this->getObjectManagerElementName('cache.redis_instance.class') . '%';
+                    $redisHost          = ! empty($cacheDriver['host']) ? $cacheDriver['host'] : '%' . $this->getObjectManagerElementName('cache.redis_host') . '%';
+                    $redisPort          = ! empty($cacheDriver['port']) ? $cacheDriver['port'] : '%' . $this->getObjectManagerElementName('cache.redis_port') . '%';
+                    $cacheDef           = new Definition($redisClass);
+                    $redisInstance      = new Definition($redisInstanceClass);
+                    $redisInstance->addMethodCall('connect', [
+                        $redisHost,
+                        $redisPort,
+                    ]);
+                    $container->setDefinition($this->getObjectManagerElementName(sprintf('%s_redis_instance', $objectManagerName)), $redisInstance);
+                    $cacheDef->addMethodCall('setRedis', [new Reference($this->getObjectManagerElementName(sprintf('%s_redis_instance', $objectManagerName)))]);
+                    break;
+                case 'apc':
+                case 'apcu':
+                case 'array':
+                case 'xcache':
+                case 'wincache':
+                case 'zenddata':
+                    $cacheDef = new Definition('%' . $this->getObjectManagerElementName(sprintf('cache.%s.class', $cacheDriver['type'])) . '%');
+                    break;
+                default:
+                    throw new InvalidArgumentException(sprintf('"%s" is an unrecognized Doctrine cache driver.', $cacheDriver['type']));
+            }
+
+            if (! isset($cacheDriver['namespace'])) {
+                // generate a unique namespace for the given application
+                if ($container->hasParameter('cache.prefix.seed')) {
+                    $seed = $container->getParameterBag()->resolveValue($container->getParameter('cache.prefix.seed'));
+                } else {
+                    $seed  = '_' . $container->getParameter('kernel.project_dir');
+                    $seed .= '.' . $container->getParameter('kernel.container_class');
+                }
+
+                $namespace = 'sf_' . $this->getMappingResourceExtension() . '_' . $objectManagerName . '_' . ContainerBuilder::hash($seed);
+
+                $cacheDriver['namespace'] = $namespace;
+            }
+
+            $cacheDef->addMethodCall('setNamespace', [$cacheDriver['namespace']]);
+
+            $container->setDefinition($cacheDriverServiceId, $cacheDef);
+
+            return $cacheDriverServiceId;
         }
 
         $cacheDriverServiceId = $this->getObjectManagerElementName($objectManagerName . '_' . $cacheName);

@@ -34,6 +34,13 @@
 
     <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint">
         <exclude-pattern>src/Validator/Constraints/Unique.php</exclude-pattern>
+        <!-- To remove in 6.0 -->
+        <exclude-pattern>src/DependencyInjection/DoctrineMongoDBExtension.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint">
+        <!-- To remove in 6.0 -->
+        <exclude-pattern>src/DependencyInjection/DoctrineMongoDBExtension.php</exclude-pattern>
     </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
