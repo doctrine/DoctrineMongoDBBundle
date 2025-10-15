@@ -52,14 +52,13 @@ Additional options are available for advanced use cases.
 Supported KMS Providers
 -----------------------
 
-The ``kmsProvider`` option specifies a single KMS provider that will be used for encryption.
+The ``kmsProvider`` option specifies a single `KMS provider`_ that will be used for encryption.
 The type of KMS provider is specified with the ``type`` property along with its options.
 
 The configuration for each KMS provider varies and is described in the
 `MongoDB Manager constructor documentation <https://www.php.net/manual/en/mongodb-driver-manager.construct.php>`.
 
 Example of configuration for AWS
-
 
 .. code-block:: yaml
 
@@ -76,15 +75,43 @@ Example of configuration for AWS
                         key: "arn:aws:kms:eu-west-1:123456789012:key/abcd1234-12ab-34cd-56ef-1234567890ab"
 
 
-Encrypted Fields Map
---------------------
+Encrypted Fields Configuration
+------------------------------
+
+The encrypted fields are configured per document class using the ``#[Encrypt]``
+attribute or the equivalent XML mapping.
+
+.. code-block:: php
+
+    use Doctrine\ODM\MongoDB\Mapping\Annotations\Encrypt;
+    use Doctrine\ODM\MongoDB\Mapping\Annotations\EncryptQuery;
+    use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+    #[ODM\Document]
+    class User
+    {
+        #[ODM\Id]
+        private $id;
+
+        #[Encrypt(queryType: EncryptQuery::Equality)]
+        #[ODM\Field(type: 'string')]
+        private $sensitiveField;
+
+        // ...
+    }
+
+Read more about it in the `MongoDB ODM documentation on Queryable Encryption`_
+
+Encrypted Fields Map (optional)
+-------------------------------
 
 The encrypted fields are set to the collection when you create it, and the MongoDB
 client will query the server for the collection schema before performing any
-operations. For additional security, you can also specify the encrypted fields
+operations. For **additional security**, you **can** also specify the encrypted fields
 in the connection configuration, which allows the client to use local rules
 instead of downloading the remote schema from the server, that could potentially
-be tampered with if an attacker compromises the server.
+be tampered with if an attacker compromises the server. Read more about it in the
+`Security Considerations`_.
 
 The Encrypted Fields Map is a list of all encrypted fields associated with all
 the collection namespaces that has encryption enabled. To configure it, you
@@ -108,71 +135,66 @@ The output of the command will be a YAML configuration for the
   schema for the collection and uses it instead.
 
 For more details, see the official MongoDB documentation:
-`Encrypted Fields and Enabled Queries <https://www.mongodb.com/docs/manual/core/queryable-encryption/fundamentals/encrypt-and-query/>`_.
+`Encrypted Fields and Enabled Queries`_.
 
-.. tabs::
+.. configuration-block::
 
-    .. group-tab:: YAML
+    .. code-block:: yaml
 
-        .. code-block:: yaml
+        doctrine_mongodb:
+            connections:
+                default:
+                    autoEncryption:
+                        encryptedFieldsMap:
+                            "app.users":
+                                fields:
+                                    - keyId: { $binary: { base64: 2CSosXLSTEKaYphcSnUuCw==, subType: '04' } }
+                                      path: "sensitive_field"
+                                      bsonType: "string"
 
-            doctrine_mongodb:
-                connections:
-                    default:
-                        autoEncryption:
-                            encryptedFieldsMap:
-                                "mydatabase.mycollection":
-                                    fields:
-                                        - keyId: { $binary: { base64: 2CSosXLSTEKaYphcSnUuCw==, subType: '04' } }
-                                          path: "sensitive_field"
-                                          bsonType: "string"
+    .. code-block:: xml
 
-    .. group-tab:: XML
-
-        .. code-block:: xml
-
-            <doctrine:connection>
-                <doctrine:autoEncryption>
-                    <doctrine:encryptedFieldsMap>
-                        <![CDATA[
-                            {
-                                "mydatabase.mycollection": {
-                                    fields: [
-                                        "keyId": { "$binary": { "base64": "2CSosXLSTEKaYphcSnUuCw==", "subType": "04" } },
-                                        "path": "sensitive_field",
-                                        "bsonType": "string"
-                                    ]
-                                }
+        <doctrine:connection>
+            <doctrine:autoEncryption>
+                <doctrine:encryptedFieldsMap>
+                    <!-- Use JSON in a CDATA to avoid XML escaping issues -->
+                    <![CDATA[
+                        {
+                            "app.users": {
+                                fields: [
+                                    "keyId": { "$binary": { "base64": "2CSosXLSTEKaYphcSnUuCw==", "subType": "04" } },
+                                    "path": "sensitive_field",
+                                    "bsonType": "string"
+                                ]
                             }
-                        ]]>
-                    </doctrine:encryptedFieldsMap>
-                </doctrine:autoEncryption>
-            </doctrine:connection>
+                        }
+                    ]]>
+                </doctrine:encryptedFieldsMap>
+            </doctrine:autoEncryption>
+        </doctrine:connection>
 
-    .. group-tab:: PHP
+    .. code-block:: php
 
-        .. code-block:: php
+        use Symfony\Config\DoctrineMongodbConfig;
 
-            use Symfony\Config\DoctrineMongodbConfig;
-
-            return static function (DoctrineMongodbConfig $config): void {
-                $config->connection('default')
-                    ->autoEncryption([
-                        'encryptedFieldsMap' => [
-                            'mydatabase.mycollection' => [
-                                'fields' => [
-                                    [
-                                        'path' => 'sensitive_field',
-                                        // Extended JSON representation of a BSON binary type
-                                        // The MongoDB\BSON\Binary class cannot be used here
-                                        'keyId' => ['$binary' => ['base64' => '2CSosXLSTEKaYphcSnUuCw==', 'subType' => '04' ] ],
-                                        'bsonType' => 'string',
-                                    ],
+        return static function (DoctrineMongodbConfig $config): void {
+            $config->connection('default')
+                ->autoEncryption([
+                    'encryptedFieldsMap' => [
+                        'mydatabase.mycollection' => [
+                            'fields' => [
+                                [
+                                    'path' => 'sensitive_field',
+                                    // Extended JSON representation of a BSON binary type
+                                    // The MongoDB\BSON\Binary class cannot be used here
+                                    'keyId' => ['$binary' => ['base64' => '2CSosXLSTEKaYphcSnUuCw==', 'subType' => '04' ] ],
+                                    'bsonType' => 'string',
                                 ],
                             ],
                         ],
-                    ]);
-            };
+                    ],
+                ]);
+        };
 
 Automatic Encryption Shared Library
 -----------------------------------
@@ -181,43 +203,37 @@ To use automatic encryption, the MongoDB PHP driver requires the `Automatic Encr
 
 If the driver is not able to find the library, you can specify its path using the ``cryptSharedLibPath`` extra option in your connection configuration.
 
-.. tabs::
+.. configuration-block::
 
-    .. group-tab:: YAML
+    .. code-block:: yaml
 
-        .. code-block:: yaml
+        doctrine_mongodb:
+            connections:
+                default:
+                    autoEncryption:
+                        extraOptions:
+                            cryptSharedLibPath: '%kernel.project_dir%/bin/mongo_crypt_v1.so'
 
-            doctrine_mongodb:
-                connections:
-                    default:
-                        autoEncryption:
-                            extraOptions:
-                                cryptSharedLibPath: '%kernel.project_dir%/bin/mongo_crypt_v1.so'
+    .. code-block:: xml
 
-    .. group-tab:: XML
+        <doctrine:connection>
+            <doctrine:autoEncryption>
+                <doctrine:extraOptions cryptSharedLibPath="%kernel.project_dir%/bin/mongo_crypt_v1.so" />
+            </doctrine:autoEncryption>
+        </doctrine:connection>
 
-        .. code-block:: xml
+    .. code-block:: php
 
-            <doctrine:connection>
-                <doctrine:autoEncryption>
-                    <doctrine:extraOptions cryptSharedLibPath="%kernel.project_dir%/bin/mongo_crypt_v1.so" />
-                </doctrine:autoEncryption>
-            </doctrine:connection>
+        use Symfony\Config\DoctrineMongodbConfig;
 
-    .. group-tab:: PHP
-
-        .. code-block:: php
-
-            use Symfony\Config\DoctrineMongodbConfig;
-
-            return static function (DoctrineMongodbConfig $config): void {
-                $config->connection('default')
-                    ->autoEncryption([
-                        'extraOptions' => [
-                            'cryptSharedLibPath' => '%kernel.project_dir%/bin/mongo_crypt_v1.so',
-                        ],
-                    ]);
-            };
+        return static function (DoctrineMongodbConfig $config): void {
+            $config->connection('default')
+                ->autoEncryption([
+                    'extraOptions' => [
+                        'cryptSharedLibPath' => '%kernel.project_dir%/bin/mongo_crypt_v1.so',
+                    ],
+                ]);
+        };
 
 TLS Options
 -----------
@@ -225,60 +241,60 @@ TLS Options
 If you are not specifying a custom ``keyVaultClient`` service, you can configure
 TLS settings for the internal key vault client using the ``tlsOptions`` key:
 
-.. tabs::
+.. configuration-block::
 
-    .. group-tab:: YAML
+    .. code-block:: yaml
 
-        .. code-block:: yaml
+        doctrine_mongodb:
+            connections:
+                default:
+                    autoEncryption:
+                        tlsOptions:
+                            tlsCAFile: "/path/to/key-vault-ca.pem"
+                            tlsCertificateKeyFile: "/path/to/key-vault-client.pem"
+                            tlsCertificateKeyFilePassword: "keyvaultclientpassword"
+                            tlsDisableOCSPEndpointCheck: false
 
-            doctrine_mongodb:
-                connections:
-                    default:
-                        autoEncryption:
-                            tlsOptions:
-                                tlsCAFile: "/path/to/key-vault-ca.pem"
-                                tlsCertificateKeyFile: "/path/to/key-vault-client.pem"
-                                tlsCertificateKeyFilePassword: "keyvaultclientpassword"
-                                tlsDisableOCSPEndpointCheck: false
+    .. code-block:: xml
 
-    .. group-tab:: XML
+        <doctrine:connection>
+            <doctrine:autoEncryption>
+                <doctrine:tlsOptions
+                    tlsCAFile="/path/to/key-vault-ca.pem"
+                    tlsCertificateKeyFile="/path/to/key-vault-client.pem"
+                    tlsCertificateKeyFilePassword="keyvaultclientpassword"
+                    tlsDisableOCSPEndpointCheck="false"
+                />
+            </doctrine:autoEncryption>
+        </doctrine:connection>
 
-        .. code-block:: xml
+    .. code-block:: php
 
-            <doctrine:connection>
-                <doctrine:autoEncryption>
-                    <doctrine:tlsOptions
-                        tlsCAFile="/path/to/key-vault-ca.pem"
-                        tlsCertificateKeyFile="/path/to/key-vault-client.pem"
-                        tlsCertificateKeyFilePassword="keyvaultclientpassword"
-                        tlsDisableOCSPEndpointCheck="false"
-                    />
-                </doctrine:autoEncryption>
-            </doctrine:connection>
+        use Symfony\Config\DoctrineMongodbConfig;
 
-    .. group-tab:: PHP
+        return static function (DoctrineMongodbConfig $config): void {
+            $config->connection('default')
+                ->autoEncryption([
+                    'tlsOptions' => [
+                        'tlsCAFile' => '/path/to/key-vault-ca.pem',
+                        'tlsCertificateKeyFile' => '/path/to/key-vault-client.pem',
+                        'tlsCertificateKeyFilePassword' => 'keyvaultclientpassword',
+                        'tlsDisableOCSPEndpointCheck' => false,
+                    ],
+                ]);
+        };
 
-        .. code-block:: php
-
-            use Symfony\Config\DoctrineMongodbConfig;
-
-            return static function (DoctrineMongodbConfig $config): void {
-                $config->connection('default')
-                    ->autoEncryption([
-                        'tlsOptions' => [
-                            'tlsCAFile' => '/path/to/key-vault-ca.pem',
-                            'tlsCertificateKeyFile' => '/path/to/key-vault-client.pem',
-                            'tlsCertificateKeyFilePassword' => 'keyvaultclientpassword',
-                            'tlsDisableOCSPEndpointCheck' => false,
-                        ],
-                    ]);
-            };
 
 Further Reading
 ---------------
 
+- `MongoDB ODM documentation on Queryable Encryption`_
 - `MongoDB CSFLE documentation <https://www.mongodb.com/docs/manual/core/csfle/>`_
 - `MongoDB PHP driver Manager::__construct <https://www.php.net/manual/en/mongodb-driver-manager.construct.php>`_
 - :doc:`config`
 
+.. _`KMS provider`: https://www.mongodb.com/docs/manual/core/queryable-encryption/fundamentals/kms-providers/
+.. _`Security Considerations`: https://www.mongodb.com/docs/manual/core/queryable-encryption/about-qe-csfle/#std-label-qe-csfle-security-considerations
+.. _`Encrypted Fields and Enabled Queries`: https://www.mongodb.com/docs/manual/core/queryable-encryption/fundamentals/encrypt-and-query/
 .. _`Automatic Encryption Shared Library`: https://www.mongodb.com/docs/manual/core/queryable-encryption/install-library/
+.. _`MongoDB ODM documentation on Queryable Encryption`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/cookbook/queryable-encryption.html
