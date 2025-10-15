@@ -52,7 +52,7 @@ Additional options are available for advanced use cases.
 Supported KMS Providers
 -----------------------
 
-The ``kmsProvider`` option specifies a single KMS provider that will be used for encryption.
+The ``kmsProvider`` option specifies a single `KMS provider`_ that will be used for encryption.
 The type of KMS provider is specified with the ``type`` property along with its options.
 
 The configuration for each KMS provider varies and is described in the
@@ -102,15 +102,16 @@ attribute or the equivalent XML mapping.
 
 Read more about it in the `MongoDB ODM documentation on Queryable Encryption`_
 
-Encrypted Fields Map
---------------------
+Encrypted Fields Map (optional)
+-------------------------------
 
 The encrypted fields are set to the collection when you create it, and the MongoDB
 client will query the server for the collection schema before performing any
 operations. For **additional security**, you **can** also specify the encrypted fields
 in the connection configuration, which allows the client to use local rules
 instead of downloading the remote schema from the server, that could potentially
-be tampered with if an attacker compromises the server.
+be tampered with if an attacker compromises the server. Read more about it in the
+`Security Considerations`_.
 
 The Encrypted Fields Map is a list of all encrypted fields associated with all
 the collection namespaces that has encryption enabled. To configure it, you
@@ -292,6 +293,8 @@ Further Reading
 - `MongoDB PHP driver Manager::__construct <https://www.php.net/manual/en/mongodb-driver-manager.construct.php>`_
 - :doc:`config`
 
+.. _`KMS provider`: https://www.mongodb.com/docs/manual/core/queryable-encryption/fundamentals/kms-providers/
+.. _`Security Considerations`: https://www.mongodb.com/docs/manual/core/queryable-encryption/about-qe-csfle/#std-label-qe-csfle-security-considerations
 .. _`Encrypted Fields and Enabled Queries`: https://www.mongodb.com/docs/manual/core/queryable-encryption/fundamentals/encrypt-and-query/
 .. _`Automatic Encryption Shared Library`: https://www.mongodb.com/docs/manual/core/queryable-encryption/install-library/
 .. _`MongoDB ODM documentation on Queryable Encryption`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/cookbook/queryable-encryption.html
