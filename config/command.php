@@ -30,7 +30,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
 
         ->set('doctrine_mongodb.odm.command.encryption_dump_fields_map', DumpFieldsMapCommand::class)
             ->tag('console.command', ['command' => 'doctrine:mongodb:encryption:dump-fields-map'])
-            ->args([tagged_locator('doctrine_mongodb.odm.document_manager', 'name')])
+            ->args([service('doctrine_mongodb')])
 
         ->set('doctrine_mongodb.odm.command.create_schema', CreateSchemaDoctrineODMCommand::class)
             ->tag('console.command', ['command' => 'doctrine:mongodb:schema:create'])

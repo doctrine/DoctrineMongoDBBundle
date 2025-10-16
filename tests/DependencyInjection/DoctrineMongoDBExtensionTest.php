@@ -8,6 +8,8 @@ use Closure;
 use Composer\InstalledVersions;
 use Composer\Semver\VersionParser;
 use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
+use Doctrine\Bundle\MongoDBBundle\Command\Encryption\DiagnosticCommand;
+use Doctrine\Bundle\MongoDBBundle\Command\Encryption\DumpFieldsMapCommand;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\DocumentListenerBundle\EventListener\TestAttributeListener;
@@ -485,6 +487,34 @@ class DoctrineMongoDBExtensionTest extends TestCase
             ],
             $configuration->getMethodCalls(),
         );
+    }
+
+    public function testEncryptionCommands(): void
+    {
+        self::requireAutoEncryptionSupportInODM();
+
+        $container = $this->buildMinimalContainer();
+        $loader    = new DoctrineMongoDBExtension();
+
+        $config = [
+            'connections' => [
+                'default' => [
+                    'autoEncryption' => [
+                        'kmsProvider' => ['type' => 'local', 'key' => 'base64_encoded_key'],
+                    ],
+                ],
+            ],
+            'document_managers' => ['default' => []],
+        ];
+
+        $loader->load([$config], $container);
+        (new ServiceRepositoryCompilerPass())->process($container);
+
+        $dumpFieldsMapCommand = $container->get('doctrine_mongodb.odm.command.encryption_dump_fields_map');
+        $this->assertInstanceOf(DumpFieldsMapCommand::class, $dumpFieldsMapCommand);
+
+        $diagnosticCommand = $container->get('doctrine_mongodb.odm.command.encryption_diagnostic');
+        $this->assertInstanceOf(DiagnosticCommand::class, $diagnosticCommand);
     }
 
     public function testAutoEncryptionWithKeyVaultClientService(): void

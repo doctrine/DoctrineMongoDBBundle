@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Command\Encryption;
 
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use MongoDB\BSON\PackedArray;
@@ -14,8 +15,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Yaml\Dumper;
-use Symfony\Contracts\Service\ServiceCollectionInterface;
 
+use function assert;
 use function json_decode;
 use function json_encode;
 use function sprintf;
@@ -34,8 +35,7 @@ use const JSON_UNESCAPED_UNICODE;
 )]
 final class DumpFieldsMapCommand extends Command
 {
-    /** @param ServiceCollectionInterface<DocumentManager> $documentManagers */
-    public function __construct(private readonly ServiceCollectionInterface $documentManagers)
+    public function __construct(private readonly ManagerRegistry $registry)
     {
         parent::__construct();
     }
@@ -60,7 +60,8 @@ final class DumpFieldsMapCommand extends Command
 
         $dumper = new Dumper();
 
-        foreach ($this->documentManagers as $name => $documentManager) {
+        foreach ($this->registry->getManagers() as $name => $documentManager) {
+            assert($documentManager instanceof DocumentManager);
             $encryptedFieldsMap = [];
             foreach ($documentManager->getMetadataFactory()->getAllMetadata() as $metadata) {
                 $database               = $documentManager->getDocumentDatabase($metadata->getName());
