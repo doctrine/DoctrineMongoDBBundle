@@ -44,7 +44,7 @@ final class CommandTestKernel extends Kernel
         ]);
 
         $container->loadFromExtension('doctrine_mongodb', [
-            'connections' => ['default' => []],
+            'connections' => ['default' => ['server' => '%env(DOCTRINE_MONGODB_SERVER)%']],
             'document_managers' => [
                 'command_test' => [
                     'connection' => 'default',

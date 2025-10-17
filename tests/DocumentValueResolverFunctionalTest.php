@@ -111,7 +111,7 @@ class FooTestKernel extends Kernel
         ]);
 
         $c->loadFromExtension('doctrine_mongodb', [
-            'connections' => ['default' => []],
+            'connections' => ['default' => ['server' => '%env(DOCTRINE_MONGODB_SERVER)%']],
             'document_managers' => [
                 'default' => [
                     'mappings' => [
