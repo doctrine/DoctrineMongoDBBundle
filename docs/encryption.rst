@@ -29,9 +29,9 @@ Additional options are available for advanced use cases.
                     server: "mongodb://localhost:27017"
                     autoEncryption:
                         kmsProvider:
-                            local:
-                                key: "YOUR_BASE64_KEY"
-                        # Optional: see below for more options
+                            type: local
+                            key: "YOUR_BASE64_KEY"
+                        # See below for more optional configuration
 
     .. code-block:: php
 
@@ -45,7 +45,7 @@ Additional options are available for advanced use cases.
                         'type' => 'local',
                         'key' => 'YOUR_BASE64_KEY',
                     ],
-                    // ... other options ...
+                    // See below for more optional configuration
                 ]);
         };
 
