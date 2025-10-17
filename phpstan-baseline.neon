@@ -355,13 +355,13 @@ parameters:
 			path: src/Form/DoctrineMongoDBTypeGuesser.php
 
 		-
-			message: '#^Property Doctrine\\Bundle\\MongoDBBundle\\Form\\DoctrineMongoDBTypeGuesser\:\:\$cache \(array\<class\-string, array\{Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata, string\}\|null\>\) does not accept non\-empty\-array\<string, array\{Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata, string\}\|null\>\.$#'
+			message: '#^Property Doctrine\\Bundle\\MongoDBBundle\\Form\\DoctrineMongoDBTypeGuesser\:\:\$cache \(array\<class\-string, array\{Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata, string\}\|null\>\) does not accept array\<class\-string, array\{Doctrine\\Persistence\\Mapping\\ClassMetadata\<object\>, string\}\|null\>\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: src/Form/DoctrineMongoDBTypeGuesser.php
 
 		-
-			message: '#^Property Doctrine\\Bundle\\MongoDBBundle\\Form\\DoctrineMongoDBTypeGuesser\:\:\$cache \(array\<class\-string, array\{Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata, string\}\|null\>\) does not accept non\-empty\-array\<string, array\{Doctrine\\Persistence\\Mapping\\ClassMetadata\<object\>, string\}\|null\>\.$#'
+			message: '#^Property Doctrine\\Bundle\\MongoDBBundle\\Form\\DoctrineMongoDBTypeGuesser\:\:\$cache \(array\<class\-string, array\{Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata, string\}\|null\>\) does not accept non\-empty\-array\<string, array\{Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata, string\}\|null\>\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: src/Form/DoctrineMongoDBTypeGuesser.php
