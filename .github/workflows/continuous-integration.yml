@@ -6,6 +6,9 @@ on:
       - "*.x"
       - "feature/*"
   push:
+    branches:
+      - "*.x"
+      - "feature/*"
 
 env:
   fail-fast: true
@@ -14,8 +17,6 @@ jobs:
   phpunit:
     name: "PHPUnit"
     runs-on: "${{ matrix.os }}"
-    env:
-      SYMFONY_REQUIRE: ${{matrix.symfony-version}}
 
     strategy:
       fail-fast: false
@@ -27,34 +28,32 @@ jobs:
           - "8.2"
           - "8.3"
           - "8.4"
-        stability:
-          - "stable"
         symfony-version:
-          - "6.4.*"
-          - "7.2.*"
-          - "7.3.*"
+          - "locked"
         driver-version:
           - "stable"
         dependencies:
           - "highest"
         include:
           - dependencies: "lowest"
-            os: "ubuntu-24.04"
             php-version: "8.1"
             driver-version: "1.21.0"
-            stability: "stable"
             symfony-version: "6.4.*"
+          - dependencies: "stable"
+            php-version: "8.4"
+            symfony-version: "6.4.*"
+          - dependencies: "lowest"
+            php-version: "8.1"
+            symfony-version: "^7"
+          - dependencies: "stable"
+            php-version: "8.4"
+            symfony-version: "^7"
           - dependencies: "highest"
-            os: "ubuntu-24.04"
-            php-version: "8.2"
+            php-version: "8.1"
+            symfony-version: "^8"
+          - dependencies: "highest"
+            php-version: "8.4"
             driver-version: "mongodb/mongo-php-driver@v2.x"
-            stability: "dev"
-            symfony-version: "7.2.*"
-        exclude:
-          - php-version: "8.1"
-            symfony-version: "7.2.*"
-          - php-version: "8.1"
-            symfony-version: "7.3.*"
 
     services:
       mongodb:
@@ -92,13 +91,12 @@ jobs:
           coverage: "pcov"
           ini-values: "zend.assertions=1"
 
-      - name: "Set minimum-stability to stable in Composer"
-        run: "composer config minimum-stability ${{ matrix.stability }}"
-
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v3"
         with:
           dependency-versions: "${{ matrix.dependencies }}"
+        env:
+          SYMFONY_REQUIRE: ${{matrix.symfony-version}}
 
       - name: "Run PHPUnit"
         run: "vendor/bin/phpunit --coverage-clover=coverage.xml"
