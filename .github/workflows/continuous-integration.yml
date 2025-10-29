@@ -16,13 +16,11 @@ env:
 jobs:
   phpunit:
     name: "PHPUnit"
-    runs-on: "${{ matrix.os }}"
+    runs-on: "ubuntu-24.04"
 
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - "ubuntu-24.04"
         php-version:
           - "8.1"
           - "8.2"
