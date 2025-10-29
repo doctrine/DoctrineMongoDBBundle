@@ -17,6 +17,8 @@
     <xsd:attribute name="auto-generate-hydrator-classes" type="xsd:integer" />
     <xsd:attribute name="auto-generate-proxy-classes" type="xsd:integer" />
     <xsd:attribute name="auto-generate-persistent-collection-classes" type="xsd:integer" />
+    <xsd:attribute name="enable-native-lazy-object" type="xsd:boolean" />
+    <xsd:attribute name="enable-lazy-ghost-object" type="xsd:boolean" />
     <xsd:attribute name="default-connection" type="xsd:string" />
     <xsd:attribute name="default-database" type="xsd:string" />
     <xsd:attribute name="default-document-manager" type="xsd:string" />

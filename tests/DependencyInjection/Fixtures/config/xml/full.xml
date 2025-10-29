@@ -10,6 +10,8 @@
         auto-generate-hydrator-classes="1"
         auto-generate-proxy-classes="2"
         auto-generate-persistent-collection-classes="3"
+        enable-native-lazy-objects="false"
+        enable-lazy-ghost-objects="false"
         default-connection="conn1"
         default-database="default_db_name"
         default-document-manager="default_dm_name"

@@ -2,6 +2,8 @@ doctrine_mongodb:
     auto_generate_proxy_classes: 2
     auto_generate_hydrator_classes: true
     auto_generate_persistent_collection_classes: 3
+    enable_native_lazy_objects: false
+    enable_lazy_ghost_objects: false
     default_connection: conn1
     default_database: default_db_name
     default_document_manager: default_dm_name

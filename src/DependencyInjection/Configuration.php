@@ -7,6 +7,7 @@ namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use InvalidArgumentException;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -20,6 +21,7 @@ use function method_exists;
 use function preg_match;
 
 use const JSON_THROW_ON_ERROR;
+use const PHP_VERSION_ID;
 
 /**
  * FrameworkExtension configuration structure.
@@ -43,11 +45,34 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('proxy_namespace')->defaultValue('MongoDBODMProxies')->end()
                 ->scalarNode('proxy_dir')->defaultValue('%kernel.cache_dir%/doctrine/odm/mongodb/Proxies')->end()
+                ->booleanNode('enable_native_lazy_objects')
+                    ->defaultValue(PHP_VERSION_ID >= 80400 && method_exists(ODMConfiguration::class, 'setUseNativeLazyObject'))
+                    ->info('Requires PHP 8.4+ and doctrine/mongodb-odm 2.14+')
+                    ->setDeprecated('doctrine/mongodb-odm-bundle', '5.4', 'The "%node%" option is deprecated and will be removed in 6.0. Native Lazy Objects are enable by default when using PHP 8.4+ and doctrine/mongodb-odm 2.14+.')
+                    ->validate()
+                        ->ifTrue()
+                        ->then(static function (): void {
+                            if (PHP_VERSION_ID < 80400) {
+                                throw new InvalidArgumentException('Native lazy objects require PHP 8.4 or higher.');
+                            }
+
+                            if (! method_exists(ODMConfiguration::class, 'setUseNativeLazyObject')) {
+                                throw new InvalidArgumentException('Native lazy objects require doctrine/mongodb-odm 2.14 or higher.');
+                            }
+                        })
+                    ->end()
+                ->end()
                 ->booleanNode('enable_lazy_ghost_objects')
                     ->defaultValue(method_exists(ODMConfiguration::class, 'setUseLazyGhostObject'))
+                    ->info('Requires doctrine/mongodb-odm 2.12+')
+                    ->setDeprecated('doctrine/mongodb-odm-bundle', '5.4', 'The "%node%" option is deprecated and will be removed in 6.0. Native Lazy Objects are enable by default when using PHP 8.4+ and doctrine/mongodb-odm 2.14+.')
                     ->validate()
-                        ->ifTrue(static fn ($v) => $v === true && ! method_exists(ODMConfiguration::class, 'setUseLazyGhostObject'))
-                        ->thenInvalid('Lazy ghost objects require doctrine/mongodb-odm 2.10 or higher.')
+                        ->ifTrue()
+                        ->then(static function (): void {
+                            if (! method_exists(ODMConfiguration::class, 'setUseLazyGhostObject')) {
+                                throw new InvalidArgumentException('Lazy ghost objects require doctrine/mongodb-odm 2.10 or higher.');
+                            }
+                        })
                     ->end()
                 ->end()
                 ->scalarNode('auto_generate_proxy_classes')
