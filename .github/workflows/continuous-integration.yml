@@ -29,7 +29,7 @@ jobs:
           - "8.3"
           - "8.4"
         symfony-version:
-          - "locked"
+          - ""
         driver-version:
           - "stable"
         dependencies:
@@ -40,10 +40,10 @@ jobs:
             php-version: "8.1"
             driver-version: "1.21.0"
 
-          # Test LTS
-          - symfony-require: "6.4.*"
+          # Test Symfony LTS
+          - symfony-version: "6.4.*"
             php-version: "8.4"
-          - symfony-require: "7.4.*"
+          - symfony-version: "7.4.*"
             php-version: "8.4"
 
           # Test with the latest driver version
