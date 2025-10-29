@@ -38,7 +38,7 @@ class TestCase extends BaseTestCase
             $config->setUseLazyGhostObject(false);
         }
 
-        $uri = getenv('MONGODB_URI') ?? throw new RuntimeException('The MONGODB_URI environment variable is not set.');
+        $uri = getenv('MONGODB_URI') ?: throw new RuntimeException('The MONGODB_URI environment variable is not set.');
 
         return DocumentManager::create(new Client($uri), $config);
     }
