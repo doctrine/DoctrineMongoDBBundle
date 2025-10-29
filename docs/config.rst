@@ -635,7 +635,7 @@ Lazy object implementation
 Doctrine MongoDB ODM uses lazy objects for lazy instantiation of references.
 The original implementation is based on the `ProxyManager` library.
 Since version 2.10 of Doctrine MongoDB ODM, support for Symfony lazy ghost
-objects has been added. And in version 2.14, support for PHP 7.4 native lazy
+objects has been added. And in version 2.14, support for PHP 8.4 native lazy
 objects has been added.
 
 The bundle select the best available lazy object implementation based on the
