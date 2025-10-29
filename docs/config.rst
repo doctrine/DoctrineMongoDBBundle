@@ -629,6 +629,47 @@ Using Queryable Encryption
 
 For details on configuring Queryable Encryption (QE) and Client-Side Field-Level Encryption (CSFLE), see :doc:`encryption`.
 
+Lazy object implementation
+--------------------------
+
+Doctrine MongoDB ODM uses lazy objects for lazy instantiation of references.
+The original implementation is based on the `ProxyManager` library.
+Since version 2.10 of Doctrine MongoDB ODM, support for Symfony lazy ghost
+objects has been added. And in version 2.14, support for PHP 7.4 native lazy
+objects has been added.
+
+The bundle select the best available lazy object implementation based on the
+installed packages and PHP version. You can override this behavior by setting
+the following configuration options to enable or disable specific lazy object
+implementations. This is not recommended unless you have a specific reason to do
+so. Please open an issue if the default Native Lazy Objects are not working as
+expected.
+
+- ``enable_native_lazy_objects`` is ``true`` by default when PHP 8.4+ and ``doctrine/mongodb-odm`` 2.14+ are installed.
+  When enabled, native lazy objects will be used for lazy loading references.
+- ``enable_lazy_ghost_objects`` is ``true`` by default when ``doctrine/mongodb-odm`` 2.10+ is installed.
+  When enabled, Symfony lazy ghost objects will be used for lazy loading references.
+  This option is ignored if ``enable_native_lazy_objects`` is ``true``.
+- When both options are ``false``, the original ``ProxyManager`` based lazy objects will be used.
+
+.. configuration-block::
+
+    .. code-block:: yaml
+
+        doctrine_mongodb:
+            enable_native_lazy_objects: false
+            enable_lazy_ghost_objects: false
+
+
+    .. code-block:: php
+
+        use Symfony\Config\DoctrineMongodbConfig;
+
+        return static function (DoctrineMongodbConfig $config): void {
+            $config->enableNativeLazyObjects(false);
+            $config->enableLazyGhostObjects(false);
+
+
 Full Default Configuration
 --------------------------
 
@@ -739,6 +780,8 @@ Full Default Configuration
             default_document_manager:  ~
             default_connection:   ~
             default_database:     default
+            enable_native_lazy_objects: true     # Enabled by default if PHP 8.4+ and doctrine/mongodb-odm 2.14+ are installed
+            enable_lazy_ghost_objects: true      # Enabled by default if doctrine/mongodb-odm 2.10+ is installed
 
     .. code-block:: xml
 
@@ -814,6 +857,8 @@ Full Default Configuration
         return static function (DoctrineMongodbConfig $config): void {
             $config->autoGenerateHydratorClasses(0);
             $config->autoGenerateProxyClasses(0);
+            $config->enableNativeLazyObjects(true);    // Enabled by default if PHP 8.4+ and doctrine/mongodb-odm 2.14+ are installed
+            $config->enableLazyGhostObjects(true);     // Enabled by default if doctrine/mongodb-odm 2.10+ is installed
             $config->defaultConnection('');
             $config->defaultDatabase('default');
             $config->defaultDocumentManager('');

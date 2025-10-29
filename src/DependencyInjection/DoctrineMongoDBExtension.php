@@ -486,9 +486,8 @@ class DoctrineMongoDBExtension extends Extension
             $container->removeDefinition('doctrine_mongodb.odm.command.load_data_fixtures');
         }
 
-        // Requires doctrine/mongodb-odm 2.10
         $container->getDefinition('doctrine_mongodb')
-            ->setArgument(5, $config['enable_lazy_ghost_objects'] ? Proxy::class : LazyLoadingInterface::class);
+            ->setArgument(5, $config['enable_lazy_ghost_objects'] ? LazyLoadingInterface::class : Proxy::class);
 
         // load the connections
         $this->loadConnections($config['connections'], $container, $config);
@@ -501,7 +500,11 @@ class DoctrineMongoDBExtension extends Extension
             $config['default_document_manager'],
             $config['default_database'],
             $container,
-            $config['enable_lazy_ghost_objects'],
+            match (true) {
+                $config['enable_native_lazy_objects'] => 'setUseNativeLazyObject',
+                $config['enable_lazy_ghost_objects'] => 'setUseLazyGhostObject',
+                default => null,
+            },
             $config['connections'],
         );
 
@@ -599,7 +602,7 @@ class DoctrineMongoDBExtension extends Extension
      * @param ContainerBuilder     $container   A ContainerBuilder instance
      * @param array<string, mixed> $connections Configuration of connections
      */
-    protected function loadDocumentManagers(array $dmConfigs, string|null $defaultDM, string $defaultDB, ContainerBuilder $container, bool $useLazyGhostObject = false, array $connections = []): void
+    protected function loadDocumentManagers(array $dmConfigs, string|null $defaultDM, string $defaultDB, ContainerBuilder $container, ?string $lazyObjectSetter = null, array $connections = []): void
     {
         $dms = [];
         foreach ($dmConfigs as $name => $documentManager) {
@@ -609,7 +612,7 @@ class DoctrineMongoDBExtension extends Extension
                 $defaultDM,
                 $defaultDB,
                 $container,
-                $useLazyGhostObject,
+                $lazyObjectSetter,
                 $connections,
             );
             $dms[$name] = sprintf('doctrine_mongodb.odm.%s_document_manager', $name);
@@ -627,7 +630,7 @@ class DoctrineMongoDBExtension extends Extension
      * @param ContainerBuilder     $container       A ContainerBuilder instance
      * @param array<string, mixed> $connections     Configuration of connections
      */
-    protected function loadDocumentManager(array $documentManager, string|null $defaultDM, string $defaultDB, ContainerBuilder $container, bool $useLazyGhostObject = false, array $connections = []): void
+    protected function loadDocumentManager(array $documentManager, string|null $defaultDM, string $defaultDB, ContainerBuilder $container, ?string $lazyObjectSetter = null, array $connections = []): void
     {
         $connectionName  = $documentManager['connection'] ?? $documentManager['name'];
         $configurationId = sprintf('doctrine_mongodb.odm.%s_configuration', $documentManager['name']);
@@ -675,8 +678,8 @@ class DoctrineMongoDBExtension extends Extension
             $methods['setDefaultMasterKey'] = $autoEncryption['masterKey'] ?? null;
         }
 
-        if ($useLazyGhostObject) {
-            $methods['setUseLazyGhostObject'] = $useLazyGhostObject;
+        if ($lazyObjectSetter) {
+            $methods[$lazyObjectSetter] = true;
         }
 
         if (method_exists(ODMConfiguration::class, 'setUseTransactionalFlush')) {
