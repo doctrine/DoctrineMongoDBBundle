@@ -20,7 +20,6 @@ use MongoDB\Client;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use stdClass;
-use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Container;
@@ -28,12 +27,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 use function array_diff_key;
 use function array_merge;
-use function class_exists;
-use function interface_exists;
 use function is_dir;
 use function method_exists;
 use function sprintf;
@@ -363,14 +359,6 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
     public function testMessengerIntegration(): void
     {
-        if (! interface_exists(MessageBusInterface::class)) {
-            $this->markTestSkipped('Symfony Messenger component is not installed');
-        }
-
-        if (! class_exists(DoctrineClearEntityManagerWorkerSubscriber::class)) {
-            $this->markTestSkipped('DoctrineClearEntityManagerWorkerSubscriber is not available in symfony/doctrine-bridge');
-        }
-
         $loader = new DoctrineMongoDBExtension();
         $loader->load(self::buildConfiguration(), $container = $this->buildMinimalContainer());
 
