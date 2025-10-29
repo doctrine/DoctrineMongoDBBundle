@@ -27,7 +27,7 @@ class TestCase extends BaseTestCase
         $config->setHydratorNamespace('SymfonyTests\Doctrine');
         $config->setMetadataDriverImpl(new AttributeDriver($paths));
         $config->setMetadataCache(new ArrayAdapter());
-        $uri = getenv('DOCTRINE_MONGODB_SERVER') ?: 'mongodb://localhost:27017';
+        $uri = getenv('MONGODB_URI');
 
         return DocumentManager::create(new Client($uri), $config);
     }
