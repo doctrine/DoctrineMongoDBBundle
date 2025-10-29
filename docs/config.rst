@@ -642,7 +642,7 @@ installed packages and PHP version. You can override this behavior by setting
 the following configuration options disable specific lazy object implementations.
 This is not recommended unless you have a specific reason to do so.
 Please open an issue if the default Native Lazy Objects are not working as expected
-as it is the preferred implementation, other will be removed in future versions.
+as it is the preferred implementation. The other implementations will be removed in a future version.
 
 - ``enable_native_lazy_objects`` is ``true`` by default when PHP 8.4+ and ``doctrine/mongodb-odm`` 2.14+ are installed.
   When enabled, native lazy objects will be used for lazy loading references.
