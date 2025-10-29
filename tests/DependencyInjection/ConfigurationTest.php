@@ -43,6 +43,7 @@ class ConfigurationTest extends TestCase
             'auto_generate_proxy_classes'    => ODMConfiguration::AUTOGENERATE_EVAL,
             'auto_generate_persistent_collection_classes' => ODMConfiguration::AUTOGENERATE_NEVER,
             'enable_lazy_ghost_objects'      => method_exists(ODMConfiguration::class, 'setUseLazyGhostObject'),
+            'enable_native_lazy_object'      => false,
             'default_database'               => 'default',
             'document_managers'              => [],
             'connections'                    => [],
@@ -79,6 +80,7 @@ class ConfigurationTest extends TestCase
             'auto_generate_proxy_classes'    => ODMConfiguration::AUTOGENERATE_FILE_NOT_EXISTS,
             'auto_generate_persistent_collection_classes' => ODMConfiguration::AUTOGENERATE_EVAL,
             'enable_lazy_ghost_objects'      => method_exists(ODMConfiguration::class, 'setUseLazyGhostObject'),
+            'enable_native_lazy_object'      => false,
             'default_connection'             => 'conn1',
             'default_database'               => 'default_db_name',
             'default_document_manager'       => 'default_dm_name',
@@ -760,6 +762,24 @@ class ConfigurationTest extends TestCase
         $configuration   = new Configuration();
         $processedConfig = $processor->processConfiguration($configuration, [$config]);
         $this->assertFalse(array_key_exists('replicaSet', $processedConfig['connections']['conn1']['options']));
+    }
+
+    public function testLazyOptionsAreMutuallyExclusive(): void
+    {
+        $config = [
+            'enable_lazy_ghost_objects' => true,
+            'enable_native_lazy_object' => true,
+            'connections' => ['default' => []],
+            'document_managers' => ['default' => []],
+        ];
+
+        $processor     = new Processor();
+        $configuration = new Configuration();
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('mutually exclusive');
+
+        $processor->processConfiguration($configuration, [$config]);
     }
 
     /**

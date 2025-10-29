@@ -361,6 +361,33 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $this->assertTrue($container->getAlias('doctrine_mongodb.odm.document_manager')->isPublic());
     }
 
+    public function testEnableNativeLazyObjectWiresConfigurationAndProxyArg(): void
+    {
+        // Skip if ODM doesn't have the API
+        if (! method_exists(Configuration::class, 'setUseNativeLazyObject')) {
+            $this->markTestSkipped('Installed version of doctrine/mongodb-odm does not support native lazy objects');
+        }
+
+        $loader = new DoctrineMongoDBExtension();
+        $container = $this->buildMinimalContainer();
+        $container->setParameter('kernel.debug', false);
+        $container->setParameter('kernel.bundles', []);
+        $container->setParameter('kernel.bundles_metadata', []);
+
+        $loader->load(self::buildConfiguration(['enable_native_lazy_object' => true]), $container);
+
+        // Assert ODM Configuration gets setUseNativeLazyObject(true)
+        $definition = $container->getDefinition('doctrine_mongodb.odm.default_configuration');
+        $this->assertContains([
+            'setUseNativeLazyObject',
+            [true],
+        ], $definition->getMethodCalls());
+
+        // doctrine_mongodb service should use Proxy interface when lazy is enabled
+        $doctrineDef = $container->getDefinition('doctrine_mongodb');
+        $this->assertSame(\Doctrine\Persistence\Proxy::class, $doctrineDef->getArgument(5));
+    }
+
     public function testMessengerIntegration(): void
     {
         if (! interface_exists(MessageBusInterface::class)) {
