@@ -28,7 +28,7 @@ jobs:
           - "8.2"
           - "8.3"
           - "8.4"
-        symfony-version:
+        symfony-require:
           - ""
         driver-version:
           - "stable"
@@ -41,9 +41,9 @@ jobs:
             driver-version: "1.21.0"
 
           # Test Symfony LTS
-          - symfony-version: "6.4.*"
+          - symfony-require: "6.4.*"
             php-version: "8.4"
-          - symfony-version: "7.4.*"
+          - symfony-require: "7.4.*"
             php-version: "8.4"
 
           # Test with the latest driver version
@@ -91,10 +91,12 @@ jobs:
         with:
           dependency-versions: "${{ matrix.dependencies }}"
         env:
-          SYMFONY_REQUIRE: ${{matrix.symfony-version}}
+          SYMFONY_REQUIRE: ${{matrix.symfony-require}}
 
       - name: "Run PHPUnit"
         run: "vendor/bin/phpunit --coverage-clover=coverage.xml"
+        env:
+          SYMFONY_DEPRECATIONS_HELPER: ${{ matrix.dependencies == 'lowest' && 'disabled=1' || 'max[direct]=0' }}
 
       - name: "Upload coverage file"
         uses: "actions/upload-artifact@v5"
