@@ -35,25 +35,20 @@ jobs:
         dependencies:
           - "highest"
         include:
+          # Tests the lowest set of dependencies
           - dependencies: "lowest"
             php-version: "8.1"
             driver-version: "1.21.0"
-            symfony-version: "6.4.*"
-          - dependencies: "stable"
+
+          # Test LTS
+          - symfony-require: "6.4.*"
             php-version: "8.4"
-            symfony-version: "6.4.*"
-          - dependencies: "lowest"
-            php-version: "8.1"
-            symfony-version: "^7"
-          - dependencies: "stable"
+          - symfony-require: "7.4.*"
             php-version: "8.4"
-            symfony-version: "^7"
-          - dependencies: "highest"
-            php-version: "8.1"
-            symfony-version: "^8"
-          - dependencies: "highest"
+
+          # Test with the latest driver version
+          - driver-version: "mongodb/mongo-php-driver@v2.x"
             php-version: "8.4"
-            driver-version: "mongodb/mongo-php-driver@v2.x"
 
     services:
       mongodb:
