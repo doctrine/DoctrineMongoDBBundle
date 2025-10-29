@@ -50,6 +50,13 @@ class Configuration implements ConfigurationInterface
                         ->thenInvalid('Lazy ghost objects require doctrine/mongodb-odm 2.10 or higher.')
                     ->end()
                 ->end()
+                ->booleanNode('enable_native_lazy_object')
+                    ->defaultFalse()
+                    ->validate()
+                        ->ifTrue(static fn ($v) => $v === true && ! method_exists(ODMConfiguration::class, 'setUseNativeLazyObject'))
+                        ->thenInvalid('Native lazy objects require a newer doctrine/mongodb-odm providing Configuration::setUseNativeLazyObject.')
+                    ->end()
+                ->end()
                 ->scalarNode('auto_generate_proxy_classes')
                     ->defaultValue(ODMConfiguration::AUTOGENERATE_EVAL)
                     ->beforeNormalization()
@@ -108,6 +115,12 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+            ->end()
+            ->validate()
+                ->ifTrue(static function ($v) {
+                    return ($v['enable_lazy_ghost_objects'] ?? false) && ($v['enable_native_lazy_object'] ?? false);
+                })
+                ->thenInvalid('Options "enable_lazy_ghost_objects" and "enable_native_lazy_object" are mutually exclusive.')
             ->end();
 
         return $treeBuilder;

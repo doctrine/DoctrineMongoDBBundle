@@ -70,6 +70,24 @@ Sample Configuration
 }
 
 
+Lazy objects configuration
+--------------------------
+
+The bundle supports two ways to avoid classic Doctrine proxies:
+
+- ``enable_lazy_ghost_objects``: uses ghost objects (requires doctrine/mongodb-odm >= 2.10).
+- ``enable_native_lazy_object``: uses PHP native lazy objects when supported by your ODM version.
+
+These options are mutually exclusive. Example YAML configuration:
+
+.. code-block:: yaml
+
+    doctrine_mongodb:
+        # enable one of the following (not both):
+        enable_lazy_ghost_objects: false
+        enable_native_lazy_object: true
+
+
 .. tip::
 
     If each environment requires a different MongoDB connection URI, you can

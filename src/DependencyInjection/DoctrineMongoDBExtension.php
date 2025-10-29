@@ -487,8 +487,10 @@ class DoctrineMongoDBExtension extends Extension
         }
 
         // Requires doctrine/mongodb-odm 2.10
+        // For native lazy objects or lazy ghost objects, we don't rely on ProxyManager lazy-loading interfaces
+        $useProxyInterface = ($config['enable_lazy_ghost_objects'] || ($config['enable_native_lazy_object'] ?? false)) ? Proxy::class : LazyLoadingInterface::class;
         $container->getDefinition('doctrine_mongodb')
-            ->setArgument(5, $config['enable_lazy_ghost_objects'] ? Proxy::class : LazyLoadingInterface::class);
+            ->setArgument(5, $useProxyInterface);
 
         // load the connections
         $this->loadConnections($config['connections'], $container, $config);
@@ -502,6 +504,7 @@ class DoctrineMongoDBExtension extends Extension
             $config['default_database'],
             $container,
             $config['enable_lazy_ghost_objects'],
+            $config['enable_native_lazy_object'] ?? false,
             $config['connections'],
         );
 
@@ -599,7 +602,7 @@ class DoctrineMongoDBExtension extends Extension
      * @param ContainerBuilder     $container   A ContainerBuilder instance
      * @param array<string, mixed> $connections Configuration of connections
      */
-    protected function loadDocumentManagers(array $dmConfigs, string|null $defaultDM, string $defaultDB, ContainerBuilder $container, bool $useLazyGhostObject = false, array $connections = []): void
+    protected function loadDocumentManagers(array $dmConfigs, string|null $defaultDM, string $defaultDB, ContainerBuilder $container, bool $useLazyGhostObject = false, bool $useNativeLazyObject = false, array $connections = []): void
     {
         $dms = [];
         foreach ($dmConfigs as $name => $documentManager) {
@@ -610,6 +613,7 @@ class DoctrineMongoDBExtension extends Extension
                 $defaultDB,
                 $container,
                 $useLazyGhostObject,
+                $useNativeLazyObject,
                 $connections,
             );
             $dms[$name] = sprintf('doctrine_mongodb.odm.%s_document_manager', $name);
@@ -627,7 +631,7 @@ class DoctrineMongoDBExtension extends Extension
      * @param ContainerBuilder     $container       A ContainerBuilder instance
      * @param array<string, mixed> $connections     Configuration of connections
      */
-    protected function loadDocumentManager(array $documentManager, string|null $defaultDM, string $defaultDB, ContainerBuilder $container, bool $useLazyGhostObject = false, array $connections = []): void
+    protected function loadDocumentManager(array $documentManager, string|null $defaultDM, string $defaultDB, ContainerBuilder $container, bool $useLazyGhostObject = false, bool $useNativeLazyObject = false, array $connections = []): void
     {
         $connectionName  = $documentManager['connection'] ?? $documentManager['name'];
         $configurationId = sprintf('doctrine_mongodb.odm.%s_configuration', $documentManager['name']);
@@ -677,6 +681,14 @@ class DoctrineMongoDBExtension extends Extension
 
         if ($useLazyGhostObject) {
             $methods['setUseLazyGhostObject'] = $useLazyGhostObject;
+        }
+
+        if ($useNativeLazyObject) {
+            if (! method_exists(ODMConfiguration::class, 'setUseNativeLazyObject')) {
+                throw new InvalidArgumentException(sprintf('The "enable_native_lazy_object" option requires doctrine/mongodb-odm with Configuration::setUseNativeLazyObject(), "%s" installed.', self::getODMVersion()));
+            }
+
+            $methods['setUseNativeLazyObject'] = true;
         }
 
         if (method_exists(ODMConfiguration::class, 'setUseTransactionalFlush')) {
