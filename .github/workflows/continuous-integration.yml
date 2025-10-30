@@ -44,10 +44,6 @@ jobs:
           - symfony-require: "7.4.*"
             php-version: "8.4"
 
-          # Test with the latest driver version
-          - driver-version: "mongodb/mongo-php-driver@v2.x"
-            php-version: "8.4"
-
     services:
       mongodb:
         image: "mongo"
@@ -99,7 +95,7 @@ jobs:
       - name: "Upload coverage file"
         uses: "actions/upload-artifact@v5"
         with:
-          name: "phpunit-${{ matrix.php-version }}-${{ hashFiles('composer.lock') }}.coverage"
+          name: "phpunit-${{ matrix.php-version }}-${{ hashFiles('composer.lock') }}-${{ matrix.driver-version }}.coverage"
           path: "coverage.xml"
 
   upload_coverage:
