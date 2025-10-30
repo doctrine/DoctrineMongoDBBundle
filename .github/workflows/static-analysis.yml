@@ -13,6 +13,9 @@ on:
       - phpstan*
       - tests/StaticAnalysis/**
   push:
+    branches:
+      - "*.x"
+      - "feature/*"
 
 jobs:
   static-analysis:

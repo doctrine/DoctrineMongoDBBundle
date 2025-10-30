@@ -6,6 +6,9 @@ on:
       - "*.x"
       - "feature/*"
   push:
+    branches:
+      - "*.x"
+      - "feature/*"
 
 env:
   fail-fast: true
@@ -13,48 +16,33 @@ env:
 jobs:
   phpunit:
     name: "PHPUnit"
-    runs-on: "${{ matrix.os }}"
-    env:
-      SYMFONY_REQUIRE: ${{matrix.symfony-version}}
+    runs-on: "ubuntu-24.04"
 
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - "ubuntu-24.04"
         php-version:
           - "8.1"
           - "8.2"
           - "8.3"
           - "8.4"
-        stability:
-          - "stable"
-        symfony-version:
-          - "6.4.*"
-          - "7.2.*"
-          - "7.3.*"
+        symfony-require:
+          - ""
         driver-version:
           - "stable"
         dependencies:
           - "highest"
         include:
+          # Tests the lowest set of dependencies
           - dependencies: "lowest"
-            os: "ubuntu-24.04"
             php-version: "8.1"
             driver-version: "1.21.0"
-            stability: "stable"
-            symfony-version: "6.4.*"
-          - dependencies: "highest"
-            os: "ubuntu-24.04"
-            php-version: "8.2"
-            driver-version: "mongodb/mongo-php-driver@v2.x"
-            stability: "dev"
-            symfony-version: "7.2.*"
-        exclude:
-          - php-version: "8.1"
-            symfony-version: "7.2.*"
-          - php-version: "8.1"
-            symfony-version: "7.3.*"
+
+          # Test Symfony LTS
+          - symfony-require: "6.4.*"
+            php-version: "8.4"
+          - symfony-require: "7.4.*"
+            php-version: "8.4"
 
     services:
       mongodb:
@@ -92,21 +80,22 @@ jobs:
           coverage: "pcov"
           ini-values: "zend.assertions=1"
 
-      - name: "Set minimum-stability to stable in Composer"
-        run: "composer config minimum-stability ${{ matrix.stability }}"
-
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v3"
         with:
           dependency-versions: "${{ matrix.dependencies }}"
+        env:
+          SYMFONY_REQUIRE: ${{matrix.symfony-require}}
 
       - name: "Run PHPUnit"
         run: "vendor/bin/phpunit --coverage-clover=coverage.xml"
+        env:
+          SYMFONY_DEPRECATIONS_HELPER: ${{ matrix.dependencies == 'lowest' && 'disabled=1' || 'max[direct]=0' }}
 
       - name: "Upload coverage file"
         uses: "actions/upload-artifact@v5"
         with:
-          name: "phpunit-${{ matrix.php-version }}-${{ hashFiles('composer.lock') }}.coverage"
+          name: "phpunit-${{ matrix.php-version }}-${{ hashFiles('composer.lock') }}-${{ matrix.driver-version }}.coverage"
           path: "coverage.xml"
 
   upload_coverage:

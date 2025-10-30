@@ -30,13 +30,13 @@
         "doctrine/mongodb-odm": "^2.6",
         "doctrine/persistence": "^3.0 || ^4.0",
         "psr/log": "^1.0 || ^2.0 || ^3.0",
-        "symfony/config": "^6.4 || ^7.0",
-        "symfony/console": "^6.4 || ^7.0",
-        "symfony/dependency-injection": "^6.4 || ^7.0",
-        "symfony/doctrine-bridge": "^6.4 || ^7.0",
-        "symfony/framework-bundle": "^6.4 || ^7.0",
-        "symfony/http-kernel": "^6.4 || ^7.0",
-        "symfony/options-resolver": "^6.4 || ^7.0"
+        "symfony/config": "^6.4 || ^7.0 || ^8.0",
+        "symfony/console": "^6.4 || ^7.0 || ^8.0",
+        "symfony/dependency-injection": "^6.4 || ^7.0 || ^8.0",
+        "symfony/doctrine-bridge": "^6.4 || ^7.0 || ^8.0",
+        "symfony/framework-bundle": "^6.4 || ^7.0 || ^8.0",
+        "symfony/http-kernel": "^6.4 || ^7.0 || ^8.0",
+        "symfony/options-resolver": "^6.4 || ^7.0 || ^8.0"
     },
     "require-dev": {
         "composer/semver": "^3.4",
@@ -45,14 +45,14 @@
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^10.5",
         "squizlabs/php_codesniffer": "^4",
-        "symfony/browser-kit": "^6.4 || ^7.0",
-        "symfony/form": "^6.4 || ^7.0",
-        "symfony/messenger": "^6.4 || ^7.0",
+        "symfony/browser-kit": "^6.4 || ^7.0 || ^8.0",
+        "symfony/form": "^6.4 || ^7.0 || ^8.0",
+        "symfony/messenger": "^6.4 || ^7.0 || ^8.0",
         "symfony/phpunit-bridge": "^6.4.1 || ^7.0.1",
-        "symfony/security-bundle": "^6.4 || ^7.0",
-        "symfony/stopwatch": "^6.4 || ^7.0",
-        "symfony/validator": "^6.4 || ^7.0",
-        "symfony/yaml": "^6.4 || ^7.0"
+        "symfony/security-bundle": "^6.4 || ^7.0 || ^8.0",
+        "symfony/stopwatch": "^6.4 || ^7.0 || ^8.0",
+        "symfony/validator": "^6.4 || ^7.0 || ^8.0",
+        "symfony/yaml": "^6.4 || ^7.0 || ^8.0"
     },
     "conflict": {
         "doctrine/data-fixtures": "<1.8 || >=3"
@@ -60,7 +60,8 @@
     "suggest": {
         "doctrine/data-fixtures": "Load data fixtures"
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "Doctrine\\Bundle\\MongoDBBundle\\": "src"
