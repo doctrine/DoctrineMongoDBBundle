@@ -32,14 +32,24 @@ class TestCase extends BaseTestCase
         $config->setMetadataDriverImpl(new AttributeDriver($paths));
         $config->setMetadataCache(new ArrayAdapter());
 
-        if (PHP_VERSION_ID >= 80400 && method_exists($config, 'setUseLazyGhostObject')) {
+        if (self::useNativeLazyObject()) {
             $config->setUseNativeLazyObject(true);
-        } elseif (method_exists($config, 'setUseLazyGhostObject')) {
-            $config->setUseLazyGhostObject(false);
+        } elseif (self::useLazyGhostObject()) {
+            $config->setUseLazyGhostObject(true);
         }
 
         $uri = getenv('MONGODB_URI') ?: throw new RuntimeException('The MONGODB_URI environment variable is not set.');
 
         return DocumentManager::create(new Client($uri), $config);
+    }
+
+    public static function useNativeLazyObject(): bool
+    {
+        return PHP_VERSION_ID >= 80400 && method_exists(Configuration::class, 'setUseNativeLazyObject');
+    }
+
+    public static function useLazyGhostObject(): bool
+    {
+        return method_exists(Configuration::class, 'setUseLazyGhostObject') && ! self::useNativeLazyObject();
     }
 }

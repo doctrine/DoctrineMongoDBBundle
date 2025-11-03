@@ -10,13 +10,13 @@ use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\ComplexFilter;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\DisabledFilter;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Repository\CustomGridFSRepository;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Repository\CustomRepository;
+use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\PhpUnit\ExpectDeprecationTrait;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
@@ -27,8 +27,6 @@ use function array_key_exists;
 use function array_merge;
 use function file_get_contents;
 use function method_exists;
-
-use const PHP_VERSION_ID;
 
 class ConfigurationTest extends TestCase
 {
@@ -45,7 +43,7 @@ class ConfigurationTest extends TestCase
             'auto_generate_proxy_classes'    => ODMConfiguration::AUTOGENERATE_EVAL,
             'auto_generate_persistent_collection_classes' => ODMConfiguration::AUTOGENERATE_NEVER,
             'enable_lazy_ghost_objects'      => method_exists(ODMConfiguration::class, 'setUseLazyGhostObject'),
-            'enable_native_lazy_objects'     => PHP_VERSION_ID >= 80400 && method_exists(ODMConfiguration::class, 'setUseNativeLazyObject'),
+            'enable_native_lazy_objects'     => self::useNativeLazyObject(),
             'default_database'               => 'default',
             'document_managers'              => [],
             'connections'                    => [],
