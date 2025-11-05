@@ -56,6 +56,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
                 abstract_arg('Proxy Interface Name'),
                 service('service_container'),
             ])
+            ->tag('kernel.reset', ['method' => 'reset'])
 
         ->set('doctrine_mongodb.odm.listeners.resolve_target_document', ResolveTargetDocumentListener::class)
 
