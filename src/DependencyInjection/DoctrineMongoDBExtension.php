@@ -235,7 +235,7 @@ class DoctrineMongoDBExtension extends Extension
         }
 
         if (! $bundleConfig['dir']) {
-            if (in_array($bundleConfig['type'], ['staticphp', 'attribute'])) {
+            if (in_array($bundleConfig['type'], ['attribute'])) {
                 $bundleConfig['dir'] = $bundleClassDir . '/' . $this->getMappingObjectDefaultName();
             } else {
                 $bundleConfig['dir'] = $bundleDir . '/' . $this->getMappingResourceConfigDirectory($bundleDir);
@@ -325,8 +325,8 @@ class DoctrineMongoDBExtension extends Extension
             throw new InvalidArgumentException(sprintf('Specified non-existing directory "%s" as Doctrine mapping source.', $mappingConfig['dir']));
         }
 
-        if (! in_array($mappingConfig['type'], ['xml', 'php', 'staticphp', 'attribute'])) {
-            throw new InvalidArgumentException(sprintf('Can only configure "xml", "yml", "php", "staticphp" or "attribute" through the DoctrineBundle. Use your own bundle to configure other metadata drivers. You can register them by adding a new driver to the "%s" service definition.', $this->getObjectManagerElementName($objectManagerName . '_metadata_driver')));
+        if (! in_array($mappingConfig['type'], ['xml', 'attribute'])) {
+            throw new InvalidArgumentException(sprintf('Can only configure  "xml" or "attribute" through the DoctrineMongoDBBundle. Use your own bundle to configure other metadata drivers. You can register them by adding a new driver to the "%s" service definition.', $this->getObjectManagerElementName($objectManagerName . '_metadata_driver')));
         }
     }
 
