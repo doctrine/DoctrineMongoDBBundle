@@ -46,6 +46,12 @@ use function trait_exists;
 
 use const PHP_VERSION_ID;
 
+/**
+ * @phpstan-type ConfigurationArray array{
+ *     enable_lazy_ghost_objects?: bool,
+ *     enable_native_lazy_objects?: bool,
+ * }
+ */
 class DoctrineMongoDBExtensionTest extends TestCase
 {
     public static function buildConfiguration(array $settings = []): array
@@ -727,6 +733,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $loader->load([$config], $container);
     }
 
+    /** @phpstan-param ConfigurationArray $config */
     #[DataProvider('provideLazyObjectConfigurations')]
     public function testRegistryGetManagerForClass(array $config): void
     {
@@ -761,6 +768,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         self::assertSame($dm, $registry->getManagerForClass($ref::class), 'The manager is found for the proxy document class');
     }
 
+    /** @phpstan-return iterable<ConfigurationArray> */
     public static function provideLazyObjectConfigurations(): iterable
     {
         if (interface_exists(GhostObjectInterface::class)) {
