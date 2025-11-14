@@ -758,7 +758,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         // Create a lazy object
         $ref = $dm->getReference(TestDocument::class, 'some');
         self::assertInstanceOf(TestDocument::class, $ref);
-        self::assertSame($dm, $registry->getManagerForClass($ref::class));
+        self::assertSame($dm, $registry->getManagerForClass($ref::class), 'The manager is found for the proxy document class');
     }
 
     public static function provideLazyObjectConfigurations(): iterable
