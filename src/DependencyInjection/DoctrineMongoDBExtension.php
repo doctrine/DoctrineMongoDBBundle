@@ -74,6 +74,8 @@ use const GLOB_NOSORT;
 
 /**
  * Doctrine MongoDB ODM extension.
+ *
+ * @internal Since 5.5. This class must not be used outside the DoctrineMongoDBBundle package.
  */
 class DoctrineMongoDBExtension extends Extension
 {
