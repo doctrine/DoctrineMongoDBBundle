@@ -10,31 +10,48 @@ use Composer\Semver\VersionParser;
 use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
 use Doctrine\Bundle\MongoDBBundle\Command\Encryption\DiagnosticCommand;
 use Doctrine\Bundle\MongoDBBundle\Command\Encryption\DumpFieldsMapCommand;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CreateProxyDirectoryPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\AttributesBundle\Document\TestDocument;
 use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\DocumentListenerBundle\EventListener\TestAttributeListener;
 use Doctrine\ODM\MongoDB\Configuration;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations;
 use InvalidArgumentException;
 use MongoDB\Client;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use ProxyManager\Proxy\GhostObjectInterface;
 use stdClass;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;
+use Symfony\Component\DependencyInjection\Compiler\ResolveParameterPlaceHoldersPass;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\VarExporter\LazyGhostTrait;
 
 use function array_diff_key;
 use function array_merge;
+use function interface_exists;
 use function is_dir;
 use function method_exists;
 use function sprintf;
 use function sys_get_temp_dir;
+use function trait_exists;
 
+use const PHP_VERSION_ID;
+
+/**
+ * @phpstan-type ConfigurationArray array{
+ *     enable_lazy_ghost_objects?: bool,
+ *     enable_native_lazy_objects?: bool,
+ * }
+ */
 class DoctrineMongoDBExtensionTest extends TestCase
 {
     public static function buildConfiguration(array $settings = []): array
@@ -714,6 +731,63 @@ class DoctrineMongoDBExtensionTest extends TestCase
         self::expectException(InvalidArgumentException::class);
         self::expectExceptionMessage('The "autoEncryption" option requires doctrine/mongodb-odm version 2.12 or higher');
         $loader->load([$config], $container);
+    }
+
+    /** @phpstan-param ConfigurationArray $config */
+    #[DataProvider('provideLazyObjectConfigurations')]
+    public function testRegistryGetManagerForClass(array $config): void
+    {
+        $container = $this->getContainer('AttributesBundle');
+        $loader    = new DoctrineMongoDBExtension();
+        $loader->load(self::buildConfiguration($config + [
+            'connections' => [
+                'default' => [],
+            ],
+            'document_managers' => [
+                'default' => [
+                    'mappings' => [
+                        'AttributesBundle' => ['type' => 'attribute'],
+                    ],
+                ],
+            ],
+        ]), $container);
+        (new ResolveParameterPlaceHoldersPass())->process($container);
+        (new ServiceRepositoryCompilerPass())->process($container);
+        (new CreateProxyDirectoryPass())->process($container);
+
+        $container->compile();
+        $registry = $container->get('doctrine_mongodb');
+        $dm       = $container->get('doctrine_mongodb.odm.document_manager');
+
+        self::assertInstanceOf(ManagerRegistry::class, $registry);
+        self::assertInstanceOf(DocumentManager::class, $dm);
+
+        // Create a lazy object
+        $ref = $dm->getReference(TestDocument::class, 'some');
+        self::assertInstanceOf(TestDocument::class, $ref);
+        self::assertSame($dm, $registry->getManagerForClass($ref::class), 'The manager is found for the proxy document class');
+    }
+
+    /** @phpstan-return iterable<ConfigurationArray> */
+    public static function provideLazyObjectConfigurations(): iterable
+    {
+        if (interface_exists(GhostObjectInterface::class)) {
+            yield 'Proxy Manager' => [
+                ['enable_lazy_ghost_objects' => false, 'enable_native_lazy_objects' => false],
+            ];
+        }
+
+        if (trait_exists(LazyGhostTrait::class) && method_exists(Configuration::class, 'setUseLazyGhostObject')) {
+            yield 'Symfony Lazy Objects' => [
+                ['enable_lazy_ghost_objects' => true, 'enable_native_lazy_objects' => false],
+            ];
+        }
+
+        if (PHP_VERSION_ID >= 80400 && method_exists(Configuration::class, 'setUseNativeLazyObject')) {
+            yield 'Native Lazy Objects' => [
+                ['enable_lazy_ghost_objects' => false, 'enable_native_lazy_objects' => true],
+            ];
+        }
     }
 
     private static function requireAutoEncryptionSupportInODM(): void
