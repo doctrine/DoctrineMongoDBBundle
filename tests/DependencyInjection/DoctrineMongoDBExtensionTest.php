@@ -777,13 +777,13 @@ class DoctrineMongoDBExtensionTest extends TestCase
             ];
         }
 
-        if (trait_exists(LazyGhostTrait::class)) {
+        if (trait_exists(LazyGhostTrait::class) && method_exists(Configuration::class, 'setUseLazyGhostObject')) {
             yield 'Symfony Lazy Objects' => [
                 ['enable_lazy_ghost_objects' => true, 'enable_native_lazy_objects' => false],
             ];
         }
 
-        if (PHP_VERSION_ID >= 80400) {
+        if (PHP_VERSION_ID >= 80400 && method_exists(Configuration::class, 'setUseNativeLazyObject')) {
             yield 'Native Lazy Objects' => [
                 ['enable_lazy_ghost_objects' => false, 'enable_native_lazy_objects' => true],
             ];
