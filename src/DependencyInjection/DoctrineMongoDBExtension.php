@@ -487,7 +487,7 @@ class DoctrineMongoDBExtension extends Extension
         }
 
         $container->getDefinition('doctrine_mongodb')
-            ->setArgument(5, $config['enable_lazy_ghost_objects'] ? LazyLoadingInterface::class : Proxy::class);
+            ->setArgument(5, $config['enable_lazy_ghost_objects'] ? Proxy::class : LazyLoadingInterface::class);
 
         // load the connections
         $this->loadConnections($config['connections'], $container, $config);
