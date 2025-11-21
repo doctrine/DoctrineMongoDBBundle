@@ -36,7 +36,6 @@ class ProxyCacheWarmerTest extends TestCase
         $dm = $this->createTestDocumentManager([__DIR__ . '/../Fixtures/Validator']);
         $r  = new ReflectionObject($dm);
         $p  = $r->getProperty('proxyFactory');
-        $p->setAccessible(true);
         $p->setValue($dm, $this->proxyMock);
 
         $registryStub = $this->getMockBuilder(ManagerRegistry::class)->disableOriginalConstructor()->getMock();

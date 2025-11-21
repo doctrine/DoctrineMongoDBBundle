@@ -70,7 +70,6 @@ abstract class AbstractDriverTestCase extends TestCase
     private function getDriverLocator(FileDriver $driver): FileLocator
     {
         $ref = new ReflectionProperty($driver, 'locator');
-        $ref->setAccessible(true);
 
         return $ref->getValue($driver);
     }
