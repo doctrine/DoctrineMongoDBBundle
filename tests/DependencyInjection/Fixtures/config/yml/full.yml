@@ -13,7 +13,7 @@ doctrine_mongodb:
     proxy_namespace: Test_Proxies
     persistent_collection_dir: "%kernel.cache_dir%/doctrine/odm/mongodb/Test_Pcolls"
     persistent_collection_namespace: Test_Pcolls
-    share_type_registry: true
+    type_registry: false
 
     resolve_target_documents:
         Foo\BarInterface: Bar\FooClass

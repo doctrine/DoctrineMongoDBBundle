@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\TypeRegistryPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\BasicFilter;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\ComplexFilter;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\DisabledFilter;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
+use Doctrine\Bundle\MongoDBBundle\Types\LazyTypeRegistry;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -25,6 +27,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 use function array_map;
@@ -469,16 +472,27 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
 
         $container->getCompilerPassConfig()->setOptimizationPasses([]);
         $container->getCompilerPassConfig()->setRemovingPasses([]);
+        $container->addCompilerPass(new TypeRegistryPass());
         $container->compile();
 
         $calls = $container->getDefinition('doctrine_mongodb.odm.type_registry.abstract')->getMethodCalls();
         $this->assertCount(4, $calls, '4 calls to TypeRegistry::register() are expected.');
-        $this->assertEquals(['register', ['custom_type_shortcut', 'Vendor\Type\CustomTypeShortcut']], $calls[0]);
-        $this->assertEquals(['register', ['custom_type', 'Vendor\Type\CustomType']], $calls[1]);
+        $this->assertSame(['register', ['custom_type_shortcut', 'Vendor\Type\CustomTypeShortcut']], $calls[0]);
+        $this->assertSame(['register', ['custom_type', 'Vendor\Type\CustomType']], $calls[1]);
         $this->assertEquals(['register', ['service_type_shortcut', new Reference('app.mongodb.custom_type_service')]], $calls[2]);
         $this->assertEquals(['register', ['service_type', new Reference('app.mongodb.custom_type_service')]], $calls[3]);
 
         $this->assertEquals(new Reference('doctrine_mongodb.odm.default_type_registry'), $container->getDefinition('doctrine_mongodb.odm.default_document_manager')->getArgument(3));
+
+        $typeRegistryDefinition = $container->getDefinition('doctrine_mongodb.odm.default_type_registry');
+        $this->assertSame(LazyTypeRegistry::class, $typeRegistryDefinition->getClass());
+        $locatorDefinition = $typeRegistryDefinition->getArgument(0);
+        $this->assertInstanceOf(Definition::class, $locatorDefinition);
+        $this->assertSame(ServiceLocator::class, $locatorDefinition->getClass());
+        $this->assertSame([
+            'custom_type_with_tag' => 'Vendor\Type\CustomTypeWithTag',
+            'custom_type_with_tag_and_default_manager' => 'Vendor\Type\CustomTypeWithTagAndDefaultManager',
+        ], $locatorDefinition->getArgument(0));
     }
 
     /**

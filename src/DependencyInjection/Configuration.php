@@ -81,15 +81,17 @@ class Configuration implements ConfigurationInterface
                         })
                     ->end()
                 ->end()
-                ->booleanNode('share_type_registry')
-                    ->defaultTrue()
-                    ->info('Share the TypeRegistry instance between all DocumentManagers')
+                ->booleanNode('type_registry')
+                    ->defaultFalse()
+                    ->info('If true, create a distinct TypeRegistry for each DocumentManager and inject services with the tag "doctrine_mongodb.field_type". If false, use the same shared TypeRegistry for all the DocumentManagers.')
                     ->validate()
-                        ->ifFalse()
-                        ->then(static function (): void {
+                        ->ifTrue()
+                        ->then(static function ($v): bool {
                             if (! class_exists(TypeRegistry::class)) {
-                                throw new InvalidArgumentException('Not sharing the type registry requires doctrine/mongodb-odm 2.16 or higher.');
+                                throw new InvalidArgumentException('TypeRegistry requires doctrine/mongodb-odm 2.16 or higher.');
                             }
+
+                            return $v;
                         })
                     ->end()
                 ->end()

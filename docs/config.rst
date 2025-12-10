@@ -317,9 +317,11 @@ your documents.
             </doctrine_mongodb:config>
         </container>
 
-You can also use a service as custom type by providing the service id. It's
-necessary to disable the shared type registry by setting ``share_type_registry``
-to ``false`` in this case.
+You can register custom types by adding the tag ``doctrine_mongodb.odm.field_type``
+to services with the following parameters:
+ - ``type`` is the name of the type. Must be unique.
+ - ``object_manager`` (optional) name of the document manager where the type
+   will be registered. If not set, the type will be registered in all document managers.
 
 .. configuration-block::
 
@@ -330,7 +332,7 @@ to ``false`` in this case.
                 class: Fully\Qualified\Class\Name
 
         doctrine_mongodb:
-            share_type_registry: false
+            type_registry: true
             types:
                 custom_type: @app.custom_type_service
 
@@ -349,7 +351,7 @@ to ``false`` in this case.
             </services>
 
             <doctrine_mongodb:config
-                share-type-registry="false"
+                type-registry="true"
             >
                 <doctrine_mongodb:type name="custom_type" service="app.custom_type_service" />
             </doctrine_mongodb:config>
@@ -358,6 +360,10 @@ to ``false`` in this case.
 .. note::
 
     Defining a custom type as a service requires Doctrine MongoDB ODM 2.16 or higher.
+
+You can also register services as custom types by tagging with the
+``#[AsFieldType]`` attribute and enabling autoconfiguration.
+See `Registering Custom Field Types` for more details.
 
 Filters
 -------
@@ -980,6 +986,7 @@ Full Default Configuration
         };
 
 .. _`Custom types`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/current/reference/custom-mapping-types.html
+.. _`Registering Custom Field Types`: cookbook/field_type
 .. _`define it as an environment variable`: https://symfony.com/doc/current/configuration.html#configuration-based-on-environment-variables
 .. _`connection string`: https://docs.mongodb.com/manual/reference/connection-string/#urioption.authSource
 .. _`Replica Sets`: https://www.php.net/manual/en/mongo.connecting.rs.php

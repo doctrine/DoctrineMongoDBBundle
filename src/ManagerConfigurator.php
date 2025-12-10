@@ -49,6 +49,8 @@ class ManagerConfigurator
     /**
      * Loads custom types.
      *
+     * @param array<string, array{class?: class-string<Type>, service?: Type}> $types
+     *
      * @throws MappingException
      */
     public static function loadTypes(array $types): void
@@ -57,13 +59,17 @@ class ManagerConfigurator
         if (class_exists(TypeRegistry::class)) {
             $registry = TypeRegistry::getSharedInstance();
             foreach ($types as $typeName => $typeConfig) {
-                $registry->register($typeName, $typeConfig['class'] ?? $typeConfig['service']);
+                $registry->register($typeName, $typeConfig['class'] ?? $typeConfig['service'] ?? throw new MappingException('Type class or service must be provided'));
             }
 
             return;
         }
 
         foreach ($types as $typeName => $typeConfig) {
+            if (! isset($typeConfig['class'])) {
+                throw new MappingException('Type "class" must be provided for ODM versions prior to 2.16');
+            }
+
             if (Type::hasType($typeName)) {
                 Type::overrideType($typeName, $typeConfig['class']);
             } else {

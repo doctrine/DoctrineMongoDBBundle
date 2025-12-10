@@ -29,7 +29,7 @@
     <xsd:attribute name="proxy-dir" type="xsd:string" />
     <xsd:attribute name="proxy-namespace" type="xsd:string" />
     <xsd:attribute name="fixture-loader" type="xsd:string" />
-    <xsd:attribute name="share-type-registry" type="xsd:boolean" />
+    <xsd:attribute name="type-registry" type="xsd:boolean" />
   </xsd:complexType>
 
   <xsd:complexType name="default-commit-options">

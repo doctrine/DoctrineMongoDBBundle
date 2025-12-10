@@ -8,6 +8,7 @@ use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CreateHydratorDir
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CreateProxyDirectoryPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\TypeRegistryPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -41,6 +42,7 @@ class DoctrineMongoDBBundle extends Bundle
         $container->addCompilerPass(new DoctrineValidationPass('mongodb'));
         $container->addCompilerPass(new ServiceRepositoryCompilerPass());
         $container->addCompilerPass(new FixturesCompilerPass());
+        $container->addCompilerPass(new TypeRegistryPass());
 
         if (! $container->hasExtension('security')) {
             return;

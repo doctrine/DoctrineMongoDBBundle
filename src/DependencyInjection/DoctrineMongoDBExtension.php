@@ -10,6 +10,7 @@ use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
 use Doctrine\Bundle\MongoDBBundle\DataCollector\ConnectionDiagnostic;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\TypeRegistryPass;
 use Doctrine\Bundle\MongoDBBundle\Fixture\ODMFixtureInterface;
 use Doctrine\Bundle\MongoDBBundle\ManagerConfigurator;
 use Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver;
@@ -477,14 +478,15 @@ class DoctrineMongoDBExtension extends Extension
 
             return $typeConfig;
         }, $config['types'] ?? []);
-
-        if ($config['share_type_registry']) {
-            if ($customTypes) {
+        if (! $config['type_registry']) {
+            if (! empty($config['types'])) {
                 $configuratorDefinition = $container->getDefinition('doctrine_mongodb.odm.manager_configurator.abstract');
                 /** @see ManagerConfigurator::loadTypes() */
                 $configuratorDefinition->addMethodCall('loadTypes', [$customTypes]);
             }
         } else {
+            TypeRegistryPass::registerAutoconfiguration($container);
+
             $typeRegistryDef = $container->register('doctrine_mongodb.odm.type_registry.abstract', TypeRegistry::class)
                 ->setAbstract(true)
                 ->setPublic(false);
@@ -767,9 +769,9 @@ class DoctrineMongoDBExtension extends Extension
         ];
 
         if ($container->has('doctrine_mongodb.odm.type_registry.abstract')) {
-            $typeRegistryName = sprintf('doctrine_mongodb.odm.%s_type_registry', $connectionName);
-            $container->registerChild($typeRegistryName, 'doctrine_mongodb.odm.type_registry.abstract');
-            $odmDmArgs[] = new Reference($typeRegistryName);
+            $typeRegistryId = sprintf('doctrine_mongodb.odm.%s_type_registry', $documentManager['name']);
+            $container->registerChild($typeRegistryId, 'doctrine_mongodb.odm.type_registry.abstract');
+            $odmDmArgs[] = new Reference($typeRegistryId);
         }
 
         $odmDmDef = new Definition(DocumentManager::class, $odmDmArgs);

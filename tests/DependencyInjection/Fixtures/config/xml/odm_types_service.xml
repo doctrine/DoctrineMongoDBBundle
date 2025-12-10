@@ -6,7 +6,7 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
                         http://symfony.com/schema/dic/doctrine/odm/mongodb http://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
 
-    <doctrine:mongodb share-type-registry="false">
+    <doctrine:mongodb type-registry="true">
         <doctrine:connection id="default" server="mongodb://localhost:27017" />
         <doctrine:document-manager id="default" connection="default" />
         <doctrine:type name="custom_type_shortcut" class="Vendor\Type\CustomTypeShortcut" />
@@ -14,4 +14,15 @@
         <doctrine:type name="service_type_shortcut" service="app.mongodb.custom_type_service" />
         <doctrine:type name="service_type" service="app.mongodb.custom_type_service" />
     </doctrine:mongodb>
+    <services>
+        <service id="Vendor\Type\CustomTypeWithTag">
+            <tag name="doctrine_mongodb.odm.field_type" type="custom_type_with_tag" />
+        </service>
+        <service id="Vendor\Type\CustomTypeWithTagAndDefaultManager">
+            <tag name="doctrine_mongodb.odm.field_type" type="custom_type_with_tag_and_default_manager" object-manager="default" />
+        </service>
+        <service id="Vendor\Type\CustomTypeWithTagOtherManager">
+            <tag name="doctrine_mongodb.odm.field_type" type="custom_type_with_tag_and_other_manager" object-manager="other" />
+        </service>
+    </services>
 </container>
