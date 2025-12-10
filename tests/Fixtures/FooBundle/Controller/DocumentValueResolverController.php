@@ -8,7 +8,7 @@ use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\Document\User;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 final class DocumentValueResolverController
