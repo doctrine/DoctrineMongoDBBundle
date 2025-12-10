@@ -40,10 +40,10 @@ jobs:
             driver-version: "1.21.0"
 
           # Test Symfony LTS
-          - symfony-require: "6.4.*"
-            php-version: "8.4"
-          - symfony-require: "7.4.*"
-            php-version: "8.4"
+          - php-version: "8.4"
+            symfony-require: "6.4.*"
+          - php-version: "8.4"
+            symfony-require: "7.4.*"
 
     services:
       mongodb:
