@@ -33,7 +33,7 @@ class TestCase extends BaseTestCase
         $config->setMetadataCache(new ArrayAdapter());
 
         if (PHP_VERSION_ID >= 80400 && method_exists($config, 'setUseLazyGhostObject')) {
-            $config->setUseLazyGhostObject(true);
+            $config->setUseNativeLazyObject(true);
         } elseif (method_exists($config, 'setUseLazyGhostObject')) {
             $config->setUseLazyGhostObject(false);
         }
