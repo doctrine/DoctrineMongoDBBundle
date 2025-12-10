@@ -77,6 +77,10 @@ class DoctrineMongoDBBundle extends Bundle
     private function registerAutoloader(DocumentManager $documentManager): void
     {
         $configuration = $documentManager->getConfiguration();
+        if ($configuration->isLazyGhostObjectEnabled() || $configuration->isNativeLazyObjectEnabled()) {
+            return;
+        }
+
         if ($configuration->getAutoGenerateProxyClasses() !== Configuration::AUTOGENERATE_FILE_NOT_EXISTS) {
             return;
         }

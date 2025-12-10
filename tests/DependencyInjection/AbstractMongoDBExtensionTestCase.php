@@ -13,11 +13,13 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use MongoDB\Client;
 use PHPUnit\Framework\AssertionFailedError;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\MemcachedAdapter;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -449,6 +451,34 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.manager_configurator.abstract');
         $this->assertDefinitionMethodCallAny($definition, 'loadTypes', [$expected]);
+        $this->assertFalse($container->has('doctrine_mongodb.odm.type_registry'));
+    }
+
+    public function testCustomTypesService(): void
+    {
+        $container = $this->getContainer();
+        $loader    = new DoctrineMongoDBExtension();
+        $container->registerExtension($loader);
+
+        if (! class_exists(TypeRegistry::class)) {
+            self::expectException(InvalidConfigurationException::class);
+            self::expectExceptionMessage('Using a service for a MongoDB ODM type requires doctrine/mongodb-odm 2.16 or higher.');
+        }
+
+        $this->loadFromFile($container, 'odm_types_service');
+
+        $container->getCompilerPassConfig()->setOptimizationPasses([]);
+        $container->getCompilerPassConfig()->setRemovingPasses([]);
+        $container->compile();
+
+        $calls = $container->getDefinition('doctrine_mongodb.odm.type_registry.abstract')->getMethodCalls();
+        $this->assertCount(4, $calls, '4 calls to TypeRegistry::register() are expected.');
+        $this->assertEquals(['register', ['custom_type_shortcut', 'Vendor\Type\CustomTypeShortcut']], $calls[0]);
+        $this->assertEquals(['register', ['custom_type', 'Vendor\Type\CustomType']], $calls[1]);
+        $this->assertEquals(['register', ['service_type_shortcut', new Reference('app.mongodb.custom_type_service')]], $calls[2]);
+        $this->assertEquals(['register', ['service_type', new Reference('app.mongodb.custom_type_service')]], $calls[3]);
+
+        $this->assertEquals(new Reference('doctrine_mongodb.odm.default_type_registry'), $container->getDefinition('doctrine_mongodb.odm.default_document_manager')->getArgument(3));
     }
 
     /**

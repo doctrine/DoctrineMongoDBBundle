@@ -7,9 +7,12 @@ namespace Doctrine\Bundle\MongoDBBundle;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
+
+use function class_exists;
 
 /**
- * Configurator for an DocumentManager
+ * Configurator for a DocumentManager
  */
 class ManagerConfigurator
 {
@@ -29,7 +32,7 @@ class ManagerConfigurator
     }
 
     /**
-     * Enable filters for an given document manager
+     * Enable filters for a given document manager
      */
     private function enableFilters(DocumentManager $documentManager): void
     {
@@ -50,6 +53,16 @@ class ManagerConfigurator
      */
     public static function loadTypes(array $types): void
     {
+        // TypeRegistry was introduced in MongoDB ODM 2.16
+        if (class_exists(TypeRegistry::class)) {
+            $registry = TypeRegistry::getSharedInstance();
+            foreach ($types as $typeName => $typeConfig) {
+                $registry->register($typeName, $typeConfig['class'] ?? $typeConfig['service']);
+            }
+
+            return;
+        }
+
         foreach ($types as $typeName => $typeConfig) {
             if (Type::hasType($typeName)) {
                 Type::overrideType($typeName, $typeConfig['class']);

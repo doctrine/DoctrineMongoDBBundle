@@ -317,15 +317,47 @@ your documents.
             </doctrine_mongodb:config>
         </container>
 
-    .. code-block:: php
+You can also use a service as custom type by providing the service id. It's
+necessary to disable the shared type registry by setting ``share_type_registry``
+to ``false`` in this case.
 
-        use Symfony\Config\DoctrineMongodbConfig;
+.. configuration-block::
 
-        return static function (DoctrineMongodbConfig $config): void {
-            $config->type('custom_type')
-                ->class(\Fully\Qualified\Class\Name::class)
-            ;
-        }
+    .. code-block:: yaml
+
+        services:
+            app.custom_type_service:
+                class: Fully\Qualified\Class\Name
+
+        doctrine_mongodb:
+            share_type_registry: false
+            types:
+                custom_type: @app.custom_type_service
+
+    .. code-block:: xml
+
+        <?xml version="1.0" ?>
+
+        <container xmlns="http://symfony.com/schema/dic/services"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:doctrine_mongodb="http://symfony.com/schema/dic/doctrine/odm/mongodb"
+                   xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd
+                                        http://symfony.com/schema/dic/doctrine/odm/mongodb https://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+
+            <services>
+                <service id="app.custom_type_service" class="Fully\Qualified\Class\Name" />
+            </services>
+
+            <doctrine_mongodb:config
+                share-type-registry="false"
+            >
+                <doctrine_mongodb:type name="custom_type" service="app.custom_type_service" />
+            </doctrine_mongodb:config>
+        </container>
+
+.. note::
+
+    Defining a custom type as a service requires Doctrine MongoDB ODM 2.16 or higher.
 
 Filters
 -------

@@ -1,0 +1,19 @@
+doctrine_mongodb:
+    share_type_registry: false
+    connections:
+        default:
+            server: mongodb://localhost:27017
+    document_managers:
+        default:
+            connection: default
+    types:
+        custom_type_shortcut: Vendor\Type\CustomTypeShortcut
+        custom_type:
+            class: Vendor\Type\CustomType
+        service_type_shortcut: '@app.mongodb.custom_type_service'
+        service_type:
+            service: 'app.mongodb.custom_type_service'
+
+services:
+    app.mongodb.custom_type_service:
+        class: Vendor\Type\CustomTypeService

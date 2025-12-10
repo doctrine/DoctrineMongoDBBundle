@@ -11,6 +11,7 @@ use Doctrine\Bundle\MongoDBBundle\DataCollector\ConnectionDiagnostic;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\Fixture\ODMFixtureInterface;
+use Doctrine\Bundle\MongoDBBundle\ManagerConfigurator;
 use Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver;
 use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepositoryInterface;
 use Doctrine\Common\DataFixtures\Loader as DataFixturesLoader;
@@ -24,6 +25,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\MappedSuperclass;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\QueryResultDocument;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\View;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use Doctrine\Persistence\Proxy;
 use InvalidArgumentException;
@@ -54,6 +56,7 @@ use function array_diff_key;
 use function array_flip;
 use function array_key_first;
 use function array_keys;
+use function array_map;
 use function array_merge;
 use function array_replace;
 use function array_values;
@@ -467,9 +470,28 @@ class DoctrineMongoDBExtension extends Extension
 
         $container->setParameter('doctrine_mongodb.odm.default_document_manager', $config['default_document_manager']);
 
-        if (! empty($config['types'])) {
-            $configuratorDefinition = $container->getDefinition('doctrine_mongodb.odm.manager_configurator.abstract');
-            $configuratorDefinition->addMethodCall('loadTypes', [$config['types']]);
+        $customTypes = array_map(static function (array $typeConfig): array {
+            if (isset($typeConfig['service'])) {
+                $typeConfig['service'] = new Reference($typeConfig['service']);
+            }
+
+            return $typeConfig;
+        }, $config['types'] ?? []);
+
+        if ($config['share_type_registry']) {
+            if ($customTypes) {
+                $configuratorDefinition = $container->getDefinition('doctrine_mongodb.odm.manager_configurator.abstract');
+                /** @see ManagerConfigurator::loadTypes() */
+                $configuratorDefinition->addMethodCall('loadTypes', [$customTypes]);
+            }
+        } else {
+            $typeRegistryDef = $container->register('doctrine_mongodb.odm.type_registry.abstract', TypeRegistry::class)
+                ->setAbstract(true)
+                ->setPublic(false);
+            foreach ($customTypes as $typeName => $typeConfig) {
+                /** @see TypeRegistry::register() */
+                $typeRegistryDef->addMethodCall('register', [$typeName, $typeConfig['class'] ?? $typeConfig['service']]);
+            }
         }
 
         // set some options as parameters and unset them
@@ -743,7 +765,14 @@ class DoctrineMongoDBExtension extends Extension
             // Document managers will share their connection's event manager
             new Reference(sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $connectionName)),
         ];
-        $odmDmDef  = new Definition(DocumentManager::class, $odmDmArgs);
+
+        if ($container->has('doctrine_mongodb.odm.type_registry.abstract')) {
+            $typeRegistryName = sprintf('doctrine_mongodb.odm.%s_type_registry', $connectionName);
+            $container->registerChild($typeRegistryName, 'doctrine_mongodb.odm.type_registry.abstract');
+            $odmDmArgs[] = new Reference($typeRegistryName);
+        }
+
+        $odmDmDef = new Definition(DocumentManager::class, $odmDmArgs);
         $odmDmDef->setFactory([DocumentManager::class, 'create']);
         $odmDmDef->addTag('doctrine_mongodb.odm.document_manager');
         $odmDmDef->setPublic(true);

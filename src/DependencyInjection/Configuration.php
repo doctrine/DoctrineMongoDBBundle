@@ -7,11 +7,13 @@ namespace Doctrine\Bundle\MongoDBBundle\DependencyInjection;
 use Doctrine\ODM\MongoDB\Configuration as ODMConfiguration;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use InvalidArgumentException;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
+use function class_exists;
 use function count;
 use function in_array;
 use function is_array;
@@ -19,6 +21,8 @@ use function is_string;
 use function json_decode;
 use function method_exists;
 use function preg_match;
+use function str_starts_with;
+use function substr;
 
 use const JSON_THROW_ON_ERROR;
 use const PHP_VERSION_ID;
@@ -73,6 +77,18 @@ class Configuration implements ConfigurationInterface
                         ->then(static function (): void {
                             if (! method_exists(ODMConfiguration::class, 'setUseLazyGhostObject')) {
                                 throw new InvalidArgumentException('Lazy ghost objects require doctrine/mongodb-odm 2.10 or higher.');
+                            }
+                        })
+                    ->end()
+                ->end()
+                ->booleanNode('share_type_registry')
+                    ->defaultTrue()
+                    ->info('Share the TypeRegistry instance between all DocumentManagers')
+                    ->validate()
+                        ->ifFalse()
+                        ->then(static function (): void {
+                            if (! class_exists(TypeRegistry::class)) {
+                                throw new InvalidArgumentException('Not sharing the type registry requires doctrine/mongodb-odm 2.16 or higher.');
                             }
                         })
                     ->end()
@@ -546,10 +562,29 @@ class Configuration implements ConfigurationInterface
                     ->prototype('array')
                         ->beforeNormalization()
                             ->ifString()
-                            ->then(static fn ($v) => ['class' => $v])
+                            ->then(static fn ($v) => str_starts_with($v, '@') ? ['service' => substr($v, 1)] : ['class' => $v])
+                        ->end()
+                        ->validate()
+                            ->ifArray()
+                            ->then(static function ($v) {
+                                if (! isset($v['class']) && ! isset($v['service'])) {
+                                    throw new InvalidArgumentException('Each MongoDB ODM type must have either a "class" or "service" key defined.');
+                                }
+
+                                if (isset($v['class']) && isset($v['service'])) {
+                                    throw new InvalidArgumentException('Each MongoDB ODM type cannot have both "class" and "service" keys defined at the same time.');
+                                }
+
+                                if (isset($v['service']) && ! class_exists(TypeRegistry::class)) {
+                                    throw new InvalidArgumentException('Using a service for a MongoDB ODM type requires doctrine/mongodb-odm 2.16 or higher.');
+                                }
+
+                                return $v;
+                            })
                         ->end()
                         ->children()
-                            ->scalarNode('class')->isRequired()->end()
+                            ->scalarNode('class')->end()
+                            ->scalarNode('service')->end()
                         ->end()
                     ->end()
                 ->end()

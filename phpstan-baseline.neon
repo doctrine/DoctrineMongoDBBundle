@@ -1,6 +1,12 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Class Doctrine\\ODM\\MongoDB\\Types\\TypeRegistry not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: config/mongodb.php
+
+		-
 			message: '#^Class Symfony\\Component\\ExpressionLanguage\\ExpressionLanguage not found\.$#'
 			identifier: class.notFound
 			count: 1
