@@ -157,30 +157,6 @@ parameters:
 			path: src/DependencyInjection/Compiler/DoctrineMongoDBMappingsPass.php
 
 		-
-			message: '#^Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition\:\:children\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: src/DependencyInjection/Configuration.php
-
-		-
-			message: '#^Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition\:\:fixXmlConfig\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/DependencyInjection/Configuration.php
-
-		-
-			message: '#^Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition\:\:performNoDeepMerging\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/DependencyInjection/Configuration.php
-
-		-
-			message: '#^Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface\:\:end\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/DependencyInjection/Configuration.php
-
-		-
 			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\ODM\\\\MongoDB\\\\Configuration'' and ''setUseLazyGhostObje…'' will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 2
@@ -190,30 +166,6 @@ parameters:
 			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\ODM\\\\MongoDB\\\\Configuration'' and ''setUseNativeLazyObj…'' will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 2
-			path: src/DependencyInjection/Configuration.php
-
-		-
-			message: '#^Parameter \#1 \$rootNode of method Doctrine\\Bundle\\MongoDBBundle\\DependencyInjection\\Configuration\:\:addConnectionsSection\(\) expects Symfony\\Component\\Config\\Definition\\Builder\\ArrayNodeDefinition, Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/DependencyInjection/Configuration.php
-
-		-
-			message: '#^Parameter \#1 \$rootNode of method Doctrine\\Bundle\\MongoDBBundle\\DependencyInjection\\Configuration\:\:addDocumentManagersSection\(\) expects Symfony\\Component\\Config\\Definition\\Builder\\ArrayNodeDefinition, Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/DependencyInjection/Configuration.php
-
-		-
-			message: '#^Parameter \#1 \$rootNode of method Doctrine\\Bundle\\MongoDBBundle\\DependencyInjection\\Configuration\:\:addResolveTargetDocumentsSection\(\) expects Symfony\\Component\\Config\\Definition\\Builder\\ArrayNodeDefinition, Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/DependencyInjection/Configuration.php
-
-		-
-			message: '#^Parameter \#1 \$rootNode of method Doctrine\\Bundle\\MongoDBBundle\\DependencyInjection\\Configuration\:\:addTypesSection\(\) expects Symfony\\Component\\Config\\Definition\\Builder\\ArrayNodeDefinition, Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition given\.$#'
-			identifier: argument.type
-			count: 1
 			path: src/DependencyInjection/Configuration.php
 
 		-
@@ -653,6 +605,24 @@ parameters:
 			identifier: property.unused
 			count: 1
 			path: tests/DependencyInjection/Fixtures/Bundles/RepositoryServiceBundle/Document/TestDefaultRepoFile.php
+
+		-
+			message: '#^Call to method load\(\) on an unknown class Symfony\\Component\\DependencyInjection\\Loader\\XmlFileLoader\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/DependencyInjection/XmlMongoDBExtensionTest.php
+
+		-
+			message: '#^Class Symfony\\Component\\DependencyInjection\\Loader\\XmlFileLoader not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/DependencyInjection/XmlMongoDBExtensionTest.php
+
+		-
+			message: '#^Instantiated class Symfony\\Component\\DependencyInjection\\Loader\\XmlFileLoader not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/DependencyInjection/XmlMongoDBExtensionTest.php
 
 		-
 			message: '#^Call to an undefined method object\:\:flush\(\)\.$#'

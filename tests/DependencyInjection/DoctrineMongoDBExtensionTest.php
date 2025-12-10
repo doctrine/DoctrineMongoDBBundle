@@ -156,6 +156,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
             $autoconfigurator = $container->getAttributeAutoconfigurators()[$class][0];
         } else {
             // Compatibility with Symfony 7.2 and earlier
+            // @phpstan-ignore-next-line method.notFound
             $autoconfigurator = $container->getAutoconfiguredAttributes()[$class];
         }
 
