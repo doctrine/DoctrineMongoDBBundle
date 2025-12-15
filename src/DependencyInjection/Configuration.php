@@ -81,14 +81,14 @@ class Configuration implements ConfigurationInterface
                         })
                     ->end()
                 ->end()
-                ->booleanNode('type_registry')
+                ->booleanNode('scoped_type_registry')
                     ->defaultFalse()
-                    ->info('If true, create a distinct TypeRegistry for each DocumentManager and inject services with the tag "doctrine_mongodb.field_type". If false, use the same shared TypeRegistry for all the DocumentManagers.')
+                    ->info('If true, create a distinct TypeRegistry for each DocumentManager and inject services having the tag "doctrine_mongodb.field_type". If false, use the same shared TypeRegistry for all the DocumentManagers.')
                     ->validate()
                         ->ifTrue()
                         ->then(static function ($v): bool {
                             if (! class_exists(TypeRegistry::class)) {
-                                throw new InvalidArgumentException('TypeRegistry requires doctrine/mongodb-odm 2.16 or higher.');
+                                throw new InvalidArgumentException('Scoped TypeRegistry requires doctrine/mongodb-odm 2.16 or higher.');
                             }
 
                             return $v;

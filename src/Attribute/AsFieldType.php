@@ -13,11 +13,11 @@ use Attribute;
 class AsFieldType
 {
     /**
-     * @param string      $name          The name of the field type
+     * @param string      $type          The name of the field type
      * @param string|null $objectManager The name of the document manager this type is associated with
      */
     public function __construct(
-        public readonly string $name,
+        public readonly string $type,
         public readonly ?string $objectManager = null,
     ) {
     }

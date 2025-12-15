@@ -8,13 +8,16 @@ specific data formats or structures.
 Enable the Type Registry
 ------------------------
 
-The ``TypeRegistry`` is responsible for managing custom field types in Doctrine
-ODM. To use it, you need to enable it in the configuration:
+The ``TypeRegistry`` is responsible for managing field types in Doctrine MongoDB
+ODM. By default, there is a global type registry shared across all document
+managers. However, you can enable a scoped type registry for each document manager
+and using service autoconfiguration by setting the ``scoped_type_registry``
+option to ``true``:
 
 .. code-block:: yaml
 
     doctrine_mongodb:
-        type_registry: true
+        scoped_type_registry: true
 
 Creating a Custom Field Type
 ----------------------------

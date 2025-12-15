@@ -9,10 +9,11 @@ use Doctrine\Bundle\MongoDBBundle\Types\LazyTypeRegistry;
 use InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Compiler\PriorityTaggedServiceTrait;
+use Symfony\Component\DependencyInjection\Compiler\ServiceLocatorTagPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\ServiceLocator;
 
+use function array_replace;
 use function array_reverse;
 use function sprintf;
 
@@ -27,12 +28,14 @@ final class TypeRegistryPass implements CompilerPassInterface
 
     private const TAG = 'doctrine_mongodb.odm.field_type';
 
+    private const ALL = '\0';
+
     public static function registerAutoconfiguration(ContainerBuilder $container): void
     {
         $container->registerAttributeForAutoconfiguration(
             AsFieldType::class,
             static function (Definition $definition, AsFieldType $attribute): void {
-                $definition->addTag(self::TAG, ['type' => $attribute->name, 'object_manager' => $attribute->objectManager]);
+                $definition->addTag(self::TAG, ['type' => $attribute->type, 'object_manager' => $attribute->objectManager]);
             },
         );
     }
@@ -49,20 +52,20 @@ final class TypeRegistryPass implements CompilerPassInterface
         foreach ($taggedServices as $id) {
             foreach ($container->getDefinition((string) $id)->getTag(self::TAG) as $attributes) {
                 if (! isset($attributes['type'])) {
-                    throw new InvalidArgumentException(sprintf('The service "%s" must define the "type" attribute on "%s" tags.', $id, self::TAG));
+                    throw new InvalidArgumentException(sprintf('The service "%s" must define the "type" parameter on "%s" tags.', $id, self::TAG));
                 }
 
-                $typesByManager[$attributes['object_manager'] ?? ''][$attributes['type']] = (string) $id;
+                $typesByManager[$attributes['object_manager'] ?? self::ALL][$attributes['type']] = $id;
             }
         }
 
         foreach ($container->getParameter('doctrine_mongodb.odm.document_managers') as $managerName => $managerDefinitionId) {
-            $serviceMap = [...($typesByManager[''] ?? []), ...($typesByManager[$managerName] ?? [])];
+            $serviceMap = array_replace($typesByManager[self::ALL] ?? [], $typesByManager[$managerName] ?? []);
             if (! $serviceMap) {
                 continue;
             }
 
-            $serviceLocator = (new Definition(ServiceLocator::class))->setArguments([$serviceMap]);
+            $serviceLocator = ServiceLocatorTagPass::register($container, $serviceMap);
             $container->getDefinition(sprintf('doctrine_mongodb.odm.%s_type_registry', $managerName))
                 ->setClass(LazyTypeRegistry::class)
                 ->setArguments([$serviceLocator]);

@@ -21,7 +21,7 @@
         proxy-namespace="Test_Proxies"
         persistent-collection-dir="%kernel.cache_dir%/doctrine/odm/mongodb/Test_Pcolls"
         persistent-collection-namespace="Test_Pcolls"
-        type-registry="false"
+        scoped-type-registry="false"
     >
 
         <doctrine:default-commit-options

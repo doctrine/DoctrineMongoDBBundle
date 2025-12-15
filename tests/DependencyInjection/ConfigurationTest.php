@@ -58,7 +58,7 @@ class ConfigurationTest extends TestCase
             'persistent_collection_dir'      => '%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections',
             'persistent_collection_namespace' => 'PersistentCollections',
             'types'                          => [],
-            'type_registry'                  => false,
+            'scoped_type_registry'           => false,
             'controller_resolver'            => [
                 'enabled'      => true,
                 'auto_mapping' => true,
@@ -93,7 +93,7 @@ class ConfigurationTest extends TestCase
             'proxy_namespace'                => 'Test_Proxies',
             'persistent_collection_dir'      => '%kernel.cache_dir%/doctrine/odm/mongodb/Test_Pcolls',
             'persistent_collection_namespace' => 'Test_Pcolls',
-            'type_registry'                  => false,
+            'scoped_type_registry'           => false,
             'default_commit_options' => [
                 'j' => false,
                 'timeout' => 10,

@@ -1,5 +1,5 @@
 doctrine_mongodb:
-    type_registry: true
+    scoped_type_registry: true
     connections:
         default:
             server: mongodb://localhost:27017
@@ -7,25 +7,19 @@ doctrine_mongodb:
         default:
             connection: default
     types:
-        custom_type_shortcut: Vendor\Type\CustomTypeShortcut
+        custom_type_shortcut: Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\CustomTypeService
         custom_type:
-            class: Vendor\Type\CustomType
+            class: Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\CustomTypeService
         service_type_shortcut: '@app.mongodb.custom_type_service'
         service_type:
             service: 'app.mongodb.custom_type_service'
 
 services:
+    _defaults:
+        autoconfigure: true
+
+    Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\:
+        resource: '../../../../Fixtures/Types'
+
     app.mongodb.custom_type_service:
-        class: Vendor\Type\CustomTypeService
-
-    Vendor\Type\CustomTypeWithTag:
-        tags:
-            - { name: doctrine_mongodb.odm.field_type, type: 'custom_type_with_tag' }
-
-    Vendor\Type\CustomTypeWithTagAndDefaultManager:
-        tags:
-            - { name: doctrine_mongodb.odm.field_type, type: 'custom_type_with_tag_and_default_manager', object_manager: 'default' }
-
-    Vendor\Type\CustomTypeWithTagOtherManager:
-        tags:
-            - { name: doctrine_mongodb.odm.field_type, type: 'custom_type_with_tag_and_other_manager', object_manager: 'other' }
+        class: Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\CustomTypeService

@@ -332,7 +332,7 @@ to services with the following parameters:
                 class: Fully\Qualified\Class\Name
 
         doctrine_mongodb:
-            type_registry: true
+            scoped_type_registry: true
             types:
                 custom_type: @app.custom_type_service
 

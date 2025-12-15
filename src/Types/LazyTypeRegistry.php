@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use InvalidArgumentException;
 use Symfony\Component\DependencyInjection\ServiceLocator;
+use Symfony\Contracts\Service\ServiceProviderInterface;
 
 use function sprintf;
 
@@ -17,7 +18,7 @@ use function sprintf;
 class LazyTypeRegistry extends TypeRegistry
 {
     /** @param ServiceLocator<Type> $locator */
-    public function __construct(private ServiceLocator $locator)
+    public function __construct(private ServiceProviderInterface $locator)
     {
     }
 

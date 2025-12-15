@@ -478,21 +478,21 @@ class DoctrineMongoDBExtension extends Extension
 
             return $typeConfig;
         }, $config['types'] ?? []);
-        if (! $config['type_registry']) {
-            if (! empty($config['types'])) {
-                $configuratorDefinition = $container->getDefinition('doctrine_mongodb.odm.manager_configurator.abstract');
-                /** @see ManagerConfigurator::loadTypes() */
-                $configuratorDefinition->addMethodCall('loadTypes', [$customTypes]);
-            }
-        } else {
-            TypeRegistryPass::registerAutoconfiguration($container);
 
+        TypeRegistryPass::registerAutoconfiguration($container);
+        if ($config['scoped_type_registry']) {
             $typeRegistryDef = $container->register('doctrine_mongodb.odm.type_registry.abstract', TypeRegistry::class)
                 ->setAbstract(true)
                 ->setPublic(false);
             foreach ($customTypes as $typeName => $typeConfig) {
                 /** @see TypeRegistry::register() */
                 $typeRegistryDef->addMethodCall('register', [$typeName, $typeConfig['class'] ?? $typeConfig['service']]);
+            }
+        } else {
+            if (! empty($config['types'])) {
+                $configuratorDefinition = $container->getDefinition('doctrine_mongodb.odm.manager_configurator.abstract');
+                /** @see ManagerConfigurator::loadTypes() */
+                $configuratorDefinition->addMethodCall('loadTypes', [$customTypes]);
             }
         }
 
@@ -716,6 +716,12 @@ class DoctrineMongoDBExtension extends Extension
             $methods['setPersistentCollectionFactory'] = new Reference($documentManager['persistent_collection_factory']);
         }
 
+        if ($container->has('doctrine_mongodb.odm.type_registry.abstract')) {
+            $typeRegistryId = sprintf('doctrine_mongodb.odm.%s_type_registry', $documentManager['name']);
+            $container->registerChild($typeRegistryId, 'doctrine_mongodb.odm.type_registry.abstract');
+            $methods['setTypeRegistry'] = new Reference($typeRegistryId);
+        }
+
         // logging
         if ($container->getParameterBag()->resolveValue($documentManager['logging'])) {
             $container->getDefinition('doctrine_mongodb.odm.psr_command_logger')
@@ -767,12 +773,6 @@ class DoctrineMongoDBExtension extends Extension
             // Document managers will share their connection's event manager
             new Reference(sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $connectionName)),
         ];
-
-        if ($container->has('doctrine_mongodb.odm.type_registry.abstract')) {
-            $typeRegistryId = sprintf('doctrine_mongodb.odm.%s_type_registry', $documentManager['name']);
-            $container->registerChild($typeRegistryId, 'doctrine_mongodb.odm.type_registry.abstract');
-            $odmDmArgs[] = new Reference($typeRegistryId);
-        }
 
         $odmDmDef = new Definition(DocumentManager::class, $odmDmArgs);
         $odmDmDef->setFactory([DocumentManager::class, 'create']);
