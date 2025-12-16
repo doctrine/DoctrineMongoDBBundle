@@ -253,22 +253,6 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $this->assertEquals('doctrine_mongodb.odm.conn2_connection.event_manager', (string) $container->getAlias('doctrine_mongodb.odm.event_manager'));
     }
 
-    public function testBundleDocumentAliases(): void
-    {
-        $container = $this->getContainer();
-        $loader    = new DoctrineMongoDBExtension();
-
-        $config = DoctrineMongoDBExtensionTest::buildConfiguration(
-            ['document_managers' => ['default' => ['mappings' => ['XmlBundle' => []]]]],
-        );
-        $loader->load($config, $container);
-
-        $definition = $container->getDefinition('doctrine_mongodb.odm.default_configuration');
-        $calls      = $definition->getMethodCalls();
-        $this->assertTrue(isset($calls[0][1][0]['XmlBundle']));
-        $this->assertEquals('Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\XmlBundle\Document', $calls[0][1][0]['XmlBundle']);
-    }
-
     public function testXmlBundleMappingDetection(): void
     {
         $container = $this->getContainer('XmlBundle');

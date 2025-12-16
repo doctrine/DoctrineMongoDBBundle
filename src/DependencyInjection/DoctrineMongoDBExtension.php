@@ -82,13 +82,6 @@ class DoctrineMongoDBExtension extends Extension
     /**
      * Used inside metadata driver method to simplify aggregation of data.
      *
-     * @var array<string, string> List of alias => namespace
-     */
-    protected $aliasMap = [];
-
-    /**
-     * Used inside metadata driver method to simplify aggregation of data.
-     *
      * @var array<string, array<string, string>> List of driver type => prefix => path
      */
     protected $drivers = [];
@@ -162,27 +155,6 @@ class DoctrineMongoDBExtension extends Extension
 
             $this->assertValidMappingConfiguration($mappingConfig, $objectManager['name']);
             $this->setMappingDriverConfig($mappingConfig, $mappingName);
-            $this->setMappingDriverAlias($mappingConfig, $mappingName);
-        }
-    }
-
-    /**
-     * Register the alias for this mapping driver.
-     *
-     * Aliases can be used in the Query languages of all the Doctrine object managers to simplify writing tasks.
-     *
-     * @param array<string, mixed> $mappingConfig
-     *
-     * @return void
-     */
-    protected function setMappingDriverAlias(
-        array $mappingConfig,
-        string $mappingName,
-    ) {
-        if (isset($mappingConfig['alias'])) {
-            $this->aliasMap[$mappingConfig['alias']] = $mappingConfig['prefix'];
-        } else {
-            $this->aliasMap[$mappingName] = $mappingConfig['prefix'];
         }
     }
 
@@ -974,26 +946,11 @@ class DoctrineMongoDBExtension extends Extension
      */
     protected function loadDocumentManagerBundlesMappingInformation(array $documentManager, Definition $odmConfigDef, ContainerBuilder $container): void
     {
-        // reset state of drivers and alias map. They are only used by this methods and children.
-        $this->drivers  = [];
-        $this->aliasMap = [];
+        // reset the state of drivers. They are only used by this method and children.
+        $this->drivers = [];
 
         $this->loadMappingInformation($documentManager, $container);
         $this->registerMappingDrivers($documentManager, $container);
-
-        if ($odmConfigDef->hasMethodCall('setDocumentNamespaces')) {
-            // TODO: Can we make a method out of it on Definition? replaceMethodArguments() or something.
-            $calls = $odmConfigDef->getMethodCalls();
-            foreach ($calls as $call) {
-                if ($call[0] === 'setDocumentNamespaces') {
-                    $this->aliasMap = array_merge($call[1][0], $this->aliasMap);
-                }
-            }
-
-            $method = $odmConfigDef->removeMethodCall('setDocumentNamespaces');
-        }
-
-        $odmConfigDef->addMethodCall('setDocumentNamespaces', [$this->aliasMap]);
     }
 
     protected function getObjectManagerElementName(string $name): string

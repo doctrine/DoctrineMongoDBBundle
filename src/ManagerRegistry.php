@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\MongoDBException;
 use ProxyManager\Proxy\LazyLoadingInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Bridge\Doctrine\ManagerRegistry as BaseManagerRegistry;
 use Symfony\Component\VarExporter\LazyObjectInterface;
 use Symfony\Contracts\Service\ResetInterface;
 
-use function array_keys;
 use function assert;
 
 class ManagerRegistry extends BaseManagerRegistry implements ResetInterface
@@ -22,29 +20,6 @@ class ManagerRegistry extends BaseManagerRegistry implements ResetInterface
         $this->container = $container;
 
         parent::__construct($name, $connections, $managers, $defaultConnection, $defaultManager, $proxyInterfaceName);
-    }
-
-    /**
-     * Resolves a registered namespace alias to the full namespace.
-     *
-     * @throws MongoDBException
-     */
-    public function getAliasNamespace(string $alias): string
-    {
-        foreach (array_keys($this->getManagers()) as $name) {
-            $objectManager = $this->getManager($name);
-
-            if (! $objectManager instanceof DocumentManager) {
-                continue;
-            }
-
-            try {
-                return $objectManager->getConfiguration()->getDocumentNamespace($alias);
-            } catch (MongoDBException) {
-            }
-        }
-
-        throw MongoDBException::unknownDocumentNamespace($alias);
     }
 
     /**
