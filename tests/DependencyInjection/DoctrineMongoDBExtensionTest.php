@@ -19,11 +19,13 @@ use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\Doc
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations;
+use Doctrine\ODM\MongoDB\Mapping\Attribute;
 use InvalidArgumentException;
 use MongoDB\Client;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
+use ReflectionClass;
 use stdClass;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -37,6 +39,7 @@ use Symfony\Component\VarExporter\LazyGhostTrait;
 
 use function array_diff_key;
 use function array_merge;
+use function class_exists;
 use function interface_exists;
 use function is_dir;
 use function method_exists;
@@ -135,18 +138,28 @@ class DoctrineMongoDBExtensionTest extends TestCase
     public static function provideAttributeExcludedFromContainer(): array
     {
         return [
-            'Document' => [Annotations\Document::class],
-            'EmbeddedDocument' => [Annotations\EmbeddedDocument::class],
-            'MappedSuperclass' => [Annotations\MappedSuperclass::class],
-            'View' => [Annotations\View::class],
-            'QueryResultDocument' => [Annotations\QueryResultDocument::class],
-            'File' => [Annotations\File::class],
+            'Annotations\Document' => [Annotations\Document::class],
+            'Annotations\EmbeddedDocument' => [Annotations\EmbeddedDocument::class],
+            'Annotations\MappedSuperclass' => [Annotations\MappedSuperclass::class],
+            'Annotations\View' => [Annotations\View::class],
+            'Annotations\QueryResultDocument' => [Annotations\QueryResultDocument::class],
+            'Annotations\File' => [Annotations\File::class],
+            'Attribute\Document' => [Attribute\Document::class],
+            'Attribute\EmbeddedDocument' => [Attribute\EmbeddedDocument::class],
+            'Attribute\MappedSuperclass' => [Attribute\MappedSuperclass::class],
+            'Attribute\View' => [Attribute\View::class],
+            'Attribute\QueryResultDocument' => [Attribute\QueryResultDocument::class],
+            'Attribute\File' => [Attribute\File::class],
         ];
     }
 
     #[DataProvider('provideAttributeExcludedFromContainer')]
     public function testDocumentAttributeExcludesFromContainer(string $class): void
     {
+        if (! class_exists($class)) {
+            $this->markTestSkipped(sprintf('Class %s does not exist.', $class));
+        }
+
         $container = $this->getContainer();
         $extension = new DoctrineMongoDBExtension();
         $extension->load($this->buildConfiguration(), $container);
@@ -164,7 +177,8 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $this->assertInstanceOf(Closure::class, $autoconfigurator);
 
         $definition = new ChildDefinition('');
-        $autoconfigurator($definition);
+        $attribute  = (new ReflectionClass($class))->newInstanceWithoutConstructor();
+        $autoconfigurator($definition, $attribute);
 
         $this->assertSame([['source' => sprintf('with #[%s] attribute', $class)]], $definition->getTag('container.excluded'));
     }
