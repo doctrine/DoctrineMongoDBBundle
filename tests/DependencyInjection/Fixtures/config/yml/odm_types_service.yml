@@ -1,0 +1,25 @@
+doctrine_mongodb:
+    scoped_type_registry: true
+    connections:
+        default:
+            server: mongodb://localhost:27017
+    document_managers:
+        default:
+            connection: default
+    types:
+        custom_type_shortcut: Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\CustomTypeService
+        custom_type:
+            class: Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\CustomTypeService
+        service_type_shortcut: '@app.mongodb.custom_type_service'
+        service_type:
+            service: 'app.mongodb.custom_type_service'
+
+services:
+    _defaults:
+        autoconfigure: true
+
+    Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\:
+        resource: '../../../../Fixtures/Types'
+
+    app.mongodb.custom_type_service:
+        class: Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\CustomTypeService

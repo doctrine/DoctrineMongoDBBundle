@@ -157,6 +157,12 @@ parameters:
 			path: src/DependencyInjection/Compiler/DoctrineMongoDBMappingsPass.php
 
 		-
+			message: '#^Argument of an invalid type array\|bool\|float\|int\|string\|UnitEnum supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/DependencyInjection/Compiler/TypeRegistryPass.php
+
+		-
 			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\ODM\\\\MongoDB\\\\Configuration'' and ''setUseLazyGhostObje…'' will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 2
@@ -201,6 +207,12 @@ parameters:
 		-
 			message: '#^Cannot access offset \(int\|string\) on array\|bool\|float\|int\|string\|UnitEnum\|null\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/DependencyInjection/DoctrineMongoDBExtension.php
+
+		-
+			message: '#^Class Doctrine\\ODM\\MongoDB\\Types\\TypeRegistry not found\.$#'
+			identifier: class.notFound
 			count: 1
 			path: src/DependencyInjection/DoctrineMongoDBExtension.php
 
@@ -379,12 +391,6 @@ parameters:
 			path: src/ManagerConfigurator.php
 
 		-
-			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\ManagerConfigurator\:\:loadTypes\(\) has parameter \$types with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/ManagerConfigurator.php
-
-		-
 			message: '#^Property Symfony\\Bridge\\Doctrine\\ManagerRegistry\:\:\$container \(Symfony\\Component\\DependencyInjection\\Container\) does not accept Psr\\Container\\ContainerInterface\|null\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -407,6 +413,36 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: src/Repository/ContainerRepositoryFactory.php
+
+		-
+			message: '#^Doctrine\\Bundle\\MongoDBBundle\\Types\\LazyTypeRegistry\:\:get\(\) calls parent\:\:get\(\) but Doctrine\\Bundle\\MongoDBBundle\\Types\\LazyTypeRegistry does not extend any class\.$#'
+			identifier: class.noParent
+			count: 1
+			path: src/Types/LazyTypeRegistry.php
+
+		-
+			message: '#^Doctrine\\Bundle\\MongoDBBundle\\Types\\LazyTypeRegistry\:\:getMap\(\) calls parent\:\:getMap\(\) but Doctrine\\Bundle\\MongoDBBundle\\Types\\LazyTypeRegistry does not extend any class\.$#'
+			identifier: class.noParent
+			count: 1
+			path: src/Types/LazyTypeRegistry.php
+
+		-
+			message: '#^Doctrine\\Bundle\\MongoDBBundle\\Types\\LazyTypeRegistry\:\:has\(\) calls parent\:\:has\(\) but Doctrine\\Bundle\\MongoDBBundle\\Types\\LazyTypeRegistry does not extend any class\.$#'
+			identifier: class.noParent
+			count: 1
+			path: src/Types/LazyTypeRegistry.php
+
+		-
+			message: '#^Doctrine\\Bundle\\MongoDBBundle\\Types\\LazyTypeRegistry\:\:register\(\) calls parent\:\:register\(\) but Doctrine\\Bundle\\MongoDBBundle\\Types\\LazyTypeRegistry does not extend any class\.$#'
+			identifier: class.noParent
+			count: 1
+			path: src/Types/LazyTypeRegistry.php
+
+		-
+			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\Types\\LazyTypeRegistry\:\:getMap\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Types/LazyTypeRegistry.php
 
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertFalse\(\) with false will always evaluate to false\.$#'

@@ -317,15 +317,53 @@ your documents.
             </doctrine_mongodb:config>
         </container>
 
-    .. code-block:: php
+You can register custom types by adding the tag ``doctrine_mongodb.odm.field_type``
+to services with the following parameters:
+ - ``type`` is the name of the type. Must be unique.
+ - ``object_manager`` (optional) name of the document manager where the type
+   will be registered. If not set, the type will be registered in all document managers.
 
-        use Symfony\Config\DoctrineMongodbConfig;
+.. configuration-block::
 
-        return static function (DoctrineMongodbConfig $config): void {
-            $config->type('custom_type')
-                ->class(\Fully\Qualified\Class\Name::class)
-            ;
-        }
+    .. code-block:: yaml
+
+        services:
+            app.custom_type_service:
+                class: Fully\Qualified\Class\Name
+
+        doctrine_mongodb:
+            scoped_type_registry: true
+            types:
+                custom_type: @app.custom_type_service
+
+    .. code-block:: xml
+
+        <?xml version="1.0" ?>
+
+        <container xmlns="http://symfony.com/schema/dic/services"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:doctrine_mongodb="http://symfony.com/schema/dic/doctrine/odm/mongodb"
+                   xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd
+                                        http://symfony.com/schema/dic/doctrine/odm/mongodb https://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
+
+            <services>
+                <service id="app.custom_type_service" class="Fully\Qualified\Class\Name" />
+            </services>
+
+            <doctrine_mongodb:config
+                type-registry="true"
+            >
+                <doctrine_mongodb:type name="custom_type" service="app.custom_type_service" />
+            </doctrine_mongodb:config>
+        </container>
+
+.. note::
+
+    Defining a custom type as a service requires Doctrine MongoDB ODM 2.16 or higher.
+
+You can also register services as custom types by tagging with the
+``#[AsFieldType]`` attribute and enabling autoconfiguration.
+See `Registering Custom Field Types` for more details.
 
 Filters
 -------
@@ -948,6 +986,7 @@ Full Default Configuration
         };
 
 .. _`Custom types`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/current/reference/custom-mapping-types.html
+.. _`Registering Custom Field Types`: cookbook/field_type
 .. _`define it as an environment variable`: https://symfony.com/doc/current/configuration.html#configuration-based-on-environment-variables
 .. _`connection string`: https://docs.mongodb.com/manual/reference/connection-string/#urioption.authSource
 .. _`Replica Sets`: https://www.php.net/manual/en/mongo.connecting.rs.php

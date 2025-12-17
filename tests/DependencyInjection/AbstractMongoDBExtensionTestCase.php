@@ -4,20 +4,28 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\TypeRegistryPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\BasicFilter;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\ComplexFilter;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\DisabledFilter;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\CustomTypeService;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\CustomTypeWithTag;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\CustomTypeWithTagAndDefaultManager;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
+use Doctrine\Bundle\MongoDBBundle\Types\LazyTypeRegistry;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use MongoDB\Client;
 use PHPUnit\Framework\AssertionFailedError;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\MemcachedAdapter;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -433,6 +441,42 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.manager_configurator.abstract');
         $this->assertDefinitionMethodCallAny($definition, 'loadTypes', [$expected]);
+        $this->assertFalse($container->has('doctrine_mongodb.odm.type_registry'));
+    }
+
+    public function testCustomTypesService(): void
+    {
+        $container = $this->getContainer();
+        $loader    = new DoctrineMongoDBExtension();
+        $container->registerExtension($loader);
+
+        if (! class_exists(TypeRegistry::class)) {
+            self::expectException(InvalidConfigurationException::class);
+            self::expectExceptionMessage('Using a service for a MongoDB ODM type requires doctrine/mongodb-odm 2.16 or higher.');
+        }
+
+        $this->loadFromFile($container, 'odm_types_service');
+        $container->addCompilerPass(new ServiceRepositoryCompilerPass());
+        $container->addCompilerPass(new TypeRegistryPass());
+        $container->compile();
+
+        $dm = $container->get('doctrine_mongodb.odm.default_document_manager');
+        self::assertInstanceOf(DocumentManager::class, $dm);
+        $typeRegistry = $dm->getConfiguration()->getTypeRegistry();
+        self::assertInstanceOf(LazyTypeRegistry::class, $typeRegistry);
+
+        self::assertTrue($typeRegistry->has('custom_type_shortcut'));
+        self::assertInstanceOf(CustomTypeService::class, $typeRegistry->get('custom_type_shortcut'));
+        self::assertTrue($typeRegistry->has('custom_type'));
+        self::assertInstanceOf(CustomTypeService::class, $typeRegistry->get('custom_type'));
+        self::assertTrue($typeRegistry->has('service_type_shortcut'));
+        self::assertInstanceOf(CustomTypeService::class, $typeRegistry->get('service_type_shortcut'));
+        self::assertTrue($typeRegistry->has('service_type'));
+        self::assertInstanceOf(CustomTypeService::class, $typeRegistry->get('service_type'));
+        self::assertTrue($typeRegistry->has('custom_type_with_tag'));
+        self::assertInstanceOf(CustomTypeWithTag::class, $typeRegistry->get('custom_type_with_tag'));
+        self::assertTrue($typeRegistry->has('custom_type_with_tag_and_default_manager'));
+        self::assertInstanceOf(CustomTypeWithTagAndDefaultManager::class, $typeRegistry->get('custom_type_with_tag_and_default_manager'));
     }
 
     /**

@@ -29,6 +29,7 @@
     <xsd:attribute name="proxy-dir" type="xsd:string" />
     <xsd:attribute name="proxy-namespace" type="xsd:string" />
     <xsd:attribute name="fixture-loader" type="xsd:string" />
+    <xsd:attribute name="scoped-type-registry" type="xsd:boolean" />
   </xsd:complexType>
 
   <xsd:complexType name="default-commit-options">
@@ -289,7 +290,8 @@
     <xsd:simpleContent>
       <xsd:extension base="xsd:string">
         <xsd:attribute name="name" type="xsd:string" use="required" />
-        <xsd:attribute name="class" type="xsd:string" use="required" />
+        <xsd:attribute name="class" type="xsd:string" />
+        <xsd:attribute name="service" type="xsd:string" />
       </xsd:extension>
     </xsd:simpleContent>
   </xsd:complexType>
