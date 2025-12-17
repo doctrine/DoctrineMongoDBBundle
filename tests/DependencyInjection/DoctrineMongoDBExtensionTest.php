@@ -40,6 +40,7 @@ use function array_merge;
 use function interface_exists;
 use function is_dir;
 use function method_exists;
+use function realpath;
 use function sprintf;
 use function sys_get_temp_dir;
 use function trait_exists;
@@ -294,38 +295,20 @@ class DoctrineMongoDBExtensionTest extends TestCase
             $container,
         );
 
-        $configDm1 = $container->getDefinition('doctrine_mongodb.odm.dm1_configuration');
-        $configDm2 = $container->getDefinition('doctrine_mongodb.odm.dm2_configuration');
-        $configDm3 = $container->getDefinition('doctrine_mongodb.odm.dm3_configuration');
-
-        $this->assertContains(
-            [
-                'setDocumentNamespaces',
-                [
-                    ['OtherXmlBundle' => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\OtherXmlBundle\Document'],
-                ],
-            ],
-            $configDm1->getMethodCalls(),
+        $baseDir = realpath(__DIR__) . '/Fixtures/Bundles/';
+        $this->assertSame(
+            [$baseDir . 'OtherXmlBundle/Resources/config/doctrine' => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\OtherXmlBundle\Document'],
+            $container->getDefinition('doctrine_mongodb.odm.dm1_xml_metadata_driver')->getArguments()[0],
         );
 
-        $this->assertContains(
-            [
-                'setDocumentNamespaces',
-                [
-                    ['XmlBundle' => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\XmlBundle\Document'],
-                ],
-            ],
-            $configDm2->getMethodCalls(),
+        $this->assertSame(
+            [$baseDir . 'XmlBundle/Resources/config/doctrine' => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\XmlBundle\Document'],
+            $container->getDefinition('doctrine_mongodb.odm.dm2_xml_metadata_driver')->getArguments()[0],
         );
 
-        $this->assertContains(
-            [
-                'setDocumentNamespaces',
-                [
-                    ['NewXmlBundle' => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\NewXmlBundle\Document'],
-                ],
-            ],
-            $configDm3->getMethodCalls(),
+        $this->assertSame(
+            [$baseDir . 'NewXmlBundle/config/doctrine' => 'Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\Bundles\NewXmlBundle\Document'],
+            $container->getDefinition('doctrine_mongodb.odm.dm3_xml_metadata_driver')->getArguments()[0],
         );
     }
 
