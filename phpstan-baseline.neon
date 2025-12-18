@@ -481,18 +481,6 @@ parameters:
 			path: tests/DependencyInjection/AbstractMongoDBExtensionTestCase.php
 
 		-
-			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\ODM\\\\MongoDB\\\\Configuration'' and ''setUseLazyGhostObje…'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: tests/DependencyInjection/ConfigurationTest.php
-
-		-
-			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\ODM\\\\MongoDB\\\\Configuration'' and ''setUseNativeLazyObj…'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: tests/DependencyInjection/ConfigurationTest.php
-
-		-
 			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\Tests\\DependencyInjection\\ConfigurationTest\:\:testFullConfiguration\(\) has parameter \$config with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -799,7 +787,13 @@ parameters:
 			path: tests/ServiceRepositoryTest.php
 
 		-
-			message: '#^Call to function method_exists\(\) with Doctrine\\ODM\\MongoDB\\Configuration and ''setUseLazyGhostObje…'' will always evaluate to true\.$#'
+			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\ODM\\\\MongoDB\\\\Configuration'' and ''setUseLazyGhostObje…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: tests/TestCase.php
+
+		-
+			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\ODM\\\\MongoDB\\\\Configuration'' and ''setUseNativeLazyObj…'' will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: tests/TestCase.php

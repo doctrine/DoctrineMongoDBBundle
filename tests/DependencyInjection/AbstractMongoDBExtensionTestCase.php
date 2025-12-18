@@ -45,7 +45,10 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $loader->load(DoctrineMongoDBExtensionTest::buildConfiguration(), $container);
 
         $this->assertEquals('MongoDBODMProxies', $container->getParameter('doctrine_mongodb.odm.proxy_namespace'));
-        $this->assertEquals(Configuration::AUTOGENERATE_EVAL, $container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes'));
+        $this->assertEquals(
+            self::useNativeLazyObject() ? Configuration::AUTOGENERATE_NEVER : Configuration::AUTOGENERATE_EVAL,
+            $container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes'),
+        );
 
         $config = DoctrineMongoDBExtensionTest::buildConfiguration([
             'proxy_namespace' => 'MyProxies',
@@ -56,7 +59,7 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $loader->load($config, $container);
 
         $this->assertEquals('MyProxies', $container->getParameter('doctrine_mongodb.odm.proxy_namespace'));
-        $this->assertEquals(true, $container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes'));
+        $this->assertEquals(! self::useNativeLazyObject(), $container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes'));
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_connection');
         $this->assertEquals(Client::class, $definition->getClass());
@@ -359,7 +362,7 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $container->getCompilerPassConfig()->setRemovingPasses([]);
         $container->compile();
 
-        $this->assertTrue((bool) $container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes'));
+        $this->assertSame(self::useNativeLazyObject(), ! $container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes'));
     }
 
     public function testResolveTargetDocument(): void

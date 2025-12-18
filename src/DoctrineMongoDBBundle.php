@@ -22,6 +22,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 use function assert;
 use function dirname;
+use function method_exists;
 use function spl_autoload_register;
 use function spl_autoload_unregister;
 
@@ -76,12 +77,22 @@ class DoctrineMongoDBBundle extends Bundle
 
     private function registerAutoloader(DocumentManager $documentManager): void
     {
-        $configuration = $documentManager->getConfiguration();
-        if ($configuration->getAutoGenerateProxyClasses() !== Configuration::AUTOGENERATE_FILE_NOT_EXISTS) {
+        $config = $documentManager->getConfiguration();
+        // Lazy ghost and native lazy have been added in mongodb-odm 2.10 and 2.14 respectively
+        if (
+            // @phpstan-ignore-next-line function.alreadyNarrowedType
+            method_exists($config, 'isNativeLazyObjectEnabled') && $config->isNativeLazyObjectEnabled()
+            // @phpstan-ignore-next-line function.alreadyNarrowedType
+            || method_exists($config, 'isLazyGhostObjectEnabled') && $config->isLazyGhostObjectEnabled()
+        ) {
             return;
         }
 
-        $this->autoloader = $configuration->getProxyManagerConfiguration()->getProxyAutoloader();
+        if ($config->getAutoGenerateProxyClasses() !== Configuration::AUTOGENERATE_FILE_NOT_EXISTS) {
+            return;
+        }
+
+        $this->autoloader = $config->getProxyManagerConfiguration()->getProxyAutoloader();
 
         spl_autoload_register($this->autoloader);
     }

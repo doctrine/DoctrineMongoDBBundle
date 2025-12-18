@@ -444,6 +444,12 @@ class DoctrineMongoDBExtension extends Extension
             $configuratorDefinition->addMethodCall('loadTypes', [$config['types']]);
         }
 
+        // Disable proxy class generation for PHP 8.4 native lazy objects
+        if ($config['enable_native_lazy_objects']) {
+            $config['auto_generate_proxy_classes'] = ODMConfiguration::AUTOGENERATE_NEVER;
+            $container->removeDefinition('doctrine_mongodb.odm.proxy_cache_warmer');
+        }
+
         // set some options as parameters and unset them
         $config = $this->overrideParameters($config, $container);
 
