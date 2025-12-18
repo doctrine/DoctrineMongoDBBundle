@@ -32,6 +32,7 @@ helping you to configure and use it in your application.
    events
    console
    cookbook/registration_form
+   cookbook/bundles
 
 Doctrine Extensions: Timestampable, Sluggable, etc.
 ---------------------------------------------------
