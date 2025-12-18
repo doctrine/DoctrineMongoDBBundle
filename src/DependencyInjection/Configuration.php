@@ -67,7 +67,7 @@ class Configuration implements ConfigurationInterface
                 ->booleanNode('enable_lazy_ghost_objects')
                     ->defaultValue(method_exists(ODMConfiguration::class, 'setUseLazyGhostObject'))
                     ->info('Requires doctrine/mongodb-odm 2.10+')
-                    ->setDeprecated('doctrine/mongodb-odm-bundle', '5.4', 'The "%node%" option is deprecated and will be removed in 6.0. Symfony Lazy Ghost Objects are enable by default with doctrine/mongodb-odm 2.10+.')
+                    ->setDeprecated('doctrine/mongodb-odm-bundle', '5.4', 'The "%node%" option is deprecated and will be removed in 6.0. Symfony Lazy Ghost Objects are enabled by default with doctrine/mongodb-odm 2.10+.')
                     ->validate()
                         ->ifTrue()
                         ->then(static function (): void {
