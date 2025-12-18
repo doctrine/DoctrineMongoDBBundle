@@ -20,3 +20,6 @@ on:
 jobs:
   static-analysis:
     uses: "doctrine/.github/.github/workflows/phpstan.yml@13.1.0"
+    with:
+      # Remove once doctrine/mongodb-odm 2.16 is released
+      composer-options: "--minimum-stability=dev"
