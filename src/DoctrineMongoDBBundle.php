@@ -80,7 +80,9 @@ class DoctrineMongoDBBundle extends Bundle
         $config = $documentManager->getConfiguration();
         // Lazy ghost and native lazy have been added in mongodb-odm 2.10 and 2.14 respectively
         if (
+            // @phpstan-ignore-next-line function.alreadyNarrowedType
             method_exists($config, 'isNativeLazyObjectEnabled') && $config->isNativeLazyObjectEnabled()
+            // @phpstan-ignore-next-line function.alreadyNarrowedType
             || method_exists($config, 'isLazyGhostObjectEnabled') && $config->isLazyGhostObjectEnabled()
         ) {
             return;
