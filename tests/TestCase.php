@@ -50,6 +50,6 @@ class TestCase extends BaseTestCase
 
     public static function useLazyGhostObject(): bool
     {
-        return method_exists(Configuration::class, 'setUseLazyGhostObject') && ! self::useNativeLazyObject();
+        return method_exists(Configuration::class, 'setUseLazyGhostObject');
     }
 }

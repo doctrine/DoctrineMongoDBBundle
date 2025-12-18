@@ -59,7 +59,7 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $loader->load($config, $container);
 
         $this->assertEquals('MyProxies', $container->getParameter('doctrine_mongodb.odm.proxy_namespace'));
-        $this->assertEquals(true, $container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes'));
+        $this->assertEquals(! self::useNativeLazyObject(), $container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes'));
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_connection');
         $this->assertEquals(Client::class, $definition->getClass());
