@@ -1,7 +1,7 @@
 Console Commands
 ================
 
-The Doctrine2 ODM integration offers various console commands under the
+The Doctrine MongoDB ODM integration offers various console commands under the
 ``doctrine:mongodb`` namespace. To view the command list you can run the console
 without any arguments:
 
@@ -21,7 +21,7 @@ For example, to get details about the ``doctrine:mongodb:query`` task, run:
 .. note::
 
    To be able to load data fixtures into MongoDB, you will need to have the
-   ``DoctrineFixturesBundle`` bundle installed. To learn how to do it, read
-   the "`DoctrineFixturesBundle`_" entry of the documentation.
+   ``doctrine/data-fixtures`` package installed. To learn how to do it, read
+   the `Doctrine Data Fixtures`_.
 
-.. _`DoctrineFixturesBundle`: https://symfony.com/doc/master/bundles/DoctrineFixturesBundle/index.html
+.. _`Doctrine Data Fixtures`: data_fixtures
