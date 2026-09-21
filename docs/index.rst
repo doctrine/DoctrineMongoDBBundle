@@ -34,6 +34,7 @@ helping you to configure and use it in your application.
    console
    cookbook/registration_form
    cookbook/bundles
+   cookbook/field_type
 
 Doctrine Extensions: Timestampable, Sluggable, etc.
 ---------------------------------------------------
