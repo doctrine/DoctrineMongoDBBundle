@@ -379,12 +379,6 @@ parameters:
 			path: src/ManagerConfigurator.php
 
 		-
-			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\ManagerConfigurator\:\:loadTypes\(\) has parameter \$types with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/ManagerConfigurator.php
-
-		-
 			message: '#^Property Symfony\\Bridge\\Doctrine\\ManagerRegistry\:\:\$container \(Symfony\\Component\\DependencyInjection\\Container\) does not accept Psr\\Container\\ContainerInterface\|null\.$#'
 			identifier: assign.propertyType
 			count: 1

@@ -317,15 +317,19 @@ your documents.
             </doctrine_mongodb:config>
         </container>
 
-    .. code-block:: php
+To register a custom type as a service, add the tag
+``doctrine_mongodb.odm.field_type`` to its service definition:
+ - ``type`` is the name of the field type. Must be unique.
+ - ``document_manager`` (optional) name of the document manager where the type
+   will be registered. If not set, the type will be registered in all document managers.
 
-        use Symfony\Config\DoctrineMongodbConfig;
+You can also register a class as a custom type with the ``#[AsFieldType]``
+attribute and service autoconfiguration.
+See `Registering Custom Field Types`_ for more details.
 
-        return static function (DoctrineMongodbConfig $config): void {
-            $config->type('custom_type')
-                ->class(\Fully\Qualified\Class\Name::class)
-            ;
-        }
+.. note::
+
+    Registering a custom type as a service requires Doctrine MongoDB ODM 2.18 or higher.
 
 Filters
 -------
@@ -948,6 +952,7 @@ Full Default Configuration
         };
 
 .. _`Custom types`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/current/reference/custom-mapping-types.html
+.. _`Registering Custom Field Types`: cookbook/field_type
 .. _`define it as an environment variable`: https://symfony.com/doc/current/configuration.html#configuration-based-on-environment-variables
 .. _`connection string`: https://docs.mongodb.com/manual/reference/connection-string/#urioption.authSource
 .. _`Replica Sets`: https://www.php.net/manual/en/mongo.connecting.rs.php

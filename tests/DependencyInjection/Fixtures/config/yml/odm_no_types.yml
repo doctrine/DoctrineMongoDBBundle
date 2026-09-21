@@ -1,0 +1,4 @@
+doctrine_mongodb:
+    connections:
+        default:
+            server: mongodb://localhost:27017
