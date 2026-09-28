@@ -10,6 +10,7 @@ use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
 use Doctrine\Bundle\MongoDBBundle\DataCollector\ConnectionDiagnostic;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\TypeProviderPass;
 use Doctrine\Bundle\MongoDBBundle\Fixture\ODMFixtureInterface;
 use Doctrine\Bundle\MongoDBBundle\Mapping\Driver\XmlDriver;
 use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepositoryInterface;
@@ -435,9 +436,14 @@ class DoctrineMongoDBExtension extends Extension
 
         $container->setParameter('doctrine_mongodb.odm.default_document_manager', $config['default_document_manager']);
 
-        if (! empty($config['types'])) {
+        TypeProviderPass::registerAutoconfiguration($container);
+
+        $customTypes = $config['types'] ?? [];
+        $container->setParameter('doctrine_mongodb.odm.custom_types', $customTypes);
+
+        if ($customTypes !== []) {
             $configuratorDefinition = $container->getDefinition('doctrine_mongodb.odm.manager_configurator.abstract');
-            $configuratorDefinition->addMethodCall('loadTypes', [$config['types']]);
+            $configuratorDefinition->addMethodCall('loadTypes', [$customTypes]);
         }
 
         // Disable proxy class generation for PHP 8.4 native lazy objects
@@ -723,7 +729,8 @@ class DoctrineMongoDBExtension extends Extension
             // Document managers will share their connection's event manager
             new Reference(sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $connectionName)),
         ];
-        $odmDmDef  = new Definition(DocumentManager::class, $odmDmArgs);
+
+        $odmDmDef = new Definition(DocumentManager::class, $odmDmArgs);
         $odmDmDef->setFactory([DocumentManager::class, 'create']);
         $odmDmDef->addTag('doctrine_mongodb.odm.document_manager');
         $odmDmDef->setPublic(true);
