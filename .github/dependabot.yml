@@ -10,3 +10,13 @@ updates:
       doctrine:
         patterns:
           - "doctrine/*"
+
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    versioning-strategy: increase
+    allow:
+      - dependency-name: "phpstan/phpstan"
+    labels:
+      - "CI"
