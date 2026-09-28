@@ -45,6 +45,10 @@ class ManagerRegistryTest extends TestCase
         // The lazy service is reinitialized instead of being cleared
         $container->get('manager.lazy')->flush();
         $repository->reset();
+        // The counter is incremented by clear(), which is called through the container,
+        // so static analysis narrows it to the 0 assigned earlier and sees this
+        // assertion as always true.
+        // @phpstan-ignore method.alreadyNarrowedType
         $this->assertSame(0, DocumentManagerStub::$clearCount);
 
         // The default service is cleared when initialized
