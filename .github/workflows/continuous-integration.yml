@@ -40,10 +40,16 @@ jobs:
             driver-version: "1.21.0"
 
           # Test Symfony LTS
+          # Entries added to `include` start a new combination: every matrix
+          # key must be repeated here, otherwise its value is empty.
           - php-version: "8.4"
             symfony-require: "6.4.*"
+            driver-version: "stable"
+            dependencies: "highest"
           - php-version: "8.4"
             symfony-require: "7.4.*"
+            driver-version: "stable"
+            dependencies: "highest"
 
     services:
       mongodb:
