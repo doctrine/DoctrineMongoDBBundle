@@ -851,7 +851,7 @@ class DoctrineMongoDBExtension extends Extension
             return;
         }
 
-        $container->getDefinition('doctrine_mongodb.odm.entity_value_resolver')->setArgument(2, (new Definition(MapDocument::class))->setArguments([
+        $container->getDefinition('doctrine_mongodb.odm.document_value_resolver')->setArgument(2, (new Definition(MapDocument::class))->setArguments([
             null,
             null,
             null,
