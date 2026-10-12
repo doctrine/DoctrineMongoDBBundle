@@ -33,6 +33,7 @@ use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\RegisterEventListen
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\Argument\ServiceLocatorArgument;
 use Symfony\Component\DependencyInjection\ChildDefinition;
+use Symfony\Component\DependencyInjection\Compiler\ResolveChildDefinitionsPass;
 use Symfony\Component\DependencyInjection\Compiler\ResolveParameterPlaceHoldersPass;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -411,6 +412,8 @@ class DoctrineMongoDBExtensionTest extends TestCase
     {
         $loader = new DoctrineMongoDBExtension();
         $loader->load(self::buildConfiguration(), $container = $this->buildMinimalContainer());
+
+        (new ResolveChildDefinitionsPass())->process($container);
 
         $this->assertTrue($container->getDefinition('doctrine_mongodb')->isPublic());
         $this->assertTrue($container->getDefinition('doctrine_mongodb.odm.default_document_manager')->isPublic());

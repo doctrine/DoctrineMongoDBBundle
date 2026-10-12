@@ -39,6 +39,12 @@ return static function (ContainerConfigurator $containerConfigurator): void {
                 abstract_arg('enabled filters'),
             ])
 
+        ->set('doctrine_mongodb.odm.document_manager.abstract', DocumentManager::class)
+            ->abstract()
+            ->factory([DocumentManager::class, 'create'])
+            ->public()
+            ->lazy()
+
         ->set('doctrine_mongodb.odm.security.user.provider', EntityUserProvider::class)
             ->abstract()
             ->args([

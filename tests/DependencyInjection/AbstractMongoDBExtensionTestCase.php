@@ -18,6 +18,7 @@ use PHPUnit\Framework\AssertionFailedError;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\MemcachedAdapter;
+use Symfony\Component\DependencyInjection\Compiler\ResolveChildDefinitionsPass;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -61,6 +62,8 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $this->assertEquals('MyProxies', $container->getParameter('doctrine_mongodb.odm.proxy_namespace'));
         $this->assertEquals(! self::useNativeLazyObject(), $container->getParameter('doctrine_mongodb.odm.auto_generate_proxy_classes'));
 
+        (new ResolveChildDefinitionsPass())->process($container);
+
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_connection');
         $this->assertEquals(Client::class, $definition->getClass());
 
@@ -99,6 +102,8 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         ];
         $loader->load([$config], $container);
 
+        (new ResolveChildDefinitionsPass())->process($container);
+
         $definition = $container->getDefinition('doctrine_mongodb.odm.default_connection');
         $this->assertEquals(Client::class, $definition->getClass());
 
@@ -130,7 +135,7 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
 
         $this->loadFromFile($container, 'mongodb_service_simple_single_connection');
 
-        $container->getCompilerPassConfig()->setOptimizationPasses([]);
+        $container->getCompilerPassConfig()->setOptimizationPasses([new ResolveChildDefinitionsPass()]);
         $container->getCompilerPassConfig()->setRemovingPasses([]);
         $container->compile();
 
@@ -172,7 +177,7 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
 
         $this->loadFromFile($container, 'mongodb_service_single_connection');
 
-        $container->getCompilerPassConfig()->setOptimizationPasses([]);
+        $container->getCompilerPassConfig()->setOptimizationPasses([new ResolveChildDefinitionsPass()]);
         $container->getCompilerPassConfig()->setRemovingPasses([]);
         $container->compile();
 
@@ -208,7 +213,7 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
 
         $this->loadFromFile($container, 'mongodb_service_multiple_connections');
 
-        $container->getCompilerPassConfig()->setOptimizationPasses([]);
+        $container->getCompilerPassConfig()->setOptimizationPasses([new ResolveChildDefinitionsPass()]);
         $container->getCompilerPassConfig()->setRemovingPasses([]);
         $container->compile();
 
@@ -310,7 +315,7 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
 
         $this->loadFromFile($container, 'mongodb_service_multiple_connections');
 
-        $container->getCompilerPassConfig()->setOptimizationPasses([]);
+        $container->getCompilerPassConfig()->setOptimizationPasses([new ResolveChildDefinitionsPass()]);
         $container->getCompilerPassConfig()->setRemovingPasses([]);
         $container->compile();
 
@@ -329,7 +334,7 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
 
         $this->loadFromFile($container, 'mongodb_service_simple_single_connection');
 
-        $container->getCompilerPassConfig()->setOptimizationPasses([]);
+        $container->getCompilerPassConfig()->setOptimizationPasses([new ResolveChildDefinitionsPass()]);
         $container->getCompilerPassConfig()->setRemovingPasses([]);
         $container->compile();
 
@@ -358,7 +363,7 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
 
         $this->loadFromFile($container, 'odm_imports');
 
-        $container->getCompilerPassConfig()->setOptimizationPasses([]);
+        $container->getCompilerPassConfig()->setOptimizationPasses([new ResolveChildDefinitionsPass()]);
         $container->getCompilerPassConfig()->setRemovingPasses([]);
         $container->compile();
 
@@ -373,7 +378,7 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
 
         $this->loadFromFile($container, 'odm_resolve_target_document');
 
-        $container->getCompilerPassConfig()->setOptimizationPasses([]);
+        $container->getCompilerPassConfig()->setOptimizationPasses([new ResolveChildDefinitionsPass()]);
         $container->getCompilerPassConfig()->setRemovingPasses([]);
         $container->compile();
 
@@ -395,7 +400,7 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
 
         $this->loadFromFile($container, 'odm_filters');
 
-        $container->getCompilerPassConfig()->setOptimizationPasses([]);
+        $container->getCompilerPassConfig()->setOptimizationPasses([new ResolveChildDefinitionsPass()]);
         $container->getCompilerPassConfig()->setRemovingPasses([]);
         $container->compile();
 
@@ -425,7 +430,7 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
 
         $this->loadFromFile($container, 'odm_types');
 
-        $container->getCompilerPassConfig()->setOptimizationPasses([]);
+        $container->getCompilerPassConfig()->setOptimizationPasses([new ResolveChildDefinitionsPass()]);
         $container->getCompilerPassConfig()->setRemovingPasses([]);
         $container->compile();
 

@@ -741,10 +741,9 @@ class DoctrineMongoDBExtension extends Extension
             // Document managers will share their connection's event manager
             new Reference(sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $connectionName)),
         ];
-        $odmDmDef  = new Definition(DocumentManager::class, $odmDmArgs);
-        $odmDmDef->setFactory([DocumentManager::class, 'create']);
+        $odmDmDef  = new ChildDefinition('doctrine_mongodb.odm.document_manager.abstract');
+        $odmDmDef->setArguments($odmDmArgs);
         $odmDmDef->addTag('doctrine_mongodb.odm.document_manager');
-        $odmDmDef->setPublic(true);
 
         $container
             ->setDefinition(sprintf('doctrine_mongodb.odm.%s_document_manager', $documentManager['name']), $odmDmDef)
