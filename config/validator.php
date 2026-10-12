@@ -19,7 +19,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             ])
 
         ->set('doctrine_odm.mongodb.validator.entity_exists', EntityExistsValidator::class)
-            ->tag('validator.constraint_validator')
+            ->tag('validator.constraint_validator', ['alias' => 'doctrine_odm.mongodb.entity_exists'])
             ->args([
                 service('doctrine_mongodb'),
             ])
