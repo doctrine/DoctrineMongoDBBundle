@@ -28,8 +28,8 @@ use MongoDB\BSON\Document as BsonDocument;
 use MongoDB\Client;
 use ProxyManager\Proxy\LazyLoadingInterface;
 use ReflectionClass;
+use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\RegisterEventListenersAndSubscribersPass;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
-use Symfony\Bridge\Doctrine\Middleware\Debug\Query;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\MemcachedAdapter;
@@ -498,8 +498,9 @@ class DoctrineMongoDBExtension extends Extension
         $container->registerForAutoconfiguration(ServiceDocumentRepositoryInterface::class)
             ->addTag(ServiceRepositoryCompilerPass::REPOSITORY_SERVICE_TAG);
 
-        // symfony/doctrine-bridge 8.2 added the "before" and "after" options of the tag, and Query::ranOnPrimary() in the same version
-        $bridgeOrdersListeners = method_exists(Query::class, 'ranOnPrimary');
+        // symfony/doctrine-bridge 8.2 added the "before" and "after" options of the event listener tag,
+        // which RegisterEventListenersAndSubscribersPass reads and orders with sortByConstraints()
+        $bridgeOrdersListeners = method_exists(RegisterEventListenersAndSubscribersPass::class, 'sortByConstraints');
 
         /** @phpstan-ignore argument.type (Needed for the $reflector parameter) */
         $container->registerAttributeForAutoconfiguration(AsDocumentListener::class, static function (ChildDefinition $definition, AsDocumentListener $attribute, ReflectionClass $reflector) use ($bridgeOrdersListeners): void {
