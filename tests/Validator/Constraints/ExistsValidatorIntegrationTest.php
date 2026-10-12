@@ -31,27 +31,8 @@ class ExistsValidatorIntegrationTest extends TestCase
             self::markTestSkipped('Requires symfony/doctrine-bridge 8.2 or higher');
         }
 
-        $this->dm = self::createTestDocumentManager([__DIR__ . '/../../Fixtures/FooBundle/Document']);
-
-        $container = new Container();
-        $container->set('doctrine_mongodb.odm.default_document_manager', $this->dm);
-
-        $registry = new ManagerRegistry(
-            'MongoDB',
-            [],
-            ['default' => 'doctrine_mongodb.odm.default_document_manager'],
-            'default',
-            'default',
-            LazyObjectInterface::class,
-            $container,
-        );
-
-        // The "doctrine_odm.mongodb.exists" key is the name returned by Exists::validatedBy().
-        $this->validator = Validation::createValidatorBuilder()
-            ->setConstraintValidatorFactory(new ConstraintValidatorFactory([
-                'doctrine_odm.mongodb.exists' => new EntityExistsValidator($registry),
-            ]))
-            ->getValidator();
+        $this->dm        = self::createTestDocumentManager([__DIR__ . '/../../Fixtures/FooBundle/Document']);
+        $this->validator = $this->createValidator($this->dm);
     }
 
     public function testExistingDocumentHasNoViolation(): void
@@ -74,5 +55,28 @@ class ExistsValidatorIntegrationTest extends TestCase
 
         $this->assertCount(1, $violations);
         $this->assertSame('unknown-identifier', $violations[0]->getInvalidValue());
+    }
+
+    private function createValidator(DocumentManager $dm): ValidatorInterface
+    {
+        $container = new Container();
+        $container->set('doctrine_mongodb.odm.default_document_manager', $dm);
+
+        $registry = new ManagerRegistry(
+            'MongoDB',
+            [],
+            ['default' => 'doctrine_mongodb.odm.default_document_manager'],
+            'default',
+            'default',
+            LazyObjectInterface::class,
+            $container,
+        );
+
+        // The "doctrine_odm.mongodb.exists" key is the name returned by Exists::validatedBy().
+        return Validation::createValidatorBuilder()
+            ->setConstraintValidatorFactory(new ConstraintValidatorFactory([
+                'doctrine_odm.mongodb.exists' => new EntityExistsValidator($registry),
+            ]))
+            ->getValidator();
     }
 }

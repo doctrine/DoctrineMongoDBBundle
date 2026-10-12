@@ -27,9 +27,20 @@ parameters:
           path: config/validator.php
           reportUnmatched: false
 
-        # Exists extends EntityExists, which exists since symfony/doctrine-bridge 8.2.
-        # With an older bridge, the parent class is unknown and PHPStan sees no constructor.
-        # This entry can be dropped once 8.2 is required.
+        # Exists extends EntityExists and ExistsValidatorIntegrationTest uses
+        # EntityExistsValidator. Both exist since symfony/doctrine-bridge 8.2.
+        # With an older bridge, PHPStan cannot resolve them, so the constraint
+        # looks like a class without a constructor. These entries can be dropped
+        # once 8.2 is required.
         - identifier: attribute.noConstructor
           path: tests/Validator/Constraints/ExistsTest.php
+          reportUnmatched: false
+        - identifier: new.noConstructor
+          path: tests/Validator/Constraints/ExistsValidatorIntegrationTest.php
+          reportUnmatched: false
+        - identifier: argument.type
+          path: tests/Validator/Constraints/ExistsValidatorIntegrationTest.php
+          reportUnmatched: false
+        - identifier: class.notFound
+          path: tests/Validator/Constraints/ExistsValidatorIntegrationTest.php
           reportUnmatched: false
