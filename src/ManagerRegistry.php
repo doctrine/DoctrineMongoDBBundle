@@ -16,6 +16,8 @@ use Symfony\Contracts\Service\ResetInterface;
 
 use function assert;
 
+use const PHP_VERSION_ID;
+
 class ManagerRegistry extends BaseManagerRegistry implements ResetInterface
 {
     /**
@@ -32,14 +34,14 @@ class ManagerRegistry extends BaseManagerRegistry implements ResetInterface
         string $defaultManager,
         private readonly string $proxyInterfaceName,
         ?ContainerInterface $container = null,
-        private readonly ContainerInterface|null $metadataDrivers = null,
+        private readonly ?ContainerInterface $metadataDrivers = null,
     ) {
         $this->container = $container;
 
         parent::__construct($name, $connections, $managers, $defaultConnection, $defaultManager, $proxyInterfaceName);
     }
 
-    public function getManagerForClass(string $class): ObjectManager|null
+    public function getManagerForClass(string $class): ?ObjectManager
     {
         if ($this->metadataDrivers === null) {
             return parent::getManagerForClass($class);
@@ -124,6 +126,11 @@ class ManagerRegistry extends BaseManagerRegistry implements ResetInterface
 
         if ($manager instanceof LazyObjectInterface) {
             return ! $manager->isLazyObjectInitialized();
+        }
+
+        // Native lazy objects are only supported on PHP 8.4 and later.
+        if (PHP_VERSION_ID < 80400) {
+            return false;
         }
 
         return (new ReflectionClass($manager))->isUninitializedLazyObject($manager);
