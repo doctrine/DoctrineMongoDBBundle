@@ -19,12 +19,15 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             service('doctrine_mongodb.odm.document_value_resolver.expression_language')->ignoreOnInvalid(),
         ]);
 
-    $services->set('doctrine_mongodb.odm.document_value_resolver.expression_language', ExpressionLanguage::class);
-
     $services->set('doctrine_mongodb.odm.document_value_resolver.console', ConsoleEntityValueResolver::class)
         ->tag('console.argument_value_resolver', ['name' => 'doctrine_mongodb.odm.document_value_resolver.console', 'priority' => 110])
         ->args([
             service('doctrine_mongodb'),
             service('doctrine_mongodb.odm.document_value_resolver.expression_language')->ignoreOnInvalid(),
+        ]);
+
+    $services->set('doctrine_mongodb.odm.document_value_resolver.expression_language', ExpressionLanguage::class)
+        ->args([
+            service('cache.doctrine_mongodb.odm.document_value_resolver.expression_language')->nullOnInvalid(),
         ]);
 };

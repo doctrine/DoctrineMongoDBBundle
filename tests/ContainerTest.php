@@ -5,13 +5,20 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\MongoDBBundle\Tests;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
+use Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection\Fixtures\TestKernel;
 use PHPUnit\Framework\Attributes\DataProvider;
+use ReflectionProperty;
 use Symfony\Bridge\Doctrine\Validator\Constraints\EntityExistsValidator;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 use function class_exists;
+use function restore_exception_handler;
 use function sys_get_temp_dir;
 
 class ContainerTest extends TestCase
@@ -160,5 +167,35 @@ class ContainerTest extends TestCase
         }
 
         $this->assertFalse($this->container->hasDefinition('doctrine_odm.mongodb.validator.exists'));
+    }
+
+    public function testDocumentValueResolverExpressionLanguageUsesTheSystemCache(): void
+    {
+        if (! class_exists(ExpressionLanguage::class)) {
+            self::markTestSkipped('This test requires the ExpressionLanguage component');
+        }
+
+        $kernel = new class (false) extends TestKernel {
+            public function registerContainerConfiguration(LoaderInterface $loader): void
+            {
+                parent::registerContainerConfiguration($loader);
+
+                // Enable framework.test so that test.service_container exposes private services.
+                $loader->load(static function (ContainerBuilder $container): void {
+                    $container->loadFromExtension('framework', ['test' => true]);
+                });
+            }
+        };
+        $kernel->boot();
+        restore_exception_handler();
+
+        $container = $kernel->getContainer()->get('test.service_container');
+        $this->assertInstanceOf(ContainerInterface::class, $container);
+
+        $expressionLanguage = $container->get('doctrine_mongodb.odm.document_value_resolver.expression_language');
+        $this->assertInstanceOf(ExpressionLanguage::class, $expressionLanguage);
+
+        $cache = (new ReflectionProperty(ExpressionLanguage::class, 'cache'))->getValue($expressionLanguage);
+        $this->assertNotInstanceOf(ArrayAdapter::class, $cache);
     }
 }
