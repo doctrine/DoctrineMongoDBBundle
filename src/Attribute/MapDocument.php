@@ -16,18 +16,18 @@ use function property_exists;
 class MapDocument extends MapEntity
 {
     public function __construct(
-        public ?string $class = null,
-        public ?string $objectManager = null,
-        public ?string $expr = null,
-        public ?array $mapping = null,
-        public ?array $exclude = null,
-        public ?bool $stripNull = null,
-        public array|string|null $id = null,
+        ?string $class = null,
+        ?string $objectManager = null,
+        ?string $expr = null,
+        ?array $mapping = null,
+        ?array $exclude = null,
+        ?bool $stripNull = null,
+        array|string|null $id = null,
         bool $disabled = false,
         string $resolver = DocumentValueResolver::class,
-        public ?string $message = null,
+        ?string $message = null,
     ) {
-        if (! is_string($this->message)) {
+        if (! is_string($message)) {
             parent::__construct($class, $objectManager, $expr, $mapping, $exclude, $stripNull, $id, null, $disabled, $resolver);
 
             return;
