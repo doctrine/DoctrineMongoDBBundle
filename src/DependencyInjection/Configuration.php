@@ -80,17 +80,12 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('auto_generate_proxy_classes')
                     ->defaultValue(ODMConfiguration::AUTOGENERATE_EVAL)
                     ->beforeNormalization()
-                    ->always(static function ($v) {
-                        if ($v === false) {
-                            return ODMConfiguration::AUTOGENERATE_EVAL;
-                        }
-
-                        if ($v === true) {
-                            return ODMConfiguration::AUTOGENERATE_FILE_NOT_EXISTS;
-                        }
-
-                        return $v;
-                    })
+                        ->ifTrue()
+                        ->then(static fn () => ODMConfiguration::AUTOGENERATE_FILE_NOT_EXISTS)
+                    ->end()
+                    ->beforeNormalization()
+                        ->ifFalse()
+                        ->then(static fn () => ODMConfiguration::AUTOGENERATE_EVAL)
                     ->end()
                 ->end()
                 ->scalarNode('hydrator_namespace')->defaultValue('Hydrators')->end()
@@ -98,17 +93,12 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('auto_generate_hydrator_classes')
                     ->defaultValue(ODMConfiguration::AUTOGENERATE_NEVER)
                     ->beforeNormalization()
-                    ->always(static function ($v) {
-                        if ($v === false) {
-                            return ODMConfiguration::AUTOGENERATE_NEVER;
-                        }
-
-                        if ($v === true) {
-                            return ODMConfiguration::AUTOGENERATE_ALWAYS;
-                        }
-
-                        return $v;
-                    })
+                        ->ifTrue()
+                        ->then(static fn () => ODMConfiguration::AUTOGENERATE_ALWAYS)
+                    ->end()
+                    ->beforeNormalization()
+                        ->ifFalse()
+                        ->then(static fn () => ODMConfiguration::AUTOGENERATE_NEVER)
                     ->end()
                 ->end()
                 ->scalarNode('persistent_collection_namespace')->defaultValue('PersistentCollections')->end()
@@ -426,16 +416,12 @@ class Configuration implements ConfigurationInterface
                                     ->arrayNode('encryptedFieldsMap')
                                         ->useAttributeAsKey('name', false)
                                         ->beforeNormalization()
-                                            ->always(static function ($v) {
-                                                // Create a PHP array representation of the Extended BSON that is later
-                                                // converted to JSON string to create a BSON document from this JSON.
-                                                // This lets the DI dumper transform the parameters in the string and dump it.
-                                                if (is_string($v)) {
-                                                    return json_decode($v, true, 512, JSON_THROW_ON_ERROR);
-                                                }
-
-                                                return $v;
-                                            })->end()
+                                            ->ifString()
+                                            // Create a PHP array representation of the Extended BSON that is later
+                                            // converted to JSON string to create a BSON document from this JSON.
+                                            // This lets the DI dumper transform the parameters in the string and dump it.
+                                            ->then(static fn ($v) => json_decode($v, true, 512, JSON_THROW_ON_ERROR))
+                                        ->end()
                                         ->prototype('array')
                                             ->children()
                                                 ->arrayNode('fields')
