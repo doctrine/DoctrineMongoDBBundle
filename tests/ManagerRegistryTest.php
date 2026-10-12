@@ -6,10 +6,17 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests;
 
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\ObjectManager;
+use Doctrine\Persistence\Proxy;
+use Psr\Container\ContainerInterface;
+use stdClass;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
+
+use function in_array;
 
 class ManagerRegistryTest extends TestCase
 {
@@ -55,6 +62,73 @@ class ManagerRegistryTest extends TestCase
         $container->get('manager.default')->flush();
         $repository->reset();
         $this->assertSame(1, DocumentManagerStub::$clearCount);
+    }
+
+    public function testGetManagerForClassDoesNotInitializeManagersThatDoNotMapTheClass(): void
+    {
+        $container = new ContainerBuilder();
+        $container->register('manager.default', DocumentManagerStub::class)->setPublic(true);
+        $container->register('manager.other', DocumentManagerStub::class)->setPublic(true);
+        $container->compile();
+
+        $repository = new ManagerRegistry('MongoDB', [], [
+            'default' => 'manager.default',
+            'other' => 'manager.other',
+        ], '', '', Proxy::class, $container, new MetadataDriverLocator([
+            'default' => new MappingDriverStub([DocumentManagerStub::class]),
+            'other' => new MappingDriverStub([self::class]),
+        ]));
+
+        // No manager maps stdClass, so none of them is initialized
+        $this->assertNull($repository->getManagerForClass(stdClass::class));
+        $this->assertFalse($container->initialized('manager.default'));
+        $this->assertFalse($container->initialized('manager.other'));
+
+        // Only the manager that maps the class is initialized
+        $manager = $repository->getManagerForClass(DocumentManagerStub::class);
+        $this->assertSame($container->get('manager.default'), $manager);
+        $this->assertFalse($container->initialized('manager.other'));
+    }
+}
+
+class MetadataDriverLocator implements ContainerInterface
+{
+    /** @param array<string, MappingDriver> $drivers */
+    public function __construct(private readonly array $drivers)
+    {
+    }
+
+    public function get(string $id): MappingDriver
+    {
+        return $this->drivers[$id];
+    }
+
+    public function has(string $id): bool
+    {
+        return isset($this->drivers[$id]);
+    }
+}
+
+class MappingDriverStub implements MappingDriver
+{
+    /** @param list<class-string> $mappedClasses */
+    public function __construct(private readonly array $mappedClasses)
+    {
+    }
+
+    public function loadMetadataForClass(string $className, ClassMetadata $metadata): void
+    {
+    }
+
+    /** @return list<class-string> */
+    public function getAllClassNames(): array
+    {
+        return $this->mappedClasses;
+    }
+
+    public function isTransient(string $className): bool
+    {
+        return ! in_array($className, $this->mappedClasses, true);
     }
 }
 

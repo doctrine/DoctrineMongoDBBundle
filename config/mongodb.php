@@ -55,6 +55,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
                 '%doctrine_mongodb.odm.default_document_manager%',
                 abstract_arg('Proxy Interface Name'),
                 service('service_container'),
+                abstract_arg('Metadata drivers'),
             ])
             ->tag('kernel.reset', ['method' => 'reset'])
 
