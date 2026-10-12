@@ -29,6 +29,7 @@ use MongoDB\Client;
 use ProxyManager\Proxy\LazyLoadingInterface;
 use ReflectionClass;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
+use Symfony\Bridge\Doctrine\Middleware\Debug\Query;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\MemcachedAdapter;
@@ -497,11 +498,21 @@ class DoctrineMongoDBExtension extends Extension
         $container->registerForAutoconfiguration(ServiceDocumentRepositoryInterface::class)
             ->addTag(ServiceRepositoryCompilerPass::REPOSITORY_SERVICE_TAG);
 
-        $container->registerAttributeForAutoconfiguration(AsDocumentListener::class, static function (ChildDefinition $definition, AsDocumentListener $attribute): void {
+        // symfony/doctrine-bridge 8.2 added the "before" and "after" options of the tag, and Query::ranOnPrimary() in the same version
+        $bridgeOrdersListeners = method_exists(Query::class, 'ranOnPrimary');
+
+        /** @phpstan-ignore argument.type (Needed for the $reflector parameter) */
+        $container->registerAttributeForAutoconfiguration(AsDocumentListener::class, static function (ChildDefinition $definition, AsDocumentListener $attribute, ReflectionClass $reflector) use ($bridgeOrdersListeners): void {
+            if (! $bridgeOrdersListeners && ($attribute->before !== null || $attribute->after !== null)) {
+                throw new LogicException(sprintf('Using "before" or "after" in #[AsDocumentListener] on "%s" requires symfony/doctrine-bridge 8.2 or higher.', $reflector->getName()));
+            }
+
             $definition->addTag('doctrine_mongodb.odm.event_listener', [
                 'event'      => $attribute->event,
                 'connection' => $attribute->connection,
                 'priority'   => $attribute->priority,
+                'before'     => $attribute->before,
+                'after'      => $attribute->after,
             ]);
         });
 

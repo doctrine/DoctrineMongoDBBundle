@@ -7,6 +7,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 use Closure;
 use Composer\InstalledVersions;
 use Composer\Semver\VersionParser;
+use Doctrine\Bundle\MongoDBBundle\Attribute\AsDocumentListener;
 use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
 use Doctrine\Bundle\MongoDBBundle\Command\Encryption\DiagnosticCommand;
 use Doctrine\Bundle\MongoDBBundle\Command\Encryption\DumpFieldsMapCommand;
@@ -21,12 +22,14 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations;
 use Doctrine\ODM\MongoDB\Mapping\Attribute;
 use InvalidArgumentException;
+use LogicException;
 use MongoDB\Client;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
 use stdClass;
+use Symfony\Bridge\Doctrine\Middleware\Debug\Query;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\ResolveParameterPlaceHoldersPass;
@@ -130,8 +133,42 @@ class DoctrineMongoDBExtensionTest extends TestCase
                 'event' => 'prePersist',
                 'connection' => 'test',
                 'priority' => 10,
+                'before' => null,
+                'after' => null,
             ],
         ], $listenerDefinition->getTag('doctrine_mongodb.odm.event_listener'));
+    }
+
+    public function testAsDocumentListenerAttributeOrdersListeners(): void
+    {
+        $container = $this->buildMinimalContainer();
+        $extension = new DoctrineMongoDBExtension();
+        $container->registerExtension($extension);
+
+        $extension->load(self::buildConfiguration(), $container);
+
+        $attributes = $container->getAttributeAutoconfigurators();
+        $reflector  = new ReflectionClass(TestAttributeListener::class);
+        $attribute  = new AsDocumentListener(event: 'prePersist', before: 'app.indexer', after: ['app.audit', 'App\Listener']);
+
+        // Query::ranOnPrimary() exists since symfony/doctrine-bridge 8.2, like the "before" and "after" options of the tag
+        if (! method_exists(Query::class, 'ranOnPrimary')) {
+            $this->expectException(LogicException::class);
+            $this->expectExceptionMessage(sprintf('Using "before" or "after" in #[AsDocumentListener] on "%s" requires symfony/doctrine-bridge 8.2 or higher.', TestAttributeListener::class));
+        }
+
+        $definition = new ChildDefinition('');
+        $attributes[AsDocumentListener::class][0]($definition, $attribute, $reflector);
+
+        self::assertSame([
+            [
+                'event' => 'prePersist',
+                'connection' => null,
+                'priority' => null,
+                'before' => 'app.indexer',
+                'after' => ['app.audit', 'App\Listener'],
+            ],
+        ], $definition->getTag('doctrine_mongodb.odm.event_listener'));
     }
 
     /** @return array<array{0: class-string}> */
