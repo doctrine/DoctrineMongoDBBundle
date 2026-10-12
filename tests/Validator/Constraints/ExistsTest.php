@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Tests\Validator\Constraints;
 
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\DocumentExists;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Exists;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Doctrine\Validator\Constraints\EntityExists;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Mapping\Loader\AttributeLoader;
 
 use function class_exists;
 
-final class DocumentExistsTest extends TestCase
+final class ExistsTest extends TestCase
 {
     protected function setUp(): void
     {
@@ -23,16 +23,16 @@ final class DocumentExistsTest extends TestCase
 
     public function testWithDefaultOptions(): void
     {
-        $metadata = new ClassMetadata(DocumentExistsDummyOne::class);
+        $metadata = new ClassMetadata(ExistsDummyOne::class);
 
         $loader = new AttributeLoader();
 
         self::assertTrue($loader->loadClassMetadata($metadata));
 
         [$constraint] = $metadata->getPropertyMetadata('documentId')[0]->getConstraints();
-        self::assertInstanceOf(DocumentExists::class, $constraint);
+        self::assertInstanceOf(Exists::class, $constraint);
         self::assertSame('App\\Document\\MyDocument', $constraint->entityClass);
-        self::assertSame('doctrine_odm.mongodb.entity_exists', $constraint->validatedBy());
+        self::assertSame('doctrine_odm.mongodb.exists', $constraint->validatedBy());
         self::assertNull($constraint->em);
         self::assertNull($constraint->identifierField);
         self::assertNull($constraint->repositoryMethod);
@@ -40,33 +40,33 @@ final class DocumentExistsTest extends TestCase
 
     public function testWithOptions(): void
     {
-        $metadata = new ClassMetadata(DocumentExistsDummyTwo::class);
+        $metadata = new ClassMetadata(ExistsDummyTwo::class);
 
         $loader = new AttributeLoader();
 
         self::assertTrue($loader->loadClassMetadata($metadata));
 
         [$constraint] = $metadata->getPropertyMetadata('identifier')[0]->getConstraints();
-        self::assertInstanceOf(DocumentExists::class, $constraint);
+        self::assertInstanceOf(Exists::class, $constraint);
         self::assertSame('App\\Document\\MyDocument', $constraint->entityClass);
         self::assertSame('Custom message', $constraint->message);
         self::assertSame('custom_dm', $constraint->em);
         self::assertSame('uuid', $constraint->identifierField);
         self::assertNull($constraint->repositoryMethod);
         self::assertSame(['group1'], $constraint->groups);
-        self::assertSame('doctrine_odm.mongodb.entity_exists', $constraint->validatedBy());
+        self::assertSame('doctrine_odm.mongodb.exists', $constraint->validatedBy());
     }
 }
 
-class DocumentExistsDummyOne
+class ExistsDummyOne
 {
-    #[DocumentExists(entityClass: 'App\\Document\\MyDocument')]
+    #[Exists(entityClass: 'App\\Document\\MyDocument')]
     public string $documentId;
 }
 
-class DocumentExistsDummyTwo
+class ExistsDummyTwo
 {
-    #[DocumentExists(
+    #[Exists(
         entityClass: 'App\\Document\\MyDocument',
         message: 'Custom message',
         em: 'custom_dm',

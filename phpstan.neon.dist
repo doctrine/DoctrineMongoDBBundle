@@ -12,6 +12,11 @@ parameters:
         # Error "overriding property ... should also have native type" is not ignorable
         - src/Validator/Constraints/Unique.php
 
+        # The parent class EntityExists exists since symfony/doctrine-bridge 8.2.
+        # Error "extends unknown class" is not ignorable, so the file is excluded
+        # until 8.2 is required.
+        - src/Validator/Constraints/Exists.php
+
     ignoreErrors:
         - message: '# with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata#'
           identifier: missingType.generics
@@ -22,9 +27,9 @@ parameters:
           path: config/validator.php
           reportUnmatched: false
 
-        # DocumentExists extends EntityExists, which exists since symfony/doctrine-bridge 8.2.
+        # Exists extends EntityExists, which exists since symfony/doctrine-bridge 8.2.
         # With an older bridge, the parent class is unknown and PHPStan sees no constructor.
         # This entry can be dropped once 8.2 is required.
         - identifier: attribute.noConstructor
-          path: tests/Validator/Constraints/DocumentExistsTest.php
+          path: tests/Validator/Constraints/ExistsTest.php
           reportUnmatched: false

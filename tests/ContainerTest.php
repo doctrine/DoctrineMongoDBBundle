@@ -152,7 +152,7 @@ class ContainerTest extends TestCase
             $definition = $this->container->getDefinition('doctrine_odm.mongodb.validator.entity_exists');
             $this->assertSame(EntityExistsValidator::class, $definition->getClass());
             $this->assertSame(
-                [['alias' => 'doctrine_odm.mongodb.entity_exists']],
+                [['alias' => 'doctrine_odm.mongodb.exists']],
                 $definition->getTag('validator.constraint_validator'),
             );
 
