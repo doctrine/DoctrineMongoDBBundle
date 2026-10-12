@@ -149,7 +149,7 @@ class ContainerTest extends TestCase
 
         // EntityExistsValidator exists since symfony/doctrine-bridge 8.2
         if (class_exists(EntityExistsValidator::class)) {
-            $definition = $this->container->getDefinition('doctrine_odm.mongodb.validator.entity_exists');
+            $definition = $this->container->getDefinition('doctrine_odm.mongodb.validator.exists');
             $this->assertSame(EntityExistsValidator::class, $definition->getClass());
             $this->assertSame(
                 [['alias' => 'doctrine_odm.mongodb.exists']],
@@ -159,6 +159,6 @@ class ContainerTest extends TestCase
             return;
         }
 
-        $this->assertFalse($this->container->hasDefinition('doctrine_odm.mongodb.validator.entity_exists'));
+        $this->assertFalse($this->container->hasDefinition('doctrine_odm.mongodb.validator.exists'));
     }
 }

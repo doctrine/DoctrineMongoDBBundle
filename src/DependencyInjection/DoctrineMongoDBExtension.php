@@ -426,7 +426,7 @@ class DoctrineMongoDBExtension extends Extension
 
         // EntityExistsValidator exists since symfony/doctrine-bridge 8.2
         if (! class_exists(EntityExistsValidator::class)) {
-            $container->removeDefinition('doctrine_odm.mongodb.validator.entity_exists');
+            $container->removeDefinition('doctrine_odm.mongodb.validator.exists');
         }
 
         if (empty($config['default_connection'])) {
