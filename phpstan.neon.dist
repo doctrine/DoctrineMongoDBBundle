@@ -15,3 +15,8 @@ parameters:
     ignoreErrors:
         - message: '# with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata#'
           identifier: missingType.generics
+        # CollectionDenormalizer is added in symfony/doctrine-bridge 8.2. The service is declared
+        # only when the class is available, so this entry can be dropped once 8.2 is required.
+        - message: '#^Class Symfony\\Bridge\\Doctrine\\Serializer\\Normalizer\\CollectionDenormalizer not found\.$#'
+          identifier: class.notFound
+          reportUnmatched: false

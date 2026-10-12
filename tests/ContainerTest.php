@@ -6,9 +6,11 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Bridge\Doctrine\Serializer\Normalizer\CollectionDenormalizer;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 use function sys_get_temp_dir;
 
@@ -134,5 +136,24 @@ class ContainerTest extends TestCase
                 'debug' => false,
             ],
         ];
+    }
+
+    public function testCollectionDenormalizerConfig(): void
+    {
+        $this->extension->load([['connections' => ['default' => []]]], $this->container);
+
+        // CollectionDenormalizer exists since symfony/doctrine-bridge 8.2
+        if (
+            ! ContainerBuilder::willBeAvailable('symfony/serializer', DenormalizerInterface::class, ['doctrine/mongodb-odm-bundle'])
+            || ! ContainerBuilder::willBeAvailable('symfony/doctrine-bridge', CollectionDenormalizer::class, ['doctrine/mongodb-odm-bundle'])
+        ) {
+            $this->assertFalse($this->container->hasDefinition('doctrine.collection.denormalizer'));
+
+            return;
+        }
+
+        $definition = $this->container->getDefinition('doctrine.collection.denormalizer');
+        $this->assertSame(CollectionDenormalizer::class, $definition->getClass());
+        $this->assertTrue($definition->hasTag('serializer.normalizer'));
     }
 }

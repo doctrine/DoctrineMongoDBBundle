@@ -29,6 +29,7 @@ use MongoDB\Client;
 use ProxyManager\Proxy\LazyLoadingInterface;
 use ReflectionClass;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
+use Symfony\Bridge\Doctrine\Serializer\Normalizer\CollectionDenormalizer;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\MemcachedAdapter;
@@ -44,6 +45,7 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Throwable;
 
 use function array_diff_key;
@@ -534,6 +536,8 @@ class DoctrineMongoDBExtension extends Extension
         $this->loadMessengerServices($container, $loader);
 
         $this->loadEntityValueResolverServices($container, $loader, $config);
+
+        $this->loadSerializerServices($loader);
     }
 
     /**
@@ -805,6 +809,22 @@ class DoctrineMongoDBExtension extends Extension
         }
 
         $loader->load('messenger.php');
+    }
+
+    private function loadSerializerServices(FileLoader $loader): void
+    {
+        // The Serializer delegates a collection interface to a denormalizer, so register the one
+        // that builds the Doctrine collections declared on document properties. Both the Serializer
+        // and the denormalizer, added in symfony/doctrine-bridge 8.2, are optional. The service id is
+        // shared with DoctrineBundle so the definition exists only once when both bundles are installed.
+        if (
+            ! ContainerBuilder::willBeAvailable('symfony/serializer', DenormalizerInterface::class, ['doctrine/mongodb-odm-bundle'])
+            || ! ContainerBuilder::willBeAvailable('symfony/doctrine-bridge', CollectionDenormalizer::class, ['doctrine/mongodb-odm-bundle'])
+        ) {
+            return;
+        }
+
+        $loader->load('serializer.php');
     }
 
     /** @param array<string, mixed> $config */
