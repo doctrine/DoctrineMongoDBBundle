@@ -21,3 +21,10 @@ parameters:
         - identifier: class.notFound
           path: config/validator.php
           reportUnmatched: false
+
+        # DocumentExists extends EntityExists, which exists since symfony/doctrine-bridge 8.2.
+        # With an older bridge, the parent class is unknown and PHPStan sees no constructor.
+        # This entry can be dropped once 8.2 is required.
+        - identifier: attribute.noConstructor
+          path: tests/Validator/Constraints/DocumentExistsTest.php
+          reportUnmatched: false
