@@ -1,12 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Class Symfony\\Component\\ExpressionLanguage\\ExpressionLanguage not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: config/value_resolver.php
-
-		-
 			message: '#^Method Doctrine\\Bundle\\MongoDBBundle\\APM\\CommandLoggerRegistry\:\:__construct\(\) has parameter \$commandLoggers with no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
