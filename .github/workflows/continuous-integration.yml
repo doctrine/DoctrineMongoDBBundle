@@ -33,6 +33,8 @@ jobs:
           - "stable"
         dependencies:
           - "highest"
+        stability:
+          - "stable"
         include:
           # Tests the lowest set of dependencies
           - dependencies: "lowest"
@@ -50,6 +52,13 @@ jobs:
             symfony-require: "7.4.*"
             driver-version: "stable"
             dependencies: "highest"
+
+          # Test Symfony 8.x@dev
+          - php-version: "8.5"
+            symfony-require: ""
+            driver-version: "stable"
+            dependencies: "highest"
+            stability: "dev"
 
     services:
       mongodb:
@@ -86,6 +95,10 @@ jobs:
           extensions: "mongodb-${{ matrix.driver-version }}"
           coverage: "pcov"
           ini-values: "zend.assertions=1"
+
+      - name: "Allow dev dependencies"
+        run: "composer config prefer-stable false"
+        if: "${{ matrix.stability == 'dev' }}"
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v3"
