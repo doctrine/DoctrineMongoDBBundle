@@ -60,7 +60,9 @@
         "doctrine/data-fixtures": "<1.8 || >=3"
     },
     "suggest": {
-        "doctrine/data-fixtures": "Load data fixtures"
+        "doctrine/data-fixtures": "Load data fixtures",
+        "symfony/expression-language": "To use expressions with the #[MapDocument] attribute.",
+        "symfony/security-bundle": "To use the current_user(), is_granted() and other security functions in #[MapDocument] expressions."
     },
     "minimum-stability": "dev",
     "prefer-stable": true,

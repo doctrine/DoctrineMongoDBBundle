@@ -6,6 +6,7 @@ namespace Doctrine\Bundle\MongoDBBundle;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CreateHydratorDirectoryPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CreateProxyDirectoryPass;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\DocumentValueResolverExpressionLanguageProviderPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
@@ -41,6 +42,7 @@ class DoctrineMongoDBBundle extends Bundle
         $container->addCompilerPass(new CreateHydratorDirectoryPass(), PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new DoctrineValidationPass('mongodb'));
         $container->addCompilerPass(new ServiceRepositoryCompilerPass());
+        $container->addCompilerPass(new DocumentValueResolverExpressionLanguageProviderPass());
         $container->addCompilerPass(new FixturesCompilerPass());
 
         if (! $container->hasExtension('security')) {

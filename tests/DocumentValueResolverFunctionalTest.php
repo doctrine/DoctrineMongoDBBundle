@@ -62,6 +62,24 @@ class DocumentValueResolverFunctionalTest extends WebTestCase
         $dm->remove($user);
     }
 
+    public function testWithTaggedExpressionLanguageProvider(): void
+    {
+        $client = static::createClient();
+
+        $dm   = static::getContainer()->get(DocumentManager::class);
+        $user = new User('user-identifier');
+
+        $dm->persist($user);
+        $dm->flush();
+
+        $client->request('GET', '/user_with_expression');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSame('user-identifier', $client->getResponse()->getContent());
+
+        $dm->remove($user);
+    }
+
     protected static function getKernelClass(): string
     {
         return FooTestKernel::class;
@@ -126,6 +144,9 @@ class FooTestKernel extends Kernel
 
         $routes->add('user_with_mapping', '/user_with_mapping/{identifier}')
             ->controller([DocumentValueResolverController::class, 'showUserWithMapping']);
+
+        $routes->add('tv_user_show_with_expression', '/user_with_expression')
+            ->controller([DocumentValueResolverController::class, 'showUserWithExpression']);
     }
 
     protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader): void
