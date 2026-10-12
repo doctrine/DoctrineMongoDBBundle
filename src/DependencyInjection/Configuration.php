@@ -9,10 +9,13 @@ use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use InvalidArgumentException;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use Symfony\Component\Config\Definition\Builder\ExprBuilder;
+use Symfony\Component\Config\Definition\Builder\ScalarNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 use function count;
+use function defined;
 use function in_array;
 use function is_array;
 use function is_string;
@@ -77,30 +80,18 @@ class Configuration implements ConfigurationInterface
                         })
                     ->end()
                 ->end()
-                ->scalarNode('auto_generate_proxy_classes')
-                    ->defaultValue(ODMConfiguration::AUTOGENERATE_EVAL)
-                    ->beforeNormalization()
-                        ->ifTrue()
-                        ->then(static fn () => ODMConfiguration::AUTOGENERATE_FILE_NOT_EXISTS)
-                    ->end()
-                    ->beforeNormalization()
-                        ->ifFalse()
-                        ->then(static fn () => ODMConfiguration::AUTOGENERATE_EVAL)
-                    ->end()
-                ->end()
+                ->append(self::booleanShorthandNode(
+                    'auto_generate_proxy_classes',
+                    ODMConfiguration::AUTOGENERATE_EVAL,
+                    ODMConfiguration::AUTOGENERATE_FILE_NOT_EXISTS,
+                ))
                 ->scalarNode('hydrator_namespace')->defaultValue('Hydrators')->end()
                 ->scalarNode('hydrator_dir')->defaultValue('%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators')->end()
-                ->scalarNode('auto_generate_hydrator_classes')
-                    ->defaultValue(ODMConfiguration::AUTOGENERATE_NEVER)
-                    ->beforeNormalization()
-                        ->ifTrue()
-                        ->then(static fn () => ODMConfiguration::AUTOGENERATE_ALWAYS)
-                    ->end()
-                    ->beforeNormalization()
-                        ->ifFalse()
-                        ->then(static fn () => ODMConfiguration::AUTOGENERATE_NEVER)
-                    ->end()
-                ->end()
+                ->append(self::booleanShorthandNode(
+                    'auto_generate_hydrator_classes',
+                    ODMConfiguration::AUTOGENERATE_NEVER,
+                    ODMConfiguration::AUTOGENERATE_ALWAYS,
+                ))
                 ->scalarNode('persistent_collection_namespace')->defaultValue('PersistentCollections')->end()
                 ->scalarNode('persistent_collection_dir')->defaultValue('%kernel.cache_dir%/doctrine/odm/mongodb/PersistentCollections')->end()
                 ->scalarNode('auto_generate_persistent_collection_classes')->defaultValue(ODMConfiguration::AUTOGENERATE_NEVER)->end()
@@ -128,6 +119,44 @@ class Configuration implements ConfigurationInterface
             ->end();
 
         return $treeBuilder;
+    }
+
+    /**
+     * Builds a scalar node whose boolean shorthands are normalized to ODM constants.
+     *
+     * The true shorthand is normalized to $trueValue, the false shorthand to
+     * $defaultValue, and any other value is left unchanged.
+     *
+     * The typed ifTrue() and ifFalse() conditions declare the "bool" type so that
+     * a configuration schema generator can emit the exact type. They are only
+     * available with symfony/config 7.4 and later, so older versions fall back to
+     * a single always() condition.
+     */
+    private static function booleanShorthandNode(string $name, int $defaultValue, int $trueValue): ScalarNodeDefinition
+    {
+        $node = (new ScalarNodeDefinition($name))->defaultValue($defaultValue);
+
+        if (defined(ExprBuilder::class . '::TYPE_BOOL')) {
+            $node
+                ->beforeNormalization()->ifTrue()->then(static fn () => $trueValue)->end()
+                ->beforeNormalization()->ifFalse()->then(static fn () => $defaultValue)->end();
+
+            return $node;
+        }
+
+        $node->beforeNormalization()->always(static function ($v) use ($defaultValue, $trueValue) {
+            if ($v === true) {
+                return $trueValue;
+            }
+
+            if ($v === false) {
+                return $defaultValue;
+            }
+
+            return $v;
+        })->end();
+
+        return $node;
     }
 
     /**
