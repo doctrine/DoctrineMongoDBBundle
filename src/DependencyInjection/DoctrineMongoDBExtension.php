@@ -29,6 +29,7 @@ use MongoDB\Client;
 use ProxyManager\Proxy\LazyLoadingInterface;
 use ReflectionClass;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
+use Symfony\Bridge\Doctrine\Validator\Constraints\EntityExistsValidator;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\MemcachedAdapter;
@@ -422,6 +423,11 @@ class DoctrineMongoDBExtension extends Extension
         $loader->load('logger.php');
         $loader->load('profiler.php');
         $loader->load('validator.php');
+
+        // EntityExistsValidator exists since symfony/doctrine-bridge 8.2
+        if (! class_exists(EntityExistsValidator::class)) {
+            $container->removeDefinition('doctrine_odm.mongodb.validator.entity_exists');
+        }
 
         if (empty($config['default_connection'])) {
             $config['default_connection'] = array_key_first($config['connections']);
