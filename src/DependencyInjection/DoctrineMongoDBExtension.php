@@ -37,6 +37,7 @@ use Symfony\Component\Cache\Adapter\MemcachedAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\FileLoader;
+use Symfony\Component\Console\ArgumentResolver\ValueResolver\ValueResolverInterface as ConsoleValueResolverInterface;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\Argument\ServiceLocatorArgument;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -843,6 +844,11 @@ class DoctrineMongoDBExtension extends Extension
                 ->addTag('expression_language.compiled', ['string_expressions' => [MapDocument::class => ['expr']]]);
         }
 
+        // The Console ValueResolverInterface is available in Symfony 8.1 and higher
+        if (! interface_exists(ConsoleValueResolverInterface::class)) {
+            $container->removeDefinition('doctrine_mongodb.odm.document_value_resolver.console');
+        }
+
         $controllerResolverDefaults = [];
 
         if (! $config['controller_resolver']['enabled']) {
@@ -867,6 +873,19 @@ class DoctrineMongoDBExtension extends Extension
             null,
             $controllerResolverDefaults['disabled'] ?? false,
         ]));
+
+        if ($container->hasDefinition('doctrine_mongodb.odm.document_value_resolver.console')) {
+            $container->getDefinition('doctrine_mongodb.odm.document_value_resolver.console')->setArgument(2, (new Definition(MapDocument::class))->setArguments([
+                null,
+                null,
+                null,
+                $controllerResolverDefaults['mapping'] ?? null,
+                null,
+                null,
+                null,
+                $controllerResolverDefaults['disabled'] ?? false,
+            ]));
+        }
     }
 
     /**

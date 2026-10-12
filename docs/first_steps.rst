@@ -429,6 +429,49 @@ control behavior:
 ``disabled``
     If true, the ``DoctrineValueResolver`` will not try to replace the argument.
 
+Console Commands
+~~~~~~~~~~~~~~~~
+
+.. versionadded:: 5.7
+
+    The support of this feature was added in Doctrine MongoDB ODM Bundle 5.7
+    and requires Symfony 8.1 or higher.
+
+The same resolver is available for console commands. Declare the command input
+with the ``Argument`` attribute, then let the ``MapDocument`` attribute or the
+automatic mapping resolve the document:
+
+.. code-block:: php
+
+    // src/Command/ShowProductCommand.php
+    namespace App\Command;
+
+    use App\Document\Product;
+    use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
+    use Symfony\Component\Console\Attribute\Argument;
+    use Symfony\Component\Console\Attribute\AsCommand;
+    use Symfony\Component\Console\Command\Command;
+    use Symfony\Component\Console\Output\OutputInterface;
+
+    #[AsCommand('app:show-product')]
+    final class ShowProductCommand
+    {
+        public function __invoke(
+            #[Argument]
+            #[MapDocument]
+            Product $product,
+            OutputInterface $output,
+        ): int {
+            $output->writeln($product->getId());
+
+            return Command::SUCCESS;
+        }
+    }
+
+The command resolves the ``product`` argument to a ``Product`` document the same
+way a controller resolves a route parameter. The ``controller_resolver``
+configuration applies to console commands too.
+
 Updating an Object
 ~~~~~~~~~~~~~~~~~~
 

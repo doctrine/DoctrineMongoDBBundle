@@ -503,6 +503,35 @@ class DoctrineMongoDBExtensionTest extends TestCase
         ], $expressionLanguage->getTag('expression_language.compiled'));
     }
 
+    /** @requires function \Symfony\Bridge\Doctrine\ArgumentResolver\Console\EntityValueResolver::__construct */
+    public function testConsoleCommandResolver(): void
+    {
+        $container = $this->getContainer();
+        $extension = new DoctrineMongoDBExtension();
+        $extension->load(self::buildConfiguration(), $container);
+
+        $consoleResolver = $container->getDefinition('doctrine_mongodb.odm.document_value_resolver.console');
+        $this->assertTrue($consoleResolver->hasTag('console.argument_value_resolver'));
+
+        $this->assertEquals([
+            new Reference('doctrine_mongodb'),
+            new Reference('doctrine_mongodb.odm.document_value_resolver.expression_language', $container::IGNORE_ON_INVALID_REFERENCE),
+        ], $consoleResolver->getArguments());
+
+        $container = $this->getContainer();
+
+        $extension->load(self::buildConfiguration([
+            'controller_resolver' => [
+                'enabled' => false,
+                'auto_mapping' => false,
+            ],
+        ]), $container);
+
+        $container->setDefinition('console_resolver_defaults', $container->getDefinition('doctrine_mongodb.odm.document_value_resolver.console')->getArgument(2))->setPublic(true);
+        $container->compile();
+        $this->assertEquals(new MapDocument(null, null, null, [], null, null, null, true), $container->get('console_resolver_defaults'));
+    }
+
     public function testTransactionalFlushConfigurationWhenNotSupported(): void
     {
         if (InstalledVersions::satisfies(new VersionParser(), 'doctrine/mongodb-odm', '>=2.7@dev')) {
