@@ -1,0 +1,26 @@
+doctrine_mongodb:
+    connections:
+        default:
+            server: mongodb://localhost:27017
+    document_managers:
+        default:
+            connection: default
+        other:
+            connection: default
+    types:
+        custom_type_shortcut: Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\CustomTypeService
+        custom_type:
+            class: Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\CustomTypeService
+
+services:
+    _defaults:
+        autoconfigure: true
+
+    Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\:
+        resource: '../../../../Fixtures/Types'
+
+    app.mongodb.manually_tagged_type:
+        class: Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\CustomTypeService
+        tags:
+            - name: doctrine_mongodb.odm.field_type
+              type: manual_tag_type
