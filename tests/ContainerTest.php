@@ -18,7 +18,6 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 use function class_exists;
-use function restore_exception_handler;
 use function sys_get_temp_dir;
 
 class ContainerTest extends TestCase
@@ -187,7 +186,6 @@ class ContainerTest extends TestCase
             }
         };
         $kernel->boot();
-        restore_exception_handler();
 
         $container = $kernel->getContainer()->get('test.service_container');
         $this->assertInstanceOf(ContainerInterface::class, $container);
