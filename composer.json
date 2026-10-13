@@ -51,6 +51,7 @@
         "symfony/form": "^6.4 || ^7.0 || ^8.0",
         "symfony/messenger": "^6.4 || ^7.0 || ^8.0",
         "symfony/phpunit-bridge": "^6.4.1 || ^7.0.1",
+        "symfony/runtime": "^6.4 || ^7.0 || ^8.0",
         "symfony/security-bundle": "^6.4 || ^7.0 || ^8.0",
         "symfony/stopwatch": "^6.4 || ^7.0 || ^8.0",
         "symfony/validator": "^6.4 || ^7.0 || ^8.0",
@@ -76,7 +77,8 @@
     },
     "config": {
         "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "symfony/runtime": false
         },
         "sort-packages": true
     }
