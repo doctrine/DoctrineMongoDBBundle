@@ -31,6 +31,7 @@ helping you to configure and use it in your application.
    security_bundle
    messenger
    events
+   document_value_resolver
    console
    cookbook/registration_form
    cookbook/bundles

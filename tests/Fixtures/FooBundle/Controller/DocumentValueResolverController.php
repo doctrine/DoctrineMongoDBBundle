@@ -27,4 +27,12 @@ final class DocumentValueResolverController
     ): Response {
         return new Response($user->getId());
     }
+
+    #[Route(path: '/user_with_expression', name: 'tv_user_show_with_expression')]
+    public function showUserWithExpression(
+        #[MapDocument(expr: 'repository.findOneBy({"id": current_id()})')]
+        User $user,
+    ): Response {
+        return new Response($user->getId());
+    }
 }
