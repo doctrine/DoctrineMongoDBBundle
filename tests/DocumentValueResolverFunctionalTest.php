@@ -9,15 +9,18 @@ use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\Controller\DocumentVa
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\Document\User;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\FooBundle\FooBundle;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\Console\Tester\ApplicationTester;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 use function sys_get_temp_dir;
+use function trim;
 use function uniqid;
 
 /** @requires function \Symfony\Bridge\Doctrine\Attribute\MapEntity::__construct */
@@ -62,6 +65,30 @@ class DocumentValueResolverFunctionalTest extends WebTestCase
     protected static function getKernelClass(): string
     {
         return FooTestKernel::class;
+    }
+
+    /** @requires function \Symfony\Bridge\Doctrine\ArgumentResolver\Console\EntityValueResolver::__construct */
+    public function testConsoleCommandWithoutConfiguration(): void
+    {
+        static::bootKernel();
+
+        $dm   = static::getContainer()->get(DocumentManager::class);
+        $user = new User('console-user-identifier');
+
+        $dm->persist($user);
+        $dm->flush();
+
+        $application = new Application(static::$kernel);
+        $application->setAutoExit(false);
+
+        $tester = new ApplicationTester($application);
+        $tester->run(['command' => 'app:show-user', 'user' => 'console-user-identifier']);
+
+        $tester->assertCommandIsSuccessful();
+        $this->assertSame('console-user-identifier', trim($tester->getDisplay()));
+
+        $dm->remove($user);
+        $dm->flush();
     }
 }
 

@@ -609,19 +609,19 @@ parameters:
 		-
 			message: '#^Call to an undefined method object\:\:flush\(\)\.$#'
 			identifier: method.notFound
-			count: 2
+			count: 4
 			path: tests/DocumentValueResolverFunctionalTest.php
 
 		-
 			message: '#^Call to an undefined method object\:\:persist\(\)\.$#'
 			identifier: method.notFound
-			count: 2
+			count: 3
 			path: tests/DocumentValueResolverFunctionalTest.php
 
 		-
 			message: '#^Call to an undefined method object\:\:remove\(\)\.$#'
 			identifier: method.notFound
-			count: 2
+			count: 3
 			path: tests/DocumentValueResolverFunctionalTest.php
 
 		-
