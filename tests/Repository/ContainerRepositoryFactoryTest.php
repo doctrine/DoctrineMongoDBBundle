@@ -19,6 +19,7 @@ use Psr\Container\ContainerInterface;
 use RuntimeException;
 use stdClass;
 
+use function class_exists;
 use function sprintf;
 use function sys_get_temp_dir;
 
@@ -145,6 +146,15 @@ class ContainerRepositoryFactoryTest extends TestCase
             ->willReturnCallback(static fn ($class) => $classMetadatas[$class]);
 
         $evm = $this->createMock(EventManager::class);
+
+        // The UnitOfWork constructor reads the document registry from the manager, which is a final
+        // class that PHPUnit cannot double. The registry only exists since doctrine/mongodb-odm 2.18.
+        $registryClass = 'Doctrine\ODM\MongoDB\Registry\DocumentRegistry';
+        if (class_exists($registryClass)) {
+            $dm
+                ->method('getDocumentRegistry')
+                ->willReturn(new $registryClass());
+        }
 
         $uow = new UnitOfWork($dm, $evm, new HydratorFactory($dm, $evm, sys_get_temp_dir(), sys_get_temp_dir(), Configuration::AUTOGENERATE_EVAL));
         $dm
