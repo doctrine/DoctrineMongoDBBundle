@@ -7,6 +7,7 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 use Closure;
 use Composer\InstalledVersions;
 use Composer\Semver\VersionParser;
+use Doctrine\Bundle\MongoDBBundle\Attribute\AsDocumentListener;
 use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
 use Doctrine\Bundle\MongoDBBundle\Command\Encryption\DiagnosticCommand;
 use Doctrine\Bundle\MongoDBBundle\Command\Encryption\DumpFieldsMapCommand;
@@ -21,12 +22,14 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations;
 use Doctrine\ODM\MongoDB\Mapping\Attribute;
 use InvalidArgumentException;
+use LogicException;
 use MongoDB\Client;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
 use stdClass;
+use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\RegisterEventListenersAndSubscribersPass;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\ResolveParameterPlaceHoldersPass;
@@ -132,8 +135,42 @@ class DoctrineMongoDBExtensionTest extends TestCase
                 'event' => 'prePersist',
                 'connection' => 'test',
                 'priority' => 10,
+                'before' => null,
+                'after' => null,
             ],
         ], $listenerDefinition->getTag('doctrine_mongodb.odm.event_listener'));
+    }
+
+    public function testAsDocumentListenerAttributeOrdersListeners(): void
+    {
+        $container = $this->buildMinimalContainer();
+        $extension = new DoctrineMongoDBExtension();
+        $container->registerExtension($extension);
+
+        $extension->load(self::buildConfiguration(), $container);
+
+        $autoconfigurator = $this->getAttributeAutoconfigurator($container, AsDocumentListener::class);
+        $reflector        = new ReflectionClass(TestAttributeListener::class);
+        $attribute        = new AsDocumentListener(event: 'prePersist', before: 'app.indexer', after: ['app.audit', 'App\Listener']);
+
+        // The "before" and "after" options require symfony/doctrine-bridge 8.2, where the pass gained sortByConstraints()
+        if (! method_exists(RegisterEventListenersAndSubscribersPass::class, 'sortByConstraints')) {
+            $this->expectException(LogicException::class);
+            $this->expectExceptionMessage(sprintf('Using "before" or "after" in #[AsDocumentListener] on "%s" requires symfony/doctrine-bridge 8.2 or higher.', TestAttributeListener::class));
+        }
+
+        $definition = new ChildDefinition('');
+        $autoconfigurator($definition, $attribute, $reflector);
+
+        self::assertSame([
+            [
+                'event' => 'prePersist',
+                'connection' => null,
+                'priority' => null,
+                'before' => 'app.indexer',
+                'after' => ['app.audit', 'App\Listener'],
+            ],
+        ], $definition->getTag('doctrine_mongodb.odm.event_listener'));
     }
 
     /** @return array<array{0: class-string}> */
@@ -166,15 +203,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $extension = new DoctrineMongoDBExtension();
         $extension->load($this->buildConfiguration(), $container);
 
-        // @phpstan-ignore function.alreadyNarrowedType
-        if (method_exists($container, 'getAttributeAutoconfigurators')) {
-            // Compatibility with Symfony 7.3 and later
-            $autoconfigurator = $container->getAttributeAutoconfigurators()[$class][0];
-        } else {
-            // Compatibility with Symfony 7.2 and earlier
-            // @phpstan-ignore-next-line method.notFound
-            $autoconfigurator = $container->getAutoconfiguredAttributes()[$class];
-        }
+        $autoconfigurator = $this->getAttributeAutoconfigurator($container, $class);
 
         $this->assertInstanceOf(Closure::class, $autoconfigurator);
 
@@ -183,6 +212,19 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $autoconfigurator($definition, $attribute);
 
         $this->assertSame([['source' => sprintf('with #[%s] attribute', $class)]], $definition->getTag('container.excluded'));
+    }
+
+    private function getAttributeAutoconfigurator(ContainerBuilder $container, string $class): callable
+    {
+        // @phpstan-ignore function.alreadyNarrowedType
+        if (method_exists($container, 'getAttributeAutoconfigurators')) {
+            // Compatibility with Symfony 7.3 and later
+            return $container->getAttributeAutoconfigurators()[$class][0];
+        }
+
+        // Compatibility with Symfony 7.2 and earlier
+        // @phpstan-ignore-next-line method.notFound
+        return $container->getAutoconfiguredAttributes()[$class];
     }
 
     /** @param string|string[] $bundles */

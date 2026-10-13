@@ -28,6 +28,7 @@ use MongoDB\BSON\Document as BsonDocument;
 use MongoDB\Client;
 use ProxyManager\Proxy\LazyLoadingInterface;
 use ReflectionClass;
+use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\RegisterEventListenersAndSubscribersPass;
 use Symfony\Bridge\Doctrine\Messenger\DoctrineClearEntityManagerWorkerSubscriber;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -498,11 +499,22 @@ class DoctrineMongoDBExtension extends Extension
         $container->registerForAutoconfiguration(ServiceDocumentRepositoryInterface::class)
             ->addTag(ServiceRepositoryCompilerPass::REPOSITORY_SERVICE_TAG);
 
-        $container->registerAttributeForAutoconfiguration(AsDocumentListener::class, static function (ChildDefinition $definition, AsDocumentListener $attribute): void {
+        // symfony/doctrine-bridge 8.2 added the "before" and "after" options of the event listener tag,
+        // which RegisterEventListenersAndSubscribersPass reads and orders with sortByConstraints()
+        $bridgeOrdersListeners = method_exists(RegisterEventListenersAndSubscribersPass::class, 'sortByConstraints');
+
+        /** @phpstan-ignore argument.type (Needed for the $reflector parameter) */
+        $container->registerAttributeForAutoconfiguration(AsDocumentListener::class, static function (ChildDefinition $definition, AsDocumentListener $attribute, ReflectionClass $reflector) use ($bridgeOrdersListeners): void {
+            if (! $bridgeOrdersListeners && ($attribute->before !== null || $attribute->after !== null)) {
+                throw new LogicException(sprintf('Using "before" or "after" in #[AsDocumentListener] on "%s" requires symfony/doctrine-bridge 8.2 or higher.', $reflector->getName()));
+            }
+
             $definition->addTag('doctrine_mongodb.odm.event_listener', [
                 'event'      => $attribute->event,
                 'connection' => $attribute->connection,
                 'priority'   => $attribute->priority,
+                'before'     => $attribute->before,
+                'after'      => $attribute->after,
             ]);
         });
 
