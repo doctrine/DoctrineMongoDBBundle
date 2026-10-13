@@ -52,3 +52,7 @@ option of the `#[MapDocument]` attribute follows this change. A controller that
 explicitly sets `resolver: DocumentValueResolver::class` must set
 `resolver: 'doctrine_mongodb.odm.document_value_resolver'` instead, or remove the
 option.
+
+The `expr` option of `#[MapDocument]` now also accepts a closure. This requires
+`symfony/doctrine-bridge` 8.2 or higher. With older versions, passing a closure
+throws an `InvalidArgumentException`.
