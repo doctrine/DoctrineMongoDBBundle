@@ -15,6 +15,8 @@ use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\DoctrineValidationP
 use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\RegisterEventListenersAndSubscribersPass;
 use Symfony\Bridge\Doctrine\DependencyInjection\Security\UserProvider\EntityFactory;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
+use Symfony\Component\DependencyInjection\ChildDefinition;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
@@ -37,6 +39,20 @@ class DoctrineMongoDBBundle extends Bundle
     public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new RegisterEventListenersAndSubscribersPass('doctrine_mongodb.odm.connections', 'doctrine_mongodb.odm.%s_connection.event_manager', 'doctrine_mongodb.odm'), PassConfig::TYPE_BEFORE_OPTIMIZATION);
+
+        // runs before CachePoolPass, so that the pool gets its own namespace
+        $container->addCompilerPass(new class () implements CompilerPassInterface {
+            public function process(ContainerBuilder $container): void
+            {
+                if (! $container->has('cache.system') || ! $container->hasDefinition('doctrine_mongodb.odm.document_value_resolver.expression_language')) {
+                    return;
+                }
+
+                $container->setDefinition('cache.doctrine_mongodb.odm.document_value_resolver.expression_language', new ChildDefinition('cache.system'))
+                    ->addTag('cache.pool');
+            }
+        }, PassConfig::TYPE_BEFORE_OPTIMIZATION, 33);
+
         $container->addCompilerPass(new CreateProxyDirectoryPass(), PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new CreateHydratorDirectoryPass(), PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new DoctrineValidationPass('mongodb'));
