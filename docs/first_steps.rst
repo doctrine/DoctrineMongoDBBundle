@@ -414,7 +414,7 @@ control behavior:
     ``null`` will not be used for the query.
 
 ``objectManager``
-    By default, the ``DocumentValueResolver`` will choose the document manager
+    By default, the resolver will choose the document manager
     that has the class registered for it, but you can configure this:
 
 .. code-block:: php
@@ -427,7 +427,7 @@ control behavior:
         }
 
 ``disabled``
-    If true, the ``DoctrineValueResolver`` will not try to replace the argument.
+    If true, the resolver will not try to replace the argument.
 
 Console Commands
 ~~~~~~~~~~~~~~~~
