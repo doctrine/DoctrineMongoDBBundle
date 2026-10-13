@@ -31,7 +31,9 @@ use ReflectionClass;
 use stdClass;
 use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\RegisterEventListenersAndSubscribersPass;
 use Symfony\Component\DependencyInjection\Alias;
+use Symfony\Component\DependencyInjection\Argument\ServiceLocatorArgument;
 use Symfony\Component\DependencyInjection\ChildDefinition;
+use Symfony\Component\DependencyInjection\Compiler\ResolveChildDefinitionsPass;
 use Symfony\Component\DependencyInjection\Compiler\ResolveParameterPlaceHoldersPass;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -410,6 +412,8 @@ class DoctrineMongoDBExtensionTest extends TestCase
     {
         $loader = new DoctrineMongoDBExtension();
         $loader->load(self::buildConfiguration(), $container = $this->buildMinimalContainer());
+
+        (new ResolveChildDefinitionsPass())->process($container);
 
         $this->assertTrue($container->getDefinition('doctrine_mongodb')->isPublic());
         $this->assertTrue($container->getDefinition('doctrine_mongodb.odm.default_document_manager')->isPublic());
@@ -797,6 +801,25 @@ class DoctrineMongoDBExtensionTest extends TestCase
         self::expectException(InvalidArgumentException::class);
         self::expectExceptionMessage('The "autoEncryption" option requires doctrine/mongodb-odm version 2.12 or higher');
         $loader->load([$config], $container);
+    }
+
+    public function testRegistryReceivesTheMetadataDriversOfTheDocumentManagers(): void
+    {
+        $container = $this->buildMinimalContainer();
+        $extension = new DoctrineMongoDBExtension();
+        $extension->load(self::buildConfiguration([
+            'document_managers' => [
+                'default' => [],
+                'other' => [],
+            ],
+        ]), $container);
+
+        $metadataDrivers = $container->getDefinition('doctrine_mongodb')->getArgument(7);
+        self::assertInstanceOf(ServiceLocatorArgument::class, $metadataDrivers);
+        self::assertEquals([
+            'default' => new Reference('doctrine_mongodb.odm.default_metadata_driver'),
+            'other' => new Reference('doctrine_mongodb.odm.other_metadata_driver'),
+        ], $metadataDrivers->getValues());
     }
 
     /** @phpstan-param ConfigurationArray $config */

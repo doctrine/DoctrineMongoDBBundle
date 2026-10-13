@@ -37,6 +37,7 @@ use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\FileLoader;
 use Symfony\Component\DependencyInjection\Alias;
+use Symfony\Component\DependencyInjection\Argument\ServiceLocatorArgument;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -595,7 +596,8 @@ class DoctrineMongoDBExtension extends Extension
      */
     protected function loadDocumentManagers(array $dmConfigs, string|null $defaultDM, string $defaultDB, ContainerBuilder $container, ?string $lazyObjectSetter = null, array $connections = []): void
     {
-        $dms = [];
+        $dms             = [];
+        $metadataDrivers = [];
         foreach ($dmConfigs as $name => $documentManager) {
             $documentManager['name'] = $name;
             $this->loadDocumentManager(
@@ -606,10 +608,13 @@ class DoctrineMongoDBExtension extends Extension
                 $lazyObjectSetter,
                 $connections,
             );
-            $dms[$name] = sprintf('doctrine_mongodb.odm.%s_document_manager', $name);
+            $dms[$name]             = sprintf('doctrine_mongodb.odm.%s_document_manager', $name);
+            $metadataDrivers[$name] = new Reference(sprintf('doctrine_mongodb.odm.%s_metadata_driver', $name));
         }
 
         $container->setParameter('doctrine_mongodb.odm.document_managers', $dms);
+
+        $container->getDefinition('doctrine_mongodb')->replaceArgument(7, new ServiceLocatorArgument($metadataDrivers));
     }
 
     /**
@@ -736,10 +741,9 @@ class DoctrineMongoDBExtension extends Extension
             // Document managers will share their connection's event manager
             new Reference(sprintf('doctrine_mongodb.odm.%s_connection.event_manager', $connectionName)),
         ];
-        $odmDmDef  = new Definition(DocumentManager::class, $odmDmArgs);
-        $odmDmDef->setFactory([DocumentManager::class, 'create']);
+        $odmDmDef  = new ChildDefinition('doctrine_mongodb.odm.document_manager.abstract');
+        $odmDmDef->setArguments($odmDmArgs);
         $odmDmDef->addTag('doctrine_mongodb.odm.document_manager');
-        $odmDmDef->setPublic(true);
 
         $container
             ->setDefinition(sprintf('doctrine_mongodb.odm.%s_document_manager', $documentManager['name']), $odmDmDef)

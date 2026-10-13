@@ -39,6 +39,12 @@ return static function (ContainerConfigurator $containerConfigurator): void {
                 abstract_arg('enabled filters'),
             ])
 
+        ->set('doctrine_mongodb.odm.document_manager.abstract', DocumentManager::class)
+            ->abstract()
+            ->factory([DocumentManager::class, 'create'])
+            ->public()
+            ->lazy()
+
         ->set('doctrine_mongodb.odm.security.user.provider', EntityUserProvider::class)
             ->abstract()
             ->args([
@@ -55,6 +61,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
                 '%doctrine_mongodb.odm.default_document_manager%',
                 abstract_arg('Proxy Interface Name'),
                 service('service_container'),
+                abstract_arg('Metadata drivers'),
             ])
             ->tag('kernel.reset', ['method' => 'reset'])
 
