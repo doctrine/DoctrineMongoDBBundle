@@ -29,9 +29,12 @@ use PHPUnit\Framework\TestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
 use stdClass;
+use Symfony\Bridge\Doctrine\ArgumentResolver\Console\EntityValueResolver as ConsoleEntityValueResolver;
 use Symfony\Bridge\Doctrine\ArgumentResolver\EntityValueResolver;
 use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\RegisterEventListenersAndSubscribersPass;
+use Symfony\Component\Console\DependencyInjection\ConsoleArgumentValueResolverPass;
 use Symfony\Component\DependencyInjection\Alias;
+use Symfony\Component\DependencyInjection\Argument\IteratorArgument;
 use Symfony\Component\DependencyInjection\Argument\ServiceLocatorArgument;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\ResolveChildDefinitionsPass;
@@ -512,6 +515,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
         $consoleResolver = $container->getDefinition('doctrine_mongodb.odm.document_value_resolver.console');
         $this->assertTrue($consoleResolver->hasTag('console.argument_value_resolver'));
+        $this->assertSame('doctrine_mongodb.odm.document_value_resolver.console', $consoleResolver->getTag('console.argument_value_resolver')[0]['name']);
 
         $this->assertEquals([
             new Reference('doctrine_mongodb'),
@@ -530,6 +534,43 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $container->setDefinition('console_resolver_defaults', $container->getDefinition('doctrine_mongodb.odm.document_value_resolver.console')->getArgument(2))->setPublic(true);
         $container->compile();
         $this->assertEquals(new MapDocument(null, null, null, [], null, null, null, true), $container->get('console_resolver_defaults'));
+    }
+
+    /**
+     * The ODM and ORM console resolvers use the same Doctrine bridge class. They
+     * must keep distinct tag names, otherwise the tagged service collector drops
+     * one of them when both bundles are installed.
+     *
+     * @requires function \Symfony\Bridge\Doctrine\ArgumentResolver\Console\EntityValueResolver::__construct
+     */
+    public function testConsoleCommandResolverCoexistsWithDoctrineBundle(): void
+    {
+        $container = $this->getContainer();
+        $extension = new DoctrineMongoDBExtension();
+        $extension->load(self::buildConfiguration(), $container);
+
+        // Simulate the console resolver registered by DoctrineBundle for the ORM.
+        $container->setDefinition('doctrine.orm.entity_value_resolver.console', (new Definition(ConsoleEntityValueResolver::class))->addTag('console.argument_value_resolver', [
+            'name' => ConsoleEntityValueResolver::class,
+            'priority' => 110,
+        ]));
+
+        $container->setDefinition('console.argument_resolver', (new Definition(stdClass::class))->setArguments([[], null]));
+
+        (new ConsoleArgumentValueResolverPass())->process($container);
+
+        $resolvers = $container->getDefinition('console.argument_resolver')->getArgument(0);
+        $this->assertInstanceOf(IteratorArgument::class, $resolvers);
+
+        $serviceIds = [];
+        foreach ($resolvers->getValues() as $resolver) {
+            if ($resolver instanceof Reference) {
+                $serviceIds[] = (string) $resolver;
+            }
+        }
+
+        $this->assertContains('doctrine_mongodb.odm.document_value_resolver.console', $serviceIds);
+        $this->assertContains('doctrine.orm.entity_value_resolver.console', $serviceIds);
     }
 
     public function testTransactionalFlushConfigurationWhenNotSupported(): void
