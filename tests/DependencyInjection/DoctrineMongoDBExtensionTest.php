@@ -35,6 +35,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\ExpressionLanguage\CompiledExpressionLanguage;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\VarExporter\LazyGhostTrait;
 
 use function array_diff_key;
@@ -424,6 +426,30 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $container->setDefinition('controller_resolver_defaults', $container->getDefinition('doctrine_mongodb.odm.entity_value_resolver')->getArgument(2))->setPublic(true);
         $container->compile();
         $this->assertEquals(new MapDocument(null, null, null, [], null, null, null, true), $container->get('controller_resolver_defaults'));
+    }
+
+    public function testDocumentValueResolverExpressionLanguageIsCompiled(): void
+    {
+        if (! class_exists(ExpressionLanguage::class)) {
+            self::markTestSkipped('This test requires the ExpressionLanguage component');
+        }
+
+        $container = $this->buildMinimalContainer();
+        $extension = new DoctrineMongoDBExtension();
+        $extension->load(self::buildConfiguration(), $container);
+
+        $expressionLanguage = $container->getDefinition('doctrine_mongodb.odm.document_value_resolver.expression_language');
+
+        // CompiledExpressionLanguage exists since symfony/expression-language 8.2
+        if (! class_exists(CompiledExpressionLanguage::class)) {
+            self::assertFalse($expressionLanguage->hasTag('expression_language.compiled'));
+
+            return;
+        }
+
+        self::assertSame([
+            ['string_expressions' => [MapDocument::class => ['expr']]],
+        ], $expressionLanguage->getTag('expression_language.compiled'));
     }
 
     public function testTransactionalFlushConfigurationWhenNotSupported(): void

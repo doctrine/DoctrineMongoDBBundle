@@ -42,6 +42,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\ExpressionLanguage\CompiledExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
@@ -814,6 +815,10 @@ class DoctrineMongoDBExtension extends Extension
 
         if (! class_exists(ExpressionLanguage::class)) {
             $container->removeDefinition('doctrine_mongodb.odm.document_value_resolver.expression_language');
+        } elseif (class_exists(CompiledExpressionLanguage::class)) {
+            // CompiledExpressionLanguage exists since symfony/expression-language 8.2
+            $container->getDefinition('doctrine_mongodb.odm.document_value_resolver.expression_language')
+                ->addTag('expression_language.compiled', ['string_expressions' => [MapDocument::class => ['expr']]]);
         }
 
         $controllerResolverDefaults = [];
