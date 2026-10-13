@@ -7,7 +7,6 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 use Closure;
 use Composer\InstalledVersions;
 use Composer\Semver\VersionParser;
-use Doctrine\Bundle\MongoDBBundle\ArgumentResolver\DocumentValueResolver;
 use Doctrine\Bundle\MongoDBBundle\Attribute\AsDocumentListener;
 use Doctrine\Bundle\MongoDBBundle\Attribute\MapDocument;
 use Doctrine\Bundle\MongoDBBundle\Command\Encryption\DiagnosticCommand;
@@ -459,7 +458,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
 
         $this->assertSame(EntityValueResolver::class, $controllerResolver->getClass());
         $this->assertTrue($controllerResolver->hasTag('controller.argument_value_resolver'));
-        $this->assertSame(DocumentValueResolver::class, $controllerResolver->getTag('controller.argument_value_resolver')[0]['name']);
+        $this->assertSame('doctrine_mongodb.odm.document_value_resolver', $controllerResolver->getTag('controller.argument_value_resolver')[0]['name']);
 
         $this->assertEquals([
             new Reference('doctrine_mongodb'),
