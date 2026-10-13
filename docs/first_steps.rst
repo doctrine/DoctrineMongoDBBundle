@@ -48,10 +48,6 @@ properties should be *mapped* to MongoDB. This metadata can be specified
 in a number of different formats including XML or directly inside the
 ``Product`` class via PHP 8 attributes:
 
-.. versionadded:: 4.4
-
-    The attribute mapping support was added in Doctrine MongoDB ODM Bundle 4.4 and requires PHP 8.0 or newer.
-
 .. configuration-block::
 
     .. code-block:: php-attributes
@@ -223,10 +219,6 @@ to easily fetch objects based on multiple conditions:
 
 Automatically Fetching Objects (DocumentValueResolver)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. versionadded:: 4.6
-
-    The support of this feature was added in Doctrine MongoDB ODM Bundle 4.6.
 
 In many cases, you can use the ``DocumentValueResolver`` to do the query for
 you automatically! You can simplify the controller to:
