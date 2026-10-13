@@ -21,5 +21,19 @@ The ``Unique`` constraint shares the same options as `UniqueEntity`_, which
 means that the ``em`` option should be used if you wish to specify the document
 manager explicitly instead of having it be inferred from the document class.
 
+Exists constraint
+-----------------
+
+This bundle provides an ``Exists`` constraint, which extends the
+`EntityExists`_ constraint provided by Symfony's Doctrine bridge. This
+constraint allows you to validate that a value references an existing document.
+It requires symfony/doctrine-bridge 8.2 or higher.
+
+The ``Exists`` constraint shares the same options as `EntityExists`_,
+which means that the ``em`` option should be used if you wish to specify the
+document manager explicitly instead of having it be inferred from the document
+class.
+
 .. _`EntityType`: https://symfony.com/doc/current/reference/forms/types/entity.html
 .. _`UniqueEntity`: https://symfony.com/doc/current/reference/constraints/UniqueEntity.html
+.. _`EntityExists`: https://symfony.com/doc/current/reference/constraints/EntityExists.html

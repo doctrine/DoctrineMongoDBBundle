@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Symfony\Bridge\Doctrine\Validator\Constraints\EntityExistsValidator;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator;
 use Symfony\Bridge\Doctrine\Validator\DoctrineInitializer;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -13,6 +14,12 @@ return static function (ContainerConfigurator $containerConfigurator): void {
 
         ->set('doctrine_odm.mongodb.validator.unique', UniqueEntityValidator::class)
             ->tag('validator.constraint_validator', ['alias' => 'doctrine_odm.mongodb.unique'])
+            ->args([
+                service('doctrine_mongodb'),
+            ])
+
+        ->set('doctrine_odm.mongodb.validator.exists', EntityExistsValidator::class)
+            ->tag('validator.constraint_validator', ['alias' => 'doctrine_odm.mongodb.exists'])
             ->args([
                 service('doctrine_mongodb'),
             ])

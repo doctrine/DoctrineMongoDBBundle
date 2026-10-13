@@ -6,10 +6,12 @@ namespace Doctrine\Bundle\MongoDBBundle\Tests;
 
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Bridge\Doctrine\Validator\Constraints\EntityExistsValidator;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
+use function class_exists;
 use function sys_get_temp_dir;
 
 class ContainerTest extends TestCase
@@ -134,5 +136,29 @@ class ContainerTest extends TestCase
                 'debug' => false,
             ],
         ];
+    }
+
+    public function testEntityExistsValidatorIsRegisteredWhenAvailable(): void
+    {
+        $this->extension->load([
+            [
+                'connections' => ['default' => []],
+                'document_managers' => ['default' => []],
+            ],
+        ], $this->container);
+
+        // EntityExistsValidator exists since symfony/doctrine-bridge 8.2
+        if (class_exists(EntityExistsValidator::class)) {
+            $definition = $this->container->getDefinition('doctrine_odm.mongodb.validator.exists');
+            $this->assertSame(EntityExistsValidator::class, $definition->getClass());
+            $this->assertSame(
+                [['alias' => 'doctrine_odm.mongodb.exists']],
+                $definition->getTag('validator.constraint_validator'),
+            );
+
+            return;
+        }
+
+        $this->assertFalse($this->container->hasDefinition('doctrine_odm.mongodb.validator.exists'));
     }
 }
