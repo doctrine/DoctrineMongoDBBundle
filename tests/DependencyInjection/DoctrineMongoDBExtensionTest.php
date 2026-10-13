@@ -29,6 +29,7 @@ use PHPUnit\Framework\TestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
 use stdClass;
+use Symfony\Bridge\Doctrine\ArgumentResolver\EntityValueResolver;
 use Symfony\Bridge\Doctrine\DependencyInjection\CompilerPass\RegisterEventListenersAndSubscribersPass;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\Argument\ServiceLocatorArgument;
@@ -453,7 +454,11 @@ class DoctrineMongoDBExtensionTest extends TestCase
         $extension = new DoctrineMongoDBExtension();
         $extension->load(self::buildConfiguration(), $container);
 
-        $controllerResolver = $container->getDefinition('doctrine_mongodb.odm.entity_value_resolver');
+        $controllerResolver = $container->getDefinition('doctrine_mongodb.odm.document_value_resolver');
+
+        $this->assertSame(EntityValueResolver::class, $controllerResolver->getClass());
+        $this->assertTrue($controllerResolver->hasTag('controller.argument_value_resolver'));
+        $this->assertSame('doctrine_mongodb.odm.document_value_resolver', $controllerResolver->getTag('controller.argument_value_resolver')[0]['name']);
 
         $this->assertEquals([
             new Reference('doctrine_mongodb'),
@@ -469,7 +474,7 @@ class DoctrineMongoDBExtensionTest extends TestCase
             ],
         ]), $container);
 
-        $container->setDefinition('controller_resolver_defaults', $container->getDefinition('doctrine_mongodb.odm.entity_value_resolver')->getArgument(2))->setPublic(true);
+        $container->setDefinition('controller_resolver_defaults', $container->getDefinition('doctrine_mongodb.odm.document_value_resolver')->getArgument(2))->setPublic(true);
         $container->compile();
         $this->assertEquals(new MapDocument(null, null, null, [], null, null, null, true), $container->get('controller_resolver_defaults'));
     }

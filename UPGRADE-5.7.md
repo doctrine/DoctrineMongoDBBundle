@@ -36,3 +36,23 @@ The lazy manager is a proxy that extends `DocumentManager`. Type checks with
 instead of `DocumentManager`.
 
 This is a performance improvement. It does not deprecate anything.
+
+Document value resolver
+-----------------------
+
+The `Doctrine\Bundle\MongoDBBundle\ArgumentResolver\DocumentValueResolver` class
+is deprecated. The `doctrine_mongodb.odm.document_value_resolver` service now
+uses the `EntityValueResolver` of `symfony/doctrine-bridge` directly, and the
+intermediate `doctrine_mongodb.odm.entity_value_resolver` service is removed.
+
+The `controller.argument_value_resolver` tag name of this service changed from
+the `DocumentValueResolver` class name to the
+`doctrine_mongodb.odm.document_value_resolver` service id. The default `resolver`
+option of the `#[MapDocument]` attribute follows this change. A controller that
+explicitly sets `resolver: DocumentValueResolver::class` must set
+`resolver: 'doctrine_mongodb.odm.document_value_resolver'` instead, or remove the
+option.
+
+The `expr` option of `#[MapDocument]` now also accepts a closure. This requires
+`symfony/doctrine-bridge` 8.2 or higher. With older versions, passing a closure
+throws an `InvalidArgumentException`.
