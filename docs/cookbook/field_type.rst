@@ -10,12 +10,13 @@ Enable the Type Registry
 The ``TypeRegistry`` is responsible for managing field types in Doctrine MongoDB
 ODM. By default, a global type registry is shared across all document managers
 for backward compatibility, which keeps projects that register their custom
-types through the global ``Type::register()`` working unchanged. When you define
-a custom type as a service, either by tagging the service or with the
+types through the global ``Type::registerType()`` working unchanged. When you
+define a custom type as a service, either by tagging the service or with the
 ``#[AsFieldType]`` attribute, a scoped type registry is created for each document
-manager and the tagged services are injected into it: from then on, that document
-manager stops using the global registry. Doing so requires Doctrine MongoDB ODM
-2.18 or higher.
+manager and the tagged services are injected into it. Types registered globally
+with ``Type::registerType()``, for example by another bundle, remain available
+as a fallback for the document managers that have a scoped registry. Doing so
+requires Doctrine MongoDB ODM 2.18 or higher.
 
 Creating a Custom Field Type
 ----------------------------
@@ -36,7 +37,7 @@ Example Implementation (using ``Money\Money``):
 
 .. code-block:: php
 
-    namespace App\MongoDB\Types;
+    namespace App\MongoDB\Type;
 
     use Doctrine\Bundle\MongoDBBundle\Attribute\AsFieldType;
     use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
@@ -99,7 +100,7 @@ if you build a reusable bundle with custom types, you must add the
 .. code-block:: yaml
 
     services:
-        App\MongoDB\Types\MoneyType:
+        App\MongoDB\Type\MoneyType:
             tags:
                 - name: doctrine_mongodb.odm.field_type
                   type: Money\Money

@@ -17,6 +17,16 @@ parameters:
         # until 8.2 is required.
         - src/Validator/Constraints/Exists.php
 
+        # TypeProviderGlobalFallback implements TypeProvider, introduced in
+        # doctrine/mongodb-odm 2.18. Error "implements unknown interface" is not
+        # ignorable, so the file is excluded until 2.18 is required.
+        - src/Types/TypeProviderGlobalFallback.php
+
+        # Type declares a final private constructor before doctrine/mongodb-odm 2.18,
+        # so a custom type cannot have a constructor with an older version. Error
+        # "overrides final method" is not ignorable, so the fixture is excluded.
+        - tests/Fixtures/Types18
+
     ignoreErrors:
         - message: '# with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata#'
           identifier: missingType.generics

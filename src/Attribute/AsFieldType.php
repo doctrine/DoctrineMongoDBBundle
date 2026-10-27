@@ -10,7 +10,7 @@ use Attribute;
  * Marks a class as a Doctrine MongoDB ODM field type.
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-class AsFieldType
+final class AsFieldType
 {
     /**
      * @param string|null $type            The name of the field type, defaults to the class name

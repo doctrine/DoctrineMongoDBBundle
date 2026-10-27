@@ -35,6 +35,8 @@ jobs:
           - "highest"
         stability:
           - "stable"
+        odm-require:
+          - ""
         include:
           # Tests the lowest set of dependencies
           - dependencies: "lowest"
@@ -59,6 +61,15 @@ jobs:
             driver-version: "stable"
             dependencies: "highest"
             stability: "dev"
+
+          # Test the type provider of doctrine/mongodb-odm 2.18 before it is released.
+          # The "dev" stability job above also installs it, but only by accident of
+          # prefer-stable being disabled.
+          - php-version: "8.4"
+            symfony-require: ""
+            driver-version: "stable"
+            dependencies: "highest"
+            odm-require: "2.18.x-dev"
 
     services:
       mongodb:
@@ -99,6 +110,12 @@ jobs:
       - name: "Allow dev dependencies"
         run: "composer config prefer-stable false"
         if: "${{ matrix.stability == 'dev' }}"
+
+      - name: "Require a specific doctrine/mongodb-odm version"
+        run: "composer require --no-update --no-interaction 'doctrine/mongodb-odm:${{ matrix.odm-require }}'"
+        if: "${{ matrix.odm-require != '' }}"
+        env:
+          COMPOSER_ROOT_VERSION: "5.7.x-dev"
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v4"

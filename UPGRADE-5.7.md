@@ -37,6 +37,23 @@ instead of `DocumentManager`.
 
 This is a performance improvement. It does not deprecate anything.
 
+Field types as services
+-----------------------
+
+Custom field types can be registered as services with the
+`doctrine_mongodb.odm.field_type` tag or the `#[AsFieldType]` attribute. This
+requires `doctrine/mongodb-odm` 2.18 or higher. The type is created by the
+dependency injection container, so its constructor can receive services.
+
+When at least one type is registered as a service, each document manager gets
+its own type registry instead of reading the global one. Types registered
+globally with `Type::registerType()` remain available as a fallback, but
+`Type::getType()` and `Type::hasType()` do not return the types registered as
+services.
+
+This is a new feature. It does not break backward compatibility and does not
+deprecate anything.
+
 Document value resolver
 -----------------------
 
