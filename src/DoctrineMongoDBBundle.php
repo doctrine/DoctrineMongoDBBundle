@@ -9,6 +9,7 @@ use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\CreateProxyDirect
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\DocumentValueResolverExpressionLanguageProviderPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\FixturesCompilerPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\TypeProviderPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -60,6 +61,7 @@ class DoctrineMongoDBBundle extends Bundle
         $container->addCompilerPass(new ServiceRepositoryCompilerPass());
         $container->addCompilerPass(new DocumentValueResolverExpressionLanguageProviderPass());
         $container->addCompilerPass(new FixturesCompilerPass());
+        $container->addCompilerPass(new TypeProviderPass());
 
         if (! $container->hasExtension('security')) {
             return;

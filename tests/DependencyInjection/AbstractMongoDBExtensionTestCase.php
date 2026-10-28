@@ -4,15 +4,33 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\MongoDBBundle\Tests\DependencyInjection;
 
+use Composer\InstalledVersions;
+use Composer\Semver\VersionParser;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
+use Doctrine\Bundle\MongoDBBundle\DependencyInjection\Compiler\TypeProviderPass;
 use Doctrine\Bundle\MongoDBBundle\DependencyInjection\DoctrineMongoDBExtension;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\BasicFilter;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\ComplexFilter;
 use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Filter\DisabledFilter;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\CustomTypeService;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\CustomTypeWithoutName;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\CustomTypeWithTag;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\CustomTypeWithTagAndDefaultManager;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\CustomTypeWithTagAndOtherManager;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types\MoneyType;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Types18\CustomTypeWithDependency;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Value\Money;
+use Doctrine\Bundle\MongoDBBundle\Tests\Fixtures\Value\MoneyDocument;
 use Doctrine\Bundle\MongoDBBundle\Tests\TestCase;
+use Doctrine\Bundle\MongoDBBundle\Types\TypeProviderGlobalFallback;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
+use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Types\TypeProvider;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use MongoDB\Client;
 use PHPUnit\Framework\AssertionFailedError;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
@@ -22,6 +40,8 @@ use Symfony\Component\DependencyInjection\Compiler\ResolveChildDefinitionsPass;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
+use Symfony\Component\DependencyInjection\Exception\LogicException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -33,6 +53,7 @@ use function class_implements;
 use function in_array;
 use function is_dir;
 use function reset;
+use function sprintf;
 
 abstract class AbstractMongoDBExtensionTestCase extends TestCase
 {
@@ -441,6 +462,306 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
 
         $definition = $container->getDefinition('doctrine_mongodb.odm.manager_configurator.abstract');
         $this->assertDefinitionMethodCallAny($definition, 'loadTypes', [$expected]);
+
+        // Class-only types keep using the legacy global Type::registerType() path (via the
+        // manager configurator), so no scoped per-manager TypeProvider is introduced or injected.
+        $this->assertFalse($container->has('doctrine_mongodb.odm.default_type_provider'));
+        $configuration = $container->getDefinition('doctrine_mongodb.odm.default_configuration');
+        foreach ($configuration->getMethodCalls() as $methodCall) {
+            $this->assertNotSame('setTypeProvider', $methodCall[0], 'Class-only config types must not inject a scoped TypeRegistry into the manager configuration.');
+        }
+    }
+
+    public function testNoCustomTypesUsesGlobalRegistry(): void
+    {
+        $container = $this->getContainer();
+        $loader    = new DoctrineMongoDBExtension();
+        $container->registerExtension($loader);
+
+        $this->loadFromFile($container, 'odm_no_types');
+
+        $container->getCompilerPassConfig()->setOptimizationPasses([]);
+        $container->getCompilerPassConfig()->setRemovingPasses([]);
+        $container->compile();
+
+        // Without any configured or tagged type, no global loadTypes() call is emitted and no
+        // scoped TypeRegistry exists: the manager keeps the shared/global registry untouched.
+        $definition = $container->getDefinition('doctrine_mongodb.odm.manager_configurator.abstract');
+        foreach ($definition->getMethodCalls() as $methodCall) {
+            $this->assertNotSame('loadTypes', $methodCall[0], 'Without custom types, loadTypes() must not be called.');
+        }
+
+        $this->assertFalse($container->has('doctrine_mongodb.odm.default_type_provider'));
+        $configuration = $container->getDefinition('doctrine_mongodb.odm.default_configuration');
+        foreach ($configuration->getMethodCalls() as $methodCall) {
+            $this->assertNotSame('setTypeProvider', $methodCall[0], 'Without custom types, no scoped TypeRegistry must be injected.');
+        }
+    }
+
+    public function testCustomTypesService(): void
+    {
+        $container = $this->getContainer();
+        $loader    = new DoctrineMongoDBExtension();
+        $container->registerExtension($loader);
+
+        // Tagged services need the TypeRegistry and the type provider introduced in
+        // doctrine/mongodb-odm 2.18.
+        if (! InstalledVersions::satisfies(new VersionParser(), 'doctrine/mongodb-odm', '>=2.18@dev')) {
+            self::expectException(LogicException::class);
+            self::expectExceptionMessage('MongoDB field types services not supported. Upgrade to doctrine/mongodb-odm >= 2.18');
+        }
+
+        $this->loadFromFile($container, 'odm_types_service');
+        $container->addCompilerPass(new ServiceRepositoryCompilerPass());
+        $container->addCompilerPass(new TypeProviderPass());
+        $container->compile();
+
+        // TypeProviderPass creates a per-manager service backed by a service locator and injects
+        // it on the manager Configuration via setTypeProvider(). Resolving the configured types
+        // and the tagged #[AsFieldType] services below is the authoritative proof that the scoped
+        // registry is in effect: the shared global registry cannot resolve them, since the tagged
+        // ones exist only as services in this container.
+        $typeProvider = $this->getTypeProvider($container, 'default');
+        self::assertInstanceOf(TypeProviderGlobalFallback::class, $typeProvider);
+
+        $this->assertTypeRegistered($typeProvider, 'custom_type_shortcut', CustomTypeService::class);
+        $this->assertTypeRegistered($typeProvider, 'custom_type', CustomTypeService::class);
+        $this->assertTypeRegistered($typeProvider, 'manual_tag_type', CustomTypeService::class);
+        $this->assertTypeRegistered($typeProvider, 'custom_type_with_tag', CustomTypeWithTag::class);
+        $this->assertTypeRegistered($typeProvider, 'custom_type_with_tag_and_default_manager', CustomTypeWithTagAndDefaultManager::class);
+        $this->assertTypeRegistered($typeProvider, Money::class, MoneyType::class);
+        $this->assertTypeNotRegistered($typeProvider, 'custom_type_with_tag_and_other_manager');
+
+        // A type tagged for another document manager is not registered on the default one and
+        // the other way around.
+        $otherTypeProvider = $this->getTypeProvider($container, 'other');
+
+        $this->assertTypeRegistered($otherTypeProvider, 'custom_type', CustomTypeService::class);
+        $this->assertTypeRegistered($otherTypeProvider, 'manual_tag_type', CustomTypeService::class);
+        $this->assertTypeRegistered($otherTypeProvider, 'custom_type_with_tag', CustomTypeWithTag::class);
+        $this->assertTypeRegistered($otherTypeProvider, 'custom_type_with_tag_and_other_manager', CustomTypeWithTagAndOtherManager::class);
+        $this->assertTypeNotRegistered($otherTypeProvider, 'custom_type_with_tag_and_default_manager');
+    }
+
+    public function testTypeServiceReceivesInjectedDependency(): void
+    {
+        $this->requiresTypeProvider();
+
+        $container = $this->createContainerWithTypes();
+        $container->register('app.mongodb.type_with_dependency', CustomTypeWithDependency::class)
+            ->addArgument('injected')
+            ->addTag('doctrine_mongodb.odm.field_type', ['type' => 'custom_type_with_dependency']);
+        $container->compile();
+
+        $type = $this->getType($this->getTypeProvider($container, 'default'), 'custom_type_with_dependency');
+
+        self::assertInstanceOf(CustomTypeWithDependency::class, $type);
+        self::assertSame('injected', $type->dependency);
+    }
+
+    public function testAsFieldTypeWithoutNameUsesTheTypeClassAsName(): void
+    {
+        $this->requiresTypeProvider();
+
+        $typeProvider = $this->getTypeProvider($this->compileContainerWithTypes(), 'default');
+
+        $this->assertTypeRegistered($typeProvider, CustomTypeWithoutName::class, CustomTypeWithoutName::class);
+    }
+
+    public function testTypeIsInferredFromThePropertyType(): void
+    {
+        $this->requiresTypeProvider();
+
+        $typeProvider = $this->getTypeProvider($this->compileContainerWithTypes(), 'default');
+
+        $classMetadata = new ClassMetadata(MoneyDocument::class);
+        $classMetadata->setTypeProvider($typeProvider);
+        $classMetadata->mapField(['fieldName' => 'price']);
+
+        self::assertSame(Money::class, $classMetadata->getTypeOfField('price'));
+
+        $type = $this->getType($typeProvider, Money::class);
+        self::assertSame(1500, $type->convertToDatabaseValue(new Money(1500)));
+        self::assertInstanceOf(Money::class, $type->convertToPHPValue(1500));
+    }
+
+    public function testGloballyRegisteredTypesStayAvailable(): void
+    {
+        $this->requiresTypeProvider();
+
+        // A type registered by other code with the static API, like a third-party bundle does.
+        TypeRegistry::getDeprecatedSharedInstance()->register('global_fallback_type', CustomTypeService::class);
+
+        $typeProvider = $this->getTypeProvider($this->compileContainerWithTypes(), 'default');
+
+        // The document manager still falls back to the global registry for the types that are
+        // not registered as services.
+        $this->assertTypeRegistered($typeProvider, 'global_fallback_type', CustomTypeService::class);
+        $this->assertTypeRegistered($typeProvider, 'custom_type_with_tag', CustomTypeWithTag::class);
+        $this->assertTypeNotRegistered($typeProvider, 'custom_type_with_tag_and_other_manager');
+    }
+
+    public function testGlobalOverridesOfBuiltinTypesStayAvailable(): void
+    {
+        $this->requiresTypeProvider();
+
+        $registry      = TypeRegistry::getDeprecatedSharedInstance();
+        $originalClass = $registry->get(Type::VECTOR_PACKED_BIT)::class;
+
+        // Overrides a built-in type in the global registry, like Type::overrideType() does.
+        $registry->register(Type::VECTOR_PACKED_BIT, CustomTypeService::class);
+
+        try {
+            $typeProvider = $this->getTypeProvider($this->compileContainerWithTypes(), 'default');
+
+            $this->assertTypeRegistered($typeProvider, Type::VECTOR_PACKED_BIT, CustomTypeService::class);
+        } finally {
+            $registry->register(Type::VECTOR_PACKED_BIT, $originalClass);
+        }
+    }
+
+    public function testTagWithoutTypeParameterThrows(): void
+    {
+        $this->requiresTypeProvider();
+
+        $container = $this->createContainerWithTypes();
+        $container->register('app.type_without_name', CustomTypeService::class)
+            ->addTag('doctrine_mongodb.odm.field_type');
+
+        self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage('must define the "type" parameter');
+
+        $container->compile();
+    }
+
+    public function testUnknownDocumentManagerThrows(): void
+    {
+        $this->requiresTypeProvider();
+
+        $container = $this->createContainerWithTypes();
+        $container->register('app.type_with_unknown_manager', CustomTypeService::class)
+            ->addTag('doctrine_mongodb.odm.field_type', ['type' => 'unknown_manager_type', 'document_manager' => 'unknown']);
+
+        self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage('unknown document manager "unknown"');
+
+        $container->compile();
+    }
+
+    public function testTaggedServiceMustExtendType(): void
+    {
+        $this->requiresTypeProvider();
+
+        $container = $this->createContainerWithTypes();
+        $container->register('app.not_a_type', 'stdClass')
+            ->addTag('doctrine_mongodb.odm.field_type', ['type' => 'not_a_type']);
+
+        self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage('must extend');
+
+        $container->compile();
+    }
+
+    public function testTaggedServiceClassCanBeAParameter(): void
+    {
+        $this->requiresTypeProvider();
+
+        $container = $this->createContainerWithTypes();
+        $container->setParameter('app.type_class', CustomTypeService::class);
+        $container->register('app.parameterized_type')
+            ->setClass('%app.type_class%')
+            ->addTag('doctrine_mongodb.odm.field_type', ['type' => 'parameterized_type']);
+        $container->compile();
+
+        $this->assertTypeRegistered($this->getTypeProvider($container, 'default'), 'parameterized_type', CustomTypeService::class);
+    }
+
+    public function testTagAttributesCanBeParameters(): void
+    {
+        $this->requiresTypeProvider();
+
+        $container = $this->createContainerWithTypes();
+        $container->setParameter('app.type_name', 'parameterized_name');
+        $container->setParameter('app.manager_name', 'other');
+        $container->register('app.parameterized_tag', CustomTypeService::class)
+            ->addTag('doctrine_mongodb.odm.field_type', ['type' => '%app.type_name%', 'document_manager' => '%app.manager_name%']);
+        $container->compile();
+
+        $this->assertTypeRegistered($this->getTypeProvider($container, 'other'), 'parameterized_name', CustomTypeService::class);
+        $this->assertTypeNotRegistered($this->getTypeProvider($container, 'default'), 'parameterized_name');
+    }
+
+    private function requiresTypeProvider(): void
+    {
+        if (! InstalledVersions::satisfies(new VersionParser(), 'doctrine/mongodb-odm', '>=2.18@dev')) {
+            self::markTestSkipped('These tests require the type provider introduced in doctrine/mongodb-odm 2.18.');
+        }
+    }
+
+    /**
+     * Creates the container for the "types as services" fixtures, without compiling it.
+     */
+    private function createContainerWithTypes(): ContainerBuilder
+    {
+        $container = $this->getContainer();
+        $container->registerExtension(new DoctrineMongoDBExtension());
+        $this->loadFromFile($container, 'odm_types_service');
+        $container->addCompilerPass(new ServiceRepositoryCompilerPass());
+        $container->addCompilerPass(new TypeProviderPass());
+
+        return $container;
+    }
+
+    private function compileContainerWithTypes(): ContainerBuilder
+    {
+        $container = $this->createContainerWithTypes();
+        $container->compile();
+
+        return $container;
+    }
+
+    /**
+     * Returns the field type provider of the given document manager.
+     *
+     * The type provider is only available from doctrine/mongodb-odm 2.18.
+     */
+    private function getTypeProvider(ContainerBuilder $container, string $managerName): TypeProvider
+    {
+        $documentManager = $container->get(sprintf('doctrine_mongodb.odm.%s_document_manager', $managerName));
+        self::assertInstanceOf(DocumentManager::class, $documentManager);
+
+        return $documentManager->getConfiguration()->getTypeProvider();
+    }
+
+    /**
+     * Returns the type with the given name from the given type provider.
+     */
+    private function getType(object $typeProvider, string $name): Type
+    {
+        // @phpstan-ignore method.notFound
+        return $typeProvider->get($name);
+    }
+
+    /**
+     * Asserts that the given type provider resolves a field type.
+     *
+     * @param class-string $class
+     */
+    private function assertTypeRegistered(object $typeProvider, string $name, string $class): void
+    {
+        // @phpstan-ignore method.notFound
+        self::assertTrue($typeProvider->has($name));
+        // @phpstan-ignore method.notFound
+        self::assertInstanceOf($class, $typeProvider->get($name));
+    }
+
+    /**
+     * Asserts that the given type provider does not resolve a field type.
+     */
+    private function assertTypeNotRegistered(object $typeProvider, string $name): void
+    {
+        // @phpstan-ignore method.notFound
+        self::assertFalse($typeProvider->has($name));
     }
 
     /**

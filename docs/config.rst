@@ -300,7 +300,7 @@ your documents.
 
         doctrine_mongodb:
             types:
-                custom_type: Fully\Qualified\Class\Name
+                custom_type: App\MongoDB\Type\MoneyType
 
     .. code-block:: xml
 
@@ -313,7 +313,7 @@ your documents.
                                         http://symfony.com/schema/dic/doctrine/odm/mongodb https://symfony.com/schema/dic/doctrine/odm/mongodb/mongodb-1.0.xsd">
 
             <doctrine_mongodb:config>
-                <doctrine_mongodb:type name="custom_type" class="Fully\Qualified\Class\Name" />
+                <doctrine_mongodb:type name="custom_type" class="App\MongoDB\Type\MoneyType" />
             </doctrine_mongodb:config>
         </container>
 
@@ -323,9 +323,25 @@ your documents.
 
         return static function (DoctrineMongodbConfig $config): void {
             $config->type('custom_type')
-                ->class(\Fully\Qualified\Class\Name::class)
+                ->class(App\MongoDB\Type\MoneyType::class)
             ;
         }
+
+To register a custom type as a service, add the
+``doctrine_mongodb.odm.field_type`` tag to its service definition:
+
+- ``type`` is the name of the field type. It must be unique.
+- ``document_manager`` (optional) is the name of the document manager where
+  the type is registered. If not set, the type is registered in all document
+  managers.
+
+You can also register a custom type as a service with the ``#[AsFieldType]``
+attribute and service autoconfiguration.
+See `Registering Custom Field Types`_ for more details.
+
+.. note::
+
+    Registering a custom type as a service requires Doctrine MongoDB ODM 2.18 or higher.
 
 Filters
 -------
@@ -709,7 +725,7 @@ Full Default Configuration
             types:
 
                 # Prototype
-                custom_type: Fully\Qualified\Class\Name
+                custom_type: App\MongoDB\Type\MoneyType
             connections:
 
                 # Prototype
@@ -827,7 +843,7 @@ Full Default Configuration
                     />
                     <doctrine:profiler enabled="true" pretty="false" />
                 </doctrine:document-manager>
-                <doctrine:type name="custom_type" class="Fully\Qualified\Class\Name" />
+                <doctrine:type name="custom_type" class="App\MongoDB\Type\MoneyType" />
                 <doctrine:connection id="conn1" server="mongodb://localhost">
                     <doctrine:options
                             authMechanism=""
@@ -892,7 +908,7 @@ Full Default Configuration
             ;
 
             $config->type('custom_type')
-                ->class('Fully\Qualified\Class\Name');
+                ->class(App\MongoDB\Type\MoneyType::class);
 
             $config->connection('id')
                 ->server('mongodb://localhost')
@@ -948,6 +964,7 @@ Full Default Configuration
         };
 
 .. _`Custom types`: https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/current/reference/custom-mapping-types.html
+.. _`Registering Custom Field Types`: cookbook/field_type
 .. _`define it as an environment variable`: https://symfony.com/doc/current/configuration.html#configuration-based-on-environment-variables
 .. _`connection string`: https://docs.mongodb.com/manual/reference/connection-string/#urioption.authSource
 .. _`Replica Sets`: https://www.php.net/manual/en/mongo.connecting.rs.php

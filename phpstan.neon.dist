@@ -17,6 +17,16 @@ parameters:
         # until 8.2 is required.
         - src/Validator/Constraints/Exists.php
 
+        # TypeProviderGlobalFallback implements TypeProvider, introduced in
+        # doctrine/mongodb-odm 2.18. Error "implements unknown interface" is not
+        # ignorable, so the file is excluded until 2.18 is required.
+        - src/Types/TypeProviderGlobalFallback.php
+
+        # Type declares a final private constructor before doctrine/mongodb-odm 2.18,
+        # so a custom type cannot have a constructor with an older version. Error
+        # "overrides final method" is not ignorable, so the fixture is excluded.
+        - tests/Fixtures/Types18
+
     ignoreErrors:
         - message: '# with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata#'
           identifier: missingType.generics
@@ -43,4 +53,24 @@ parameters:
           reportUnmatched: false
         - identifier: class.notFound
           path: tests/Validator/Constraints/ExistsValidatorIntegrationTest.php
+          reportUnmatched: false
+
+        # Configuration::getTypeProvider() and TypeRegistry exist since doctrine/mongodb-odm 2.18.
+        # With an older version, PHPStan cannot resolve them. These entries can be dropped
+        # once 2.18 is required.
+        - identifier: method.notFound
+          path: tests/DependencyInjection/AbstractMongoDBExtensionTestCase.php
+          reportUnmatched: false
+        - identifier: class.notFound
+          path: tests/DependencyInjection/AbstractMongoDBExtensionTestCase.php
+          reportUnmatched: false
+
+        # TypeRegistry::getDeprecatedSharedInstance() exists since doctrine/mongodb-odm 2.18.
+        # The method_exists() guard is reported as impossible with an older version and as
+        # always true with 2.18. These entries can be dropped once 2.18 is required.
+        - identifier: function.impossibleType
+          path: src/ManagerConfigurator.php
+          reportUnmatched: false
+        - identifier: function.alreadyNarrowedType
+          path: src/ManagerConfigurator.php
           reportUnmatched: false
