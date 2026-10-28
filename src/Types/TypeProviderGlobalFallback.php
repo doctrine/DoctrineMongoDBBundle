@@ -7,12 +7,20 @@ namespace Doctrine\Bundle\MongoDBBundle\Types;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\TypeProvider;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Generator;
 use IteratorAggregate;
+use Symfony\Contracts\Service\ServiceProviderInterface;
+
+use function array_keys;
 
 /**
- * Provides the types of the document manager registry, and falls back to the global type
- * registry for the types that other code registers with Type::registerType().
+ * Provides the types registered as services, and falls back to the global type registry for
+ * every other name.
+ *
+ * The scoped registry must not be queried first for the names it does not declare explicitly:
+ * it also knows the built-in types, and would hide the built-in types overridden in the global
+ * registry with Type::overrideType(). Only the services of the document manager take precedence.
  *
  * A document manager that has its own type provider does not read the global type registry
  * anymore, so the fallback keeps those types available, for example a type registered by
@@ -26,14 +34,17 @@ final class TypeProviderGlobalFallback implements TypeProvider, IteratorAggregat
 {
     private static ?TypeProvider $globalProvider = null;
 
-    public function __construct(private readonly TypeProvider $provider)
-    {
+    /** @param ServiceProviderInterface<Type> $services */
+    public function __construct(
+        private readonly TypeRegistry $registry,
+        private readonly ServiceProviderInterface $services,
+    ) {
     }
 
     public function get(string $name): Type
     {
-        if ($this->provider->has($name)) {
-            return $this->provider->get($name);
+        if ($this->services->has($name)) {
+            return $this->registry->get($name);
         }
 
         return $this->globalProvider()->get($name);
@@ -41,7 +52,7 @@ final class TypeProviderGlobalFallback implements TypeProvider, IteratorAggregat
 
     public function has(string $name): bool
     {
-        return $this->provider->has($name) || $this->globalProvider()->has($name);
+        return $this->services->has($name) || $this->globalProvider()->has($name);
     }
 
     /** @return Generator<string, Type> */
@@ -49,10 +60,10 @@ final class TypeProviderGlobalFallback implements TypeProvider, IteratorAggregat
     {
         $names = [];
 
-        foreach ($this->provider as $name => $type) {
+        foreach (array_keys($this->services->getProvidedServices()) as $name) {
             $names[$name] = true;
 
-            yield $name => $type;
+            yield $name => $this->registry->get($name);
         }
 
         foreach ($this->globalProvider() as $name => $type) {

@@ -23,6 +23,7 @@ use function array_keys;
 use function array_replace;
 use function class_exists;
 use function implode;
+use function is_string;
 use function is_subclass_of;
 use function sprintf;
 
@@ -85,12 +86,19 @@ final class TypeProviderPass implements CompilerPassInterface
 
         /** @var array<string, string> $documentManagers */
         $documentManagers = $container->getParameter('doctrine_mongodb.odm.document_managers');
+        $parameterBag     = $container->getParameterBag();
 
         // Service-tagged types apply either to every document manager or to a named one.
         foreach ($taggedServiceIds as $id => $tags) {
             $class = $container->getDefinition($id)->getClass();
-            if ($class !== null && ! is_subclass_of($class, Type::class)) {
-                throw new InvalidArgumentException(sprintf('The class "%s" of the service "%s" must extend "%s".', $class, $id, Type::class));
+
+            if ($class !== null) {
+                // The class can still be a parameter placeholder at this stage.
+                $resolvedClass = $parameterBag->resolveValue($class);
+
+                if (! is_string($resolvedClass) || ! is_subclass_of($resolvedClass, Type::class)) {
+                    throw new InvalidArgumentException(sprintf('The class "%s" of the service "%s" must extend "%s".', $class, $id, Type::class));
+                }
             }
 
             foreach ($tags as $attributes) {
@@ -98,13 +106,19 @@ final class TypeProviderPass implements CompilerPassInterface
                     throw new InvalidArgumentException(sprintf('The service "%s" must define the "type" parameter on "%s" tags.', $id, self::TAG));
                 }
 
-                $managerName = $attributes['document_manager'] ?? self::ALL;
+                // Tag attributes are not resolved by Symfony, so the parameters are resolved here.
+                $type        = $parameterBag->resolveValue($attributes['type']);
+                $managerName = $parameterBag->resolveValue($attributes['document_manager'] ?? self::ALL);
+
+                if (! is_string($type) || ! is_string($managerName)) {
+                    throw new InvalidArgumentException(sprintf('The "type" and "document_manager" parameters of the "%s" tag of the service "%s" must be strings.', self::TAG, $id));
+                }
 
                 if ($managerName !== self::ALL && ! isset($documentManagers[$managerName])) {
                     throw new InvalidArgumentException(sprintf('The service "%s" is tagged with the unknown document manager "%s" on "%s" tags. Available document managers: "%s".', $id, $managerName, self::TAG, implode('", "', array_keys($documentManagers))));
                 }
 
-                $typesByManager[$managerName][$attributes['type']] = new Reference($id);
+                $typesByManager[$managerName][$type] = new Reference($id);
             }
         }
 
@@ -123,6 +137,7 @@ final class TypeProviderPass implements CompilerPassInterface
             // the types that other code registers with Type::registerType().
             $container->setDefinition($registryId, new Definition(TypeProviderGlobalFallback::class, [
                 new Definition(TypeRegistry::class, [$locatorRef]),
+                $locatorRef,
             ]));
 
             // Expose the scoped provider to that document manager's Configuration.

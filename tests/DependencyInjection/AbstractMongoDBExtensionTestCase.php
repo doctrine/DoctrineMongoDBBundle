@@ -601,6 +601,25 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         $this->assertTypeNotRegistered($typeProvider, 'custom_type_with_tag_and_other_manager');
     }
 
+    public function testGlobalOverridesOfBuiltinTypesStayAvailable(): void
+    {
+        $this->requiresTypeProvider();
+
+        $registry      = TypeRegistry::getDeprecatedSharedInstance();
+        $originalClass = $registry->get(Type::VECTOR_PACKED_BIT)::class;
+
+        // Overrides a built-in type in the global registry, like Type::overrideType() does.
+        $registry->register(Type::VECTOR_PACKED_BIT, CustomTypeService::class);
+
+        try {
+            $typeProvider = $this->getTypeProvider($this->compileContainerWithTypes(), 'default');
+
+            $this->assertTypeRegistered($typeProvider, Type::VECTOR_PACKED_BIT, CustomTypeService::class);
+        } finally {
+            $registry->register(Type::VECTOR_PACKED_BIT, $originalClass);
+        }
+    }
+
     public function testTagWithoutTypeParameterThrows(): void
     {
         $this->requiresTypeProvider();
@@ -641,6 +660,35 @@ abstract class AbstractMongoDBExtensionTestCase extends TestCase
         self::expectExceptionMessage('must extend');
 
         $container->compile();
+    }
+
+    public function testTaggedServiceClassCanBeAParameter(): void
+    {
+        $this->requiresTypeProvider();
+
+        $container = $this->createContainerWithTypes();
+        $container->setParameter('app.type_class', CustomTypeService::class);
+        $container->register('app.parameterized_type')
+            ->setClass('%app.type_class%')
+            ->addTag('doctrine_mongodb.odm.field_type', ['type' => 'parameterized_type']);
+        $container->compile();
+
+        $this->assertTypeRegistered($this->getTypeProvider($container, 'default'), 'parameterized_type', CustomTypeService::class);
+    }
+
+    public function testTagAttributesCanBeParameters(): void
+    {
+        $this->requiresTypeProvider();
+
+        $container = $this->createContainerWithTypes();
+        $container->setParameter('app.type_name', 'parameterized_name');
+        $container->setParameter('app.manager_name', 'other');
+        $container->register('app.parameterized_tag', CustomTypeService::class)
+            ->addTag('doctrine_mongodb.odm.field_type', ['type' => '%app.type_name%', 'document_manager' => '%app.manager_name%']);
+        $container->compile();
+
+        $this->assertTypeRegistered($this->getTypeProvider($container, 'other'), 'parameterized_name', CustomTypeService::class);
+        $this->assertTypeNotRegistered($this->getTypeProvider($container, 'default'), 'parameterized_name');
     }
 
     private function requiresTypeProvider(): void
