@@ -22,6 +22,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations;
 use Doctrine\ODM\MongoDB\Mapping\Attribute;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
+use Doctrine\Persistence\Mapping\Driver\PHPDriver;
+use Doctrine\Persistence\Mapping\Driver\StaticPHPDriver;
 use Doctrine\Persistence\Proxy;
 use InvalidArgumentException;
 use LogicException;
@@ -297,8 +299,8 @@ class DoctrineMongoDBExtension extends Extension
             throw new InvalidArgumentException(sprintf('Specified non-existing directory "%s" as Doctrine mapping source.', $mappingConfig['dir']));
         }
 
-        if (! in_array($mappingConfig['type'], ['xml', 'attribute'])) {
-            throw new InvalidArgumentException(sprintf('Can only configure "xml" or "attribute" through the DoctrineMongoDBBundle. Use your own bundle to configure other metadata drivers. You can register them by adding a new driver to the "%s" service definition.', $this->getObjectManagerElementName($objectManagerName . '_metadata_driver')));
+        if (! in_array($mappingConfig['type'], ['xml', 'php', 'staticphp', 'attribute'])) {
+            throw new InvalidArgumentException(sprintf('Can only configure "xml", "php", "staticphp" or "attribute" through the DoctrineMongoDBBundle. Use your own bundle to configure other metadata drivers. You can register them by adding a new driver to the "%s" service definition.', $this->getObjectManagerElementName($objectManagerName . '_metadata_driver')));
         }
     }
 
@@ -1042,6 +1044,8 @@ class DoctrineMongoDBExtension extends Extension
         return match ($driverType) {
             'driver_chain' => MappingDriverChain::class,
             'attribute' => AttributeDriver::class,
+            'staticphp' => StaticPHPDriver::class,
+            'php' => PHPDriver::class,
             'xml' => XmlDriver::class,
             default => throw new InvalidArgumentException(sprintf('Metadata driver not supported: "%s"', $driverType))
         };
