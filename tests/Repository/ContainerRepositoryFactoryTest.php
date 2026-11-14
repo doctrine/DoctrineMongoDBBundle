@@ -153,7 +153,7 @@ class ContainerRepositoryFactoryTest extends TestCase
         if (class_exists($registryClass)) {
             $dm
                 ->method('getDocumentRegistry')
-                ->willReturn(new $registryClass());
+                ->willReturn(new $registryClass(new Configuration()));
         }
 
         $uow = new UnitOfWork($dm, $evm, new HydratorFactory($dm, $evm, sys_get_temp_dir(), sys_get_temp_dir(), Configuration::AUTOGENERATE_EVAL));
