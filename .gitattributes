@@ -2,15 +2,9 @@
 
 /* export-ignore
 /src -export-ignore
-/src/** -export-ignore
 /config -export-ignore
-/config/** -export-ignore
 /docs -export-ignore
-/docs/** -export-ignore
 /templates -export-ignore
-/templates/** -export-ignore
-/tests -export-ignore
-/tests/** -export-ignore
 /composer.json -export-ignore
 /LICENSE -export-ignore
 /*.md -export-ignore
